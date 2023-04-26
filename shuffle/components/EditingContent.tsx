@@ -6,26 +6,36 @@ import clsx from "clsx";
 // -----------------------------------------------------------------------------
 
 type EditingContentViewProps = {
-  textareaRef: React.RefObject<HTMLTextAreaElement>;
-  value: string;
-  setValue: (value: string) => void;
-  onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+  data: {
+    placeholder?: string;
+  };
+  refs: {
+    textareaRef: React.RefObject<HTMLTextAreaElement>;
+  };
+  state: {
+    value: string;
+    setValue: (value: string) => void;
+  };
+  callbacks: {
+    onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+  };
 };
 
 type EditingContentProps = {
   card: CardContent;
   setValue: (value: string) => void;
   onCancel: () => void;
+  placeholder?: string;
 };
 
 // View
 // -----------------------------------------------------------------------------
 
 const EditingContentView = ({
-  textareaRef,
-  value,
-  setValue,
-  onKeyDown,
+  data: { placeholder },
+  refs: { textareaRef },
+  state: { value, setValue },
+  callbacks: { onKeyDown },
 }: EditingContentViewProps) => (
   <textarea
     ref={textareaRef}
@@ -36,13 +46,19 @@ const EditingContentView = ({
     value={value}
     onChange={(e) => setValue(e.target.value)}
     onKeyDown={onKeyDown}
+    placeholder={placeholder}
   />
 );
 
 // Default export
 // -----------------------------------------------------------------------------
 
-const EditingContent = ({ card, setValue, onCancel }: EditingContentProps) => {
+const EditingContent = ({
+  card,
+  setValue,
+  onCancel,
+  placeholder,
+}: EditingContentProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [localValue, setLocalValue] = useState(card.comment);
 
@@ -77,10 +93,10 @@ const EditingContent = ({ card, setValue, onCancel }: EditingContentProps) => {
 
   return (
     <EditingContentView
-      textareaRef={textareaRef}
-      value={localValue}
-      setValue={setLocalValue}
-      onKeyDown={onKeyDown}
+      refs={{ textareaRef }}
+      data={{ placeholder }}
+      state={{ value: localValue, setValue: setLocalValue }}
+      callbacks={{ onKeyDown }}
     />
   );
 };
