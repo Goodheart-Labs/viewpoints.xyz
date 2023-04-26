@@ -1,11 +1,11 @@
-import UrqlProvider from "@/providers/UrqlProvider";
+import QueryProvider from "@/providers/QueryProvider";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 
 const App = ({ Component, pageProps }: AppProps) => (
-  <UrqlProvider>
+  <QueryProvider>
     <Component {...pageProps} />
-  </UrqlProvider>
+  </QueryProvider>
 );
 
 export default App;
