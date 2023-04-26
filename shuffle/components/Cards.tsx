@@ -1,6 +1,8 @@
-import Card, { CardViewProps, Valence } from "./Card";
-import { AnimatePresence } from "framer-motion";
+import Card, { CardContent, Valence } from "./Card";
+import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useState } from "react";
+import BorderedButton from "./BorderedButton";
+import { PlusIcon } from "@heroicons/react/20/solid";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -11,7 +13,7 @@ type CardsProps = {};
 // -----------------------------------------------------------------------------
 
 const Cards = ({}: CardsProps) => {
-  const [cards, setCards] = useState<CardViewProps[]>([
+  const [cards, setCards] = useState<CardContent[]>([
     {
       cardId: "1",
       author: {
@@ -45,7 +47,7 @@ const Cards = ({}: CardsProps) => {
   ]);
 
   const handleSwipe = useCallback(
-    (card: CardViewProps, valence: Valence) => {
+    (card: CardContent, valence: Valence) => {
       console.log(`${card.cardId} - ${valence}`);
       setCards(cards.filter((c) => c.cardId !== card.cardId));
     },
@@ -53,11 +55,31 @@ const Cards = ({}: CardsProps) => {
   );
 
   return (
-    <AnimatePresence>
-      {cards.map((card) => (
-        <Card key={card.cardId} card={card} onSwipe={handleSwipe} />
-      ))}
-    </AnimatePresence>
+    <div className="relative flex flex-col items-center justify-center w-full sm:min-w-[600px]">
+      <AnimatePresence>
+        {cards.map((card) => (
+          <Card key={card.cardId} card={card} onSwipe={handleSwipe} />
+        ))}
+
+        {cards.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.1 }}
+            className="flex flex-col w-full p-10 -mt-20 border border-gray-800 rounded-lg min-w-[320px] max-w-[600px]"
+          >
+            <div className="pb-4 text-center">
+              You&apos;ve answered all the comments!
+            </div>
+            <div className="text-center">
+              <BorderedButton color="blue" className="flex items-center">
+                <PlusIcon width={28} className="mr-1" /> Add a new comment
+              </BorderedButton>
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </div>
   );
 };
 

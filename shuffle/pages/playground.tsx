@@ -67,9 +67,7 @@ const Playground = () => (
       </h2>
     </div>
     <div className="mt-20">
-      <div className="relative flex flex-col items-center justify-center w-full sm:min-w-[600px]">
-        <Cards />
-      </div>
+      <Cards />
     </div>
     {/* <Fetch /> */}
   </main>

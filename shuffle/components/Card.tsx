@@ -1,14 +1,15 @@
 import { motion, PanInfo } from "framer-motion";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { PencilSquareIcon } from "@heroicons/react/20/solid";
 import Avatar from "@/components/Avatar";
+import BorderedButton from "./BorderedButton";
 
 // Types
 // -----------------------------------------------------------------------------
 
 export type Valence = "agree" | "disagree";
 
-export type CardViewProps = {
+export type CardContent = {
   cardId: string;
   author: {
     name: string;
@@ -17,12 +18,25 @@ export type CardViewProps = {
   comment: string;
 };
 
+export type CardViewProps = {
+  card: CardContent;
+  onAgree: () => void;
+  onDisagree: () => void;
+};
+
 export type CardProps = {};
 
 // View
 // -----------------------------------------------------------------------------
 
-const CardView = ({ author: { name, avatar }, comment }: CardViewProps) => (
+const CardView = ({
+  card: {
+    author: { name, avatar },
+    comment,
+  },
+  onAgree,
+  onDisagree,
+}: CardViewProps) => (
   <>
     <div className="flex flex-col px-4 py-5 sm:p-6">
       <div className="flex items-center justify-between mb-4">
@@ -48,14 +62,14 @@ const CardView = ({ author: { name, avatar }, comment }: CardViewProps) => (
     <div className="w-full px-4 py-4 bg-gray-50 sm:px-6">
       <div className="flex justify-between">
         <div>
-          <button className="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 border border-red-600 rounded-md hover:text-white hover:bg-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500">
+          <BorderedButton onClick={onDisagree} color="red">
             &larr; Disagree
-          </button>
+          </BorderedButton>
         </div>
         <div>
-          <button className="inline-flex items-center px-4 py-2 text-sm font-medium text-green-600 border border-green-600 rounded-md hover:text-white hover:bg-green-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500">
+          <BorderedButton onClick={onAgree} color="green">
             Agree &rarr;
-          </button>
+          </BorderedButton>
         </div>
       </div>
     </div>
@@ -69,20 +83,34 @@ const Card = ({
   card,
   onSwipe,
 }: {
-  card: CardViewProps;
-  onSwipe: (card: CardViewProps, valence: Valence) => void;
+  card: CardContent;
+  onSwipe: (card: CardContent, valence: Valence) => void;
 }) => {
   const [leaveX, setLeaveX] = useState(0);
-  const onDragEnd = (_e: any, info: PanInfo) => {
-    if (info.offset.x > 100) {
-      setLeaveX(1000);
-      onSwipe(card, "agree");
-    }
-    if (info.offset.x < -100) {
-      setLeaveX(-1000);
-      onSwipe(card, "disagree");
-    }
-  };
+
+  const onDragEnd = useCallback(
+    (_e: any, info: PanInfo) => {
+      if (info.offset.x > 100) {
+        setLeaveX(1000);
+        onSwipe(card, "agree");
+      }
+      if (info.offset.x < -100) {
+        setLeaveX(-1000);
+        onSwipe(card, "disagree");
+      }
+    },
+    [card, onSwipe]
+  );
+
+  const onAgree = useCallback(() => {
+    setLeaveX(1000);
+    onSwipe(card, "agree");
+  }, [card, onSwipe]);
+
+  const onDisagree = useCallback(() => {
+    setLeaveX(-1000);
+    onSwipe(card, "disagree");
+  }, [card, onSwipe]);
 
   return (
     <motion.div
@@ -105,7 +133,7 @@ const Card = ({
       }}
       className="absolute min-w-[320px] max-w-[600px] flex flex-col justify-center items-center cursor-grab overflow-hidden bg-white rounded-lg shadow"
     >
-      <CardView {...card} />
+      <CardView card={card} onAgree={onAgree} onDisagree={onDisagree} />
     </motion.div>
   );
 };
