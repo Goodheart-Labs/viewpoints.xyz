@@ -12,10 +12,11 @@ type BorderedButtonProps = JSX.IntrinsicElements["button"] & {
 // -----------------------------------------------------------------------------
 
 const styles = {
-  red: "text-red-600 border-red-600 hover:bg-red-600 focus-visible:ring-blue-500",
-  green:
-    "text-green-600 border-green-600 hover:bg-green-600 focus-visible:ring-blue-500",
-  blue: "text-blue-600 border-blue-600 hover:bg-blue-600 focus-visible:ring-blue-500",
+  red: "text-red-600 border-red-600 hover:bg-red-50 focus:bg-red-50",
+  green: "text-green-600 border-green-600 hover:bg-green-50 focus:bg-green-50",
+  blue: "text-blue-600 border-blue-600 hover:bg-blue-50 focus:bg-blue-50",
+  yellow:
+    "text-yellow-600 border-yellow-600 hover:bg-yellow-50 focus:bg-yellow-50",
 };
 
 // Default export
@@ -29,7 +30,7 @@ const BorderedButton = ({
   <button
     {...props}
     className={clsx(
-      "inline-flex items-center px-4 py-2 text-sm font-medium border rounded-md hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+      "inline-flex items-center px-4 py-2 text-sm font-medium border rounded-md focus:outline-none",
       styles[color || "red"],
       props.className
     )}
