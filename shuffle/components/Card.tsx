@@ -248,6 +248,7 @@ const Card = ({
           "fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50",
           isEditing ? "z-40" : "z-0"
         )}
+        onClick={onCancelEdit}
       />
     </>
   );
