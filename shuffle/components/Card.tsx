@@ -5,6 +5,8 @@ import Avatar from "@/components/Avatar";
 import BorderedButton from "./BorderedButton";
 import clsx from "clsx";
 import EditingContent from "./EditingContent";
+import useHotkeys from "@reecelucas/react-use-hotkeys";
+import { Key } from "ts-key-enum";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -135,9 +137,11 @@ const CardView = ({
 
 const Card = ({
   card,
+  isActive,
   onSwipe,
 }: {
   card: CardContent;
+  isActive: boolean;
   onSwipe: (card: CardContent, valence: Valence) => void;
 }) => {
   // State
@@ -178,28 +182,48 @@ const Card = ({
   );
 
   const onAgree = useCallback(() => {
+    if (!isActive) return;
+    if (isEditing) return;
+
     setLeaveX(1000);
     setTimeout(() => onSwipe(card, "agree"), ANIMATION_DURATION * 1000);
-  }, [card, onSwipe]);
+  }, [card, isActive, isEditing, onSwipe]);
 
   const onDisagree = useCallback(() => {
+    if (!isActive) return;
+    if (isEditing) return;
+
     setLeaveX(-1000);
     setTimeout(() => onSwipe(card, "disagree"), ANIMATION_DURATION * 1000);
-  }, [card, onSwipe]);
+  }, [card, isActive, isEditing, onSwipe]);
 
   const onEdit = useCallback(() => {
+    if (!isActive) return;
+
     setIsEditing((editing) => !editing);
-  }, []);
+  }, [isActive]);
 
   const onCancelEdit = useCallback(() => {
+    if (!isActive) return;
+    if (!isEditing) return;
+
     setIsEditing(false);
     setEditingValue(card.comment);
-  }, [card.comment]);
+  }, [card.comment, isActive, isEditing]);
 
   const onSaveEdit = useCallback(() => {
+    if (!isActive) return;
+    if (!isEditing) return;
+
     setIsEditing(false);
     console.log("Save new", editingValue);
-  }, [editingValue]);
+  }, [editingValue, isActive, isEditing]);
+
+  // Keyboard shortcuts
+
+  useHotkeys(Key.ArrowLeft, onDisagree);
+  useHotkeys(Key.ArrowRight, onAgree);
+  useHotkeys("e", onEdit);
 
   // Render
 

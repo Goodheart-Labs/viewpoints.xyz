@@ -68,7 +68,11 @@ const Cards = ({}: CardsProps) => {
     <div className="relative flex flex-col items-center justify-center w-full sm:min-w-[600px]">
       {cards.map((card) => (
         <AnimatePresence key={card.cardId}>
-          <Card card={card} onSwipe={handleSwipe} />
+          <Card
+            card={card}
+            onSwipe={handleSwipe}
+            isActive={card.cardId === cards[cards.length - 1].cardId}
+          />
         </AnimatePresence>
       ))}
 
