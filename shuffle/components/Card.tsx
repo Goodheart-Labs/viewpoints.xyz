@@ -52,7 +52,7 @@ export type CardProps = {};
 // Styles
 // -----------------------------------------------------------------------------
 
-export const contentClasses = "text-lg text-gray-800 p-2";
+export const contentClasses = "text-lg text-gray-800 dark:text-gray-400 p-2";
 export const contentMinHeight = 70;
 
 // View
@@ -75,10 +75,10 @@ const CardView = ({
     <div className="flex flex-col w-full px-4 py-5 sm:p-6">
       <div className="flex items-center justify-between w-full mb-4">
         <div className="flex items-center w-full">
-          <div className="mr-2">
+          <div className="mr-2 dark:shadow-sm">
             <Avatar url={card.author.avatar} alt={card.author.name} />
           </div>
-          <div className="text-sm font-semibold text-gray-600">
+          <div className="text-sm font-semibold text-gray-600 dark:text-gray-400">
             {card.author.name}
           </div>
         </div>
@@ -86,7 +86,7 @@ const CardView = ({
           <button
             type="button"
             className={clsx(
-              "p-1 hover:text-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600",
+              "p-1 hover:text-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 dark:hover:text-indigo-300 dark:focus-visible:text-indigo-300",
               isEditing ? "text-indigo-500" : "text-gray-400"
             )}
           >
@@ -114,7 +114,7 @@ const CardView = ({
         )}
       </div>
     </div>
-    <div className="w-full px-4 py-4 bg-gray-50 sm:px-6">
+    <div className="w-full px-4 py-4 bg-gray-50 dark:bg-gray-800 sm:px-6">
       {isEditing ? (
         <div className="flex justify-end">
           <div>
@@ -132,12 +132,12 @@ const CardView = ({
             </BorderedButton>
           </div>
           <div>
-            <BorderedButton onClick={onDisagree} color="yellow">
+            <BorderedButton onClick={onSkip} color="yellow">
               [S]kip
             </BorderedButton>
           </div>
           <div>
-            <BorderedButton onClick={onDisagree} color="orange">
+            <BorderedButton onClick={onItsComplicated} color="orange">
               ? It&apos;s complicated
             </BorderedButton>
           </div>
@@ -282,7 +282,7 @@ const Card = ({
         variants={{
           default: {
             scale: 1,
-            rotate: `${Number(card.cardId) % 2 === 0 ? 2 : -2}deg`,
+            rotate: `${Number(card.cardId) % 2 === 0 ? 1 : -1}deg`,
           },
           exit: {
             x: leaveX,
@@ -296,7 +296,7 @@ const Card = ({
           },
         }}
         className={clsx(
-          "absolute w-[600px] flex flex-col justify-center items-center cursor-grab overflow-hidden bg-white rounded-lg shadow",
+          "absolute w-[600px] flex flex-col justify-center items-center cursor-grab overflow-hidden bg-white rounded-lg shadow dark:bg-gray-700 dark:drop-shadow-lg dark:border dark:border-gray-800",
           isEditing ? "z-50" : "z-30"
         )}
       >

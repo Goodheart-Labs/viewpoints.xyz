@@ -12,13 +12,14 @@ type BorderedButtonProps = JSX.IntrinsicElements["button"] & {
 // -----------------------------------------------------------------------------
 
 const styles = {
-  red: "text-red-600 border-red-600 hover:bg-red-50 focus:bg-red-50",
-  green: "text-green-600 border-green-600 hover:bg-green-50 focus:bg-green-50",
-  blue: "text-blue-600 border-blue-600 hover:bg-blue-50 focus:bg-blue-50",
+  red: "text-red-600 dark:hover:text-red-400 border-red-600 hover:bg-red-50 dark:hover:bg-red-900 focus:bg-red-50 dark:focus:bg-red-900",
+  green:
+    "text-green-600 dark:hover:text-green-400 border-green-600 hover:bg-green-50 dark:hover:bg-green-900 focus:bg-green-50 dark:focus:bg-green-900",
+  blue: "text-blue-600 dark:hover:text-blue-400 border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900 focus:bg-blue-50 dark:focus:bg-blue-900",
   yellow:
-    "text-yellow-600 border-yellow-600 hover:bg-yellow-50 focus:bg-yellow-50",
+    "text-yellow-600 dark:hover:text-yellow-400 border-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900 focus:bg-yellow-50 dark:focus:bg-yellow-900",
   orange:
-    "text-orange-600 border-orange-600 hover:bg-orange-50 focus:bg-orange-50",
+    "text-orange-600 dark:hover:text-orange-400 border-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900 focus:bg-orange-50 dark:focus:bg-orange-900",
 };
 
 // Default export
