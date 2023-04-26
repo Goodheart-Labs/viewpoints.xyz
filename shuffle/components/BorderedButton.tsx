@@ -17,6 +17,8 @@ const styles = {
   blue: "text-blue-600 border-blue-600 hover:bg-blue-50 focus:bg-blue-50",
   yellow:
     "text-yellow-600 border-yellow-600 hover:bg-yellow-50 focus:bg-yellow-50",
+  orange:
+    "text-orange-600 border-orange-600 hover:bg-orange-50 focus:bg-orange-50",
 };
 
 // Default export

@@ -17,7 +17,7 @@ const ANIMATION_DURATION = 0.2;
 // Types
 // -----------------------------------------------------------------------------
 
-export type Valence = "agree" | "disagree";
+export type Valence = "agree" | "disagree" | "skip" | "itsComplicated";
 
 export type CardContent = {
   cardId: string;
@@ -39,6 +39,8 @@ export type CardViewProps = {
   callbacks: {
     onAgree: () => void;
     onDisagree: () => void;
+    onSkip: () => void;
+    onItsComplicated: () => void;
     onEdit: () => void;
     onCancelEdit: () => void;
     onSaveEdit: () => void;
@@ -59,7 +61,15 @@ export const contentMinHeight = 70;
 const CardView = ({
   data: { card },
   state: { isEditing, setEditingValue },
-  callbacks: { onAgree, onDisagree, onEdit, onCancelEdit, onSaveEdit },
+  callbacks: {
+    onAgree,
+    onDisagree,
+    onSkip,
+    onItsComplicated,
+    onEdit,
+    onCancelEdit,
+    onSaveEdit,
+  },
 }: CardViewProps) => (
   <>
     <div className="flex flex-col w-full px-4 py-5 sm:p-6">
@@ -122,6 +132,16 @@ const CardView = ({
             </BorderedButton>
           </div>
           <div>
+            <BorderedButton onClick={onDisagree} color="yellow">
+              [S]kip
+            </BorderedButton>
+          </div>
+          <div>
+            <BorderedButton onClick={onDisagree} color="orange">
+              ? It&apos;s complicated
+            </BorderedButton>
+          </div>
+          <div>
             <BorderedButton onClick={onAgree} color="green">
               Agree &rarr;
             </BorderedButton>
@@ -147,6 +167,7 @@ const Card = ({
   // State
 
   const [leaveX, setLeaveX] = useState(0);
+  const [leaveY, setLeaveY] = useState(0);
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -155,7 +176,7 @@ const Card = ({
   // View state
 
   const animate = useMemo(() => {
-    if (leaveX !== 0) {
+    if (leaveX !== 0 || leaveY !== 0) {
       return "exit";
     }
 
@@ -163,7 +184,7 @@ const Card = ({
       return "edit";
     }
     return "default";
-  }, [isEditing, leaveX]);
+  }, [isEditing, leaveX, leaveY]);
 
   // Callbacks
 
@@ -197,6 +218,25 @@ const Card = ({
     setTimeout(() => onSwipe(card, "disagree"), ANIMATION_DURATION * 1000);
   }, [card, isActive, isEditing, onSwipe]);
 
+  const onSkip = useCallback(() => {
+    if (!isActive) return;
+    if (isEditing) return;
+
+    setLeaveY(-1000);
+    setTimeout(() => onSwipe(card, "skip"), ANIMATION_DURATION * 1000);
+  }, [card, isActive, isEditing, onSwipe]);
+
+  const onItsComplicated = useCallback(() => {
+    if (!isActive) return;
+    if (isEditing) return;
+
+    setLeaveY(1000);
+    setTimeout(
+      () => onSwipe(card, "itsComplicated"),
+      ANIMATION_DURATION * 1000
+    );
+  }, [card, isActive, isEditing, onSwipe]);
+
   const onEdit = useCallback(() => {
     if (!isActive) return;
 
@@ -223,7 +263,9 @@ const Card = ({
 
   useHotkeys(Key.ArrowLeft, onDisagree);
   useHotkeys(Key.ArrowRight, onAgree);
-  useHotkeys("e", onEdit);
+  useHotkeys(["s", "shift+s"], onSkip);
+  useHotkeys("shift+?", onItsComplicated);
+  useHotkeys(["e", "shift+e"], onEdit);
 
   // Render
 
@@ -244,7 +286,7 @@ const Card = ({
           },
           exit: {
             x: leaveX,
-            y: 0,
+            y: leaveY,
             opacity: 0,
             scale: 0.5,
             transition: { duration: 0.2 },
@@ -261,7 +303,15 @@ const Card = ({
         <CardView
           data={{ card }}
           state={{ isEditing, setEditingValue }}
-          callbacks={{ onAgree, onDisagree, onEdit, onCancelEdit, onSaveEdit }}
+          callbacks={{
+            onAgree,
+            onDisagree,
+            onSkip,
+            onItsComplicated,
+            onEdit,
+            onCancelEdit,
+            onSaveEdit,
+          }}
         />
       </motion.div>
 
