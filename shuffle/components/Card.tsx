@@ -290,7 +290,8 @@ const Card = ({
         variants={{
           default: {
             scale: 1,
-            rotate: `${Number(card.id) % 2 === 0 ? 1 : -1}deg`,
+            x: Number(card.id) % 2 === 0 ? -5 : 5,
+            rotate: `${Number(card.id) % 2 === 0 ? -1 : 1}deg`,
           },
           exit: {
             x: leaveX,
