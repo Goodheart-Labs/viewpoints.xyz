@@ -26,6 +26,7 @@ export type CardViewProps = {
   state: {
     isEditing: boolean;
     setEditingValue: (value: string) => void;
+    editingDisabled: boolean;
   };
   callbacks: {
     onAgree: () => void;
@@ -51,7 +52,7 @@ export const contentMinHeight = 70;
 
 const CardView = ({
   data: { card },
-  state: { isEditing, setEditingValue },
+  state: { isEditing, setEditingValue, editingDisabled },
   callbacks: {
     onAgree,
     onDisagree,
@@ -112,7 +113,11 @@ const CardView = ({
       {isEditing ? (
         <div className="flex justify-end">
           <div>
-            <BorderedButton onClick={onSaveEdit} color="yellow">
+            <BorderedButton
+              onClick={onSaveEdit}
+              color="yellow"
+              disabled={editingDisabled}
+            >
               <CheckIcon width={22} height={22} className="mr-1" /> Add Edited
               Comment
             </BorderedButton>
@@ -153,10 +158,12 @@ const Card = ({
   card,
   isActive,
   onSwipe,
+  onCommentEdited,
 }: {
   card: Comment;
   isActive: boolean;
   onSwipe: (card: Comment, valence: Valence) => void;
+  onCommentEdited: (card: Pick<Comment, "id" | "comment">) => void;
 }) => {
   // State
 
@@ -249,9 +256,16 @@ const Card = ({
     if (!isActive) return;
     if (!isEditing) return;
 
+    onCommentEdited({ id: card.id, comment: editingValue });
     setIsEditing(false);
-    console.log("Save new", editingValue);
-  }, [editingValue, isActive, isEditing]);
+  }, [card.id, editingValue, isActive, isEditing, onCommentEdited]);
+
+  // Memos
+
+  const editingDisabled = useMemo(
+    () => editingValue === card.comment,
+    [card.comment, editingValue]
+  );
 
   // Keyboard shortcuts
 
@@ -296,7 +310,7 @@ const Card = ({
       >
         <CardView
           data={{ card }}
-          state={{ isEditing, setEditingValue }}
+          state={{ isEditing, setEditingValue, editingDisabled }}
           callbacks={{
             onAgree,
             onDisagree,

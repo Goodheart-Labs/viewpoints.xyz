@@ -122,10 +122,13 @@ const Poll = ({
   );
 
   const newCommentMutation = useMutation(
-    async (comment: Comment["comment"]) => {
+    async ({
+      comment,
+      edited_from_id,
+    }: Pick<Comment, "comment" | "edited_from_id">) => {
       const { error } = await supabase
         .from("comments")
-        .insert({ poll_id: poll.id, comment });
+        .insert({ poll_id: poll.id, comment, edited_from_id });
 
       if (error) {
         throw error;
@@ -144,10 +147,17 @@ const Poll = ({
   }, []);
 
   const onCreateComment = useCallback(
-    async (comment: Comment["comment"]) => {
-      await newCommentMutation.mutateAsync(comment);
+    async (comment: Comment["comment"], edited_from_id?: number) => {
+      await newCommentMutation.mutateAsync({ comment, edited_from_id });
     },
     [newCommentMutation]
+  );
+
+  const onCommentEdited = useCallback(
+    async ({ id, comment }: Pick<Comment, "id" | "comment">) => {
+      await onCreateComment(comment, id);
+    },
+    [onCreateComment]
   );
 
   const onCancelCreating = useCallback(() => {
@@ -204,7 +214,11 @@ const Poll = ({
               <div className="w-10 h-10 border-2 border-t-2 border-gray-200 rounded-full animate-spin"></div>
             </div>
           ) : (
-            <Cards comments={filteredComments} onNewComment={onNewComment} />
+            <Cards
+              comments={filteredComments}
+              onNewComment={onNewComment}
+              onCommentEdited={onCommentEdited}
+            />
           )}
         </div>
       </div>

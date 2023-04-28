@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { CardContent, contentClasses, contentMinHeight } from "./Card";
+import { contentClasses, contentMinHeight } from "./Card";
 import clsx from "clsx";
+import { Comment } from "@/lib/api";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -22,7 +23,7 @@ type EditingContentViewProps = {
 };
 
 type EditingContentProps = {
-  card: CardContent;
+  card: Omit<Comment, "id" | "poll_id" | "created_at">;
   setValue: (value: string) => void;
   onCancel: () => void;
   placeholder?: string;

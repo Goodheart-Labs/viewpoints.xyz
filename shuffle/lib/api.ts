@@ -10,6 +10,7 @@ export type Comment = {
   id: number;
   poll_id: string;
   session_id?: string;
+  edited_from_id?: number;
   author_name?: string;
   author_avatar_url?: string;
   comment: string;

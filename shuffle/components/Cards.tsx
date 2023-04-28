@@ -20,12 +20,13 @@ export const anonymousAvatar =
 type CardsProps = {
   comments: Comment[];
   onNewComment: () => void;
+  onCommentEdited: (card: Pick<Comment, "id" | "comment">) => void;
 };
 
 // Default export
 // -----------------------------------------------------------------------------
 
-const Cards = ({ comments, onNewComment }: CardsProps) => {
+const Cards = ({ comments, onNewComment, onCommentEdited }: CardsProps) => {
   // State
 
   const [cards, setCards] = useState<Comment[]>(comments);
@@ -70,6 +71,7 @@ const Cards = ({ comments, onNewComment }: CardsProps) => {
           <Card
             card={card}
             onSwipe={onSwipe}
+            onCommentEdited={onCommentEdited}
             isActive={card.id === cards[cards.length - 1].id}
           />
         </AnimatePresence>
