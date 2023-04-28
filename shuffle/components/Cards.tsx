@@ -81,7 +81,7 @@ const Cards = ({ comments, onNewComment }: CardsProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.1 }}
-            className="flex flex-col w-full p-10 -mt-20 border border-gray-800 dark:border-gray-600 rounded-lg min-w-[320px] max-w-[600px]"
+            className="flex flex-col w-full p-10 border border-gray-800 dark:border-gray-600 rounded-lg min-w-[320px] max-w-[600px]"
           >
             <div className="pb-4 text-center dark:text-gray-300">
               You&apos;ve answered all the comments!

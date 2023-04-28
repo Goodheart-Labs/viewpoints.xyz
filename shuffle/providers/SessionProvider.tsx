@@ -5,7 +5,13 @@ import {
   useEffect,
   useState,
 } from "react";
+import { getCookie, setCookie } from "typescript-cookie";
 import { v4 as uuidv4 } from "uuid";
+
+// Config
+// -----------------------------------------------------------------------------
+
+export const SESSION_ID_COOKIE_NAME = "sessionId";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -33,13 +39,13 @@ const SessionProvider = ({ children }: PropsWithChildren<{}>) => {
   const [sessionId, setSessionId] = useState("");
 
   useEffect(() => {
-    const storedSessionId = localStorage.getItem("sessionId");
+    const storedSessionId = getCookie(SESSION_ID_COOKIE_NAME);
 
     if (storedSessionId) {
       setSessionId(storedSessionId);
     } else {
       const newSessionId = uuidv4();
-      localStorage.setItem("sessionID", newSessionId);
+      setCookie(SESSION_ID_COOKIE_NAME, newSessionId, { expires: Infinity });
       setSessionId(newSessionId);
     }
   }, []);

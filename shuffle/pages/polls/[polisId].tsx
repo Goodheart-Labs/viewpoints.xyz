@@ -1,12 +1,16 @@
 import Cards from "@/components/Cards";
 import NewComment from "@/components/NewComment";
 import TwitterShare from "@/components/TwitterShare";
-import { Comment, Poll } from "@/lib/api";
+import { Comment, Poll, Response } from "@/lib/api";
+import { SESSION_ID_COOKIE_NAME } from "@/providers/SessionProvider";
 import { supabase } from "@/providers/SupabaseProvider";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import { AnimatePresence } from "framer-motion";
 import { GetServerSidePropsContext } from "next";
+import { cookies } from "next/headers";
 import { useState, useCallback, useMemo } from "react";
+import { useQuery } from "react-query";
+import { getCookie } from "typescript-cookie";
 
 // SSR
 // -----------------------------------------------------------------------------
@@ -81,6 +85,53 @@ const Poll = ({ poll, comments }: { poll: Poll; comments: Comment[] }) => {
 
   useHotkeys("c", onNewComment);
 
+  // Supabase
+
+  const commentIds = useMemo(
+    () => comments.map((comment) => comment.id),
+    [comments]
+  );
+
+  const { data: responses, isLoading: responsesLoading } = useQuery(
+    ["responses", commentIds.join(",")],
+    async () => {
+      const sessionId = getCookie(SESSION_ID_COOKIE_NAME);
+
+      const { data, error } = await supabase
+        .from("responses")
+        .select("*")
+        .in("comment_id", commentIds)
+        .eq("session_id", sessionId);
+
+      if (error) {
+        throw error;
+      }
+
+      return data;
+    }
+  );
+
+  // Memos
+
+  const responsesByCommentId = useMemo(
+    () =>
+      responses?.reduce(
+        (acc, response) => ({
+          ...acc,
+          [response.comment_id]: response,
+        }),
+        {}
+      ) ?? {},
+    [responses]
+  );
+
+  const loading = useMemo(() => responsesLoading, [responsesLoading]);
+
+  const filteredComments = useMemo(
+    () => comments.filter((comment) => !responsesByCommentId[comment.id]),
+    [comments, responsesByCommentId]
+  );
+
   // Render
 
   return (
@@ -98,7 +149,13 @@ const Poll = ({ poll, comments }: { poll: Poll; comments: Comment[] }) => {
           <TwitterShare url={twitterShareUrl} title={twitterShareTitle} />
         </div>
         <div className="relative">
-          <Cards comments={comments} onNewComment={onNewComment} />
+          {loading ? (
+            <div className="absolute top-0 left-0 flex items-center justify-center w-full h-full">
+              <div className="w-10 h-10 border-2 border-t-2 border-gray-200 rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            <Cards comments={filteredComments} onNewComment={onNewComment} />
+          )}
         </div>
       </div>
       <AnimatePresence>

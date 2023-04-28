@@ -30,6 +30,7 @@
     "tailwindcss": "3.3.2",
     "ts-key-enum": "^2.0.12",
     "typescript": "5.0.4",
+    "typescript-cookie": "^1.0.6",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
