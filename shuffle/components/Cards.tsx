@@ -3,7 +3,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useState } from "react";
 import BorderedButton from "./BorderedButton";
 import { PlusIcon } from "@heroicons/react/20/solid";
-import { Comment, Valence } from "@/lib/api";
+import { Comment, Valence, Response } from "@/lib/api";
+import { useSession } from "@/providers/SessionProvider";
+import { useMutation } from "react-query";
+import { useSupabase } from "@/providers/SupabaseProvider";
 
 // Setup
 // -----------------------------------------------------------------------------
@@ -23,15 +26,42 @@ type CardsProps = {
 // -----------------------------------------------------------------------------
 
 const Cards = ({ comments, onNewComment }: CardsProps) => {
+  // State
+
   const [cards, setCards] = useState<Comment[]>(comments);
+
+  // Supabase
+
+  const { client } = useSupabase();
+  const { sessionId } = useSession();
+
+  const insertResponseMutation = useMutation(
+    async (response: Pick<Response, "comment_id" | "valence">) => {
+      const { error } = await client
+        .from("responses")
+        .insert({ ...response, session_id: sessionId });
+
+      if (error) {
+        throw error;
+      }
+    }
+  );
+
+  // Callbacks
 
   const onSwipe = useCallback(
     (card: Comment, valence: Valence) => {
-      console.log(`${card.id} - ${valence}`);
+      insertResponseMutation.mutateAsync({
+        comment_id: card.id,
+        valence,
+      });
+
       setCards(cards.filter((c) => c.id !== card.id));
     },
-    [cards]
+    [cards, insertResponseMutation]
   );
+
+  // Render
 
   return (
     <div className="w-full sm:min-w-[600px]">
