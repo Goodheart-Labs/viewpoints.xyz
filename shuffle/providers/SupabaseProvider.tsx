@@ -30,7 +30,7 @@ const SupabaseContext = createContext<SupabaseContextType>({
 export const useSupabase = () => {
   const context = useContext(SupabaseContext);
   if (!context) {
-    throw new Error("useModal must be used within a ModalProvider");
+    throw new Error("useModal must be used within a SupabaseProvider");
   }
   return context;
 };
@@ -38,10 +38,10 @@ export const useSupabase = () => {
 // Provider
 // -----------------------------------------------------------------------------
 
-const ModalProvider = ({ children }: PropsWithChildren<{}>) => (
+const SupabaseProvider = ({ children }: PropsWithChildren<{}>) => (
   <SupabaseContext.Provider value={{ client: supabase }}>
     {children}
   </SupabaseContext.Provider>
 );
 
-export default ModalProvider;
+export default SupabaseProvider;
