@@ -9,7 +9,7 @@ import { AnimatePresence } from "framer-motion";
 import { GetServerSidePropsContext } from "next";
 import { cookies } from "next/headers";
 import { useState, useCallback, useMemo } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { getCookie } from "typescript-cookie";
 
 // SSR
@@ -53,7 +53,13 @@ export async function getServerSideProps(
 // Default export
 // -----------------------------------------------------------------------------
 
-const Poll = ({ poll, comments }: { poll: Poll; comments: Comment[] }) => {
+const Poll = ({
+  poll,
+  comments: initialData,
+}: {
+  poll: Poll;
+  comments: Comment[];
+}) => {
   // State
 
   const [isCreating, setIsCreating] = useState(false);
@@ -70,25 +76,29 @@ const Poll = ({ poll, comments }: { poll: Poll; comments: Comment[] }) => {
 
   const twitterShareTitle = useMemo(() => poll.title, [poll.title]);
 
-  // Callbacks
-
-  const onNewComment = useCallback(() => {
-    console.log("New comment");
-    setIsCreating(true);
-  }, []);
-
-  const onCancelCreating = useCallback(() => {
-    setIsCreating(false);
-  }, []);
-
-  // Keyboard shortcuts
-
-  useHotkeys("c", onNewComment);
-
   // Supabase
 
+  const { data: comments, refetch: refetchComments } = useQuery(
+    ["comments", poll.id],
+    async () => {
+      const { data, error } = await supabase
+        .from("comments")
+        .select("*")
+        .eq("poll_id", poll.id);
+
+      if (error) {
+        throw error;
+      }
+
+      return data;
+    },
+    {
+      initialData,
+    }
+  );
+
   const commentIds = useMemo(
-    () => comments.map((comment) => comment.id),
+    () => (comments ?? []).map((comment) => comment.id),
     [comments]
   );
 
@@ -111,6 +121,43 @@ const Poll = ({ poll, comments }: { poll: Poll; comments: Comment[] }) => {
     }
   );
 
+  const newCommentMutation = useMutation(
+    async (comment: Comment["comment"]) => {
+      const { error } = await supabase
+        .from("comments")
+        .insert({ poll_id: poll.id, comment });
+
+      if (error) {
+        throw error;
+      }
+
+      await refetchComments();
+
+      setIsCreating(false);
+    }
+  );
+
+  // Callbacks
+
+  const onNewComment = useCallback(() => {
+    setIsCreating(true);
+  }, []);
+
+  const onCreateComment = useCallback(
+    async (comment: Comment["comment"]) => {
+      await newCommentMutation.mutateAsync(comment);
+    },
+    [newCommentMutation]
+  );
+
+  const onCancelCreating = useCallback(() => {
+    setIsCreating(false);
+  }, []);
+
+  // Keyboard shortcuts
+
+  useHotkeys("c", onNewComment);
+
   // Memos
 
   const responsesByCommentId = useMemo(
@@ -128,7 +175,10 @@ const Poll = ({ poll, comments }: { poll: Poll; comments: Comment[] }) => {
   const loading = useMemo(() => responsesLoading, [responsesLoading]);
 
   const filteredComments = useMemo(
-    () => comments.filter((comment) => !responsesByCommentId[comment.id]),
+    () =>
+      (comments ?? []).filter(
+        (comment) => !responsesByCommentId[comment.id]
+      ) as Comment[],
     [comments, responsesByCommentId]
   );
 
@@ -159,7 +209,9 @@ const Poll = ({ poll, comments }: { poll: Poll; comments: Comment[] }) => {
         </div>
       </div>
       <AnimatePresence>
-        {isCreating && <NewComment onCancel={onCancelCreating} />}
+        {isCreating && (
+          <NewComment onCreate={onCreateComment} onCancel={onCancelCreating} />
+        )}
       </AnimatePresence>
     </main>
   );

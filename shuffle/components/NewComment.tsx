@@ -4,16 +4,16 @@ import { motion } from "framer-motion";
 import { useCallback, useMemo, useState } from "react";
 import Avatar from "./Avatar";
 import BorderedButton from "./BorderedButton";
-import { CardContent } from "./Card";
 import EditingContent from "./EditingContent";
 import { anonymousAvatar } from "./Cards";
+import { Comment } from "@/lib/api";
 
 // Types
 // -----------------------------------------------------------------------------
 
 type NewCommentViewProps = {
   data: {
-    card: CardContent;
+    card: Omit<Comment, "id" | "poll_id" | "created_at">;
   };
   state: {
     editingValue: string;
@@ -26,6 +26,7 @@ type NewCommentViewProps = {
 };
 
 type NewCommentProps = {
+  onCreate: (value: string) => void;
   onCancel: () => void;
 };
 
@@ -43,10 +44,13 @@ const NewCommentView = ({
         <div className="flex items-center justify-between w-full mb-4">
           <div className="flex items-center w-full">
             <div className="mr-2">
-              <Avatar url={card.author.avatar} alt={card.author.name} />
+              <Avatar
+                url={card.author_avatar_url ?? anonymousAvatar}
+                alt={card.author_name ?? "Anonymous"}
+              />
             </div>
             <div className="text-sm font-semibold text-gray-600">
-              {card.author.name}
+              {card.author_name ?? "Anonymous"}
             </div>
           </div>
           <div>
@@ -95,25 +99,21 @@ const NewCommentView = ({
 // Default export
 // -----------------------------------------------------------------------------
 
-const NewComment = ({ onCancel }: NewCommentProps) => {
+const NewComment = ({ onCreate, onCancel }: NewCommentProps) => {
   const [editingValue, setEditingValue] = useState("");
 
   const card = useMemo(
     () => ({
-      cardId: "new",
-      author: {
-        name: "Anonymous",
-        avatar: anonymousAvatar,
-      },
+      author_name: "Anonymous",
+      author_avatar_url: anonymousAvatar,
       comment: editingValue,
     }),
     [editingValue]
   );
 
   const onSave = useCallback(() => {
-    console.log("Saving new comment", card);
-    onCancel();
-  }, [card, onCancel]);
+    onCreate(editingValue);
+  }, [editingValue, onCreate]);
 
   return (
     <NewCommentView
