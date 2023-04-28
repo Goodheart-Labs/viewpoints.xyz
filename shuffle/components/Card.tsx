@@ -7,6 +7,8 @@ import clsx from "clsx";
 import EditingContent from "./EditingContent";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import { Key } from "ts-key-enum";
+import { Comment, Valence } from "@/lib/api";
+import { anonymousAvatar } from "./Cards";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -17,20 +19,9 @@ const ANIMATION_DURATION = 0.2;
 // Types
 // -----------------------------------------------------------------------------
 
-export type Valence = "agree" | "disagree" | "skip" | "itsComplicated";
-
-export type CardContent = {
-  cardId: string;
-  author: {
-    name: string;
-    avatar: string;
-  };
-  comment: string;
-};
-
 export type CardViewProps = {
   data: {
-    card: CardContent;
+    card: Comment;
   };
   state: {
     isEditing: boolean;
@@ -76,10 +67,13 @@ const CardView = ({
       <div className="flex items-center justify-between w-full mb-4">
         <div className="flex items-center w-full">
           <div className="mr-2 dark:shadow-sm">
-            <Avatar url={card.author.avatar} alt={card.author.name} />
+            <Avatar
+              url={card.author_avatar_url ?? anonymousAvatar}
+              alt={card.author_name ?? "Anonymous"}
+            />
           </div>
           <div className="text-sm font-semibold text-gray-600 dark:text-gray-400">
-            {card.author.name}
+            {card.author_name ?? "Anonymous"}
           </div>
         </div>
         <div>
@@ -160,9 +154,9 @@ const Card = ({
   isActive,
   onSwipe,
 }: {
-  card: CardContent;
+  card: Comment;
   isActive: boolean;
-  onSwipe: (card: CardContent, valence: Valence) => void;
+  onSwipe: (card: Comment, valence: Valence) => void;
 }) => {
   // State
 
@@ -282,7 +276,7 @@ const Card = ({
         variants={{
           default: {
             scale: 1,
-            rotate: `${Number(card.cardId) % 2 === 0 ? 1 : -1}deg`,
+            rotate: `${Number(card.id) % 2 === 0 ? 1 : -1}deg`,
           },
           exit: {
             x: leaveX,
@@ -315,15 +309,17 @@ const Card = ({
         />
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={isEditing ? { opacity: 1 } : { opacity: 0 }}
-        className={clsx(
-          "fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50",
-          isEditing ? "z-40" : "z-0"
-        )}
-        onClick={onCancelEdit}
-      />
+      {isActive && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isEditing ? { opacity: 1 } : { opacity: 0 }}
+          className={clsx(
+            "fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50",
+            isEditing ? "z-40" : "z-0"
+          )}
+          onClick={onCancelEdit}
+        />
+      )}
     </>
   );
 };
