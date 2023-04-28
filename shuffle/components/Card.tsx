@@ -24,6 +24,7 @@ export type CardViewProps = {
     card: Comment;
   };
   state: {
+    isActive: boolean;
     isEditing: boolean;
     setEditingValue: (value: string) => void;
     editingDisabled: boolean;
@@ -52,7 +53,7 @@ export const contentMinHeight = 70;
 
 const CardView = ({
   data: { card },
-  state: { isEditing, setEditingValue, editingDisabled },
+  state: { isActive, isEditing, setEditingValue, editingDisabled },
   callbacks: {
     onAgree,
     onDisagree,
@@ -126,22 +127,39 @@ const CardView = ({
       ) : (
         <div className="flex justify-between">
           <div>
-            <BorderedButton onClick={onDisagree} color="red">
+            <BorderedButton
+              onClick={onDisagree}
+              color="red"
+              disabled={!isActive}
+            >
               &larr; Disagree
             </BorderedButton>
           </div>
           <div>
-            <BorderedButton onClick={onSkip} color="yellow">
-              [S]kip
+            <BorderedButton
+              onClick={onSkip}
+              color="yellow"
+              disabled={!isActive}
+            >
+              <span className="hidden sm:inline">[</span>S
+              <span className="hidden sm:inline">]</span>kip
             </BorderedButton>
           </div>
           <div>
-            <BorderedButton onClick={onItsComplicated} color="orange">
-              ? It&apos;s complicated
+            <BorderedButton
+              onClick={onItsComplicated}
+              color="orange"
+              disabled={!isActive}
+            >
+              <span className="hidden sm:inline">?</span> It&apos;s complicated
             </BorderedButton>
           </div>
           <div>
-            <BorderedButton onClick={onAgree} color="green">
+            <BorderedButton
+              onClick={onAgree}
+              color="green"
+              disabled={!isActive}
+            >
               Agree &rarr;
             </BorderedButton>
           </div>
@@ -305,13 +323,13 @@ const Card = ({
           },
         }}
         className={clsx(
-          "absolute w-[600px] flex flex-col justify-center items-center cursor-grab overflow-hidden bg-white rounded-lg shadow dark:bg-gray-700 dark:drop-shadow-lg dark:border dark:border-gray-800",
+          "absolute sm:w-[600px] flex flex-col justify-center items-center cursor-grab overflow-hidden bg-white rounded-lg shadow dark:bg-gray-700 dark:drop-shadow-lg dark:border dark:border-gray-800",
           isEditing ? "z-50" : "z-30"
         )}
       >
         <CardView
           data={{ card }}
-          state={{ isEditing, setEditingValue, editingDisabled }}
+          state={{ isActive, isEditing, setEditingValue, editingDisabled }}
           callbacks={{
             onAgree,
             onDisagree,

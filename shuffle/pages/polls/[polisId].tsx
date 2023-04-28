@@ -195,12 +195,12 @@ const Poll = ({
   // Render
 
   return (
-    <main className="flex flex-col items-center w-full h-screen gradient">
-      <div className="flex flex-col mt-40 text-center max-w-[800px]">
+    <main className="flex flex-col items-center w-full h-screen px-4 gradient sm:px-0">
+      <div className="flex flex-col mt-10 sm:mt-40 text-center max-w-[800px]">
         <h1 className="mb-4 text-4xl font-bold text-black dark:text-gray-200">
           {poll.title}
         </h1>
-        <h2 className="text-xl text-gray-800 dark:text-gray-500">
+        <h2 className="text-gray-800 sm:text-xl dark:text-gray-500">
           {poll.core_question}
         </h2>
       </div>

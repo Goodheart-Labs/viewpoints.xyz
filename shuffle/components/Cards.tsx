@@ -65,17 +65,19 @@ const Cards = ({ comments, onNewComment, onCommentEdited }: CardsProps) => {
   // Render
 
   return (
-    <div className="w-full sm:min-w-[600px]">
-      {cards.map((card) => (
-        <AnimatePresence key={card.id}>
-          <Card
-            card={card}
-            onSwipe={onSwipe}
-            onCommentEdited={onCommentEdited}
-            isActive={card.id === cards[cards.length - 1].id}
-          />
-        </AnimatePresence>
-      ))}
+    <div className="sm:w-full sm:min-w-[600px]">
+      <div className="relative flex flex-col w-full sm:min-h-[200px] min-w-[400px]">
+        {cards.map((card) => (
+          <AnimatePresence key={card.id}>
+            <Card
+              card={card}
+              onSwipe={onSwipe}
+              onCommentEdited={onCommentEdited}
+              isActive={card.id === cards[cards.length - 1].id}
+            />
+          </AnimatePresence>
+        ))}
+      </div>
 
       {cards.length === 0 ? (
         <AnimatePresence>
@@ -83,7 +85,7 @@ const Cards = ({ comments, onNewComment, onCommentEdited }: CardsProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.1 }}
-            className="flex flex-col w-full p-10 border border-gray-800 dark:border-gray-600 rounded-lg min-w-[320px] max-w-[600px]"
+            className="flex flex-col w-full p-10 sm:border border-gray-800 dark:border-gray-600 rounded-lg sm:min-w-[320px] max-w-[600px]"
           >
             <div className="pb-4 text-center dark:text-gray-300">
               You&apos;ve answered all the comments!
