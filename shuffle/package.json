@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@amplitude/analytics-browser": "^1.10.2",
     "@heroicons/react": "^2.0.17",
     "@reecelucas/react-use-hotkeys": "^2.0.0",
     "@supabase/supabase-js": "^2.21.0",

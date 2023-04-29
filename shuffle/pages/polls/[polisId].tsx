@@ -2,6 +2,7 @@ import Cards from "@/components/Cards";
 import NewComment from "@/components/NewComment";
 import TwitterShare from "@/components/TwitterShare";
 import { Comment, Poll, Response } from "@/lib/api";
+import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
 import { SESSION_ID_COOKIE_NAME } from "@/providers/SessionProvider";
 import { supabase } from "@/providers/SupabaseProvider";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
@@ -60,6 +61,8 @@ const Poll = ({
   poll: Poll;
   comments: Comment[];
 }) => {
+  const { amplitude } = useAmplitude();
+
   // State
 
   const [isCreating, setIsCreating] = useState(false);
@@ -142,15 +145,29 @@ const Poll = ({
 
   // Callbacks
 
-  const onNewComment = useCallback(() => {
-    setIsCreating(true);
-  }, []);
+  const onNewComment = useCallback(
+    (interactionMode: "click" | "keyboard" = "click") => {
+      setIsCreating(true);
+
+      amplitude.track(TrackingEvent.OpenNewComment, {
+        poll_id: poll.id,
+        interactionMode,
+      });
+    },
+    [amplitude, poll.id]
+  );
 
   const onCreateComment = useCallback(
     async (comment: Comment["comment"], edited_from_id?: number) => {
+      amplitude.track(TrackingEvent.PersistNewComment, {
+        poll_id: poll.id,
+        comment,
+        edited_from_id,
+      });
+
       await newCommentMutation.mutateAsync({ comment, edited_from_id });
     },
-    [newCommentMutation]
+    [amplitude, newCommentMutation, poll.id]
   );
 
   const onCommentEdited = useCallback(
@@ -161,12 +178,22 @@ const Poll = ({
   );
 
   const onCancelCreating = useCallback(() => {
+    amplitude.track(TrackingEvent.CancelNewComment, {
+      poll_id: poll.id,
+    });
+
     setIsCreating(false);
-  }, []);
+  }, [amplitude, poll.id]);
+
+  const onShareClickCapture = useCallback(() => {
+    amplitude.track(TrackingEvent.Share, {
+      poll_id: poll.id,
+    });
+  }, [amplitude, poll.id]);
 
   // Keyboard shortcuts
 
-  useHotkeys("c", onNewComment);
+  useHotkeys("c", () => onNewComment("keyboard"));
 
   // Memos
 
@@ -205,7 +232,7 @@ const Poll = ({
         </h2>
       </div>
       <div className="grid grid-cols-1 gap-20 justify-items-center items-end max-width-[800px]">
-        <div className="z-30">
+        <div className="z-30" onClickCapture={onShareClickCapture}>
           <TwitterShare url={twitterShareUrl} title={twitterShareTitle} />
         </div>
         <div className="relative">

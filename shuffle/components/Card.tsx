@@ -9,6 +9,7 @@ import useHotkeys from "@reecelucas/react-use-hotkeys";
 import { Key } from "ts-key-enum";
 import { Comment, Valence } from "@/lib/api";
 import { anonymousAvatar } from "./Cards";
+import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -34,7 +35,7 @@ export type CardViewProps = {
     onDisagree: () => void;
     onSkip: () => void;
     onItsComplicated: () => void;
-    onEdit: () => void;
+    onEdit: (interactionMode?: "click" | "keyboard") => void;
     onCancelEdit: () => void;
     onSaveEdit: () => void;
   };
@@ -87,7 +88,7 @@ const CardView = ({
             )}
           >
             <PencilSquareIcon
-              onClick={onEdit}
+              onClick={() => onEdit("click")}
               className="w-5 h-5"
               aria-hidden="true"
             />
@@ -183,6 +184,8 @@ const Card = ({
   onSwipe: (card: Comment, valence: Valence) => void;
   onCommentEdited: (card: Pick<Comment, "id" | "comment">) => void;
 }) => {
+  const { amplitude } = useAmplitude();
+
   // State
 
   const [leaveX, setLeaveX] = useState(0);
@@ -209,6 +212,8 @@ const Card = ({
 
   const onDragEnd = useCallback(
     (_e: any, info: PanInfo) => {
+      amplitude.track(TrackingEvent.Drag);
+
       if (info.offset.x > SWIPE_THRESHOLD) {
         setLeaveX(1000);
         setTimeout(() => onSwipe(card, "agree"), ANIMATION_DURATION * 1000);
@@ -218,65 +223,128 @@ const Card = ({
         setTimeout(() => onSwipe(card, "disagree"), ANIMATION_DURATION * 1000);
       }
     },
-    [card, onSwipe]
+    [amplitude, card, onSwipe]
   );
 
-  const onAgree = useCallback(() => {
-    if (!isActive) return;
-    if (isEditing) return;
+  const onAgree = useCallback(
+    (interactionMode: "click" | "keyboard" = "click") => {
+      if (!isActive) return;
+      if (isEditing) return;
 
-    setLeaveX(1000);
-    setTimeout(() => onSwipe(card, "agree"), ANIMATION_DURATION * 1000);
-  }, [card, isActive, isEditing, onSwipe]);
+      amplitude.track(TrackingEvent.VoteAgreement, {
+        pollId: card.poll_id,
+        cardId: card.id,
+        interactionMode,
+      });
 
-  const onDisagree = useCallback(() => {
-    if (!isActive) return;
-    if (isEditing) return;
+      setLeaveX(1000);
+      setTimeout(() => onSwipe(card, "agree"), ANIMATION_DURATION * 1000);
+    },
+    [amplitude, card, isActive, isEditing, onSwipe]
+  );
 
-    setLeaveX(-1000);
-    setTimeout(() => onSwipe(card, "disagree"), ANIMATION_DURATION * 1000);
-  }, [card, isActive, isEditing, onSwipe]);
+  const onDisagree = useCallback(
+    (interactionMode: "click" | "keyboard" = "click") => {
+      if (!isActive) return;
+      if (isEditing) return;
 
-  const onSkip = useCallback(() => {
-    if (!isActive) return;
-    if (isEditing) return;
+      amplitude.track(TrackingEvent.VoteDisagreement, {
+        pollId: card.poll_id,
+        cardId: card.id,
+        interactionMode,
+      });
 
-    setLeaveY(-1000);
-    setTimeout(() => onSwipe(card, "skip"), ANIMATION_DURATION * 1000);
-  }, [card, isActive, isEditing, onSwipe]);
+      setLeaveX(-1000);
+      setTimeout(() => onSwipe(card, "disagree"), ANIMATION_DURATION * 1000);
+    },
+    [amplitude, card, isActive, isEditing, onSwipe]
+  );
 
-  const onItsComplicated = useCallback(() => {
-    if (!isActive) return;
-    if (isEditing) return;
+  const onSkip = useCallback(
+    (interactionMode: "click" | "keyboard" = "click") => {
+      if (!isActive) return;
+      if (isEditing) return;
 
-    setLeaveY(1000);
-    setTimeout(
-      () => onSwipe(card, "itsComplicated"),
-      ANIMATION_DURATION * 1000
-    );
-  }, [card, isActive, isEditing, onSwipe]);
+      amplitude.track(TrackingEvent.VoteSkipped, {
+        pollId: card.poll_id,
+        cardId: card.id,
+        interactionMode,
+      });
 
-  const onEdit = useCallback(() => {
-    if (!isActive) return;
+      setLeaveY(-1000);
+      setTimeout(() => onSwipe(card, "skip"), ANIMATION_DURATION * 1000);
+    },
+    [amplitude, card, isActive, isEditing, onSwipe]
+  );
 
-    setIsEditing((editing) => !editing);
-  }, [isActive]);
+  const onItsComplicated = useCallback(
+    (interactionMode: "click" | "keyboard" = "click") => {
+      if (!isActive) return;
+      if (isEditing) return;
+
+      amplitude.track(TrackingEvent.VoteItsComplicated, {
+        pollId: card.poll_id,
+        cardId: card.id,
+        interactionMode,
+      });
+
+      setLeaveY(1000);
+      setTimeout(
+        () => onSwipe(card, "itsComplicated"),
+        ANIMATION_DURATION * 1000
+      );
+    },
+    [amplitude, card, isActive, isEditing, onSwipe]
+  );
+
+  const onEdit = useCallback(
+    (interactionMode: "click" | "keyboard" = "click") => {
+      if (!isActive) return;
+
+      amplitude.track(TrackingEvent.OpenEditComment, {
+        pollId: card.poll_id,
+        cardId: card.id,
+        interactionMode,
+      });
+
+      setIsEditing((editing) => !editing);
+    },
+    [amplitude, card.id, card.poll_id, isActive]
+  );
 
   const onCancelEdit = useCallback(() => {
     if (!isActive) return;
     if (!isEditing) return;
 
+    amplitude.track(TrackingEvent.CancelEditComment, {
+      pollId: card.poll_id,
+      cardId: card.id,
+    });
+
     setIsEditing(false);
     setEditingValue(card.comment);
-  }, [card.comment, isActive, isEditing]);
+  }, [amplitude, card.comment, card.id, card.poll_id, isActive, isEditing]);
 
   const onSaveEdit = useCallback(() => {
     if (!isActive) return;
     if (!isEditing) return;
 
+    amplitude.track(TrackingEvent.PersistEditComment, {
+      pollId: card.poll_id,
+      cardId: card.id,
+    });
+
     onCommentEdited({ id: card.id, comment: editingValue });
     setIsEditing(false);
-  }, [card.id, editingValue, isActive, isEditing, onCommentEdited]);
+  }, [
+    amplitude,
+    card.id,
+    card.poll_id,
+    editingValue,
+    isActive,
+    isEditing,
+    onCommentEdited,
+  ]);
 
   // Memos
 
@@ -287,11 +355,11 @@ const Card = ({
 
   // Keyboard shortcuts
 
-  useHotkeys(Key.ArrowLeft, onDisagree);
-  useHotkeys(Key.ArrowRight, onAgree);
-  useHotkeys(["s", "shift+s"], onSkip);
-  useHotkeys("shift+?", onItsComplicated);
-  useHotkeys(["e", "shift+e"], onEdit);
+  useHotkeys(Key.ArrowLeft, () => onDisagree("keyboard"));
+  useHotkeys(Key.ArrowRight, () => onAgree("keyboard"));
+  useHotkeys(["s", "shift+s"], () => onSkip("keyboard"));
+  useHotkeys("shift+?", () => onItsComplicated("keyboard"));
+  useHotkeys(["e", "shift+e"], () => onEdit("keyboard"));
 
   // Render
 

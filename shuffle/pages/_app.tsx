@@ -1,3 +1,4 @@
+import AmplitudeProvider from "@/providers/AmplitudeProvider";
 import ModalProvider from "@/providers/ModalProvider";
 import QueryProvider from "@/providers/QueryProvider";
 import SessionProvider from "@/providers/SessionProvider";
@@ -7,13 +8,15 @@ import type { AppProps } from "next/app";
 
 const App = ({ Component, pageProps }: AppProps) => (
   <SessionProvider>
-    <SupabaseProvider>
-      <ModalProvider>
-        <QueryProvider>
-          <Component {...pageProps} />
-        </QueryProvider>
-      </ModalProvider>
-    </SupabaseProvider>
+    <AmplitudeProvider>
+      <SupabaseProvider>
+        <ModalProvider>
+          <QueryProvider>
+            <Component {...pageProps} />
+          </QueryProvider>
+        </ModalProvider>
+      </SupabaseProvider>
+    </AmplitudeProvider>
   </SessionProvider>
 );
 
