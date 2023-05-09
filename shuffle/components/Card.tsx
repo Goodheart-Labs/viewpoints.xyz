@@ -391,7 +391,7 @@ const Card = ({
           },
         }}
         className={clsx(
-          "absolute sm:w-[600px] flex flex-col justify-center items-center cursor-grab overflow-hidden bg-white rounded-lg shadow dark:bg-gray-700 dark:drop-shadow-lg dark:border dark:border-gray-800",
+          "absolute sm:w-[600px] flex flex-col justify-center items-center cursor-grab overflow-hidden border border-gray-300 bg-white rounded-lg shadow dark:bg-gray-700 dark:drop-shadow-lg dark:border dark:border-gray-800",
           isEditing ? "z-50" : "z-30"
         )}
       >
