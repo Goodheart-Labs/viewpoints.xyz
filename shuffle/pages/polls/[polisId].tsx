@@ -6,10 +6,11 @@ import { Comment, Poll, Response } from "@/lib/api";
 import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
 import { SESSION_ID_COOKIE_NAME } from "@/providers/SessionProvider";
 import { supabase } from "@/providers/SupabaseProvider";
+import { getAbsoluteUrl } from "@/utils/urlutils";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import { AnimatePresence } from "framer-motion";
 import { GetServerSidePropsContext } from "next";
-import { cookies } from "next/headers";
+import Head from "next/head";
 import { useState, useCallback, useMemo } from "react";
 import { useMutation, useQuery } from "react-query";
 import { getCookie } from "typescript-cookie";
@@ -48,6 +49,7 @@ export async function getServerSideProps(
     props: {
       poll: polls[0],
       comments,
+      url: `${getAbsoluteUrl(context.req)}${context.resolvedUrl}`,
     },
   };
 }
@@ -58,9 +60,11 @@ export async function getServerSideProps(
 const Poll = ({
   poll,
   comments: initialData,
+  url,
 }: {
   poll: Poll;
   comments: Comment[];
+  url: string;
 }) => {
   const { amplitude } = useAmplitude();
 
@@ -74,10 +78,8 @@ const Poll = ({
 
   const twitterShareUrl = useMemo(
     () =>
-      typeof window === "undefined"
-        ? ""
-        : window.location.href.replace(/\?.*/, ""),
-    []
+      `${url}?utm_source=twitter&utm_medium=social&utm_campaign=share&utm_content=${poll.id}`,
+    [poll.id, url]
   );
 
   const twitterShareTitle = useMemo(() => poll.title, [poll.title]);
@@ -239,6 +241,19 @@ const Poll = ({
 
   return (
     <main className="flex flex-col items-center w-full min-h-screen px-4 gradient sm:px-0">
+      <Head>
+        <title>{poll.title} | Polls</title>
+        <meta name="description" content={poll.core_question} />
+        <meta property="og:title" content={poll.title} />
+        <meta property="og:description" content={poll.core_question} />
+        <meta property="og:url" content={twitterShareUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="twitter:card" content="summary" />
+        <meta property="twitter:title" content={poll.title} />
+        <meta property="twitter:description" content={poll.core_question} />
+        <meta property="twitter:site" content="viewpoints.xyz" />
+      </Head>
+
       <div className="flex flex-col mt-10 sm:mt-40 text-center max-w-[800px]">
         <h1 className="mb-4 text-4xl font-bold text-black dark:text-gray-200">
           {poll.title}
