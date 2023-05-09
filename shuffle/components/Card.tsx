@@ -1,6 +1,10 @@
-import { motion, PanInfo } from "framer-motion";
+import { AnimatePresence, motion, PanInfo } from "framer-motion";
 import { useCallback, useMemo, useState } from "react";
-import { CheckIcon, PencilSquareIcon } from "@heroicons/react/20/solid";
+import {
+  CheckIcon,
+  FlagIcon,
+  PencilSquareIcon,
+} from "@heroicons/react/20/solid";
 import Avatar from "@/components/Avatar";
 import BorderedButton from "./BorderedButton";
 import clsx from "clsx";
@@ -10,6 +14,7 @@ import { Key } from "ts-key-enum";
 import { Comment, Valence } from "@/lib/api";
 import { anonymousAvatar } from "./Cards";
 import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
+import FlagComment from "./FlagComment";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -29,6 +34,7 @@ export type CardViewProps = {
     isEditing: boolean;
     setEditingValue: (value: string) => void;
     editingDisabled: boolean;
+    isFlagging: boolean;
   };
   callbacks: {
     onAgree: () => void;
@@ -38,6 +44,7 @@ export type CardViewProps = {
     onEdit: (interactionMode?: "click" | "keyboard") => void;
     onCancelEdit: () => void;
     onSaveEdit: () => void;
+    onFlag: (interactionMode?: "click" | "keyboard") => void;
   };
 };
 
@@ -54,7 +61,7 @@ export const contentMinHeight = 70;
 
 const CardView = ({
   data: { card },
-  state: { isActive, isEditing, setEditingValue, editingDisabled },
+  state: { isActive, isEditing, setEditingValue, editingDisabled, isFlagging },
   callbacks: {
     onAgree,
     onDisagree,
@@ -63,6 +70,7 @@ const CardView = ({
     onEdit,
     onCancelEdit,
     onSaveEdit,
+    onFlag,
   },
 }: CardViewProps) => (
   <>
@@ -79,7 +87,20 @@ const CardView = ({
             {card.author_name ?? "Anonymous"}
           </div>
         </div>
-        <div>
+        <div className="flex">
+          <button
+            type="button"
+            className={clsx(
+              "mr-1 p-1 hover:text-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:hover:text-red-300 dark:focus-visible:text-red-300",
+              isFlagging ? "text-red-500" : "text-gray-400"
+            )}
+          >
+            <FlagIcon
+              onClick={() => onFlag("click")}
+              className="w-5 h-5"
+              aria-hidden="true"
+            />
+          </button>
           <button
             type="button"
             className={clsx(
@@ -178,11 +199,13 @@ const Card = ({
   isActive,
   onSwipe,
   onCommentEdited,
+  onCommentFlagged,
 }: {
   card: Comment;
   isActive: boolean;
   onSwipe: (card: Comment, valence: Valence) => void;
   onCommentEdited: (card: Pick<Comment, "id" | "comment">) => void;
+  onCommentFlagged: (commentId: Comment["id"]) => void;
 }) => {
   const { amplitude } = useAmplitude();
 
@@ -192,8 +215,9 @@ const Card = ({
   const [leaveY, setLeaveY] = useState(0);
 
   const [isEditing, setIsEditing] = useState(false);
-
   const [editingValue, setEditingValue] = useState(card.comment);
+
+  const [isFlagging, setIsFlagging] = useState(false);
 
   // View state
 
@@ -230,6 +254,7 @@ const Card = ({
     (interactionMode: "click" | "keyboard" = "click") => {
       if (!isActive) return;
       if (isEditing) return;
+      if (isFlagging) return;
 
       amplitude.track(TrackingEvent.VoteAgreement, {
         pollId: card.poll_id,
@@ -240,13 +265,14 @@ const Card = ({
       setLeaveX(1000);
       setTimeout(() => onSwipe(card, "agree"), ANIMATION_DURATION * 1000);
     },
-    [amplitude, card, isActive, isEditing, onSwipe]
+    [amplitude, card, isActive, isEditing, isFlagging, onSwipe]
   );
 
   const onDisagree = useCallback(
     (interactionMode: "click" | "keyboard" = "click") => {
       if (!isActive) return;
       if (isEditing) return;
+      if (isFlagging) return;
 
       amplitude.track(TrackingEvent.VoteDisagreement, {
         pollId: card.poll_id,
@@ -257,13 +283,14 @@ const Card = ({
       setLeaveX(-1000);
       setTimeout(() => onSwipe(card, "disagree"), ANIMATION_DURATION * 1000);
     },
-    [amplitude, card, isActive, isEditing, onSwipe]
+    [amplitude, card, isActive, isEditing, isFlagging, onSwipe]
   );
 
   const onSkip = useCallback(
     (interactionMode: "click" | "keyboard" = "click") => {
       if (!isActive) return;
       if (isEditing) return;
+      if (isFlagging) return;
 
       amplitude.track(TrackingEvent.VoteSkipped, {
         pollId: card.poll_id,
@@ -274,13 +301,14 @@ const Card = ({
       setLeaveY(-1000);
       setTimeout(() => onSwipe(card, "skip"), ANIMATION_DURATION * 1000);
     },
-    [amplitude, card, isActive, isEditing, onSwipe]
+    [amplitude, card, isActive, isEditing, isFlagging, onSwipe]
   );
 
   const onItsComplicated = useCallback(
     (interactionMode: "click" | "keyboard" = "click") => {
       if (!isActive) return;
       if (isEditing) return;
+      if (isFlagging) return;
 
       amplitude.track(TrackingEvent.VoteItsComplicated, {
         pollId: card.poll_id,
@@ -294,12 +322,13 @@ const Card = ({
         ANIMATION_DURATION * 1000
       );
     },
-    [amplitude, card, isActive, isEditing, onSwipe]
+    [amplitude, card, isActive, isEditing, isFlagging, onSwipe]
   );
 
   const onEdit = useCallback(
     (interactionMode: "click" | "keyboard" = "click") => {
       if (!isActive) return;
+      if (isFlagging) return;
 
       amplitude.track(TrackingEvent.OpenEditComment, {
         pollId: card.poll_id,
@@ -309,12 +338,13 @@ const Card = ({
 
       setIsEditing((editing) => !editing);
     },
-    [amplitude, card.id, card.poll_id, isActive]
+    [amplitude, card.id, card.poll_id, isActive, isFlagging]
   );
 
   const onCancelEdit = useCallback(() => {
     if (!isActive) return;
     if (!isEditing) return;
+    if (isFlagging) return;
 
     amplitude.track(TrackingEvent.CancelEditComment, {
       pollId: card.poll_id,
@@ -323,11 +353,20 @@ const Card = ({
 
     setIsEditing(false);
     setEditingValue(card.comment);
-  }, [amplitude, card.comment, card.id, card.poll_id, isActive, isEditing]);
+  }, [
+    amplitude,
+    card.comment,
+    card.id,
+    card.poll_id,
+    isActive,
+    isEditing,
+    isFlagging,
+  ]);
 
   const onSaveEdit = useCallback(() => {
     if (!isActive) return;
     if (!isEditing) return;
+    if (isFlagging) return;
 
     amplitude.track(TrackingEvent.PersistEditComment, {
       pollId: card.poll_id,
@@ -343,8 +382,56 @@ const Card = ({
     editingValue,
     isActive,
     isEditing,
+    isFlagging,
     onCommentEdited,
   ]);
+
+  const onFlag = useCallback(
+    (interactionMode: "click" | "keyboard" = "click") => {
+      if (!isActive) return;
+      if (isEditing) return;
+
+      amplitude.track(TrackingEvent.OpenFlagComment, {
+        pollId: card.poll_id,
+        cardId: card.id,
+        interactionMode,
+      });
+
+      setIsFlagging(true);
+    },
+    [amplitude, card.id, card.poll_id, isActive, isEditing]
+  );
+
+  const onCancelFlag = useCallback(() => {
+    if (!isActive) return;
+    if (isEditing) return;
+    if (!isFlagging) return;
+
+    amplitude.track(TrackingEvent.CancelFlagComment, {
+      pollId: card.poll_id,
+      cardId: card.id,
+    });
+
+    setIsFlagging(false);
+    setEditingValue(card.comment);
+  }, [
+    amplitude,
+    card.comment,
+    card.id,
+    card.poll_id,
+    isActive,
+    isEditing,
+    isFlagging,
+  ]);
+
+  const onSaveFlag = useCallback(() => {
+    if (!isActive) return;
+    if (isEditing) return;
+    if (!isFlagging) return;
+
+    setIsFlagging(false);
+    onCommentFlagged(card.id);
+  }, [card.id, isActive, isEditing, isFlagging, onCommentFlagged]);
 
   // Memos
 
@@ -360,6 +447,7 @@ const Card = ({
   useHotkeys(["s", "shift+s"], () => onSkip("keyboard"));
   useHotkeys("shift+?", () => onItsComplicated("keyboard"));
   useHotkeys(["e", "shift+e"], () => onEdit("keyboard"));
+  useHotkeys(["f", "shift+f"], () => onFlag("keyboard"));
 
   // Render
 
@@ -397,7 +485,13 @@ const Card = ({
       >
         <CardView
           data={{ card }}
-          state={{ isActive, isEditing, setEditingValue, editingDisabled }}
+          state={{
+            isActive,
+            isEditing,
+            setEditingValue,
+            editingDisabled,
+            isFlagging,
+          }}
           callbacks={{
             onAgree,
             onDisagree,
@@ -406,6 +500,7 @@ const Card = ({
             onEdit,
             onCancelEdit,
             onSaveEdit,
+            onFlag,
           }}
         />
       </motion.div>
@@ -421,6 +516,16 @@ const Card = ({
           onClick={onCancelEdit}
         />
       )}
+
+      <AnimatePresence>
+        {isActive && isFlagging && (
+          <FlagComment
+            comment={card}
+            onCreate={onSaveFlag}
+            onCancel={onCancelFlag}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 };

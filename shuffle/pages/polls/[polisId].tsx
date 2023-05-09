@@ -2,7 +2,7 @@ import Cards, { MinimalResponse } from "@/components/Cards";
 import NewComment from "@/components/NewComment";
 import Responses from "@/components/Responses";
 import TwitterShare from "@/components/TwitterShare";
-import { Comment, Poll, Response } from "@/lib/api";
+import { Comment, FlaggedComment, Poll, Response } from "@/lib/api";
 import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
 import { SESSION_ID_COOKIE_NAME } from "@/providers/SessionProvider";
 import { supabase } from "@/providers/SupabaseProvider";
@@ -14,6 +14,11 @@ import Head from "next/head";
 import { useState, useCallback, useMemo } from "react";
 import { useMutation, useQuery } from "react-query";
 import { getCookie } from "typescript-cookie";
+
+// Config
+// -----------------------------------------------------------------------------
+
+const MAX_NUM_FLAGS_BEFORE_REMOVAL = 2;
 
 // SSR
 // -----------------------------------------------------------------------------
@@ -129,6 +134,23 @@ const Poll = ({
     }
   );
 
+  const {
+    data: flaggedComments,
+    isLoading: flaggedCommentsLoading,
+    refetch: refetchFlaggedComments,
+  } = useQuery(["flaggedComments", commentIds.join(",")], async () => {
+    const { data, error } = await supabase
+      .from("flagged_comments")
+      .select("*")
+      .in("comment_id", commentIds);
+
+    if (error) {
+      throw error;
+    }
+
+    return data as FlaggedComment[];
+  });
+
   const newCommentMutation = useMutation(
     async ({
       comment,
@@ -206,7 +228,20 @@ const Poll = ({
 
   // Memos
 
-  const responsesByCommentId = useMemo(
+  const flagCountByCommentId = useMemo(
+    () =>
+      (flaggedComments ?? []).reduce(
+        (acc, flaggedComment) => ({
+          ...acc,
+          [flaggedComment.comment_id]:
+            (acc[flaggedComment.comment_id] ?? 0) + 1,
+        }),
+        {} as Record<number, number>
+      ),
+    [flaggedComments]
+  );
+
+  const currentUserResponsesByCommentId = useMemo(
     () =>
       responses?.reduce(
         (acc, response) => ({
@@ -222,10 +257,31 @@ const Poll = ({
 
   const filteredComments = useMemo(
     () =>
-      (comments ?? []).filter(
-        (comment) => !responsesByCommentId[comment.id]
-      ) as Comment[],
-    [comments, responsesByCommentId]
+      (comments ?? []).filter((comment) => {
+        const userHasResponded = !!currentUserResponsesByCommentId[comment.id];
+
+        const commentHasBeenFlaggedByCurrentUser = flaggedComments?.some(
+          (flaggedComment) =>
+            flaggedComment.comment_id === comment.id &&
+            flaggedComment.session_id === getCookie(SESSION_ID_COOKIE_NAME)
+        );
+
+        const commentExceedsFlagThreshold =
+          (flagCountByCommentId[comment.id] ?? 0) >=
+          MAX_NUM_FLAGS_BEFORE_REMOVAL;
+
+        return !(
+          userHasResponded ||
+          commentHasBeenFlaggedByCurrentUser ||
+          commentExceedsFlagThreshold
+        );
+      }) as Comment[],
+    [
+      comments,
+      currentUserResponsesByCommentId,
+      flagCountByCommentId,
+      flaggedComments,
+    ]
   );
 
   const enrichedResponses = useMemo(
@@ -276,6 +332,7 @@ const Poll = ({
               comments={filteredComments}
               onNewComment={onNewComment}
               onCommentEdited={onCommentEdited}
+              onCommentFlagged={refetchFlaggedComments}
               onResponseCreated={onResponseCreated}
             />
           )}
@@ -285,6 +342,7 @@ const Poll = ({
             <Responses responses={enrichedResponses} comments={comments} />
           )}
       </div>
+
       <AnimatePresence>
         {isCreating && (
           <NewComment onCreate={onCreateComment} onCancel={onCancelCreating} />

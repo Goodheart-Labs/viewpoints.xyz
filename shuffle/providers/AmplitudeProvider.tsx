@@ -12,12 +12,16 @@ export enum TrackingEvent {
   VoteDisagreement = "votes.disagree",
   VoteSkipped = "votes.skip",
   VoteItsComplicated = "votes.itsComplicated",
+  ViewAllVotes = "votes.viewAll",
   OpenNewComment = "comments.new.open",
   PersistNewComment = "comments.new.persist",
   CancelNewComment = "comments.new.cancel",
   OpenEditComment = "comments.edit.open",
   PersistEditComment = "comments.edit.persist",
   CancelEditComment = "comments.edit.cancel",
+  OpenFlagComment = "comments.flag.open",
+  PersistFlagComment = "comments.flag.persist",
+  CancelFlagComment = "comments.flag.cancel",
   Share = "share",
 }
 
