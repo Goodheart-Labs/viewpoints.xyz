@@ -99,7 +99,7 @@ const ResponsesView = ({
       ))}
     </AnimatePresence>
 
-    {!viewAll && (
+    {!viewAll && responsesWithComments.length > 0 && (
       <div className="flex justify-center mt-2">
         <BorderedButton
           color="blue"
