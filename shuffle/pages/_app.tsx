@@ -1,3 +1,4 @@
+import AuthHeader from "@/components/AuthHeader";
 import AmplitudeProvider from "@/providers/AmplitudeProvider";
 import ModalProvider from "@/providers/ModalProvider";
 import QueryProvider from "@/providers/QueryProvider";
@@ -12,6 +13,7 @@ const App = ({ Component, pageProps }: AppProps) => (
       <SupabaseProvider>
         <ModalProvider>
           <QueryProvider>
+            <AuthHeader />
             <Component {...pageProps} />
           </QueryProvider>
         </ModalProvider>

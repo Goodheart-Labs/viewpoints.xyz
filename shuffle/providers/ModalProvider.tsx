@@ -13,10 +13,7 @@ import {
 // Types
 // -----------------------------------------------------------------------------
 
-type ModalKey = "error";
-
 type Modal = {
-  id: ModalKey;
   render: (props?: any) => React.ReactNode;
   permanent?: boolean;
 };
@@ -82,7 +79,7 @@ const ModalContext = createContext<ModalContextType>({
 
 export const useModal = () => {
   const context = useContext(ModalContext);
-  if (!context) {
+  if (!context.setModal) {
     throw new Error("useModal must be used within a ModalProvider");
   }
   return context;

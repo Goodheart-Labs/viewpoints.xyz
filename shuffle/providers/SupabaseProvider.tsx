@@ -30,7 +30,7 @@ const SupabaseContext = createContext<SupabaseContextType>({
 export const useSupabase = () => {
   const context = useContext(SupabaseContext);
   if (!context) {
-    throw new Error("useModal must be used within a SupabaseProvider");
+    throw new Error("useSupabase must be used within a SupabaseProvider");
   }
   return context;
 };
