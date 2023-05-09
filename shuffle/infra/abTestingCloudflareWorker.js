@@ -10,6 +10,25 @@ const cookieName = "ab-test";
 const OPTIONS_POLIS = "polis";
 const OPTIONS_SHUFFLE = "shuffle";
 
+// Redirect Body
+// -----------------------------------------------------------------------------
+
+const REDIRECT_BODY = `
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Redirecting...</title>
+        <meta http-equiv="refresh" content="0; URL='{{redirectUrl}}'" />
+    </head>
+    <body>
+        <script>
+            window.location.href = "{{redirectUrl}}"
+        </script>
+    </body>
+</html>
+`;
+
 // Handler
 // -----------------------------------------------------------------------------
 
@@ -19,6 +38,10 @@ async function handleRequest(request) {
 
   const cookies = request.headers.get("Cookie") || "";
   const abTestCookie = cookies.match(new RegExp(`${cookieName}=([^;]+)`));
+
+  const headers = {
+    "Content-Type": "text/html",
+  };
 
   let choice;
 
@@ -37,15 +60,22 @@ async function handleRequest(request) {
     expiryDate.setFullYear(expiryDate.getFullYear() + 1);
     const cookieHeader = `${cookieName}=${choice}; Expires=${expiryDate.toUTCString()}; Path=/`;
 
-    response.headers.append("Set-Cookie", cookieHeader);
+    headers["Set-Cookie"] = cookieHeader;
   }
 
+  // We'll need to handle the redirect 'manually' so that the cookie is set
+
+  let body = "";
+
   if (choice === OPTIONS_SHUFFLE) {
-    return fetch(request);
+    const res = await fetch(request);
+    body = await res.text();
   } else {
     const redirectUrl = `${polisBaseUrl}/${pollId}`;
-    return Response.redirect(redirectUrl, 307);
+    body = REDIRECT_BODY.replaceAll("{{redirectUrl}}", redirectUrl);
   }
+
+  return new Response(body, { headers });
 }
 
 // Events
