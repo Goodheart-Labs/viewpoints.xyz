@@ -19,6 +19,7 @@ import { getCookie } from "typescript-cookie";
 // -----------------------------------------------------------------------------
 
 const MAX_NUM_FLAGS_BEFORE_REMOVAL = 2;
+const MAX_NUM_SKIPS_BEFORE_REMOVAL = 5;
 
 // SSR
 // -----------------------------------------------------------------------------
@@ -241,6 +242,20 @@ const Poll = ({
     [flaggedComments]
   );
 
+  const skipCountByCommentId = useMemo(
+    () =>
+      (responses ?? []).reduce(
+        (acc, response) => ({
+          ...acc,
+          [response.comment_id]:
+            (acc[response.comment_id] ?? 0) +
+            (response.valence === "skip" ? 1 : 0),
+        }),
+        {} as Record<number, number>
+      ),
+    [responses]
+  );
+
   const currentUserResponsesByCommentId = useMemo(
     () =>
       responses?.reduce(
@@ -270,10 +285,15 @@ const Poll = ({
           (flagCountByCommentId[comment.id] ?? 0) >=
           MAX_NUM_FLAGS_BEFORE_REMOVAL;
 
+        const commentExceedsSkipThreshold =
+          (skipCountByCommentId[comment.id] ?? 0) >=
+          MAX_NUM_SKIPS_BEFORE_REMOVAL;
+
         return !(
           userHasResponded ||
           commentHasBeenFlaggedByCurrentUser ||
-          commentExceedsFlagThreshold
+          commentExceedsFlagThreshold ||
+          commentExceedsSkipThreshold
         );
       }) as Comment[],
     [
@@ -281,6 +301,7 @@ const Poll = ({
       currentUserResponsesByCommentId,
       flagCountByCommentId,
       flaggedComments,
+      skipCountByCommentId,
     ]
   );
 
