@@ -1,5 +1,6 @@
-import Cards from "@/components/Cards";
+import Cards, { MinimalResponse } from "@/components/Cards";
 import NewComment from "@/components/NewComment";
+import Responses from "@/components/Responses";
 import TwitterShare from "@/components/TwitterShare";
 import { Comment, Poll, Response } from "@/lib/api";
 import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
@@ -67,6 +68,8 @@ const Poll = ({
 
   const [isCreating, setIsCreating] = useState(false);
 
+  const [cachedResponses, setCachedResponses] = useState<MinimalResponse[]>([]);
+
   // Sharing
 
   const twitterShareUrl = useMemo(
@@ -93,7 +96,7 @@ const Poll = ({
         throw error;
       }
 
-      return data;
+      return data as Comment[];
     },
     {
       initialData,
@@ -120,7 +123,7 @@ const Poll = ({
         throw error;
       }
 
-      return data;
+      return data as Response[];
     }
   );
 
@@ -191,6 +194,10 @@ const Poll = ({
     });
   }, [amplitude, poll.id]);
 
+  const onResponseCreated = useCallback((response: MinimalResponse) => {
+    setCachedResponses((cachedResponses) => [...cachedResponses, response]);
+  }, []);
+
   // Keyboard shortcuts
 
   useHotkeys("c", () => onNewComment("keyboard"));
@@ -204,7 +211,7 @@ const Poll = ({
           ...acc,
           [response.comment_id]: response,
         }),
-        {}
+        {} as Record<number, Response>
       ) ?? {},
     [responses]
   );
@@ -219,10 +226,19 @@ const Poll = ({
     [comments, responsesByCommentId]
   );
 
+  const enrichedResponses = useMemo(
+    () =>
+      [...(responses || []), ...cachedResponses].filter(
+        (response, index, self) =>
+          self.findIndex((r) => r.comment_id === response.comment_id) === index
+      ),
+    [responses, cachedResponses]
+  );
+
   // Render
 
   return (
-    <main className="flex flex-col items-center w-full h-screen px-4 gradient sm:px-0">
+    <main className="flex flex-col items-center w-full min-h-screen px-4 gradient sm:px-0">
       <div className="flex flex-col mt-10 sm:mt-40 text-center max-w-[800px]">
         <h1 className="mb-4 text-4xl font-bold text-black dark:text-gray-200">
           {poll.title}
@@ -245,9 +261,14 @@ const Poll = ({
               comments={filteredComments}
               onNewComment={onNewComment}
               onCommentEdited={onCommentEdited}
+              onResponseCreated={onResponseCreated}
             />
           )}
         </div>
+        {typeof responses !== "undefined" &&
+          typeof comments !== "undefined" && (
+            <Responses responses={enrichedResponses} comments={comments} />
+          )}
       </div>
       <AnimatePresence>
         {isCreating && (

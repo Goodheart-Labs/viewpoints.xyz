@@ -17,16 +17,27 @@ export const anonymousAvatar =
 // Types
 // -----------------------------------------------------------------------------
 
+export type MinimalResponse = Pick<
+  Response,
+  "comment_id" | "valence" | "created_at"
+>;
+
 type CardsProps = {
   comments: Comment[];
   onNewComment: () => void;
   onCommentEdited: (card: Pick<Comment, "id" | "comment">) => void;
+  onResponseCreated: (response: MinimalResponse) => void;
 };
 
 // Default export
 // -----------------------------------------------------------------------------
 
-const Cards = ({ comments, onNewComment, onCommentEdited }: CardsProps) => {
+const Cards = ({
+  comments,
+  onNewComment,
+  onCommentEdited,
+  onResponseCreated,
+}: CardsProps) => {
   // State
 
   const [cards, setCards] = useState<Comment[]>(comments);
@@ -37,7 +48,7 @@ const Cards = ({ comments, onNewComment, onCommentEdited }: CardsProps) => {
   const { sessionId } = useSession();
 
   const insertResponseMutation = useMutation(
-    async (response: Pick<Response, "comment_id" | "valence">) => {
+    async (response: MinimalResponse) => {
       const { error } = await client
         .from("responses")
         .insert({ ...response, session_id: sessionId });
@@ -52,33 +63,24 @@ const Cards = ({ comments, onNewComment, onCommentEdited }: CardsProps) => {
 
   const onSwipe = useCallback(
     (card: Comment, valence: Valence) => {
-      insertResponseMutation.mutateAsync({
+      const response: MinimalResponse = {
         comment_id: card.id,
         valence,
-      });
+        created_at: new Date().toISOString(),
+      };
+
+      insertResponseMutation.mutateAsync(response);
+      onResponseCreated(response);
 
       setCards(cards.filter((c) => c.id !== card.id));
     },
-    [cards, insertResponseMutation]
+    [cards, insertResponseMutation, onResponseCreated]
   );
 
   // Render
 
   return (
     <div className="sm:w-full sm:min-w-[600px]">
-      <div className="relative flex flex-col w-full sm:min-h-[200px] min-w-[400px]">
-        {cards.map((card) => (
-          <AnimatePresence key={card.id}>
-            <Card
-              card={card}
-              onSwipe={onSwipe}
-              onCommentEdited={onCommentEdited}
-              isActive={card.id === cards[cards.length - 1].id}
-            />
-          </AnimatePresence>
-        ))}
-      </div>
-
       {cards.length === 0 ? (
         <AnimatePresence>
           <motion.div
@@ -101,7 +103,20 @@ const Cards = ({ comments, onNewComment, onCommentEdited }: CardsProps) => {
             </div>
           </motion.div>
         </AnimatePresence>
-      ) : null}
+      ) : (
+        <div className="relative flex flex-col w-full sm:min-h-[200px] min-w-[400px]">
+          {cards.map((card) => (
+            <AnimatePresence key={card.id}>
+              <Card
+                card={card}
+                onSwipe={onSwipe}
+                onCommentEdited={onCommentEdited}
+                isActive={card.id === cards[cards.length - 1].id}
+              />
+            </AnimatePresence>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
