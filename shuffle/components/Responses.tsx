@@ -5,6 +5,11 @@ import { MinimalResponse } from "./Cards";
 import { Comment, Valence } from "@/lib/api";
 import { useCallback, useMemo, useState } from "react";
 
+// Config
+// -----------------------------------------------------------------------------
+
+const NUM_VISIBLE_RESPONSES = 5;
+
 // Types
 // -----------------------------------------------------------------------------
 
@@ -18,6 +23,7 @@ type ResponseWithComment = MinimalResponse & {
 type ResponsesViewProps = {
   data: {
     responsesWithComments: ResponseWithComment[];
+    totalResponses: number;
   };
   state: {
     viewAll: boolean;
@@ -78,7 +84,7 @@ const ValenceBadge = ({ valence }: { valence: Valence }) =>
   ) : null;
 
 const ResponsesView = ({
-  data: { responsesWithComments },
+  data: { responsesWithComments, totalResponses },
   state: { viewAll },
   callbacks: { onClickViewAll },
 }: ResponsesViewProps) => (
@@ -88,7 +94,10 @@ const ResponsesView = ({
         <motion.div
           key={response.comment_id}
           initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1 - (viewAll ? 0 : i * 0.2), y: 0 }}
+          animate={{
+            opacity: 1 - (viewAll ? 0 : i * (1 / NUM_VISIBLE_RESPONSES)),
+            y: 0,
+          }}
           className="flex items-center w-full mb-4"
         >
           <ValenceBadge valence={response.valence} />{" "}
@@ -99,8 +108,8 @@ const ResponsesView = ({
       ))}
     </AnimatePresence>
 
-    {!viewAll && responsesWithComments.length > 0 && (
-      <div className="flex justify-center mt-2">
+    {!viewAll && totalResponses > NUM_VISIBLE_RESPONSES && (
+      <div className="z-30 flex justify-center mt-2">
         <BorderedButton
           color="blue"
           className="text-xs"
@@ -129,13 +138,13 @@ const Responses = ({ responses, comments }: ResponsesProps) => {
           comment: comments.find((c) => c.id === r.comment_id) as Comment,
         }))
         .sort((a, b) => b.created_at.localeCompare(a.created_at))
-        .slice(0, viewAll ? responses.length : 5),
+        .slice(0, viewAll ? responses.length : NUM_VISIBLE_RESPONSES),
     [responses, viewAll, comments]
   );
 
   return (
     <ResponsesView
-      data={{ responsesWithComments }}
+      data={{ responsesWithComments, totalResponses: responses.length }}
       state={{ viewAll }}
       callbacks={{ onClickViewAll }}
     />

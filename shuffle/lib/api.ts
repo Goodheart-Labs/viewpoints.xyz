@@ -18,6 +18,14 @@ export type Comment = {
   created_at: string;
 };
 
+export type FlaggedComment = {
+  id: number;
+  comment_id: number;
+  session_id: string;
+  reason: string;
+  created_at: string;
+};
+
 export type Valence = "agree" | "disagree" | "skip" | "itsComplicated";
 
 export type Response = {

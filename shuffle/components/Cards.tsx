@@ -8,6 +8,7 @@ import { useSession } from "@/providers/SessionProvider";
 import { useMutation } from "react-query";
 import { useSupabase } from "@/providers/SupabaseProvider";
 import { useUser } from "@clerk/nextjs";
+import useOverridableState from "@/lib/useOverridableState";
 
 // Setup
 // -----------------------------------------------------------------------------
@@ -27,6 +28,7 @@ type CardsProps = {
   comments: Comment[];
   onNewComment: () => void;
   onCommentEdited: (card: Pick<Comment, "id" | "comment">) => void;
+  onCommentFlagged: () => void;
   onResponseCreated: (response: MinimalResponse) => void;
 };
 
@@ -37,13 +39,14 @@ const Cards = ({
   comments,
   onNewComment,
   onCommentEdited,
+  onCommentFlagged: parentOnCommentFlagged,
   onResponseCreated,
 }: CardsProps) => {
   const { user } = useUser();
 
   // State
 
-  const [cards, setCards] = useState<Comment[]>(comments);
+  const [cards, setCards] = useOverridableState<Comment[]>(comments);
 
   // Supabase
 
@@ -78,7 +81,15 @@ const Cards = ({
 
       setCards(cards.filter((c) => c.id !== card.id));
     },
-    [cards, insertResponseMutation, onResponseCreated, user?.id]
+    [cards, insertResponseMutation, onResponseCreated, setCards, user?.id]
+  );
+
+  const onCommentFlagged = useCallback(
+    (cardId: Comment["id"]) => {
+      setCards(cards.filter((c) => c.id !== cardId));
+      parentOnCommentFlagged();
+    },
+    [cards, parentOnCommentFlagged, setCards]
   );
 
   // Render
@@ -115,6 +126,7 @@ const Cards = ({
                 card={card}
                 onSwipe={onSwipe}
                 onCommentEdited={onCommentEdited}
+                onCommentFlagged={onCommentFlagged}
                 isActive={card.id === cards[cards.length - 1].id}
               />
             </AnimatePresence>
