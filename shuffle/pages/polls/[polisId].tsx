@@ -374,7 +374,7 @@ const Poll = ({
   return (
     <main className="flex flex-col items-center w-full min-h-screen px-4 gradient sm:px-0">
       <Head>
-        <title>{poll.title} | Polls</title>
+        <title>{poll.title}</title>
         <meta name="description" content={poll.core_question} />
         <meta property="og:title" content={poll.title} />
         <meta property="og:description" content={poll.core_question} />
