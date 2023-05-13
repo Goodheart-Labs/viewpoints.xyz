@@ -1,35 +1,51 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import BorderedButton from "./BorderedButton";
-import { Auth } from "@supabase/auth-ui-react";
-import { useSupabase } from "@/providers/SupabaseProvider";
-import { useModal } from "@/providers/ModalProvider";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
+import { UserButton, useUser } from "@clerk/nextjs";
+import clsx from "clsx";
+import { motion } from "framer-motion";
+import { SignIn } from "@clerk/clerk-react";
 
 const AuthHeader = () => {
-  const { setModal } = useModal();
-  const { client } = useSupabase();
+  const { isSignedIn } = useUser();
+  const [showSignIn, setShowSignIn] = useState(false);
 
   const onClickLogin = useCallback(() => {
-    setModal({
-      render: () => (
-        <Auth
-          onlyThirdPartyProviders
-          supabaseClient={client}
-          appearance={{ theme: ThemeSupa }}
-          providers={["apple", "google", "facebook", "twitter"]}
-        />
-      ),
-    });
-  }, [client, setModal]);
+    setShowSignIn(true);
+  }, []);
 
-  useHotkeys(["l", "shift+l"], onClickLogin);
+  useHotkeys(["l", "shift+l"], () => {
+    if (isSignedIn) return;
+    onClickLogin();
+  });
 
   return (
     <div className="flex justify-end p-4">
-      <BorderedButton color="indigo" onClick={onClickLogin}>
-        Login
-      </BorderedButton>
+      <div className="z-50">
+        {isSignedIn ? (
+          <UserButton />
+        ) : (
+          <BorderedButton color="indigo" onClick={onClickLogin}>
+            Login
+          </BorderedButton>
+        )}
+      </div>
+
+      {showSignIn && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={clsx(
+              "fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-80 z-40"
+            )}
+            onClick={() => setShowSignIn(false)}
+          />
+          <div className="fixed z-50 top-[30vh] h-[200px] flex w-full justify-center items-center">
+            <SignIn redirectUrl={window.location.pathname} />
+          </div>
+        </>
+      )}
     </div>
   );
 };

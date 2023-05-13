@@ -4,9 +4,13 @@ import Responses from "@/components/Responses";
 import TwitterShare from "@/components/TwitterShare";
 import { Comment, Poll, Response } from "@/lib/api";
 import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
-import { SESSION_ID_COOKIE_NAME } from "@/providers/SessionProvider";
+import {
+  SESSION_ID_COOKIE_NAME,
+  useSession,
+} from "@/providers/SessionProvider";
 import { supabase } from "@/providers/SupabaseProvider";
 import { getAbsoluteUrl } from "@/utils/urlutils";
+import { useUser } from "@clerk/nextjs";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import { AnimatePresence } from "framer-motion";
 import { GetServerSidePropsContext } from "next";
@@ -67,6 +71,8 @@ const Poll = ({
   url: string;
 }) => {
   const { amplitude } = useAmplitude();
+  const { user } = useUser();
+  const { sessionId } = useSession();
 
   // State
 
@@ -110,16 +116,32 @@ const Poll = ({
     [comments]
   );
 
+  const userId = useMemo(
+    () =>
+      user?.id ??
+      (typeof document === "undefined"
+        ? undefined
+        : getCookie(SESSION_ID_COOKIE_NAME)),
+    [user?.id]
+  );
+
   const { data: responses, isLoading: responsesLoading } = useQuery(
-    ["responses", commentIds.join(",")],
+    [userId, "responses", commentIds.join(",")],
     async () => {
       const sessionId = getCookie(SESSION_ID_COOKIE_NAME);
 
-      const { data, error } = await supabase
+      let query = supabase
         .from("responses")
         .select("*")
-        .in("comment_id", commentIds)
-        .eq("session_id", sessionId);
+        .in("comment_id", commentIds);
+
+      if (userId === getCookie(SESSION_ID_COOKIE_NAME)) {
+        query = query.eq("session_id", sessionId);
+      } else {
+        query = query.eq("user_id", userId);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         throw error;
@@ -133,10 +155,28 @@ const Poll = ({
     async ({
       comment,
       edited_from_id,
-    }: Pick<Comment, "comment" | "edited_from_id">) => {
-      const { error } = await supabase
-        .from("comments")
-        .insert({ poll_id: poll.id, comment, edited_from_id });
+      author_name,
+      author_avatar_url,
+      user_id,
+      session_id,
+    }: Pick<
+      Comment,
+      | "comment"
+      | "session_id"
+      | "edited_from_id"
+      | "author_name"
+      | "author_avatar_url"
+      | "user_id"
+    >) => {
+      const { error } = await supabase.from("comments").insert({
+        poll_id: poll.id,
+        session_id,
+        comment,
+        edited_from_id,
+        author_name,
+        author_avatar_url,
+        user_id,
+      });
 
       if (error) {
         throw error;
@@ -170,9 +210,24 @@ const Poll = ({
         edited_from_id,
       });
 
-      await newCommentMutation.mutateAsync({ comment, edited_from_id });
+      await newCommentMutation.mutateAsync({
+        comment,
+        session_id: sessionId,
+        edited_from_id,
+        author_name: user?.fullName ?? undefined,
+        author_avatar_url: user?.profileImageUrl,
+        user_id: user?.id,
+      });
     },
-    [amplitude, newCommentMutation, poll.id]
+    [
+      amplitude,
+      newCommentMutation,
+      poll.id,
+      sessionId,
+      user?.fullName,
+      user?.id,
+      user?.profileImageUrl,
+    ]
   );
 
   const onCommentEdited = useCallback(

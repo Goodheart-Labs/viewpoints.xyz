@@ -10,6 +10,7 @@ export type Comment = {
   id: number;
   poll_id: string;
   session_id?: string;
+  user_id?: string;
   edited_from_id?: number;
   author_name?: string;
   author_avatar_url?: string;
@@ -23,6 +24,7 @@ export type Response = {
   id: number;
   comment_id: number;
   session_id: string;
+  user_id?: string;
   valence: Valence;
   created_at: string;
 };

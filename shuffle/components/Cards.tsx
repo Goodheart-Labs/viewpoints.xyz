@@ -7,6 +7,7 @@ import { Comment, Valence, Response } from "@/lib/api";
 import { useSession } from "@/providers/SessionProvider";
 import { useMutation } from "react-query";
 import { useSupabase } from "@/providers/SupabaseProvider";
+import { useUser } from "@clerk/nextjs";
 
 // Setup
 // -----------------------------------------------------------------------------
@@ -19,7 +20,7 @@ export const anonymousAvatar =
 
 export type MinimalResponse = Pick<
   Response,
-  "comment_id" | "valence" | "created_at"
+  "comment_id" | "valence" | "created_at" | "user_id"
 >;
 
 type CardsProps = {
@@ -38,6 +39,8 @@ const Cards = ({
   onCommentEdited,
   onResponseCreated,
 }: CardsProps) => {
+  const { user } = useUser();
+
   // State
 
   const [cards, setCards] = useState<Comment[]>(comments);
@@ -67,6 +70,7 @@ const Cards = ({
         comment_id: card.id,
         valence,
         created_at: new Date().toISOString(),
+        user_id: user?.id,
       };
 
       insertResponseMutation.mutateAsync(response);
@@ -74,7 +78,7 @@ const Cards = ({
 
       setCards(cards.filter((c) => c.id !== card.id));
     },
-    [cards, insertResponseMutation, onResponseCreated]
+    [cards, insertResponseMutation, onResponseCreated, user?.id]
   );
 
   // Render

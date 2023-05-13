@@ -7,6 +7,7 @@ import BorderedButton from "./BorderedButton";
 import EditingContent from "./EditingContent";
 import { anonymousAvatar } from "./Cards";
 import { Comment } from "@/lib/api";
+import { useUser } from "@clerk/nextjs";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -100,15 +101,16 @@ const NewCommentView = ({
 // -----------------------------------------------------------------------------
 
 const NewComment = ({ onCreate, onCancel }: NewCommentProps) => {
+  const { user } = useUser();
   const [editingValue, setEditingValue] = useState("");
 
   const card = useMemo(
     () => ({
-      author_name: "Anonymous",
-      author_avatar_url: anonymousAvatar,
+      author_name: user?.fullName ?? "Anonymous",
+      author_avatar_url: user?.profileImageUrl ?? anonymousAvatar,
       comment: editingValue,
     }),
-    [editingValue]
+    [editingValue, user?.fullName, user?.profileImageUrl]
   );
 
   const onSave = useCallback(() => {
