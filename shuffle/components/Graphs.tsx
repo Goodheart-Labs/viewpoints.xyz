@@ -12,6 +12,7 @@ export enum GraphType {
   TotalHeatmap = "TotalHeatmap",
   ClustersList = "ClustersList",
   ClusterQuestions = "ClusterQuestions",
+  TwoDimensionalGraph = "TwoDimensionalGraph",
 }
 
 // Background bars
@@ -603,6 +604,80 @@ const ClusterQuestions = ({ responses }: { responses: Response[] }) => {
   );
 };
 
+// Users (Unclustered)
+// -----------------------------------------------------------------------------
+
+// We can use the idea of an opinion matrix, plus a projection, to create a
+// two-dimensional representation of the users.
+
+import "chart.js/auto";
+import { Scatter } from "react-chartjs-2";
+import { TSNE } from "@/lib/tsne";
+
+const computeTsne = (
+  opinionMatrix: number[][],
+  perplexity: number = 30,
+  epsilon: number = 10
+) => {
+  const model = new TSNE({
+    dim: 2,
+    perplexity,
+    epsilon,
+  });
+
+  model.initDataDist(opinionMatrix);
+  for (let k = 0; k < 500; k++) {
+    model.step();
+  }
+
+  return model.getSolution();
+};
+
+const ScatterPlot = ({
+  data,
+  clusters,
+}: {
+  data: number[][];
+  clusters: ClusteredUser[][];
+}) => {
+  const dataset = useMemo(
+    () =>
+      clusters.map((cluster, i) => ({
+        label: `Cluster ${i + 1}`,
+        data: cluster.map((_, userIndex) => ({
+          x: data[userIndex][0],
+          y: data[userIndex][1],
+        })),
+        backgroundColor: `rgba(${Math.random() * 255}, ${
+          Math.random() * 255
+        }, ${Math.random() * 255}, 0.2)`,
+        pointRadius: 5,
+      })),
+    [clusters, data]
+  );
+
+  const options = {
+    scales: {
+      x: {},
+      y: {},
+    },
+  };
+
+  return <Scatter data={{ datasets: dataset }} options={options} />;
+};
+
+const TwoDimensionalGraph = ({ responses }: { responses: Response[] }) => {
+  const opinionMatrix = useMemo(() => getOpinionMatrix(responses), [responses]);
+  const clusters = useMemo(
+    () => clusterUsers(opinionMatrix, responses),
+    [responses, opinionMatrix]
+  );
+
+  const tsneData = useMemo(() => computeTsne(opinionMatrix), [opinionMatrix]);
+
+  return <ScatterPlot data={tsneData} clusters={clusters} />;
+};
+
 // Default export
 // -----------------------------------------------------------------------------
 
@@ -653,6 +728,10 @@ const Graphs = ({
 
   if (graphType === GraphType.ClusterQuestions) {
     return <ClusterQuestions responses={responses ?? []} />;
+  }
+
+  if (graphType === GraphType.TwoDimensionalGraph) {
+    return <TwoDimensionalGraph responses={responses ?? []} />;
   }
 
   return null;
