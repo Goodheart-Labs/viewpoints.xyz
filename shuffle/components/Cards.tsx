@@ -21,7 +21,7 @@ export const anonymousAvatar =
 
 export type MinimalResponse = Pick<
   Response,
-  "comment_id" | "valence" | "created_at" | "user_id"
+  "comment_id" | "valence" | "created_at" | "user_id" | "session_id"
 >;
 
 type CardsProps = {
@@ -74,6 +74,7 @@ const Cards = ({
         valence,
         created_at: new Date().toISOString(),
         user_id: user?.id,
+        session_id: sessionId,
       };
 
       insertResponseMutation.mutateAsync(response);
@@ -81,7 +82,14 @@ const Cards = ({
 
       setCards(cards.filter((c) => c.id !== card.id));
     },
-    [cards, insertResponseMutation, onResponseCreated, setCards, user?.id]
+    [
+      cards,
+      insertResponseMutation,
+      onResponseCreated,
+      sessionId,
+      setCards,
+      user?.id,
+    ]
   );
 
   const onCommentFlagged = useCallback(
