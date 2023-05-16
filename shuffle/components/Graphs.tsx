@@ -606,7 +606,7 @@ const ClusterQuestions = ({ responses }: { responses: Response[] }) => {
 // Default export
 // -----------------------------------------------------------------------------
 
-const MeanResponse = ({
+const Graphs = ({
   commentIds,
   graphType,
 }: {
@@ -658,4 +658,4 @@ const MeanResponse = ({
   return null;
 };
 
-export default MeanResponse;
+export default Graphs;

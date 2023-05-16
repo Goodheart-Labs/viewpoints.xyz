@@ -1,4 +1,4 @@
-import MeanResponse, { GraphType } from "@/components/MeanResponse";
+import Graphs, { GraphType } from "@/components/Graphs";
 import { Comment, Poll } from "@/lib/api";
 import { supabase } from "@/providers/SupabaseProvider";
 import { getAbsoluteUrl } from "@/utils/urlutils";
@@ -136,7 +136,7 @@ const Poll = ({
       </div>
 
       <div className="mt-12">
-        <MeanResponse commentIds={commentIds} graphType={graphType} />
+        <Graphs commentIds={commentIds} graphType={graphType} />
       </div>
     </main>
   );
