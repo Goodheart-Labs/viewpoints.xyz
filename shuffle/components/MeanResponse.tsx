@@ -6,16 +6,14 @@ import { useQuery } from "react-query";
 // Config
 // -----------------------------------------------------------------------------
 
-enum GraphType {
-  BackgroundBar,
-  PerUserHeatmap,
-  TotalHeatmap,
-  ClustersKModes,
-  ClustersCosineDistance,
-  PolisMatrix,
+export enum GraphType {
+  BackgroundBar = "BackgroundBar",
+  PerUserHeatmap = "PerUserHeatmap",
+  TotalHeatmap = "TotalHeatmap",
+  ClustersKModes = "ClustersKModes",
+  ClustersCosineDistance = "ClustersCosineDistance",
+  PolisMatrix = "PolisMatrix",
 }
-
-const GRAPH_TYPE = GraphType.ClustersCosineDistance;
 
 // Background bars
 // -----------------------------------------------------------------------------
@@ -156,7 +154,6 @@ const PerUserHeatmap: React.FC<{ responses: Response[] }> = ({ responses }) => {
                 width: "20px",
                 height: "20px",
                 backgroundColor: valenceToColor(valence as Response["valence"]),
-                border: "1px solid black",
                 margin: "2px",
                 opacity:
                   Math.abs(
@@ -204,7 +201,6 @@ const TotalHeatmap: React.FC<{ responses: Response[] }> = ({ responses }) => {
             backgroundColor: valenceToColor(
               response.valence as Response["valence"]
             ),
-            border: "1px solid black",
             margin: "2px",
             opacity:
               Math.abs(
@@ -540,7 +536,13 @@ const ClustersCosineDistance = ({ responses }: { responses: Response[] }) => {
 // Default export
 // -----------------------------------------------------------------------------
 
-const MeanResponse = ({ commentIds }: { commentIds: Comment["id"][] }) => {
+const MeanResponse = ({
+  commentIds,
+  graphType,
+}: {
+  commentIds: Comment["id"][];
+  graphType: GraphType;
+}) => {
   const { client } = useSupabase();
 
   const { data: responses, isLoading: responsesLoading } = useQuery(
@@ -563,23 +565,23 @@ const MeanResponse = ({ commentIds }: { commentIds: Comment["id"][] }) => {
     return <div>loading...</div>;
   }
 
-  if (GRAPH_TYPE === GraphType.BackgroundBar) {
+  if (graphType === GraphType.BackgroundBar) {
     return <BackgroundBar responses={responses ?? []} />;
   }
 
-  if (GRAPH_TYPE === GraphType.PerUserHeatmap) {
+  if (graphType === GraphType.PerUserHeatmap) {
     return <PerUserHeatmap responses={responses ?? []} />;
   }
 
-  if (GRAPH_TYPE === GraphType.TotalHeatmap) {
+  if (graphType === GraphType.TotalHeatmap) {
     return <TotalHeatmap responses={responses ?? []} />;
   }
 
-  if (GRAPH_TYPE === GraphType.ClustersKModes) {
+  if (graphType === GraphType.ClustersKModes) {
     return <ClustersKModes responses={responses ?? []} />;
   }
 
-  if (GRAPH_TYPE === GraphType.ClustersCosineDistance) {
+  if (graphType === GraphType.ClustersCosineDistance) {
     return <ClustersCosineDistance responses={responses ?? []} />;
   }
 

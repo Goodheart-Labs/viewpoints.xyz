@@ -1,5 +1,4 @@
 import Cards, { MinimalResponse } from "@/components/Cards";
-import MeanResponse from "@/components/MeanResponse";
 import NewComment from "@/components/NewComment";
 import Responses from "@/components/Responses";
 import TwitterShare from "@/components/TwitterShare";
@@ -419,8 +418,6 @@ const Poll = ({
             <Responses responses={enrichedResponses} comments={comments} />
           )}
       </div>
-
-      <MeanResponse commentIds={commentIds} />
 
       <AnimatePresence>
         {isCreating && (
