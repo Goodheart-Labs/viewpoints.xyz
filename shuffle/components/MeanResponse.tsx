@@ -1,6 +1,6 @@
-import { Comment, Response } from "@/lib/api";
+import { Comment, Response, Valence } from "@/lib/api";
 import { useSupabase } from "@/providers/SupabaseProvider";
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import { useQuery } from "react-query";
 
 // Config
@@ -10,92 +10,60 @@ export enum GraphType {
   BackgroundBar = "BackgroundBar",
   PerUserHeatmap = "PerUserHeatmap",
   TotalHeatmap = "TotalHeatmap",
-  ClustersKModes = "ClustersKModes",
-  ClustersCosineDistance = "ClustersCosineDistance",
-  PolisMatrix = "PolisMatrix",
+  ClustersList = "ClustersList",
+  ClusterQuestions = "ClusterQuestions",
 }
 
 // Background bars
 // -----------------------------------------------------------------------------
 
-const BackgroundBar = ({ responses }: { responses: Response[] }) => {
-  //   // Calculate the difference from the mean for each user and project users onto a single x-axis
-  //   const usersDifferenceFromMean: { [userId: string]: number } = {};
+const BackgroundBar = ({ responses }: { responses: Response[] }) => (
+  <div
+    style={{
+      display: "flex",
+      height: "200px",
+      alignItems: "end",
+      width: "100%",
+      overflow: "hidden",
+    }}
+  >
+    {responses.map((item, index) => {
+      let height = 0;
+      let top = 0;
+      if (item.valence === "agree") {
+        top = -100;
+        height = 50;
+      } else if (item.valence === "disagree") {
+        height = 50;
+      } else if (item.valence === "skip") {
+        height = 0;
+      } else if (item.valence === "itsComplicated") {
+        height = 100;
+      }
 
-  //   (responses ?? []).forEach((response) => {
-  //     const responseValue = valenceToNumber(response.valence);
-  //     const differenceFromMean = responseValue - meanResponseValue;
-  //     usersDifferenceFromMean[response.user_id ?? response.session_id] =
-  //       differenceFromMean;
-  //   });
-
-  //   // Calculate the standard deviation
-  //   const standardDeviation = Math.sqrt(
-  //     Object.values(usersDifferenceFromMean).reduce(
-  //       (sum, differenceFromMean) => sum + differenceFromMean ** 2,
-  //       0
-  //     ) / (responses ?? []).length
-  //   );
-
-  //   const usersDifferenceFromMeanArray = Object.entries(
-  //     usersDifferenceFromMean
-  //   ).map(([userId, difference]) => ({
-  //     userId,
-  //     difference,
-  //   }));
-
-  //   const maxDifference = Math.max(
-  //     ...usersDifferenceFromMeanArray.map((item) => Math.abs(item.difference))
-  //   );
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        height: "200px",
-        alignItems: "end",
-        width: "100%",
-        overflow: "hidden",
-      }}
-    >
-      {responses.map((item, index) => {
-        let height = 0;
-        let top = 0;
-        if (item.valence === "agree") {
-          top = -100;
-          height = 50;
-        } else if (item.valence === "disagree") {
-          height = 50;
-        } else if (item.valence === "skip") {
-          height = 0;
-        } else if (item.valence === "itsComplicated") {
-          height = 100;
-        }
-
-        return (
-          <div
-            key={index}
-            className="flex items-center justify-center bg-gray-200 basis-5 w-[20px] min-w-[20px] relative text-gray-300"
-            style={{
-              height: `${height}%`,
-              top,
-            }}
-          >
-            {item.valence === "agree"
-              ? "A"
-              : item.valence === "disagree"
-              ? "D"
-              : item.valence === "skip"
-              ? "S"
-              : item.valence === "itsComplicated"
-              ? "?"
-              : null}
-          </div>
-        );
-      })}
-    </div>
-  );
-};
+      return (
+        <div
+          key={index}
+          className="flex items-center justify-center bg-gray-200 basis-5 w-[20px] min-w-[20px] relative text-gray-300"
+          style={{
+            height: `${height}%`,
+            top,
+          }}
+        >
+          {item.valence === "agree"
+            ? "A"
+            : item.valence === "disagree"
+            ? "D"
+            : item.valence === "skip"
+            ? "S"
+            : item.valence === "itsComplicated"
+            ? "?"
+            : null}
+        </div>
+      );
+    })}
+  </div>
+);
 
 // Heatmaps
 // -----------------------------------------------------------------------------
@@ -216,97 +184,6 @@ const TotalHeatmap: React.FC<{ responses: Response[] }> = ({ responses }) => {
   );
 };
 
-// Clusters (Simple k-modes)
-// -----------------------------------------------------------------------------
-
-const k = 3; // Number of clusters
-const maxIterations = 100; // Maximum number of iterations
-
-const kModes = (responses: Response[]) => {
-  const data = responses.map((response) => ({
-    userId: response.user_id ?? response.session_id,
-    value: response.valence,
-  }));
-
-  // Initialize modes randomly
-  let modes = data
-    .sort(() => 0.5 - Math.random())
-    .slice(0, k)
-    .map((response) => response.value as string);
-
-  for (let iteration = 0; iteration < maxIterations; iteration++) {
-    // Assign each data point to the nearest mode
-    const clusters = data.reduce((clusters, response) => {
-      const modeIndex = modes.reduce(
-        (nearestIndex, mode, index) =>
-          response.value === mode ? index : nearestIndex,
-        0
-      );
-
-      clusters[modeIndex].push(response);
-      return clusters;
-    }, Array.from({ length: k }, () => []) as (typeof data)[]);
-
-    // Calculate the new mode of each cluster
-    const newModes = clusters.map((cluster) => {
-      const modeCount = cluster.reduce((count, response) => {
-        count[response.value] = (count[response.value] || 0) + 1;
-        return count;
-      }, {} as { [valence: string]: number });
-
-      return Object.keys(modeCount).reduce((a, b) =>
-        modeCount[a] > modeCount[b] ? a : b
-      );
-    });
-
-    // Check if modes have changed
-    const modesChanged = newModes.some((mode, index) => mode !== modes[index]);
-
-    // Update modes
-    modes = newModes;
-
-    // If modes haven't changed, we're done
-    if (!modesChanged) {
-      break;
-    }
-  }
-
-  const clusters: { userId: string; value: string }[][] = Array.from(
-    { length: k },
-    () => []
-  );
-
-  for (let response of data) {
-    const modeIndex = modes.findIndex((mode) => mode === response.value);
-    if (!clusters[modeIndex]) {
-      clusters[modeIndex] = [];
-    }
-    clusters[modeIndex].push(response);
-  }
-
-  return clusters;
-};
-
-const ClustersKModes = ({ responses }: { responses: Response[] }) => {
-  const colors = ["red", "green", "blue"]; // Colors for clusters
-  const clusters = useMemo(() => kModes(responses), [responses]);
-
-  return (
-    <div style={{ display: "flex", flexDirection: "row" }}>
-      {clusters.map((cluster, index) => (
-        <div key={index} style={{ margin: "10px" }}>
-          <h2 style={{ color: colors[index] }}>Cluster {index + 1}</h2>
-          {cluster.map((response) => (
-            <div key={response.userId}>
-              {response.userId}: {response.value}
-            </div>
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-};
-
 // Polis Matrix
 // -----------------------------------------------------------------------------
 
@@ -344,6 +221,21 @@ const numericalValence = (valence: Response["valence"] | "none"): number => {
       return 0.2;
     default:
       return 0;
+  }
+};
+
+const stringValence = (
+  numericalValence: number
+): Response["valence"] | "none" => {
+  switch (numericalValence) {
+    case 1:
+      return "agree";
+    case -1:
+      return "disagree";
+    case 0.2:
+      return "itsComplicated";
+    default:
+      return "skip";
   }
 };
 
@@ -402,8 +294,15 @@ const getOpinionMatrix = (responses: Response[]) => {
 // * If the angle is 90, the cosine is 0.
 // * If the angle is 180, the cosine is -1.
 //
-// This is a useful measure for us for a key reason: it's invariant to the length of the vectors.
-// This means that we can compare users who have responded to different numbers of comments.
+// This is a useful measure for us for two key reasons:
+//
+// 1. It's invariant to the length of the vectors. This means that we can compare
+//    users who have responded to different numbers of comments.
+//
+// 2. We don't care about the magnitude of the vectors, since we have a fixed
+//    set of valences. We only care whether the direction of the vectors is the same.
+//    (Since two vectors pointing toward the same place represent the same opinion
+//    over the same set of comments!)
 
 const dotProduct = (a: number[], b: number[]): number =>
   a.reduce((sum, a, index) => sum + a * b[index], 0);
@@ -416,121 +315,292 @@ const cosineSimilarity = (a: number[], b: number[]): number =>
 // We then want to calculate the similarity score between each pair of users. We'll store these
 // in a matrix, where each cell is the similarity score between the users in the row and column.
 
+const deepClone = (obj: any) => JSON.parse(JSON.stringify(obj));
+
 const getSimilarityMatrix = (opinionMatrix: number[][]) => {
-  const similarityMatrix = Array(opinionMatrix.length).fill(
-    Array(opinionMatrix.length).fill(0)
+  const numUsers = opinionMatrix.length;
+
+  const similarityMatrix = deepClone(
+    Array(numUsers).fill(Array(numUsers).fill(0))
   );
 
-  return opinionMatrix.reduce((similarityMatrix, user, index) => {
-    opinionMatrix.forEach((otherUser, otherIndex) => {
-      similarityMatrix[index][otherIndex] = cosineSimilarity(user, otherUser);
-    });
-    return similarityMatrix;
-  }, similarityMatrix);
-};
+  for (let i = 0; i < numUsers; i++) {
+    const row = opinionMatrix[i];
 
-// We now have a measure of similarity between each pair of users. We can use this to cluster
-// users together. Let's use hierarchical similarity clustering.
-//
-// Hierarchical similarity clustering gives us a set of clusters, where each cluster is
-// distinct from the others, and the objects within each cluster are similar to each other.
-//
-// The algorithm works like this:
-//
-// 1. Start with each user in its own cluster.
-// 2. Find the most similar pair of clusters.
-// 3. Merge the two clusters into a single cluster.
-// 4. Repeat steps 2 and 3 until there is only K clusters left.
-//
-// This does mean that it is O(n^3) in the worst case, but it's not too bad for our purposes.
-//
-// Our similarity matrix is a matrix of cosine similarities, so we'll be returning an array of
-// arrays of user indexes.
-
-const hierarchicalClustering = (
-  similarityMatrix: number[][],
-  k: number
-): number[][] => {
-  let clusters = similarityMatrix.map((_, i) => [i]); // start with each row's index (user index) in its own cluster
-
-  while (clusters.length > k) {
-    // Find the two clusters that are closest to each other
-    let minDistance = Infinity;
-    let mergeClusters = [-1, -1];
-
-    for (let i = 0; i < clusters.length; i++) {
-      for (let j = i + 1; j < clusters.length; j++) {
-        let distance =
-          clusters[i]
-            .map((index1) =>
-              clusters[j].map((index2) => similarityMatrix[index1][index2])
-            )
-            .flat()
-            .reduce((a, b) => a + b, 0) /
-          (clusters[i].length * clusters[j].length); // average distance between points in the two clusters
-
-        if (distance < minDistance) {
-          minDistance = distance;
-          mergeClusters = [i, j];
-        }
+    for (let j = 0; j < numUsers; j++) {
+      if (i === j) {
+        similarityMatrix[i][j] = 1;
+      } else {
+        similarityMatrix[i][j] = cosineSimilarity(row, opinionMatrix[j]);
       }
     }
-
-    // Merge the two closest clusters
-    clusters[mergeClusters[0]] = clusters[mergeClusters[0]].concat(
-      clusters[mergeClusters[1]]
-    );
-    clusters.splice(mergeClusters[1], 1);
   }
 
-  return clusters;
+  return deepClone(similarityMatrix);
 };
 
-// Now we know how to cluster users, all we need to do now is map back from our clusters to our users and
-// their comments.
+// We now have a measure of similarity between each pair of users.
 //
-// Our hierarchical clustering algorithm returns an array of clusters of user indexes. We built our initial
-// similarity matrix by mapping the user indexes to the rows of the matrix. So, we can map back from the
-// clusters to the rows of the matrix, and this should give us our actual user ID.
+// We can use the same measure of similarity - cosine similarity - to cluster users
+// using k-means.
 //
-// And we can do the same for the comments!
+// The k-means algorithm randomly initializes k points (called centroids) and then
+// iteratively:
 //
-// We can thus take each cluster and transform it into a list of users and their votes on each comment.
+// 1. Assigns each point to the nearest centroid
+// 2. Recomputes centroids as the mean of the points in each cluster
+//
+// The algorithm terminates when the centroids stop changing.
 
-const clusterUsers = (similarityMatrix: number[][], responses: Response[]) => {
-  const clusters = hierarchicalClustering(similarityMatrix, k);
-  const userIds = getUserIds(responses);
+const KMEANS_THRESHOLD = 0.0001;
 
-  return clusters.map((cluster) => {
-    const userIndexedIds = cluster.map((index) => userIds[index]);
+const kmeans = (
+  opinionMatrix: number[][],
+  k: number,
+  maxIterations = 1000
+): { [clusterIndex: number]: number[] } => {
+  let centroids = opinionMatrix
+    .slice() // create a copy of the array
+    .sort(() => 0.5 - Math.random()) // shuffle array
+    .slice(0, k); // pick first k elements
 
-    return responses.filter((response) =>
-      userIndexedIds.includes(response.user_id ?? response.session_id)
-    );
+  let iteration = 0;
+  let oldCentroids: number[][];
+  let clusters: number[] = new Array(opinionMatrix.length).fill(-1);
+
+  do {
+    // 2. Assign each point to the nearest centroid
+    clusters.fill(-1);
+    opinionMatrix.forEach((user, i) => {
+      let minDistance = Infinity;
+      centroids.forEach((centroid, j) => {
+        let distance = cosineSimilarity(user, centroid);
+        if (distance < minDistance) {
+          minDistance = distance;
+          clusters[i] = j;
+        }
+      });
+    });
+
+    // 3. Recompute centroids as the mean of the points in each cluster
+    oldCentroids = centroids;
+    centroids = centroids.map((_, j) => {
+      const clusterUsers = opinionMatrix.filter((_, i) => clusters[i] === j);
+
+      return clusterUsers
+        .reduce(
+          (mean, user) => mean.map((value, i) => value + user[i]),
+          new Array(clusterUsers[0].length).fill(0)
+        )
+        .map((value) => value / clusterUsers.length);
+    });
+
+    iteration++;
+  } while (
+    centroids.some(
+      (centroid, i) =>
+        Math.abs(cosineSimilarity(centroid, oldCentroids[i])) > KMEANS_THRESHOLD
+    ) &&
+    iteration < maxIterations
+  );
+
+  // We've got our clusters as an array of cluster indices, where each index
+  // corresponds to a user and each value to a cluster.
+  //
+  // Let's group them a little more usefully.
+
+  const clusterIndexToUserIndex: { [clusterIndex: number]: number[] } = {};
+
+  clusters.forEach((clusterIndex, userIndex) => {
+    if (!clusterIndexToUserIndex[clusterIndex]) {
+      clusterIndexToUserIndex[clusterIndex] = [];
+    }
+    clusterIndexToUserIndex[clusterIndex].push(userIndex);
   });
+
+  return clusterIndexToUserIndex;
+};
+
+// Now we know how to cluster users, all we need to do now is map back from our
+// clusters to our users and their comments.
+
+type ClusteredComment = {
+  commentId: number;
+  valence: string;
+};
+
+type ClusteredUser = {
+  userIdOrSessionId: string;
+  comments: ClusteredComment[];
+};
+
+const clusterUsers = (opinionMatrix: number[][], responses: Response[]) => {
+  const clusters = kmeans(opinionMatrix, 2);
+  const userIds = getUserIds(responses);
+  const commentIds = getCommentIds(responses);
+
+  return Object.keys(clusters)
+    .map(Number)
+    .map((cluster) =>
+      clusters[cluster].map(
+        (userIndex): ClusteredUser => ({
+          userIdOrSessionId: userIds[userIndex],
+          comments: opinionMatrix[userIndex].map(
+            (valence, commentIndex): ClusteredComment => ({
+              commentId: commentIds[commentIndex],
+              valence: stringValence(valence),
+            })
+          ),
+        })
+      )
+    );
 };
 
 // Phew! Now we've got all the logic we need to cluster users. Let's put it all together.
 //
 // We'll present it in a couple of ways. Firstly, let's list out the clusters:
 
-const ClustersCosineDistance = ({ responses }: { responses: Response[] }) => {
+const ClustersList = ({ responses }: { responses: Response[] }) => {
   const opinionMatrix = useMemo(() => getOpinionMatrix(responses), [responses]);
-  const similarityMatrix = useMemo(
-    () => getSimilarityMatrix(opinionMatrix),
-    [opinionMatrix]
-  );
+
   const clusters = useMemo(
-    () => clusterUsers(similarityMatrix, responses),
-    [responses, similarityMatrix]
+    () => clusterUsers(opinionMatrix, responses),
+    [responses, opinionMatrix]
   );
 
-  console.log({ responses });
-  console.log({ opinionMatrix });
-  console.log({ similarityMatrix });
-  console.log({ clusters });
+  return (
+    <div className="container p-4 mx-auto">
+      {clusters.map((cluster, i) => (
+        <div key={i} className="p-4 mb-4 bg-white rounded shadow-lg">
+          <h2 className="mb-2 text-2xl font-bold">Cluster {i + 1}</h2>
+          <ul className="pl-5 list-disc">
+            {cluster.map((user) => (
+              <li key={user.userIdOrSessionId}>
+                User: {user.userIdOrSessionId}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  );
+};
 
-  return null;
+// We can also present the comments grouped, rather than the users
+
+type ClusterQuestionsValenceCounts = {
+  agree: number;
+  disagree: number;
+  skip: number;
+  itsComplicated: number;
+};
+
+const countValences = (responses: Valence[]): ClusterQuestionsValenceCounts => {
+  const counts = {
+    agree: 0,
+    disagree: 0,
+    skip: 0,
+    itsComplicated: 0,
+  };
+
+  responses.forEach((valence) => {
+    switch (valence) {
+      case "agree":
+        counts.agree++;
+        break;
+      case "disagree":
+        counts.disagree++;
+        break;
+      case "skip":
+        counts.skip++;
+        break;
+      case "itsComplicated":
+        counts.itsComplicated++;
+        break;
+    }
+  });
+
+  const total = responses.length;
+
+  // Convert counts to percentages
+  for (const key in counts) {
+    counts[key as keyof ClusterQuestionsValenceCounts] /= total;
+  }
+
+  return counts;
+};
+
+const ClusterQuestions = ({ responses }: { responses: Response[] }) => {
+  const opinionMatrix = useMemo(() => getOpinionMatrix(responses), [responses]);
+  const clusters = useMemo(
+    () => clusterUsers(opinionMatrix, responses),
+    [responses, opinionMatrix]
+  );
+
+  const commentIds = useMemo(() => getCommentIds(responses), [responses]);
+
+  const questions = useMemo(() => {
+    const questions = [];
+
+    for (let j = 0; j < commentIds.length; j++) {
+      const question = {
+        commentId: commentIds[j],
+        valenceCounts: [] as ClusterQuestionsValenceCounts[],
+      };
+
+      for (let k = 0; k < clusters.length; k++) {
+        const responses = clusters[k].flatMap(
+          (u) =>
+            u.comments
+              .filter((c) => c.commentId === question.commentId)
+              .map((c) => c.valence) as Valence[]
+        );
+
+        question.valenceCounts.push(countValences(responses));
+      }
+
+      questions.push(question);
+    }
+
+    return questions;
+  }, [clusters, commentIds]);
+
+  return (
+    <table className="w-full table-auto">
+      <thead>
+        <tr>
+          <th className="px-4 py-2">Comment</th>
+          <th className="px-4 py-2">Agree (%)</th>
+          <th className="px-4 py-2">Disagree (%)</th>
+          <th className="px-4 py-2">Skip (%)</th>
+          <th className="px-4 py-2">It&apos;s Complicated (%)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {questions.map((question) => (
+          <tr key={question.commentId}>
+            <td className="px-4 py-2 border">{question.commentId}</td>
+            {question.valenceCounts.map((valenceCount, i) => (
+              <Fragment key={i}>
+                <td className="px-4 py-2 border">
+                  {(valenceCount.agree * 100).toFixed(2)}
+                </td>
+                <td className="px-4 py-2 border">
+                  {(valenceCount.disagree * 100).toFixed(2)}
+                </td>
+                <td className="px-4 py-2 border">
+                  {(valenceCount.skip * 100).toFixed(2)}
+                </td>
+                <td className="px-4 py-2 border">
+                  {(valenceCount.itsComplicated * 100).toFixed(2)}
+                </td>
+              </Fragment>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
 };
 
 // Default export
@@ -577,12 +647,12 @@ const MeanResponse = ({
     return <TotalHeatmap responses={responses ?? []} />;
   }
 
-  if (graphType === GraphType.ClustersKModes) {
-    return <ClustersKModes responses={responses ?? []} />;
+  if (graphType === GraphType.ClustersList) {
+    return <ClustersList responses={responses ?? []} />;
   }
 
-  if (graphType === GraphType.ClustersCosineDistance) {
-    return <ClustersCosineDistance responses={responses ?? []} />;
+  if (graphType === GraphType.ClusterQuestions) {
+    return <ClusterQuestions responses={responses ?? []} />;
   }
 
   return null;
