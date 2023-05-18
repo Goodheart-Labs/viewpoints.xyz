@@ -4,6 +4,7 @@ import BorderedButton from "./BorderedButton";
 import { MinimalResponse } from "./Cards";
 import { Comment, Valence } from "@/lib/api";
 import { useCallback, useMemo, useState } from "react";
+import ValenceBadge from "./ValenceBadge";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -40,48 +41,6 @@ type ResponsesProps = {
 
 // Views
 // -----------------------------------------------------------------------------
-
-const valenceBaseClasses =
-  "mr-2 inline-flex items-center px-2 py-1 text-xs font-medium rounded-md ring-1 ring-inset";
-
-const ValenceBadge = ({ valence }: { valence: Valence }) =>
-  valence === "agree" ? (
-    <span
-      className={clsx(
-        valenceBaseClasses,
-        "text-green-700 bg-green-50 ring-green-600/20"
-      )}
-    >
-      A
-    </span>
-  ) : valence === "disagree" ? (
-    <span
-      className={clsx(
-        valenceBaseClasses,
-        "text-red-700 bg-red-50 ring-red-600/10"
-      )}
-    >
-      D
-    </span>
-  ) : valence === "skip" ? (
-    <span
-      className={clsx(
-        valenceBaseClasses,
-        "text-yellow-800 bg-yellow-50 ring-yellow-600/20"
-      )}
-    >
-      S
-    </span>
-  ) : valence === "itsComplicated" ? (
-    <span
-      className={clsx(
-        valenceBaseClasses,
-        "text-orange-600 bg-orange-50 ring-orange-600/10"
-      )}
-    >
-      ?
-    </span>
-  ) : null;
 
 const ResponsesView = ({
   data: { responsesWithComments, totalResponses },
