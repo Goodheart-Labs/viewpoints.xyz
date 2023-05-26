@@ -23,7 +23,7 @@ type EditingContentViewProps = {
 };
 
 type EditingContentProps = {
-  card: Omit<Comment, "id" | "poll_id" | "created_at">;
+  card: Omit<Comment, "id" | "poll_id" | "created_at" | "reporting_type">;
   setValue: (value: string) => void;
   onCancel: () => void;
   placeholder?: string;
