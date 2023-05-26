@@ -2,7 +2,10 @@ import Card from "./Card";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useState } from "react";
 import BorderedButton from "./BorderedButton";
-import { PlusIcon } from "@heroicons/react/20/solid";
+import {
+  ChatBubbleBottomCenterIcon,
+  PlusIcon,
+} from "@heroicons/react/20/solid";
 import { Comment, Valence, Response } from "@/lib/api";
 import { useSession } from "@/providers/SessionProvider";
 import { useMutation } from "react-query";
@@ -27,6 +30,7 @@ export type MinimalResponse = Pick<
 type CardsProps = {
   comments: Comment[];
   onNewComment: () => void;
+  onNewPoll: () => void;
   onCommentEdited: (card: Pick<Comment, "id" | "comment">) => void;
   onCommentFlagged: () => void;
   onResponseCreated: (response: MinimalResponse) => void;
@@ -38,6 +42,7 @@ type CardsProps = {
 const Cards = ({
   comments,
   onNewComment,
+  onNewPoll,
   onCommentEdited,
   onCommentFlagged: parentOnCommentFlagged,
   onResponseCreated,
@@ -104,7 +109,7 @@ const Cards = ({
 
   return (
     <div className="sm:w-full sm:min-w-[600px]">
-      {cards.length === 0 ? (
+      {cards.length !== 0 ? (
         <AnimatePresence>
           <motion.div
             initial={{ opacity: 0 }}
@@ -121,7 +126,17 @@ const Cards = ({
                 className="flex items-center"
                 onClick={onNewComment}
               >
-                <PlusIcon width={28} className="mr-1" /> Add a new comment
+                <ChatBubbleBottomCenterIcon width={28} className="mr-1" /> Add a
+                new comment
+              </BorderedButton>
+            </div>
+            <div className="mt-4 text-center">
+              <BorderedButton
+                color="orange"
+                className="flex items-center"
+                onClick={onNewPoll}
+              >
+                <PlusIcon width={28} className="mr-1" /> Create a new poll
               </BorderedButton>
             </div>
           </motion.div>

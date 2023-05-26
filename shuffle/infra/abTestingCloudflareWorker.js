@@ -8,7 +8,7 @@ const cookieName = "ab-test";
 // -----------------------------------------------------------------------------
 
 const OPTIONS_POLIS = "polis";
-const OPTIONS_SHUFFLE = "shuffle";
+const OPTIONS_SHUFFLE = "viewpoints";
 
 // Redirect Body
 // -----------------------------------------------------------------------------
@@ -35,13 +35,26 @@ const REDIRECT_BODY = `
 async function handleRequest(request) {
   const url = new URL(request.url);
   const pollId = url.pathname.split("/")[2];
-
-  const cookies = request.headers.get("Cookie") || "";
-  const abTestCookie = cookies.match(new RegExp(`${cookieName}=([^;]+)`));
+  const override = url.searchParams.get("override");
 
   const headers = {
     "Content-Type": "text/html",
   };
+
+  if (override === OPTIONS_SHUFFLE) {
+    const res = await fetch(request);
+    const body = await res.text();
+
+    return new Response(body, { headers });
+  } else if (override === OPTIONS_POLIS) {
+    const redirectUrl = `${polisBaseUrl}/${pollId}`;
+    const body = REDIRECT_BODY.replaceAll("{{redirectUrl}}", redirectUrl);
+
+    return new Response(body, { headers });
+  }
+
+  const cookies = request.headers.get("Cookie") || "";
+  const abTestCookie = cookies.match(new RegExp(`${cookieName}=([^;]+)`));
 
   let choice;
 

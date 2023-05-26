@@ -18,6 +18,7 @@ import Head from "next/head";
 import { useState, useCallback, useMemo } from "react";
 import { useMutation, useQuery } from "react-query";
 import { getCookie } from "typescript-cookie";
+import { useModal } from "@/providers/ModalProvider";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -278,6 +279,19 @@ const Poll = ({
     setCachedResponses((cachedResponses) => [...cachedResponses, response]);
   }, []);
 
+  const { setModal } = useModal();
+
+  const onNewPoll = useCallback(() => {
+    amplitude.logEvent(TrackingEvent.OpenNewPoll);
+    setModal({
+      render: () => (
+        <div>
+          <h1>Coming Soon</h1>
+        </div>
+      ),
+    });
+  }, [amplitude, setModal]);
+
   // Keyboard shortcuts
 
   useHotkeys("c", () => onNewComment("keyboard"));
@@ -407,6 +421,7 @@ const Poll = ({
             <Cards
               comments={filteredComments}
               onNewComment={onNewComment}
+              onNewPoll={onNewPoll}
               onCommentEdited={onCommentEdited}
               onCommentFlagged={refetchFlaggedComments}
               onResponseCreated={onResponseCreated}

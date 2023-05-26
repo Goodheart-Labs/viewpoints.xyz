@@ -5,6 +5,8 @@ import { UserButton, useUser } from "@clerk/nextjs";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import { SignIn } from "@clerk/clerk-react";
+import { useModal } from "@/providers/ModalProvider";
+import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
 
 const AuthHeader = () => {
   const { isSignedIn } = useUser();
@@ -19,8 +21,26 @@ const AuthHeader = () => {
     onClickLogin();
   });
 
+  const { setModal } = useModal();
+  const { amplitude } = useAmplitude();
+
+  const onNewPoll = useCallback(() => {
+    amplitude.logEvent(TrackingEvent.OpenNewPoll);
+    setModal({
+      render: () => (
+        <div>
+          <h1>Coming Soon</h1>
+        </div>
+      ),
+    });
+  }, [amplitude, setModal]);
+
   return (
     <div className="flex justify-end p-4">
+      <BorderedButton color="orange" onClick={onNewPoll} className="mr-2">
+        Create New Poll
+      </BorderedButton>
+
       <div className="z-50">
         {isSignedIn ? (
           <UserButton />

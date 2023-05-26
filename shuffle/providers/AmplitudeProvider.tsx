@@ -23,6 +23,7 @@ export enum TrackingEvent {
   PersistFlagComment = "comments.flag.persist",
   CancelFlagComment = "comments.flag.cancel",
   Share = "share",
+  OpenNewPoll = "polls.new.open",
 }
 
 // Types
