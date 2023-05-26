@@ -14,7 +14,11 @@ import { useUser } from "@clerk/nextjs";
 
 type NewCommentViewProps = {
   data: {
-    card: Omit<Comment, "id" | "poll_id" | "created_at" | "reporting_type">;
+    card: {
+      author_name: string;
+      author_avatar_url: string;
+      comment: string;
+    };
   };
   state: {
     editingValue: string;

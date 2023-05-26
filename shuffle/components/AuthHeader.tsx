@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useState } from "react";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import BorderedButton from "./BorderedButton";

@@ -1,41 +1,13 @@
-export type Poll = {
-  id: number;
-  polis_id: string;
-  title: string;
-  core_question: string;
-  created_at: string;
-};
+import { comments, flagged_comments, polls, responses } from "@prisma/client";
+
+export type Poll = polls;
 
 export type CommentReportingType = "default" | "demographic";
 
-export type Comment = {
-  id: number;
-  poll_id: string;
-  session_id?: string;
-  user_id?: string;
-  edited_from_id?: number;
-  author_name?: string;
-  author_avatar_url?: string;
-  comment: string;
-  created_at: string;
-  reporting_type: CommentReportingType;
-};
+export type Comment = comments;
 
-export type FlaggedComment = {
-  id: number;
-  comment_id: number;
-  session_id: string;
-  reason: string;
-  created_at: string;
-};
+export type FlaggedComment = flagged_comments;
 
 export type Valence = "agree" | "disagree" | "skip" | "itsComplicated";
 
-export type Response = {
-  id: number;
-  comment_id: number;
-  session_id: string;
-  user_id?: string;
-  valence: Valence;
-  created_at: string;
-};
+export type Response = responses;

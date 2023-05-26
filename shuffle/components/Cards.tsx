@@ -9,7 +9,6 @@ import {
 import { Comment, Valence, Response } from "@/lib/api";
 import { useSession } from "@/providers/SessionProvider";
 import { useMutation } from "react-query";
-import { useSupabase } from "@/providers/SupabaseProvider";
 import { useUser } from "@clerk/nextjs";
 import useOverridableState from "@/lib/useOverridableState";
 import AnalyticsSynopsis from "./AnalyticsSynopsis";
@@ -30,6 +29,7 @@ export type MinimalResponse = Pick<
 
 type CardsProps = {
   comments: Comment[];
+  filteredComments: Comment[];
   allResponses: Response[];
   userResponses: MinimalResponse[];
   onNewComment: () => void;
@@ -44,6 +44,7 @@ type CardsProps = {
 
 const Cards = ({
   comments,
+  filteredComments,
   allResponses,
   userResponses,
   onNewComment,
@@ -60,18 +61,17 @@ const Cards = ({
 
   // Supabase
 
-  const { client } = useSupabase();
   const { sessionId } = useSession();
 
   const insertResponseMutation = useMutation(
     async (response: MinimalResponse) => {
-      const { error } = await client
-        .from("responses")
-        .insert({ ...response, session_id: sessionId });
-
-      if (error) {
-        throw error;
-      }
+      // TODO
+      // const { error } = await client
+      //   .from("responses")
+      //   .insert({ ...response, session_id: sessionId });
+      // if (error) {
+      //   throw error;
+      // }
     }
   );
 
@@ -82,8 +82,8 @@ const Cards = ({
       const response: MinimalResponse = {
         comment_id: card.id,
         valence,
-        created_at: new Date().toISOString(),
-        user_id: user?.id,
+        created_at: new Date(),
+        user_id: user?.id ?? null,
         session_id: sessionId,
       };
 
@@ -162,7 +162,7 @@ const Cards = ({
         </AnimatePresence>
       ) : (
         <div className="relative flex flex-col w-full sm:min-h-[200px] min-w-[400px]">
-          {cards.map((card) => (
+          {filteredComments.map((card) => (
             <AnimatePresence key={card.id}>
               <Card
                 card={card}

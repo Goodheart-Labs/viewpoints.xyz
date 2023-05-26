@@ -12,7 +12,6 @@ import BorderedButton from "./BorderedButton";
 import { Comment, FlaggedComment } from "@/lib/api";
 import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
 import { useMutation } from "react-query";
-import { useSupabase } from "@/providers/SupabaseProvider";
 import { useSession } from "@/providers/SessionProvider";
 
 // Types
@@ -113,7 +112,6 @@ const FlagCommentView = ({
 
 const FlagComment = ({ comment, onCreate, onCancel }: FlagCommentProps) => {
   const { amplitude } = useAmplitude();
-  const { client } = useSupabase();
   const { sessionId } = useSession();
 
   const [reason, setReason] = useState("");
@@ -149,15 +147,14 @@ const FlagComment = ({ comment, onCreate, onCancel }: FlagCommentProps) => {
 
   const newFlaggedCommentMutation = useMutation(
     async ({ reason }: Pick<FlaggedComment, "reason">) => {
-      const { error } = await client
-        .from("flagged_comments")
-        .insert({ comment_id: comment.id, session_id: sessionId, reason });
-
-      if (error) {
-        throw error;
-      }
-
-      onCreate();
+      // TODO
+      // const { error } = await client
+      //   .from("flagged_comments")
+      //   .insert({ comment_id: comment.id, session_id: sessionId, reason });
+      // if (error) {
+      //   throw error;
+      // }
+      // onCreate();
     }
   );
 
