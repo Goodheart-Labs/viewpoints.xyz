@@ -6,6 +6,8 @@ export type Poll = {
   created_at: string;
 };
 
+export type CommentReportingType = "default" | "demographic";
+
 export type Comment = {
   id: number;
   poll_id: string;
@@ -16,6 +18,7 @@ export type Comment = {
   author_avatar_url?: string;
   comment: string;
   created_at: string;
+  reporting_type: CommentReportingType;
 };
 
 export type FlaggedComment = {
