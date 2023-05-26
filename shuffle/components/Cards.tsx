@@ -109,7 +109,7 @@ const Cards = ({
 
   return (
     <div className="sm:w-full sm:min-w-[600px]">
-      {cards.length !== 0 ? (
+      {cards.length === 0 ? (
         <AnimatePresence>
           <motion.div
             initial={{ opacity: 0 }}
