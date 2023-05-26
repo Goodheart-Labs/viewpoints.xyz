@@ -12,6 +12,7 @@
     "@amplitude/analytics-browser": "^1.10.2",
     "@clerk/nextjs": "^4.17.3",
     "@heroicons/react": "^2.0.17",
+    "@prisma/client": "^4.14.1",
     "@reecelucas/react-use-hotkeys": "^2.0.0",
     "@supabase/supabase-js": "^2.21.0",
     "@types/node": "18.16.1",
@@ -39,6 +40,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@types/uuid": "^9.0.1"
+    "@types/uuid": "^9.0.1",
+    "prisma": "^4.14.1"
   }
 }

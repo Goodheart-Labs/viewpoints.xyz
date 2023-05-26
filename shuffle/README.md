@@ -9,6 +9,7 @@ Currently deployed at [https://polislike.vercel.app](https://polislike.vercel.ap
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/en/) (>= 18)
+- [PostgreSQL](https://www.postgresql.org/) (>= 14; use `brew install postgresql`)
 
 ### Installing
 
@@ -16,12 +17,14 @@ Currently deployed at [https://polislike.vercel.app](https://polislike.vercel.ap
 npm install
 ```
 
+You'll also want to setup the database. The defaults in this script will match those in .env.example:
+
+```bash
+bash infra/setup-database.sh
+```
+
 ### Running
 
 ```bash
 npm run dev
 ```
-
-## Supabase
-
-Data persistence is handled by [Supabase](https://app.supabase.com/project/yrehugaawjzlqnkoodru).
