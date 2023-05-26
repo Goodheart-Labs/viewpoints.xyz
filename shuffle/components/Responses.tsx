@@ -8,7 +8,7 @@ import { valenceToHumanReadablePastTense } from "@/utils/valenceutils";
 import {
   ResponsePercentages,
   calculateResponsePercentages,
-} from "@/lib/analytics/comments";
+} from "@/lib/analytics/responses";
 
 // Config
 // -----------------------------------------------------------------------------

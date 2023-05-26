@@ -1,6 +1,6 @@
 import Card from "./Card";
 import { AnimatePresence, motion } from "framer-motion";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo } from "react";
 import BorderedButton from "./BorderedButton";
 import {
   ChatBubbleBottomCenterIcon,
@@ -12,6 +12,7 @@ import { useMutation } from "react-query";
 import { useSupabase } from "@/providers/SupabaseProvider";
 import { useUser } from "@clerk/nextjs";
 import useOverridableState from "@/lib/useOverridableState";
+import AnalyticsSynopsis from "./AnalyticsSynopsis";
 
 // Setup
 // -----------------------------------------------------------------------------
@@ -29,6 +30,8 @@ export type MinimalResponse = Pick<
 
 type CardsProps = {
   comments: Comment[];
+  allResponses: Response[];
+  userResponses: MinimalResponse[];
   onNewComment: () => void;
   onNewPoll: () => void;
   onCommentEdited: (card: Pick<Comment, "id" | "comment">) => void;
@@ -41,6 +44,8 @@ type CardsProps = {
 
 const Cards = ({
   comments,
+  allResponses,
+  userResponses,
   onNewComment,
   onNewPoll,
   onCommentEdited,
@@ -105,6 +110,15 @@ const Cards = ({
     [cards, parentOnCommentFlagged, setCards]
   );
 
+  const commentMap = useMemo(
+    () =>
+      comments.reduce(
+        (acc, comment) => ({ ...acc, [comment.id]: comment }),
+        {}
+      ),
+    [comments]
+  );
+
   // Render
 
   return (
@@ -117,27 +131,32 @@ const Cards = ({
             transition={{ duration: 0.1 }}
             className="flex flex-col w-full p-10 sm:border border-gray-800 dark:border-gray-600 rounded-lg sm:min-w-[320px] max-w-[600px]"
           >
-            <div className="pb-4 text-center dark:text-gray-300">
-              You&apos;ve answered all the comments!
-            </div>
-            <div className="text-center">
-              <BorderedButton
-                color="blue"
-                className="flex items-center"
-                onClick={onNewComment}
-              >
-                <ChatBubbleBottomCenterIcon width={28} className="mr-1" /> Add a
-                new comment
-              </BorderedButton>
-            </div>
-            <div className="mt-4 text-center">
-              <BorderedButton
-                color="orange"
-                className="flex items-center"
-                onClick={onNewPoll}
-              >
-                <PlusIcon width={28} className="mr-1" /> Create a new poll
-              </BorderedButton>
+            <AnalyticsSynopsis
+              allResponses={allResponses}
+              userResponses={userResponses}
+              commentMap={commentMap}
+            />
+
+            <div className="flex justify-center">
+              <div className="text-center">
+                <BorderedButton
+                  color="blue"
+                  className="flex items-center"
+                  onClick={onNewComment}
+                >
+                  <ChatBubbleBottomCenterIcon width={28} className="mr-1" /> Add
+                  a new comment
+                </BorderedButton>
+              </div>
+              <div className="ml-4 text-center">
+                <BorderedButton
+                  color="orange"
+                  className="flex items-center"
+                  onClick={onNewPoll}
+                >
+                  <PlusIcon width={28} className="mr-1" /> Create a new poll
+                </BorderedButton>
+              </div>
             </div>
           </motion.div>
         </AnimatePresence>

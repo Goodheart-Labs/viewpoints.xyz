@@ -435,7 +435,9 @@ const Poll = ({
             </div>
           ) : (
             <Cards
-              comments={filteredComments}
+              allResponses={allResponses ?? []}
+              userResponses={enrichedResponses}
+              comments={comments ?? []}
               onNewComment={onNewComment}
               onNewPoll={onNewPoll}
               onCommentEdited={onCommentEdited}

@@ -87,50 +87,6 @@ export const getTopKUncertainCommentIds = (
     .map((comment) => comment.comment_id);
 };
 
-// Matching responses
-// -----------------------------------------------------------------------------
-
-export type AllResponses = MinimalResponse[];
-export type UserResponses = MinimalResponse[];
-export type ResponsePercentages = { [commentId: number]: number };
-
-export const calculateResponsePercentages = (
-  allResponses: AllResponses,
-  userResponses: UserResponses
-): ResponsePercentages => {
-  const userResponseMap: { [commentId: number]: Valence } = {};
-  const commentResponseCounts: ResponsePercentages = {};
-  const commentUserAgreementCounts: ResponsePercentages = {};
-
-  userResponses.forEach((response) => {
-    userResponseMap[response.comment_id] = response.valence;
-  });
-
-  allResponses.forEach((response) => {
-    if (!commentResponseCounts[response.comment_id]) {
-      commentResponseCounts[response.comment_id] = 0;
-      commentUserAgreementCounts[response.comment_id] = 0;
-    }
-    commentResponseCounts[response.comment_id]++;
-    if (
-      userResponseMap[response.comment_id] &&
-      userResponseMap[response.comment_id] === response.valence
-    ) {
-      commentUserAgreementCounts[response.comment_id]++;
-    }
-  });
-
-  const commentPercentages: ResponsePercentages = {};
-  for (let commentId in commentResponseCounts) {
-    commentPercentages[commentId] =
-      (commentUserAgreementCounts[commentId] /
-        (commentResponseCounts[commentId] ?? 1)) *
-      100;
-  }
-
-  return commentPercentages;
-};
-
 // Per-comment statistics
 // -----------------------------------------------------------------------------
 
