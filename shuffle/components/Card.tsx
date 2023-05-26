@@ -505,7 +505,7 @@ const Card = ({
         />
       </motion.div>
 
-      {isActive && (
+      {isActive && isEditing && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={isEditing ? { opacity: 1 } : { opacity: 0 }}

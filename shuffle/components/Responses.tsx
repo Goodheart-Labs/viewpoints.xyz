@@ -1,10 +1,14 @@
-import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import BorderedButton from "./BorderedButton";
 import { MinimalResponse } from "./Cards";
-import { Comment, Valence } from "@/lib/api";
+import { Comment } from "@/lib/api";
 import { useCallback, useMemo, useState } from "react";
 import ValenceBadge from "./ValenceBadge";
+import { valenceToHumanReadablePastTense } from "@/utils/valenceutils";
+import {
+  ResponsePercentages,
+  calculateResponsePercentages,
+} from "@/lib/analytics/comments";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -24,6 +28,7 @@ type ResponseWithComment = MinimalResponse & {
 type ResponsesViewProps = {
   data: {
     responsesWithComments: ResponseWithComment[];
+    responsePercentages: ResponsePercentages;
     totalResponses: number;
   };
   state: {
@@ -36,6 +41,7 @@ type ResponsesViewProps = {
 
 type ResponsesProps = {
   responses: MinimalResponse[];
+  allResponses: MinimalResponse[];
   comments: Comment[];
 };
 
@@ -43,48 +49,73 @@ type ResponsesProps = {
 // -----------------------------------------------------------------------------
 
 const ResponsesView = ({
-  data: { responsesWithComments, totalResponses },
+  data: { responsesWithComments, responsePercentages, totalResponses },
   state: { viewAll },
   callbacks: { onClickViewAll },
 }: ResponsesViewProps) => (
-  <div className="flex flex-col mx-auto mt-4 mb-8">
-    <AnimatePresence>
-      {responsesWithComments.map((response, i) => (
-        <motion.div
-          key={response.comment_id}
-          initial={{ opacity: 0, y: -50 }}
-          animate={{
-            opacity: 1 - (viewAll ? 0 : i * (1 / NUM_VISIBLE_RESPONSES)),
-            y: 0,
-          }}
-          className="flex items-center w-full mb-4"
-        >
-          <ValenceBadge valence={response.valence} />{" "}
-          <span className="text-sm w-60 sm:w-96">
-            {response.comment.comment}
-          </span>
-        </motion.div>
-      ))}
-    </AnimatePresence>
+  <>
+    <div className="flex flex-col mx-auto mt-4 mb-8">
+      <AnimatePresence>
+        {responsesWithComments.map((response, i) => (
+          <motion.div
+            key={response.comment_id}
+            initial={{ opacity: 0, y: -50 }}
+            animate={{
+              opacity: 1 - (viewAll ? 0 : i * (1 / NUM_VISIBLE_RESPONSES)),
+              y: 0,
+            }}
+            className="flex items-center w-full mb-4"
+          >
+            <ValenceBadge valence={response.valence} />
 
-    {!viewAll && totalResponses > NUM_VISIBLE_RESPONSES && (
-      <div className="z-30 flex justify-center mt-2">
-        <BorderedButton
-          color="blue"
-          className="text-xs"
-          onClick={onClickViewAll}
-        >
-          View All
-        </BorderedButton>
-      </div>
-    )}
-  </div>
+            <span className="ml-2 text-sm w-60 sm:w-96">
+              {response.comment.comment}
+            </span>
+
+            <span
+              className="ml-4 text-xs font-bold text-gray-500 dark:text-gray-400"
+              data-tooltip-id="tooltip"
+              data-tooltip-content={`${(
+                responsePercentages[response.comment_id] ?? 0
+              ).toLocaleString(undefined, {
+                maximumFractionDigits: 2,
+              })}% of people also ${valenceToHumanReadablePastTense(
+                response.valence
+              )}`}
+              data-tooltip-float
+              data-tooltip-place="right"
+            >
+              {(responsePercentages[response.comment_id] ?? 0).toLocaleString(
+                undefined,
+                {
+                  maximumFractionDigits: 2,
+                }
+              )}
+              %
+            </span>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+
+      {!viewAll && totalResponses > NUM_VISIBLE_RESPONSES && (
+        <div className="z-30 flex justify-center mt-2">
+          <BorderedButton
+            color="blue"
+            className="text-xs"
+            onClick={onClickViewAll}
+          >
+            View All
+          </BorderedButton>
+        </div>
+      )}
+    </div>
+  </>
 );
 
 // Default export
 // -----------------------------------------------------------------------------
 
-const Responses = ({ responses, comments }: ResponsesProps) => {
+const Responses = ({ responses, comments, allResponses }: ResponsesProps) => {
   const [viewAll, setViewAll] = useState(false);
 
   const onClickViewAll = useCallback(() => setViewAll(true), []);
@@ -101,9 +132,18 @@ const Responses = ({ responses, comments }: ResponsesProps) => {
     [responses, viewAll, comments]
   );
 
+  const responsePercentages = useMemo(
+    () => calculateResponsePercentages(allResponses, responses),
+    [allResponses, responses]
+  );
+
   return (
     <ResponsesView
-      data={{ responsesWithComments, totalResponses: responses.length }}
+      data={{
+        responsesWithComments,
+        responsePercentages,
+        totalResponses: responses.length,
+      }}
       state={{ viewAll }}
       callbacks={{ onClickViewAll }}
     />

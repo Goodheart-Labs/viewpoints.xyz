@@ -158,6 +158,22 @@ const Poll = ({
     }
   );
 
+  const { data: allResponses, isLoading: allResponsesLoading } = useQuery(
+    ["responses", commentIds.join(",")],
+    async () => {
+      const { data, error } = await supabase
+        .from("responses")
+        .select("*")
+        .in("comment_id", commentIds);
+
+      if (error) {
+        throw error;
+      }
+
+      return data as Response[];
+    }
+  );
+
   const {
     data: flaggedComments,
     isLoading: flaggedCommentsLoading,
@@ -430,7 +446,11 @@ const Poll = ({
         </div>
         {typeof responses !== "undefined" &&
           typeof comments !== "undefined" && (
-            <Responses responses={enrichedResponses} comments={comments} />
+            <Responses
+              allResponses={allResponses ?? []}
+              responses={enrichedResponses}
+              comments={comments}
+            />
           )}
       </div>
 

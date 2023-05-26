@@ -31,6 +31,7 @@
     "react-dom": "18.2.0",
     "react-query": "^3.39.3",
     "react-share": "^4.4.1",
+    "react-tooltip": "^5.13.1",
     "tailwindcss": "3.3.2",
     "ts-key-enum": "^2.0.12",
     "typescript": "5.0.4",
