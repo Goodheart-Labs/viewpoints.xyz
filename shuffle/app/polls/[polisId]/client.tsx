@@ -18,6 +18,7 @@ import { useState, useCallback, useMemo } from "react";
 import { useMutation, useQuery } from "react-query";
 import { getCookie } from "typescript-cookie";
 import { useModal } from "@/providers/ModalProvider";
+import axios from "axios";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -62,18 +63,8 @@ const Poll = ({
   const { data: comments, refetch: refetchComments } = useQuery<Comment[]>(
     ["comments", poll.id],
     async () => {
-      // TODO
-      // const { data, error } = await supabase
-      //   .from("comments")
-      //   .select("*")
-      //   .eq("poll_id", poll.id);
-
-      // if (error) {
-      //   throw error;
-      // }
-
-      // return data as Comment[];
-      return [];
+      const { data } = await axios.get(`/api/polls/${poll.id}/comments`);
+      return data as Comment[];
     },
     {
       initialData,
