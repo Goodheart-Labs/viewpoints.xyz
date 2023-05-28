@@ -1,98 +1,52 @@
-import Analytics from "@/components/Analytics";
-import { Comment, Poll } from "@/lib/api";
-import { supabase } from "@/providers/SupabaseProvider";
-import { getAbsoluteUrl } from "@/utils/urlutils";
-import { GetServerSidePropsContext } from "next";
+import prisma from "@/lib/prisma";
 import Head from "next/head";
-import { useMemo } from "react";
-import { useQuery } from "react-query";
+import AnalyticsClient from "./client";
 
-// SSR
+// Data
 // -----------------------------------------------------------------------------
 
-export async function getServerSideProps(
-  context: GetServerSidePropsContext<{ polisId: string }>
-) {
-  if (!context.params) {
-    return {
-      notFound: true,
-    };
-  }
+async function getData({
+  params: { polisId },
+}: {
+  params: { polisId: string };
+}) {
+  const poll = await prisma.polls.findUniqueOrThrow({
+    where: {
+      polis_id: polisId,
+    },
+  });
 
-  const { polisId } = context.params;
-
-  const { data: polls } = await supabase
-    .from("polls")
-    .select("*")
-    .eq("polis_id", polisId);
-
-  if (!polls || polls.length === 0) {
-    return {
-      notFound: true,
-    };
-  }
-
-  const { data: comments } = await supabase
-    .from("comments")
-    .select("*")
-    .eq("poll_id", polls[0].id);
+  const [comments, responses] = await Promise.all([
+    prisma.comments.findMany({
+      where: {
+        poll_id: poll.id,
+      },
+    }),
+    prisma.responses.findMany({
+      where: {
+        comments: {
+          poll_id: poll.id,
+        },
+      },
+    }),
+  ]);
 
   return {
-    props: {
-      poll: polls[0],
-      comments,
-      url: `${getAbsoluteUrl(context.req)}${context.resolvedUrl}`,
-    },
+    poll,
+    comments,
+    responses,
   };
 }
 
 // Default export
 // -----------------------------------------------------------------------------
 
-const Poll = ({
-  poll,
-  comments: initialData,
-  url,
-}: {
-  poll: Poll;
-  comments: Comment[];
-  url: string;
-}) => {
-  // Sharing
+const AnalyticsPage = async ({ params }: { params: { polisId: string } }) => {
+  const { poll, comments, responses } = await getData({ params });
 
-  const twitterShareUrl = useMemo(
-    () =>
-      `${url}?utm_source=twitter&utm_medium=social&utm_campaign=share&utm_content=${poll.id}`,
-    [poll.id, url]
-  );
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/polls/${poll.polis_id}`;
 
-  // Supabase
-
-  const { data: comments, refetch: refetchComments } = useQuery(
-    ["comments", poll.id],
-    async () => {
-      const { data, error } = await supabase
-        .from("comments")
-        .select("*")
-        .eq("poll_id", poll.id);
-
-      if (error) {
-        throw error;
-      }
-
-      return data as Comment[];
-    },
-    {
-      initialData,
-    }
-  );
-
-  const commentIds = useMemo(
-    () => (comments ?? []).map((comment) => comment.id),
-    [comments]
-  );
-
-  // Render
+  const twitterShareUrl = `${url}?utm_source=twitter&utm_medium=social&utm_campaign=share&utm_content=${poll.id}`;
 
   return (
     <main className="flex flex-col items-center w-full min-h-screen px-4 gradient sm:px-0">
@@ -119,10 +73,10 @@ const Poll = ({
       </div>
 
       <div className="mt-12">
-        <Analytics commentIds={commentIds} />
+        <AnalyticsClient comments={comments} responses={responses} />
       </div>
     </main>
   );
 };
 
-export default Poll;
+export default AnalyticsPage;

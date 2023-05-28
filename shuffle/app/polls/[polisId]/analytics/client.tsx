@@ -1,3 +1,6 @@
+"use client";
+
+import ValenceBadge from "@/components/ValenceBadge";
 import {
   getCommentStatistics,
   getTopKCertainCommentIds,
@@ -5,51 +8,18 @@ import {
   getTopKUncertainCommentIds,
 } from "@/lib/analytics/comments";
 import { Comment, Response } from "@/lib/api";
-import { useSupabase } from "@/providers/SupabaseProvider";
 import { useMemo } from "react";
-import { useQuery } from "react-query";
-import ValenceBadge from "./ValenceBadge";
 
 // Default export
 // -----------------------------------------------------------------------------
 
-const Analytics = ({ commentIds }: { commentIds: Comment["id"][] }) => {
-  const { client } = useSupabase();
-
-  // Supabase
-
-  const { data: comments, isLoading: commentsLoading } = useQuery(
-    ["comments", commentIds.join(",")],
-    async () => {
-      const { data, error } = await client
-        .from("comments")
-        .select("*")
-        .in("id", commentIds);
-
-      if (error) {
-        throw error;
-      }
-
-      return data as Comment[];
-    }
-  );
-
-  const { data: responses, isLoading: responsesLoading } = useQuery(
-    ["responses", commentIds.join(",")],
-    async () => {
-      const { data, error } = await client
-        .from("responses")
-        .select("*")
-        .in("comment_id", commentIds);
-
-      if (error) {
-        throw error;
-      }
-
-      return data as Response[];
-    }
-  );
-
+const AnalyticsClient = ({
+  comments,
+  responses,
+}: {
+  comments: Comment[];
+  responses: Response[];
+}) => {
   // Statistics
 
   const statistics = useMemo(
@@ -84,8 +54,6 @@ const Analytics = ({ commentIds }: { commentIds: Comment["id"][] }) => {
     [comments]
   );
 
-  const totalResponses = useMemo(() => responses?.length ?? 0, [responses]);
-
   const totalUserSessions = useMemo(() => {
     const userSessions = new Set<string>();
     responses?.forEach((response) => {
@@ -100,16 +68,12 @@ const Analytics = ({ commentIds }: { commentIds: Comment["id"][] }) => {
 
   // Render
 
-  if (commentsLoading || responsesLoading) {
-    return <div>loading...</div>;
-  }
-
   return (
     <div className="flex flex-col">
       {/* stats box */}
       <div className="flex flex-col gap-2 px-3 py-2 mb-8 border border-black rounded-md">
-        <h5>Total Comments: {commentIds.length}</h5>
-        <h5>Total Responses: {totalResponses}</h5>
+        <h5>Total Comments: {comments.length}</h5>
+        <h5>Total Responses: {responses.length}</h5>
         <h5>Individual Respondents: {totalUserSessions}</h5>
       </div>
 
@@ -248,4 +212,4 @@ const Analytics = ({ commentIds }: { commentIds: Comment["id"][] }) => {
   );
 };
 
-export default Analytics;
+export default AnalyticsClient;
