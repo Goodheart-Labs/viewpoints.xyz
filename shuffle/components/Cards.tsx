@@ -62,7 +62,7 @@ const Cards = ({
 
   const [cards, setCards] = useOverridableState<Comment[]>(comments);
 
-  // Supabase
+  // Mutations
 
   const { sessionId } = useSession();
 

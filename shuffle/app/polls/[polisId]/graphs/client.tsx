@@ -35,7 +35,7 @@ const GraphsClient = ({
     [poll.id, url]
   );
 
-  // Supabase
+  // Mutations
 
   const { data: comments } = useQuery(
     ["comments", poll.id],

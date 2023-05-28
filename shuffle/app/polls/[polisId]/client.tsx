@@ -57,7 +57,7 @@ const Poll = ({
 
   const twitterShareTitle = useMemo(() => poll.title, [poll.title]);
 
-  // Supabase
+  // Queries
 
   const { data: comments, refetch: refetchComments } = useQuery<Comment[]>(
     ["comments", poll.id],
