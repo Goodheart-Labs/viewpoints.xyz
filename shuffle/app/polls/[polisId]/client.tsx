@@ -240,16 +240,25 @@ const Poll = ({
     [responses]
   );
 
+  const enrichedResponses = useMemo(
+    () =>
+      [...(responses || []), ...cachedResponses].filter(
+        (response, index, self) =>
+          self.findIndex((r) => r.comment_id === response.comment_id) === index
+      ),
+    [responses, cachedResponses]
+  );
+
   const currentUserResponsesByCommentId = useMemo(
     () =>
-      responses?.reduce(
+      enrichedResponses?.reduce(
         (acc, response) => ({
           ...acc,
           [response.comment_id]: response,
         }),
-        {} as Record<number, Response>
+        {} as Record<number, MinimalResponse>
       ) ?? {},
-    [responses]
+    [enrichedResponses]
   );
 
   const loading = useMemo(() => responsesLoading, [responsesLoading]);
@@ -287,15 +296,6 @@ const Poll = ({
       flaggedComments,
       skipCountByCommentId,
     ]
-  );
-
-  const enrichedResponses = useMemo(
-    () =>
-      [...(responses || []), ...cachedResponses].filter(
-        (response, index, self) =>
-          self.findIndex((r) => r.comment_id === response.comment_id) === index
-      ),
-    [responses, cachedResponses]
   );
 
   // Render

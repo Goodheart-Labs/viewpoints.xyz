@@ -9,6 +9,7 @@ import {
   ResponsePercentages,
   calculateResponsePercentages,
 } from "@/lib/analytics/responses";
+import dayjs from "dayjs";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -127,7 +128,7 @@ const Responses = ({ responses, comments, allResponses }: ResponsesProps) => {
           ...r,
           comment: comments.find((c) => c.id === r.comment_id) as Comment,
         }))
-        .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
+        .sort((a, b) => dayjs(b.created_at).diff(dayjs(a.created_at)))
         .slice(0, viewAll ? responses.length : NUM_VISIBLE_RESPONSES),
     [responses, viewAll, comments]
   );
