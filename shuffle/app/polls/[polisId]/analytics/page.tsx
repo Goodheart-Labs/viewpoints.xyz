@@ -24,7 +24,7 @@ async function getData({
     }),
     prisma.responses.findMany({
       where: {
-        comments: {
+        comment: {
           poll_id: poll.id,
         },
       },

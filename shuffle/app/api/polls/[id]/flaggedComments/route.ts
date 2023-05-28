@@ -14,7 +14,7 @@ export async function GET(
 ) {
   const flaggedComments = await prisma.flagged_comments.findMany({
     where: {
-      comments: {
+      comment: {
         poll_id: parseInt(id),
       },
     },

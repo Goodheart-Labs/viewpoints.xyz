@@ -24,8 +24,8 @@ type EditingContentViewProps = {
 
 type EditingContentProps = {
   card: {
-    author_name: string;
-    author_avatar_url: string;
+    author_name: string | null;
+    author_avatar_url: string | null;
     comment: string;
   };
   setValue: (value: string) => void;

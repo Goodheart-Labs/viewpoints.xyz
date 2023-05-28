@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import BorderedButton from "./BorderedButton";
 import { MinimalResponse } from "./Cards";
-import { Comment } from "@/lib/api";
+import { Comment, Valence } from "@/lib/api";
 import { useCallback, useMemo, useState } from "react";
 import ValenceBadge from "./ValenceBadge";
 import { valenceToHumanReadablePastTense } from "@/utils/valenceutils";
@@ -66,7 +66,7 @@ const ResponsesView = ({
             }}
             className="flex items-center w-full mb-4"
           >
-            <ValenceBadge valence={response.valence} />
+            <ValenceBadge valence={response.valence as Valence} />
 
             <span className="ml-2 text-sm w-60 sm:w-96">
               {response.comment.comment}
@@ -80,7 +80,7 @@ const ResponsesView = ({
               ).toLocaleString(undefined, {
                 maximumFractionDigits: 2,
               })}% of people also ${valenceToHumanReadablePastTense(
-                response.valence
+                response.valence as Valence
               )}`}
               data-tooltip-float
               data-tooltip-place="right"
@@ -127,7 +127,7 @@ const Responses = ({ responses, comments, allResponses }: ResponsesProps) => {
           ...r,
           comment: comments.find((c) => c.id === r.comment_id) as Comment,
         }))
-        .sort((a, b) => b.created_at.localeCompare(a.created_at))
+        .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
         .slice(0, viewAll ? responses.length : NUM_VISIBLE_RESPONSES),
     [responses, viewAll, comments]
   );

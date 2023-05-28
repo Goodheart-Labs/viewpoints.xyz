@@ -1,3 +1,5 @@
+"use client";
+
 import { FlagIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import { motion } from "framer-motion";
@@ -12,7 +14,7 @@ import BorderedButton from "./BorderedButton";
 import { Comment, FlaggedComment } from "@/lib/api";
 import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
 import { useMutation } from "react-query";
-import { useSession } from "@/providers/SessionProvider";
+import axios from "axios";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -112,7 +114,6 @@ const FlagCommentView = ({
 
 const FlagComment = ({ comment, onCreate, onCancel }: FlagCommentProps) => {
   const { amplitude } = useAmplitude();
-  const { sessionId } = useSession();
 
   const [reason, setReason] = useState("");
 
@@ -147,14 +148,10 @@ const FlagComment = ({ comment, onCreate, onCancel }: FlagCommentProps) => {
 
   const newFlaggedCommentMutation = useMutation(
     async ({ reason }: Pick<FlaggedComment, "reason">) => {
-      // TODO
-      // const { error } = await client
-      //   .from("flagged_comments")
-      //   .insert({ comment_id: comment.id, session_id: sessionId, reason });
-      // if (error) {
-      //   throw error;
-      // }
-      // onCreate();
+      await axios.post(`/api/comments/${comment.id}/flag`, {
+        reason,
+      });
+      onCreate();
     }
   );
 

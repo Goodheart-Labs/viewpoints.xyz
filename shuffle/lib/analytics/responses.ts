@@ -17,7 +17,7 @@ export const calculateResponsePercentages = (
   const commentUserAgreementCounts: ResponsePercentages = {};
 
   userResponses.forEach((response) => {
-    userResponseMap[response.comment_id] = response.valence;
+    userResponseMap[response.comment_id] = response.valence as Valence;
   });
 
   allResponses.forEach((response) => {
@@ -80,7 +80,7 @@ export const getUserConsensusViews = (
 
     const consensus: CommentConsensus = {
       comment_id: Number(commentId),
-      valence,
+      valence: valence as Valence,
       consensusPercentage: percentage,
     };
 

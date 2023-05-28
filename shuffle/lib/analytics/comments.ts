@@ -126,7 +126,7 @@ export function getCommentStatistics(
           skip: 0,
           itsComplicated: 0,
         },
-        mostCommonValence: response.valence,
+        mostCommonValence: response.valence as Valence,
       };
     }
 
@@ -226,7 +226,7 @@ export const getTopKCorrelatedCommentPairs = (
   for (const userResponses of Object.values(userGroups)) {
     const commentIdsToValences: Record<number, Valence> = userResponses.reduce(
       (acc, response) => {
-        acc[response.comment_id] = response.valence;
+        acc[response.comment_id] = response.valence as Valence;
         return acc;
       },
       {} as Record<number, Valence>
