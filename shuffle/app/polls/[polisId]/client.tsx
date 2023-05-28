@@ -40,7 +40,6 @@ const Poll = ({
 }) => {
   const { amplitude } = useAmplitude();
   const { user } = useUser();
-  const { sessionId } = useSession();
 
   // State
 
@@ -88,42 +87,16 @@ const Poll = ({
   const { data: responses, isLoading: responsesLoading } = useQuery<Response[]>(
     [userId, "responses", commentIds.join(",")],
     async () => {
-      // TODO
-      // const sessionId = getCookie(SESSION_ID_COOKIE_NAME);
-      // let query = supabase
-      //   .from("responses")
-      //   .select("*")
-      //   .in("comment_id", commentIds);
-      // if (userId === getCookie(SESSION_ID_COOKIE_NAME)) {
-      //   query = query.eq("session_id", sessionId);
-      // } else {
-      //   query = query.eq("user_id", userId);
-      // }
-      // const { data, error } = await query;
-      // if (error) {
-      //   throw error;
-      // }
-      // return data as Response[];
-
-      return [];
+      const { data } = await axios.get(`/api/polls/${poll.id}/responses`);
+      return data as Response[];
     }
   );
 
   const { data: allResponses, isLoading: allResponsesLoading } = useQuery<
     Response[]
   >(["responses", commentIds.join(",")], async () => {
-    // const { data, error } = await supabase
-    //   .from("responses")
-    //   .select("*")
-    //   .in("comment_id", commentIds);
-
-    // if (error) {
-    //   throw error;
-    // }
-
-    // return data as Response[];
-
-    return [];
+    const { data } = await axios.get(`/api/polls/${poll.id}/responses?all`);
+    return data as Response[];
   });
 
   const {
@@ -133,18 +106,8 @@ const Poll = ({
   } = useQuery<FlaggedComment[]>(
     ["flaggedComments", commentIds.join(",")],
     async () => {
-      // const { data, error } = await supabase
-      //   .from("flagged_comments")
-      //   .select("*")
-      //   .in("comment_id", commentIds);
-
-      // if (error) {
-      //   throw error;
-      // }
-
-      // return data as FlaggedComment[];
-
-      return [];
+      const { data } = await axios.get(`/api/polls/${poll.id}/flaggedComments`);
+      return data as FlaggedComment[];
     }
   );
 
@@ -154,36 +117,17 @@ const Poll = ({
       edited_from_id,
       author_name,
       author_avatar_url,
-      user_id,
-      session_id,
     }: Pick<
       Comment,
-      | "comment"
-      | "session_id"
-      | "edited_from_id"
-      | "author_name"
-      | "author_avatar_url"
-      | "user_id"
+      "comment" | "edited_from_id" | "author_name" | "author_avatar_url"
     >) => {
-      // const { error } = await supabase.from("comments").insert({
-      //   poll_id: poll.id,
-      //   session_id,
-      //   comment,
-      //   edited_from_id,
-      //   author_name,
-      //   author_avatar_url,
-      //   user_id,
-      // });
-
-      // if (error) {
-      //   throw error;
-      // }
-
-      // await refetchComments();
-
-      // setIsCreating(false);
-
-      return [];
+      await axios.post(`/api/polls/${poll.id}/comments`, {
+        comment,
+        edited_from_id,
+        author_name,
+        author_avatar_url,
+      });
+      await refetchComments();
     }
   );
 
@@ -211,20 +155,16 @@ const Poll = ({
 
       await newCommentMutation.mutateAsync({
         comment,
-        session_id: sessionId,
         edited_from_id: edited_from_id ?? null,
         author_name: user?.fullName ?? null,
         author_avatar_url: user?.profileImageUrl ?? null,
-        user_id: user?.id ?? null,
       });
     },
     [
       amplitude,
       newCommentMutation,
       poll.id,
-      sessionId,
       user?.fullName,
-      user?.id,
       user?.profileImageUrl,
     ]
   );

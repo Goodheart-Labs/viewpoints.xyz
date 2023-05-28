@@ -1,3 +1,5 @@
+"use client";
+
 import Card from "./Card";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useMemo } from "react";
@@ -12,6 +14,7 @@ import { useMutation } from "react-query";
 import { useUser } from "@clerk/nextjs";
 import useOverridableState from "@/lib/useOverridableState";
 import AnalyticsSynopsis from "./AnalyticsSynopsis";
+import axios from "axios";
 
 // Setup
 // -----------------------------------------------------------------------------
@@ -65,13 +68,9 @@ const Cards = ({
 
   const insertResponseMutation = useMutation(
     async (response: MinimalResponse) => {
-      // TODO
-      // const { error } = await client
-      //   .from("responses")
-      //   .insert({ ...response, session_id: sessionId });
-      // if (error) {
-      //   throw error;
-      // }
+      await axios.post(`/api/comments/${response.comment_id}/responses`, {
+        ...response,
+      });
     }
   );
 
@@ -169,7 +168,9 @@ const Cards = ({
                 onSwipe={onSwipe}
                 onCommentEdited={onCommentEdited}
                 onCommentFlagged={onCommentFlagged}
-                isActive={card.id === cards[cards.length - 1].id}
+                isActive={
+                  card.id === filteredComments[filteredComments.length - 1].id
+                }
               />
             </AnimatePresence>
           ))}

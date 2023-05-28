@@ -12,14 +12,6 @@ type PollPageProps = {
 // Data
 // -----------------------------------------------------------------------------
 
-export async function generateStaticParams() {
-  const polls = await prisma.polls.findMany();
-
-  return polls.map(({ polis_id }) => ({
-    polisId: polis_id,
-  }));
-}
-
 async function getData({ params }: PollPageProps) {
   const poll = await prisma.polls.findFirst({
     where: {
