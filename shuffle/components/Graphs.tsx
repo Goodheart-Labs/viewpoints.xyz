@@ -1,7 +1,5 @@
 import { Comment, Response, Valence } from "@/lib/api";
-import { useSupabase } from "@/providers/SupabaseProvider";
 import { Fragment, useMemo } from "react";
-import { useQuery } from "react-query";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -75,10 +73,10 @@ const valenceToColor = (valence: Response["valence"]): string => {
       return "green";
     case "disagree":
       return "red";
-    case "skip":
-      return "gray";
     case "itsComplicated":
       return "orange";
+    default:
+      return "gray";
   }
 };
 
@@ -88,10 +86,10 @@ const valenceToNumber = (valence: Response["valence"]): number => {
       return 1;
     case "disagree":
       return -1;
-    case "skip":
-      return 0;
     case "itsComplicated":
       return 0.5;
+    default:
+      return 0;
   }
 };
 
@@ -682,56 +680,36 @@ const TwoDimensionalGraph = ({ responses }: { responses: Response[] }) => {
 // -----------------------------------------------------------------------------
 
 const Graphs = ({
+  responses,
   commentIds,
   graphType,
 }: {
+  responses: Response[];
   commentIds: Comment["id"][];
   graphType: GraphType;
 }) => {
-  const { client } = useSupabase();
-
-  const { data: responses, isLoading: responsesLoading } = useQuery(
-    ["responses", commentIds.join(",")],
-    async () => {
-      const { data, error } = await client
-        .from("responses")
-        .select("*")
-        .in("comment_id", commentIds);
-
-      if (error) {
-        throw error;
-      }
-
-      return data as Response[];
-    }
-  );
-
-  if (responsesLoading) {
-    return <div>loading...</div>;
-  }
-
   if (graphType === GraphType.BackgroundBar) {
-    return <BackgroundBar responses={responses ?? []} />;
+    return <BackgroundBar responses={responses} />;
   }
 
   if (graphType === GraphType.PerUserHeatmap) {
-    return <PerUserHeatmap responses={responses ?? []} />;
+    return <PerUserHeatmap responses={responses} />;
   }
 
   if (graphType === GraphType.TotalHeatmap) {
-    return <TotalHeatmap responses={responses ?? []} />;
+    return <TotalHeatmap responses={responses} />;
   }
 
   if (graphType === GraphType.ClustersList) {
-    return <ClustersList responses={responses ?? []} />;
+    return <ClustersList responses={responses} />;
   }
 
   if (graphType === GraphType.ClusterQuestions) {
-    return <ClusterQuestions responses={responses ?? []} />;
+    return <ClusterQuestions responses={responses} />;
   }
 
   if (graphType === GraphType.TwoDimensionalGraph) {
-    return <TwoDimensionalGraph responses={responses ?? []} />;
+    return <TwoDimensionalGraph responses={responses} />;
   }
 
   return null;
