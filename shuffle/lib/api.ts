@@ -11,3 +11,11 @@ export type FlaggedComment = flagged_comments;
 export type Valence = "agree" | "disagree" | "skip" | "itsComplicated";
 
 export type Response = responses;
+
+export type AnalyticsFilters = {
+  correlatedComments: {
+    [key: string]: {
+      hidden: boolean;
+    };
+  };
+};

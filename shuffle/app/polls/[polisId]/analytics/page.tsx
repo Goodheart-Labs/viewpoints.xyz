@@ -73,7 +73,11 @@ const AnalyticsPage = async ({ params }: { params: { polisId: string } }) => {
       </div>
 
       <div className="mt-12">
-        <AnalyticsClient comments={comments} responses={responses} />
+        <AnalyticsClient
+          poll={poll}
+          comments={comments}
+          responses={responses}
+        />
       </div>
     </main>
   );

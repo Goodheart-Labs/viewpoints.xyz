@@ -22,6 +22,7 @@ const styles = {
     "text-orange-600 dark:hover:text-orange-400 border-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900 focus:bg-orange-50 dark:focus:bg-orange-900",
   indigo:
     "text-indigo-600 dark:hover:text-indigo-400 border-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900 focus:bg-indigo-50 dark:focus:bg-indigo-900",
+  gray: "text-gray-600 dark:hover:text-gray-400 border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-900 focus:bg-gray-50 dark:focus:bg-gray-900",
 };
 
 // Default export

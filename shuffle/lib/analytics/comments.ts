@@ -198,7 +198,8 @@ export const generateCommentPairs = (commentIds: number[]): number[][] =>
     commentIds.filter((id2) => id2 !== id1).map((id2) => [id1, id2])
   );
 
-type Correlation = {
+export type Correlation = {
+  key: string;
   commentA: number;
   commentB: number;
   commentAValence: Valence;
@@ -289,6 +290,7 @@ export const getTopKCorrelatedCommentPairs = (
       const percentage = (count / denominator) * 100;
 
       return {
+        key,
         commentA: Number(commentA),
         commentB: Number(commentB),
         commentAValence: commentAValence as Valence,
