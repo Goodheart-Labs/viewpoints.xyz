@@ -1,4 +1,5 @@
 import { comments, flagged_comments, polls, responses } from "@prisma/client";
+import { Correlation } from "./analytics/comments";
 
 export type Poll = polls;
 
@@ -13,9 +14,5 @@ export type Valence = "agree" | "disagree" | "skip" | "itsComplicated";
 export type Response = responses;
 
 export type AnalyticsFilters = {
-  correlatedComments: {
-    [key: string]: {
-      hidden: boolean;
-    };
-  };
+  correlatedComments: Correlation["key"][];
 };

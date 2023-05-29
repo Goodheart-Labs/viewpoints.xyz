@@ -2,15 +2,23 @@ import BorderedButton from "@/components/BorderedButton";
 import ValenceBadge from "@/components/ValenceBadge";
 import {
   Correlation,
+  getCorrelatedCommentPairs,
   getTopKCorrelatedCommentPairs,
 } from "@/lib/analytics/comments";
 import { Poll, Comment, Response, AnalyticsFilters } from "@/lib/api";
+import { useAdminState } from "@/providers/AdminStateProvider";
 import { useAuth } from "@clerk/nextjs";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import clsx from "clsx";
 import { useCallback, useMemo, useState } from "react";
 import { useMutation } from "react-query";
+import SelectCorrelatedComment from "./SelectCorrelatedComment";
+
+// Config
+// -----------------------------------------------------------------------------
+
+const NUM_CORRELATED_COMMENTS = 5;
 
 // Types
 // -----------------------------------------------------------------------------
@@ -19,17 +27,23 @@ type CorrelatedCommentsViewProps = {
   data: {
     poll: Poll;
     correlatedComments: Correlation[];
-    hiddenCorrelationsKeys: Correlation["key"][];
+    commentIdToCommentMap: Record<Comment["id"], Comment>;
+  };
+};
+
+type EditingCorrelatedCommentsViewProps = {
+  data: {
+    allCorrelatedComments: Correlation[];
+    selectedCorrelatedComments: Correlation[];
     commentIdToCommentMap: Record<Comment["id"], Comment>;
   };
   state: {
-    isAdmin: boolean;
-    isEditing: boolean;
-    setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
     isLoading: boolean;
+    isDefault: boolean;
   };
   callbacks: {
-    onClickCorrelation: (key: Correlation["key"]) => void;
+    onSelected: (correlationKey: Correlation["key"]) => void;
+    onClickReset: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
   };
 };
 
@@ -39,110 +53,243 @@ type CorrelatedCommentsProps = {
   responses: Response[];
 };
 
-type CorrelatedCommentsSettings = {
-  [key: string]: {
-    hidden: boolean;
+type EditingCorrelatedCommentsProps = {
+  data: {
+    poll: Poll;
+    allCorrelatedComments: Correlation[];
+    selectedCorrelatedComments: Correlation[];
+    commentIdToCommentMap: Record<Comment["id"], Comment>;
+  };
+  state: {
+    analyticsFilters: AnalyticsFilters;
+    setAnalyticsFilters: (analyticsFilters: AnalyticsFilters) => void;
   };
 };
 
-// View
+// Views
 // -----------------------------------------------------------------------------
 
-const CorrelatedCommentsView = ({
-  data: { hiddenCorrelationsKeys, correlatedComments, commentIdToCommentMap },
-  state: { isAdmin, isEditing, setIsEditing, isLoading },
-  callbacks: { onClickCorrelation },
-}: CorrelatedCommentsViewProps) => (
+const EditingCorrelatedCommentsView = ({
+  data: {
+    selectedCorrelatedComments,
+    allCorrelatedComments,
+    commentIdToCommentMap,
+  },
+  state: { isLoading, isDefault },
+  callbacks: { onSelected, onClickReset },
+}: EditingCorrelatedCommentsViewProps) => (
   <div className="flex gap-8">
     <div className="w-1/2">
       <h3 className="flex items-center justify-between mb-4 font-semibold">
         Interestingly Correlated Comments
-        {isAdmin ? (
+        {!isDefault && (
           <span>
-            <BorderedButton
-              color={isEditing ? "blue" : "gray"}
-              onClick={() => setIsEditing((e) => !e)}
-              disabled={isLoading}
+            <a
+              href="#"
+              className="text-xs text-gray-500 uppercase dark:text-gray-700"
+              onClick={onClickReset}
             >
-              {isEditing ? "Done" : "Edit"}
-            </BorderedButton>
+              Reset
+            </a>
           </span>
-        ) : null}
-      </h3>
-      <ul>
-        {correlatedComments.map(
-          ({
-            key,
-            commentA,
-            commentB,
-            commentAValence,
-            commentBValence,
-            percentage,
-          }) => (
-            <li
-              className={clsx(
-                "flex flex-col pb-4 mb-4 border-b border-gray-300 dark:border-gray-800",
-                hiddenCorrelationsKeys.includes(key)
-                  ? "opacity-50"
-                  : "opacity-100",
-                isEditing ? "cursor-pointer" : null,
-                isEditing && hiddenCorrelationsKeys.includes(key)
-                  ? "hover:opacity-100"
-                  : "hover:opacity-50"
-              )}
-              key={[commentA, commentB, commentAValence, commentBValence].join(
-                ","
-              )}
-              onClick={
-                isEditing && isAdmin ? () => onClickCorrelation(key) : undefined
-              }
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-lg font-bold">
-                    {percentage.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                    })}
-                    %
-                  </span>{" "}
-                  of respondents who voted{" "}
-                  <ValenceBadge valence={commentAValence}>
-                    {commentAValence}
-                  </ValenceBadge>
-                  on
-                </div>
-
-                <div className="w-[20px]">
-                  {hiddenCorrelationsKeys.includes(key) ? (
-                    <EyeSlashIcon />
-                  ) : isEditing ? (
-                    <EyeIcon />
-                  ) : null}
-                </div>
-              </div>
-
-              <div className="my-4 ml-3 text-sm italic text-gray-700 dark:text-gray-400">
-                <span>{commentIdToCommentMap[commentA]?.comment}</span>
-              </div>
-
-              <div className="mb-1">
-                also voted{" "}
-                <ValenceBadge valence={commentBValence}>
-                  {commentBValence}
-                </ValenceBadge>{" "}
-                on
-              </div>
-
-              <div className="my-4 ml-3 text-sm italic text-gray-700 dark:text-gray-400">
-                <span>{commentIdToCommentMap[commentB]?.comment}</span>
-              </div>
-            </li>
-          )
         )}
+      </h3>
+
+      <div className="flex flex-col p-4 border-2 border-dashed rounded-lg">
+        <div className="flex flex-col">
+          {isDefault ? (
+            <div>
+              <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+                No correlations selected. Displaying defaults.
+              </p>
+            </div>
+          ) : (
+            <ul>
+              {selectedCorrelatedComments.map((correlation) => (
+                <CorrelatedComment
+                  key={correlation.key}
+                  correlation={correlation}
+                  commentIdToCommentMap={commentIdToCommentMap}
+                />
+              ))}
+            </ul>
+          )}
+
+          <hr className="my-2" />
+        </div>
+
+        <div className="flex items-center justify-center w-full">
+          <SelectCorrelatedComment
+            disabled={isLoading}
+            correlatedComments={allCorrelatedComments}
+            commentIdToCommentMap={commentIdToCommentMap}
+            onSelected={onSelected}
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const CorrelatedCommentsView = ({
+  data: { correlatedComments, commentIdToCommentMap },
+}: CorrelatedCommentsViewProps) => (
+  <div className="flex gap-8">
+    <div className="w-1/2">
+      <h3 className="mb-4 font-semibold">Interestingly Correlated Comments</h3>
+      <ul>
+        {correlatedComments.map((correlation) => (
+          <CorrelatedComment
+            key={correlation.key}
+            commentIdToCommentMap={commentIdToCommentMap}
+            correlation={correlation}
+          />
+        ))}
       </ul>
     </div>
   </div>
 );
+
+// Correlated Comment
+// -----------------------------------------------------------------------------
+
+const CorrelatedComment = ({
+  correlation: {
+    key,
+    commentA,
+    commentB,
+    commentAValence,
+    commentBValence,
+    percentage,
+  },
+  commentIdToCommentMap,
+}: {
+  correlation: Correlation;
+  commentIdToCommentMap: Record<Comment["id"], Comment>;
+}) => (
+  <li
+    className={clsx(
+      "flex flex-col pb-4 mb-4 border-b border-gray-300 dark:border-gray-800"
+    )}
+    key={[commentA, commentB, commentAValence, commentBValence].join(",")}
+  >
+    <div className="flex items-center justify-between">
+      <div>
+        <span className="text-lg font-bold">
+          {percentage.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+          })}
+          %
+        </span>{" "}
+        of respondents who voted{" "}
+        <ValenceBadge valence={commentAValence}>{commentAValence}</ValenceBadge>
+        on
+      </div>
+    </div>
+
+    <div className="my-4 ml-3 text-sm italic text-gray-700 dark:text-gray-400">
+      <span>{commentIdToCommentMap[commentA]?.comment}</span>
+    </div>
+
+    <div className="mb-1">
+      also voted{" "}
+      <ValenceBadge valence={commentBValence}>{commentBValence}</ValenceBadge>{" "}
+      on
+    </div>
+
+    <div className="my-4 ml-3 text-sm italic text-gray-700 dark:text-gray-400">
+      <span>{commentIdToCommentMap[commentB]?.comment}</span>
+    </div>
+  </li>
+);
+
+// Editing
+// -----------------------------------------------------------------------------
+
+const EditingCorrelatedComments = ({
+  data: {
+    poll,
+    selectedCorrelatedComments,
+    allCorrelatedComments,
+    commentIdToCommentMap,
+  },
+  state: { analyticsFilters, setAnalyticsFilters },
+}: EditingCorrelatedCommentsProps) => {
+  // Mutations
+
+  const updatePollMutation = useMutation(
+    async (analytics_filters: AnalyticsFilters) => {
+      await axios.patch(`/api/polls/${poll.id}`, {
+        analytics_filters,
+      });
+    }
+  );
+
+  // State
+
+  const isLoading = useMemo(
+    () => updatePollMutation.isLoading,
+    [updatePollMutation]
+  );
+
+  const isDefault = useMemo(
+    () => (analyticsFilters.correlatedComments || []).length === 0,
+    [analyticsFilters]
+  );
+
+  // Callbacks
+
+  const onSelected = useCallback(
+    (correlationKey: Correlation["key"]) => {
+      const newAnalyticsFilters = {
+        ...analyticsFilters,
+        correlatedComments: [
+          ...(analyticsFilters.correlatedComments ?? []),
+          correlationKey,
+        ],
+      };
+
+      setAnalyticsFilters(newAnalyticsFilters);
+      updatePollMutation.mutate(newAnalyticsFilters);
+    },
+    [analyticsFilters, setAnalyticsFilters, updatePollMutation]
+  );
+
+  const onClickReset = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      e.preventDefault();
+
+      const newAnalyticsFilters = {
+        ...analyticsFilters,
+        correlatedComments: [],
+      };
+
+      setAnalyticsFilters(newAnalyticsFilters);
+      updatePollMutation.mutate(newAnalyticsFilters);
+    },
+    [analyticsFilters, setAnalyticsFilters, updatePollMutation]
+  );
+
+  // Render
+
+  return (
+    <EditingCorrelatedCommentsView
+      data={{
+        allCorrelatedComments,
+        selectedCorrelatedComments,
+        commentIdToCommentMap,
+      }}
+      state={{
+        isLoading,
+        isDefault,
+      }}
+      callbacks={{
+        onSelected,
+        onClickReset,
+      }}
+    />
+  );
+};
 
 // Default export
 // -----------------------------------------------------------------------------
@@ -154,10 +301,8 @@ const CorrelatedComments = ({
 }: CorrelatedCommentsProps) => {
   // Basic data
 
-  const { userId } = useAuth();
-
   const allCorrelatedComments = useMemo(
-    () => getTopKCorrelatedCommentPairs(responses ?? [], 40),
+    () => getCorrelatedCommentPairs(responses ?? []),
     [responses]
   );
 
@@ -175,101 +320,73 @@ const CorrelatedComments = ({
 
   // State
 
-  const [analyticsFilters, setAnalyticsFilters] = useState<
-    AnalyticsFilters | undefined
-  >(poll.analytics_filters as AnalyticsFilters);
+  const { adminState } = useAdminState();
 
-  const [isEditing, setIsEditing] = useState(false);
+  const isEditing = adminState.editingAnalytics;
 
-  const isAdmin = useMemo(() => userId === poll.user_id, [userId, poll]);
+  // State
 
-  // Settings
+  const [analyticsFilters, setAnalyticsFilters] = useState<AnalyticsFilters>(
+    (poll.analytics_filters as AnalyticsFilters) ?? {}
+  );
 
-  const settings = useMemo(() => {
-    if (!isAdmin) return {};
-
+  const selectedCorrelatedCommentKeys = useMemo(() => {
     if (
       !analyticsFilters ||
       typeof analyticsFilters !== "object" ||
       !("correlatedComments" in analyticsFilters)
     ) {
-      return {} as CorrelatedCommentsSettings;
+      return [];
     }
 
-    return analyticsFilters.correlatedComments as CorrelatedCommentsSettings;
-  }, [analyticsFilters, isAdmin]);
-
-  const updatePollMutation = useMutation(
-    async (analytics_filters: AnalyticsFilters) => {
-      await axios.patch(`/api/polls/${poll.id}`, {
-        analytics_filters,
-      });
-    }
-  );
-
-  const onClickCorrelation = useCallback(
-    async (key: Correlation["key"]) => {
-      if (!isAdmin) return;
-
-      const analytics_filters = {
-        ...analyticsFilters,
-        correlatedComments: {
-          ...analyticsFilters?.correlatedComments,
-          [key]: {
-            hidden: !settings[key]?.hidden,
-          },
-        },
-      };
-
-      await updatePollMutation.mutateAsync(analytics_filters);
-      setAnalyticsFilters(analytics_filters);
-    },
-    [isAdmin, analyticsFilters, settings, updatePollMutation]
-  );
-
-  const isLoading = useMemo(
-    () => updatePollMutation.isLoading,
-    [updatePollMutation]
-  );
+    return analyticsFilters.correlatedComments;
+  }, [analyticsFilters]);
 
   // Filter out hidden comments if not admin
 
-  const correlatedComments = useMemo(
-    () =>
-      isEditing
-        ? allCorrelatedComments
-        : allCorrelatedComments
-            .filter(({ key }) => !settings[key]?.hidden)
-            .slice(0, 5),
-    [isEditing, allCorrelatedComments, settings]
-  );
+  const correlatedComments = useMemo(() => {
+    if (selectedCorrelatedCommentKeys.length === 0) {
+      return allCorrelatedComments.slice(0, NUM_CORRELATED_COMMENTS);
+    }
 
-  const hiddenCorrelationsKeys = useMemo(
+    return allCorrelatedComments.filter(({ key }) =>
+      selectedCorrelatedCommentKeys.includes(key)
+    );
+  }, [allCorrelatedComments, selectedCorrelatedCommentKeys]);
+
+  const selectedCorrelatedComments = useMemo(
     () =>
-      Object.entries(settings)
-        .filter(([, value]) => value.hidden)
-        .map(([key]) => key),
-    [settings]
+      correlatedComments.filter(({ key }) =>
+        selectedCorrelatedCommentKeys.includes(key)
+      ),
+    [correlatedComments, selectedCorrelatedCommentKeys]
   );
 
   // Render
+
+  if (isEditing) {
+    return (
+      <EditingCorrelatedComments
+        data={{
+          poll,
+          allCorrelatedComments,
+          selectedCorrelatedComments,
+          commentIdToCommentMap,
+        }}
+        state={{
+          analyticsFilters,
+          setAnalyticsFilters,
+        }}
+      />
+    );
+  }
 
   return (
     <CorrelatedCommentsView
       data={{
         poll,
         correlatedComments,
-        hiddenCorrelationsKeys,
         commentIdToCommentMap,
-      }}
-      state={{
-        isAdmin,
-        isEditing,
-        setIsEditing,
-        isLoading,
-      }}
-      callbacks={{
-        onClickCorrelation,
       }}
     />
   );

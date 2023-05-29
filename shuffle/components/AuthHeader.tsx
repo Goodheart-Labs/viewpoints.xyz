@@ -38,7 +38,7 @@ const AuthHeader = () => {
   }, [amplitude, setModal]);
 
   return (
-    <div className="flex justify-end p-4">
+    <div className="fixed right-0 flex items-center justify-end w-full p-4 bg-black bg-opacity-5">
       <BorderedButton color="orange" onClick={onNewPoll} className="mr-2">
         Create New Poll
       </BorderedButton>

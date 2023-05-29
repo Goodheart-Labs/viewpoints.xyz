@@ -210,6 +210,10 @@ export type Correlation = {
 export const getTopKCorrelatedCommentPairs = (
   responses: Response[],
   k: number
+): Correlation[] => getCorrelatedCommentPairs(responses).slice(0, k);
+
+export const getCorrelatedCommentPairs = (
+  responses: Response[]
 ): Correlation[] => {
   const allCommentIds = Array.from(
     new Set(responses.map((response) => response.comment_id))
@@ -298,6 +302,5 @@ export const getTopKCorrelatedCommentPairs = (
         percentage,
       };
     })
-    .sort((a, b) => b.percentage - a.percentage)
-    .slice(0, k);
+    .sort((a, b) => b.percentage - a.percentage);
 };
