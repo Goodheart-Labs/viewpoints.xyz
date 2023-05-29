@@ -1,10 +1,11 @@
 import { Metadata } from "next";
 import { Tooltip } from "react-tooltip";
 
-import "@/styles/globals.css";
+import "@/styles/tailwind.css";
+import "@/styles/frontend.css";
 import "react-tooltip/dist/react-tooltip.css";
 
-import Contexts from "./components/Contexts";
+import Contexts from "../components/Contexts";
 import AuthHeader from "@/components/AuthHeader";
 import { ClerkProvider } from "@clerk/nextjs";
 
