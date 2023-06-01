@@ -1,22 +1,19 @@
-// import tiktoken from "@openai/tiktoken";
-// import openai from "@openai/openai";
+import { openai, tiktoken } from "./openai";
 
 // TODO:
-//  - escape title and question
 //  - add a 'get current context length' option
 
 // Config
 // -----------------------------------------------------------------------------
 
-const MODEL_NAME = "gpt-3.5-turbo";
-const CONTEXT_LENGTH = 2048; // tokens
+const MODEL_NAME = "text-davinci-003";
+const CONTEXT_LENGTH = 4096; // tokens
 const RESULT_MARKER = "RESULT:";
 
 // Setup
 // -----------------------------------------------------------------------------
 
-// const tokeniser = tiktoken.getEncodingForModel(MODEL_NAME); // TODO
-// const model = openai.getModel(MODEL_NAME); // TODO
+const tokeniser = tiktoken.encodingForModel(MODEL_NAME);
 
 // Types
 // -----------------------------------------------------------------------------
@@ -34,7 +31,12 @@ type ModelSettings = {
 // Prompt
 // -----------------------------------------------------------------------------
 
-const PROMPT_TEXT = (title: string, question: string, n: number) => `
+const PROMPT_TEXT = (
+  title: string,
+  question: string,
+  n: number,
+  result: string = ""
+) => `
 generateComments() is a function that takes a title, question, and N as parameters, then returns a JSON array of N comments that relate to the title and question.
 
 The comments it generates are declarative sentences that people can agree or disagree with. For instance:
@@ -48,15 +50,17 @@ ${RESULT_MARKER} [
     "I am excited about AI benefits"
 ]
 
-PROMPT: generateComments("${title}", "${question}", ${n})
-${RESULT_MARKER} 
+PROMPT: generateComments(${JSON.stringify(title)}, ${JSON.stringify(
+  question
+)}, ${n})
+${RESULT_MARKER}${result}
 `;
 
 // Default export
 // -----------------------------------------------------------------------------
 
 const autogenerateComments = async (
-  { title, question, numComments = 5 }: AutogenerateCommentsSettings,
+  { title, question, numComments = 10 }: AutogenerateCommentsSettings,
   { temperature = 0.7 }: ModelSettings = { temperature: 0.7 }
 ): Promise<string[]> => {
   const fullPrompt = PROMPT_TEXT(title, question, numComments);
@@ -66,32 +70,31 @@ const autogenerateComments = async (
     throw new PromptTooLongError(fullPromptTokenLength, CONTEXT_LENGTH);
   }
 
-  // TODO
-  //   const completion = await model.prompt(fullPrompt, {
-  //     temperature,
-  //   });
+  const remainingTokens = CONTEXT_LENGTH - fullPromptTokenLength;
 
-  const completion =
-    fullPrompt.trimEnd() +
-    " " +
-    JSON.stringify([
-      "The benefits of AI will be distributed evenly across the whole world",
-      "I am concerned about AI risk",
-      "We should invest more in research into how to get AIs to do what we want in line with human values",
-      "AI is a technical problem to solve, not a moral or social problem",
-      "I am excited about AI benefits",
-    ]);
+  const response = await openai.createCompletion({
+    model: MODEL_NAME,
+    prompt: fullPrompt,
+    max_tokens: remainingTokens,
+    temperature,
+  });
 
-  const results = parseResults(completion);
+  const completion = response.data.choices[0].text;
+  if (!completion) {
+    throw new Error(
+      `Invalid response from OpenAI: ${JSON.stringify(response.data)}`
+    );
+  }
+
+  const results = parseResults(
+    PROMPT_TEXT(title, question, numComments, completion)
+  );
+
   if (!results || results.length !== numComments) {
     throw new CantFindResponseError(completion);
   }
 
-  return new Promise((res) => {
-    setTimeout(() => res(results), 2000);
-  }); // TODO
-
-  //   return results;
+  return results;
 };
 
 export default autogenerateComments;
@@ -130,8 +133,7 @@ const checkTokenLength = (prompt: string) => {
     return memoisedTokenLengths[prompt];
   }
 
-  return (memoisedTokenLengths[prompt] = prompt.length); // TODO
-  //   return (memoisedTokenLengths[prompt] = tokeniser.tokenize(prompt).length);
+  return (memoisedTokenLengths[prompt] = tokeniser.encode(prompt).length);
 };
 
 export const parseResults = (fullResponse: string) => {

@@ -1,7 +1,3 @@
-import CommentsList from "@/app/components/polls/new/CommentsList";
-import prisma from "@/lib/prisma";
-import { notFound } from "next/navigation";
-import { useState } from "react";
 import NewPollPageClient from "./client";
 
 // Types

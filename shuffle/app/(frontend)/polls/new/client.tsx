@@ -7,6 +7,7 @@ import BorderedButton from "@/components/BorderedButton";
 import ControlledInput from "@/components/ui/ControlledInput";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { useMutation } from "react-query";
 
@@ -37,7 +38,15 @@ type Comment = string;
 // -----------------------------------------------------------------------------
 
 const NewPollPageClientView = ({
-  state: { title, setTitle, polisId, setPolisId, question, setQuestion },
+  state: {
+    title,
+    setTitle,
+    polisId,
+    setPolisId,
+    question,
+    setQuestion,
+    loading,
+  },
   callbacks: { onCommentsChange, onSubmit },
 }: NewPollPageClientViewProps) => (
   <div className="flex flex-col w-full">
@@ -98,7 +107,7 @@ const NewPollPageClientView = ({
 
     <div className="flex items-center justify-end w-full py-4 my-10 bg-gray-50 dark:bg-gray-950">
       <div>
-        <BorderedButton color="green" onClick={onSubmit}>
+        <BorderedButton color="green" onClick={onSubmit} disabled={loading}>
           <CheckIcon className="w-5" /> Save and Publish Poll
         </BorderedButton>
       </div>
@@ -110,6 +119,8 @@ const NewPollPageClientView = ({
 // -----------------------------------------------------------------------------
 
 const NewPollPageClient = ({}: NewPollPageClientProps) => {
+  const router = useRouter();
+
   // State
 
   const [title, setTitle] = useState("");
@@ -154,7 +165,9 @@ const NewPollPageClient = ({}: NewPollPageClientProps) => {
       question,
       comments,
     });
-  }, [newPollMutation, title, polisId, question, comments]);
+
+    router.push(`/polls/${polisId}`);
+  }, [newPollMutation, title, polisId, question, comments, router]);
 
   // Render
 
