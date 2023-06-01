@@ -36,7 +36,8 @@ const PollLayout = async ({
   return (
     <AdminStateProvider>
       <div className="flex flex-col">
-        <AdminPill poll={poll} />
+        {/* TODO */}
+        {/* <AdminPill poll={poll} /> */}
         <div className="flex flex-col">{children}</div>
       </div>
     </AdminStateProvider>

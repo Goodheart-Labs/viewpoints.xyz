@@ -24,7 +24,7 @@ const Index = async () => {
 
   return (
     <main className="flex flex-col items-center w-full h-screen gradient">
-      <h1 className="mt-20 mb-4 text-4xl font-bold text-black dark:text-gray-200">
+      <h1 className="mt-40 mb-4 text-4xl font-bold text-black dark:text-gray-200">
         Polls
       </h1>
       <h2 className="text-xl text-gray-800 dark:text-gray-500">

@@ -6,7 +6,7 @@ import "@/styles/frontend.css";
 import "react-tooltip/dist/react-tooltip.css";
 
 import Contexts from "../components/Contexts";
-import AuthHeader from "@/components/AuthHeader";
+import Header from "@/components/Header";
 import { ClerkProvider } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
     <html lang="en">
       <body>
         <Contexts>
-          <AuthHeader />
+          <Header />
           {children}
         </Contexts>
         <Tooltip id="tooltip" />
