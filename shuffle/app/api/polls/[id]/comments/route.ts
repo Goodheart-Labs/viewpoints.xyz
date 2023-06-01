@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { SESSION_ID_COOKIE_NAME } from "@/middleware";
-import { auth } from "@clerk/nextjs";
+import { auth, currentUser } from "@clerk/nextjs";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -39,6 +39,7 @@ export async function POST(
   }
 ) {
   const { userId } = auth();
+  const user = await currentUser();
 
   const poll = await prisma.polls.findUnique({
     where: {
@@ -61,8 +62,12 @@ export async function POST(
         body.session_id ??
         null,
       edited_from_id: body.edited_from_id ?? null,
-      author_name: body.author_name ?? null,
-      author_avatar_url: body.author_avatar_url ?? null,
+      author_name:
+        body.author_name ??
+        (user?.firstName ? `${user.firstName} ${user.lastName}` : null) ??
+        null,
+      author_avatar_url:
+        body.author_avatar_url ?? user?.profileImageUrl ?? null,
       comment: body.comment,
       created_at: new Date(),
     },

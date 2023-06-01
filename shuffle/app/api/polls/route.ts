@@ -1,14 +1,15 @@
 // TODO: validation
 
 import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs";
+import { auth, currentUser } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 
 // POST /api/polls
 // -----------------------------------------------------------------------------
 
 export async function POST(request: NextRequest) {
-  const { userId, user } = auth();
+  const { userId } = auth();
+  const user = await currentUser();
   const { title, slug, question, comments } = await request.json();
 
   const poll = await prisma.$transaction(async (tx) => {
@@ -22,7 +23,9 @@ export async function POST(request: NextRequest) {
     });
 
     if (Array.isArray(comments) && comments.length) {
-      const author_name = `${user?.firstName} ${user?.lastName}`.trim() || null;
+      const author_name = user?.firstName
+        ? `${user?.firstName} ${user?.lastName}`.trim()
+        : null;
       const author_avatar_url = user?.profileImageUrl || null;
 
       await Promise.all(
