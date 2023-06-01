@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "node -T",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -27,6 +28,7 @@
     "dayjs": "^1.11.7",
     "eslint": "8.39.0",
     "framer-motion": "^10.12.4",
+    "lodash": "^4.17.21",
     "next": "^13.4.4",
     "postcss": "8.4.23",
     "react": "^18.2.0",
@@ -43,6 +45,7 @@
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.24.0",
+    "@types/lodash": "^4.14.191",
     "@types/uuid": "^9.0.1",
     "eslint-config-next": "^13.4.4",
     "prisma": "^4.14.1"

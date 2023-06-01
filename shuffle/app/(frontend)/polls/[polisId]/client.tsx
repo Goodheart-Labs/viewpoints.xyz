@@ -325,6 +325,7 @@ const Poll = ({
           {poll.core_question}
         </h2>
       </div>
+
       <div className="grid grid-cols-1 gap-20 justify-items-center items-end max-width-[800px]">
         <div className="z-30" onClickCapture={onShareClickCapture}>
           <TwitterShare url={twitterShareUrl} title={twitterShareTitle} />

@@ -2,7 +2,26 @@ import { authMiddleware } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 
+// Config
+// -----------------------------------------------------------------------------
+
+const publicRoutes = [
+  "/",
+  "/polls/(.*)",
+  "/polls/(.*)/analytics",
+  "/polls/(.*)/graphs",
+];
+
+const privateRoutes = ["/polls/new"];
+
 export const SESSION_ID_COOKIE_NAME = "sessionId";
+
+export const config = {
+  matcher: ["/((?!.*\\..*|_next|iframe).*)", "/'"],
+};
+
+// Auth middleware
+// -----------------------------------------------------------------------------
 
 export default authMiddleware({
   beforeAuth: async (req) => {
@@ -24,9 +43,5 @@ export default authMiddleware({
     return NextResponse.next();
   },
 
-  publicRoutes: () => true,
+  publicRoutes,
 });
-
-export const config = {
-  matcher: ["/((?!.*\\..*|_next|iframe).*)", "/'"],
-};
