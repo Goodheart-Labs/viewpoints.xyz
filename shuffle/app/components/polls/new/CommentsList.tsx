@@ -3,7 +3,7 @@
 import ControlledInput from "@/components/ui/ControlledInput";
 import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { v4 } from "uuid";
 import { pullAllBy, set, values } from "lodash/fp";
 import axios from "axios";
@@ -285,7 +285,10 @@ const CommentsList = ({
 
   // Effects
 
+  const commentsRef = useRef<Comment[]>(defaultComments);
   useEffect(() => {
+    if (commentsRef.current === comments) return;
+    commentsRef.current = comments;
     onCommentsChange(comments.map(({ comment }) => comment));
   }, [comments, onCommentsChange]);
 
