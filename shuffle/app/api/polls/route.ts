@@ -8,10 +8,8 @@ import { NextRequest, NextResponse } from "next/server";
 // -----------------------------------------------------------------------------
 
 export async function POST(request: NextRequest) {
-  const { userId } = auth();
+  const { userId, user } = auth();
   const { title, slug, question, comments } = await request.json();
-
-  console.log(comments);
 
   const poll = await prisma.$transaction(async (tx) => {
     const poll = await tx.polls.create({
@@ -24,6 +22,9 @@ export async function POST(request: NextRequest) {
     });
 
     if (Array.isArray(comments) && comments.length) {
+      const author_name = `${user?.firstName} ${user?.lastName}`.trim() || null;
+      const author_avatar_url = user?.profileImageUrl || null;
+
       await Promise.all(
         comments.map((comment: string) =>
           tx.comments.create({
@@ -32,6 +33,8 @@ export async function POST(request: NextRequest) {
               user_id: userId,
               reporting_type: "default",
               comment,
+              author_name,
+              author_avatar_url,
             },
           })
         )
