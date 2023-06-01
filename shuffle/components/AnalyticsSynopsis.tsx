@@ -5,10 +5,7 @@ import {
 import { Comment, Response } from "@/lib/api";
 import ValenceBadge from "./ValenceBadge";
 import { useMemo } from "react";
-import {
-  valenceToHumanReadablePastTense,
-  valenceToHumanReadablePresentTense,
-} from "@/utils/valenceutils";
+import { valenceToHumanReadablePresentTense } from "@/utils/valenceutils";
 import { MinimalResponse } from "./Cards";
 
 // Types

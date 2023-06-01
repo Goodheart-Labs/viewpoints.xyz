@@ -60,7 +60,7 @@ const Cards = ({
 
   // State
 
-  const [cards, setCards] = useOverridableState<Comment[]>(comments);
+  const [cards, setCards] = useOverridableState<Comment[]>(filteredComments);
 
   // Mutations
 
@@ -161,16 +161,14 @@ const Cards = ({
         </AnimatePresence>
       ) : (
         <div className="relative flex flex-col w-full sm:min-h-[200px] min-w-[400px]">
-          {filteredComments.map((card) => (
+          {cards.map((card) => (
             <AnimatePresence key={card.id}>
               <Card
                 card={card}
                 onSwipe={onSwipe}
                 onCommentEdited={onCommentEdited}
                 onCommentFlagged={onCommentFlagged}
-                isActive={
-                  card.id === filteredComments[filteredComments.length - 1].id
-                }
+                isActive={card.id === cards[cards.length - 1].id}
               />
             </AnimatePresence>
           ))}

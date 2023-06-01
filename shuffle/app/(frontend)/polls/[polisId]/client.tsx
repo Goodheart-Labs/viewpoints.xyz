@@ -271,7 +271,8 @@ const Poll = ({
         const commentHasBeenFlaggedByCurrentUser = flaggedComments?.some(
           (flaggedComment) =>
             flaggedComment.comment_id === comment.id &&
-            flaggedComment.session_id === getCookie(SESSION_ID_COOKIE_NAME)
+            (flaggedComment.session_id === getCookie(SESSION_ID_COOKIE_NAME) ||
+              (user?.id && flaggedComment.user_id === user.id))
         );
 
         const commentExceedsFlagThreshold =
@@ -295,6 +296,7 @@ const Poll = ({
       flagCountByCommentId,
       flaggedComments,
       skipCountByCommentId,
+      user?.id,
     ]
   );
 
