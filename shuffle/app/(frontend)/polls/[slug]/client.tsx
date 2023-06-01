@@ -92,7 +92,7 @@ const Poll = ({
     }
   );
 
-  const { data: allResponses, isLoading: allResponsesLoading } = useQuery<
+  const { data: allResponses, refetch: refetchAllResponses } = useQuery<
     Response[]
   >(["responses", commentIds.join(",")], async () => {
     const { data } = await axios.get(`/api/polls/${poll.id}/responses?all`);
@@ -190,9 +190,13 @@ const Poll = ({
     });
   }, [amplitude, poll.id]);
 
-  const onResponseCreated = useCallback((response: MinimalResponse) => {
-    setCachedResponses((cachedResponses) => [...cachedResponses, response]);
-  }, []);
+  const onResponseCreated = useCallback(
+    async (response: MinimalResponse) => {
+      setCachedResponses((cachedResponses) => [...cachedResponses, response]);
+      await refetchAllResponses();
+    },
+    [refetchAllResponses]
+  );
 
   const { setModal } = useModal();
 
