@@ -33,7 +33,7 @@ const Index = async () => {
 
       <ul className="flex flex-col items-center justify-center w-full mt-20">
         {polls.map((poll, i) => (
-          <Link href={`/polls/${poll.polis_id}`} key={poll.id.toString()}>
+          <Link href={`/polls/${poll.slug}`} key={poll.id.toString()}>
             <li className="w-full px-5 py-3 mb-4 text-black border border-gray-400 rounded-lg dark:border-gray-800 hover:bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 hover:text-white dark:text-white">
               <h2 className="w-full text-2xl font-semibold">
                 <span className="min-w-[40px] inline-block">{i + 1}.</span>{" "}

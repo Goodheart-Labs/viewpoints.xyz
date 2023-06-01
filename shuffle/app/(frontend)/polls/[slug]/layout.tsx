@@ -6,15 +6,15 @@ import AdminStateProvider from "@/providers/AdminStateProvider";
 // -----------------------------------------------------------------------------
 
 type Params = {
-  polisId: string;
+  slug: string;
 };
 
 // Data
 // -----------------------------------------------------------------------------
 
-async function getData({ polisId }: Params) {
+async function getData({ slug }: Params) {
   const poll = await prisma.polls.findUnique({
-    where: { polis_id: polisId },
+    where: { slug },
   });
 
   return {

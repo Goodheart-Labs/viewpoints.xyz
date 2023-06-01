@@ -5,14 +5,10 @@ import AnalyticsClient from "./client";
 // Data
 // -----------------------------------------------------------------------------
 
-async function getData({
-  params: { polisId },
-}: {
-  params: { polisId: string };
-}) {
+async function getData({ params: { slug } }: { params: { slug: string } }) {
   const poll = await prisma.polls.findUniqueOrThrow({
     where: {
-      polis_id: polisId,
+      slug,
     },
   });
 
@@ -41,10 +37,10 @@ async function getData({
 // Default export
 // -----------------------------------------------------------------------------
 
-const AnalyticsPage = async ({ params }: { params: { polisId: string } }) => {
+const AnalyticsPage = async ({ params }: { params: { slug: string } }) => {
   const { poll, comments, responses } = await getData({ params });
 
-  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/polls/${poll.polis_id}`;
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/polls/${poll.slug}`;
 
   const twitterShareUrl = `${url}?utm_source=twitter&utm_medium=social&utm_campaign=share&utm_content=${poll.id}`;
 

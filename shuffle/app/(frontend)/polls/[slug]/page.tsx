@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 // -----------------------------------------------------------------------------
 
 type PollPageProps = {
-  params: { id: string };
+  params: { slug: string };
 };
 
 // Data
@@ -15,7 +15,7 @@ type PollPageProps = {
 async function getData({ params }: PollPageProps) {
   const poll = await prisma.polls.findFirst({
     where: {
-      polis_id: params.id,
+      slug: params.slug,
     },
   });
   if (!poll) {
@@ -40,7 +40,7 @@ async function getData({ params }: PollPageProps) {
 const PollPage = async ({ params }: PollPageProps) => {
   const { poll, comments } = await getData({ params });
 
-  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/polls/${poll.polis_id}`;
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/polls/${poll.slug}`;
 
   return <Poll poll={poll} comments={comments} url={url} />;
 };

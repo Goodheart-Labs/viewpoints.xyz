@@ -31,7 +31,7 @@ type Comment = string;
 
 type FormData = {
   title: string;
-  polisId: string;
+  slug: string;
   question: string;
   comments: Comment[];
 };
@@ -77,9 +77,9 @@ const NewPollPageClientView = ({
       </div>
 
       <div className="flex flex-col w-full mt-10">
-        <h3 className="mb-2 text-xl font-semibold">Polis ID</h3>
+        <h3 className="mb-2 text-xl font-semibold">Slug</h3>
         <h4 className="mb-4 text-lg text-gray-700 dark:text-gray-200">
-          What is the Polis ID for the corresponding poll?
+          This will be in the URL for your poll.
         </h4>
 
         <div className="flex flex-col">
@@ -87,13 +87,13 @@ const NewPollPageClientView = ({
             type="text"
             className={clsx(
               "w-full text-lg",
-              errors?.polisId ? "border-red-500" : ""
+              errors?.slug ? "border-red-500" : ""
             )}
-            {...register("polisId", { required: "This field is required" })}
+            {...register("slug", { required: "This field is required" })}
           />
-          {errors?.polisId ? (
+          {errors?.slug ? (
             <span className="mt-1 text-sm text-red-500">
-              {errors.polisId.message}
+              {errors.slug.message}
             </span>
           ) : null}
         </div>
@@ -176,18 +176,18 @@ const NewPollPageClient = ({}: NewPollPageClientProps) => {
   const newPollMutation = useMutation(
     async ({
       title,
-      polisId,
+      slug,
       question,
       comments,
     }: {
       title: string;
-      polisId: string;
+      slug: string;
       question: string;
       comments: Comment[];
     }) => {
       await axios.post(`/api/polls`, {
         title,
-        polisId,
+        slug,
         question,
         comments,
       });
@@ -197,15 +197,15 @@ const NewPollPageClient = ({}: NewPollPageClientProps) => {
   // Callbacks
 
   const onSubmit = useCallback(
-    async ({ title, polisId, question, comments }: FormData) => {
+    async ({ title, slug, question, comments }: FormData) => {
       await newPollMutation.mutateAsync({
         title,
-        polisId,
+        slug,
         question,
         comments: comments.filter((c) => c.trim() !== ""),
       });
 
-      router.push(`/polls/${polisId}`);
+      router.push(`/polls/${slug}`);
     },
     [newPollMutation, router]
   );

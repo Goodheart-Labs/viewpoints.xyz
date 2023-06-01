@@ -6,7 +6,7 @@ import PollIframeClient from "./client";
 // -----------------------------------------------------------------------------
 
 type PollIframeProps = {
-  params: { id: string };
+  params: { slug: string };
 };
 
 // Data
@@ -15,7 +15,7 @@ type PollIframeProps = {
 async function getData({ params }: PollIframeProps) {
   const poll = await prisma.polls.findFirst({
     where: {
-      polis_id: params.id,
+      slug: params.slug,
     },
   });
 

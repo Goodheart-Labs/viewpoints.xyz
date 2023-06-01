@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   const { userId } = auth();
-  const { title, polisId, question, comments } = await request.json();
+  const { title, slug, question, comments } = await request.json();
 
   console.log(comments);
 
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       data: {
         user_id: userId,
         title,
-        polis_id: polisId,
+        slug,
         core_question: question,
       },
     });
