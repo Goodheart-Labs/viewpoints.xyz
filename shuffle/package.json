@@ -51,6 +51,7 @@
     "@types/lodash": "^4.14.191",
     "@types/uuid": "^9.0.1",
     "eslint-config-next": "^13.4.4",
+    "pg": "^8.11.0",
     "prisma": "^4.14.1"
   }
 }
