@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import BorderedButton from "./BorderedButton";
 import { UserButton, useUser } from "@clerk/nextjs";
@@ -9,23 +9,43 @@ import { motion } from "framer-motion";
 import { SignIn } from "@clerk/clerk-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useCurrentPoll } from "@/providers/CurrentPollProvider";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
-  const { isSignedIn } = useUser();
+  // State
+
+  const router = useRouter();
+  const { isSignedIn, user } = useUser();
   const [showSignIn, setShowSignIn] = useState(false);
+
+  const { currentPoll } = useCurrentPoll();
+
+  const isCurrentPollAdmin = useMemo(
+    () => currentPoll && currentPoll.user_id === user?.id,
+    [currentPoll, user?.id]
+  );
+
+  // Callbacks
 
   const onClickLogin = useCallback(() => {
     setShowSignIn(true);
   }, []);
+
+  const onClickPollAdmin = useCallback(() => {
+    router.push(`/polls/${currentPoll?.slug}/admin`);
+  }, [currentPoll?.slug, router]);
 
   useHotkeys(["l", "shift+l"], () => {
     if (isSignedIn) return;
     onClickLogin();
   });
 
+  // Render
+
   return (
-    <div className="fixed right-0 flex items-center justify-end w-full p-4 bg-black bg-opacity-5">
-      <div className="mr-auto">
+    <div className="flex items-center justify-end w-full p-4">
+      <div className={clsx(!(isSignedIn && isCurrentPollAdmin) && "mr-auto")}>
         <Link href="/" className="hover:opacity-50">
           <Image
             src={"/logo.png"}
@@ -35,6 +55,14 @@ const Header = () => {
           />
         </Link>
       </div>
+
+      {isSignedIn && isCurrentPollAdmin ? (
+        <div className="mx-auto">
+          <BorderedButton color="yellow" onClick={onClickPollAdmin}>
+            Poll Admin
+          </BorderedButton>
+        </div>
+      ) : null}
 
       {isSignedIn ? (
         <Link href="/polls/new">
