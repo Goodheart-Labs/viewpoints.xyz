@@ -21,7 +21,8 @@ import FlagComment from "./FlagComment";
 // Config
 // -----------------------------------------------------------------------------
 
-const SWIPE_THRESHOLD = 150;
+const X_SWIPE_THRESHOLD = 150;
+const Y_SWIPE_THRESHOLD = 150;
 const ANIMATION_DURATION = 0.2;
 
 // Types
@@ -165,8 +166,7 @@ const CardView = ({
               color="yellow"
               disabled={!isActive}
             >
-              <span className="hidden sm:inline">[</span>S
-              <span className="hidden sm:inline">]</span>kip
+              <span className="hidden sm:inline">&uarr;</span>Skip
             </BorderedButton>
           </div>
           <div>
@@ -175,7 +175,8 @@ const CardView = ({
               color="orange"
               disabled={!isActive}
             >
-              <span className="hidden sm:inline">?</span> It&apos;s complicated
+              <span className="hidden sm:inline">&darr;</span> It&apos;s
+              complicated
             </BorderedButton>
           </div>
           <div>
@@ -240,13 +241,24 @@ const Card = ({
     (_e: any, info: PanInfo) => {
       amplitude.track(TrackingEvent.Drag);
 
-      if (info.offset.x > SWIPE_THRESHOLD) {
+      if (info.offset.x > X_SWIPE_THRESHOLD) {
         setLeaveX(1000);
         setTimeout(() => onSwipe(card, "agree"), ANIMATION_DURATION * 1000);
       }
-      if (info.offset.x < -SWIPE_THRESHOLD) {
+      if (info.offset.x < -X_SWIPE_THRESHOLD) {
         setLeaveX(-1000);
         setTimeout(() => onSwipe(card, "disagree"), ANIMATION_DURATION * 1000);
+      }
+      if (info.offset.y < -Y_SWIPE_THRESHOLD) {
+        setLeaveY(-1000);
+        setTimeout(() => onSwipe(card, "skip"), ANIMATION_DURATION * 1000);
+      }
+      if (info.offset.y > Y_SWIPE_THRESHOLD) {
+        setLeaveY(1000);
+        setTimeout(
+          () => onSwipe(card, "itsComplicated"),
+          ANIMATION_DURATION * 1000
+        );
       }
     },
     [amplitude, card, onSwipe]
@@ -446,8 +458,8 @@ const Card = ({
 
   useHotkeys(Key.ArrowLeft, () => onDisagree("keyboard"));
   useHotkeys(Key.ArrowRight, () => onAgree("keyboard"));
-  useHotkeys(["s", "shift+s"], () => onSkip("keyboard"));
-  useHotkeys("shift+?", () => onItsComplicated("keyboard"));
+  useHotkeys(Key.ArrowUp, () => onSkip("keyboard"));
+  useHotkeys(Key.ArrowDown, () => onItsComplicated("keyboard"));
   useHotkeys(["e", "shift+e"], () => onEdit("keyboard"));
   useHotkeys(["f", "shift+f"], () => onFlag("keyboard"));
 
