@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { polls_visibility_enum } from "@prisma/client";
 import Link from "next/link";
 
 // Data
@@ -8,6 +9,9 @@ async function getData() {
   const polls = await prisma.polls.findMany({
     orderBy: {
       id: "asc",
+    },
+    where: {
+      visibility: polls_visibility_enum.public,
     },
   });
 

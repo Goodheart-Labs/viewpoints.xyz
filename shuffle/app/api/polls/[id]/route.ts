@@ -33,7 +33,7 @@ export async function GET(
     });
   }
 
-  if (!poll) {
+  if (!userId || !poll || poll.user_id !== userId) {
     notFound();
   }
 
@@ -57,22 +57,45 @@ export async function PATCH(
     where: { id: parseInt(id) },
   });
 
-  if (!userId || !poll) {
+  if (!userId || !poll || poll.user_id !== userId) {
     notFound();
   }
 
-  const { analytics_filters } = await request.json();
+  const data = await request.json();
 
-  if (!analytics_filters) {
+  if (
+    ["analytics_filters", "visibility"].every(
+      (value) => value in data === false
+    )
+  ) {
     return NextResponse.json(poll);
   }
 
-  const updatedPoll = await prisma.polls.update({
-    where: { id: parseInt(id) },
-    data: {
-      analytics_filters,
-    },
-  });
+  let updatedPoll: Poll = poll;
+
+  if ("visibility" in data) {
+    const { visibility } = data;
+
+    updatedPoll = await prisma.polls.update({
+      where: { id: parseInt(id) },
+      data: {
+        visibility,
+      },
+    });
+
+    return NextResponse.json(updatedPoll);
+  }
+
+  if ("analytics_filters" in data) {
+    const { analytics_filters } = data;
+
+    updatedPoll = await prisma.polls.update({
+      where: { id: parseInt(id) },
+      data: {
+        analytics_filters,
+      },
+    });
+  }
 
   return NextResponse.json(updatedPoll);
 }

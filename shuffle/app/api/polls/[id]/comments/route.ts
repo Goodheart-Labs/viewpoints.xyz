@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { SESSION_ID_COOKIE_NAME } from "@/middleware";
 import { auth, currentUser } from "@clerk/nextjs";
+import { polls_visibility_enum } from "@prisma/client";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -47,8 +48,13 @@ export async function POST(
     },
   });
 
-  if (!poll) {
-    notFound();
+  if (
+    !userId ||
+    !poll ||
+    (poll.visibility === polls_visibility_enum.private &&
+      poll.user_id !== userId)
+  ) {
+    return notFound();
   }
 
   const body = await request.json();

@@ -1,6 +1,8 @@
 import prisma from "@/lib/prisma";
 import Poll from "./client";
 import { notFound } from "next/navigation";
+import { auth } from "@clerk/nextjs";
+import { polls_visibility_enum } from "@prisma/client";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -13,12 +15,19 @@ type PollPageProps = {
 // -----------------------------------------------------------------------------
 
 async function getData({ params }: PollPageProps) {
+  const { userId } = auth();
+
   const poll = await prisma.polls.findFirst({
     where: {
       slug: params.slug,
     },
   });
-  if (!poll) {
+
+  if (
+    !poll ||
+    (poll.visibility === polls_visibility_enum.private &&
+      poll.user_id !== userId)
+  ) {
     notFound();
   }
 

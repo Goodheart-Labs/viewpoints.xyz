@@ -1,20 +1,24 @@
+import UpdatePollVisibility from "@/app/components/polls/admin/UpdatePollVisibility";
 import ValenceBadge from "@/components/ValenceBadge";
+import SelectMenuWithDetails from "@/components/ui/SelectMenuWithDetails";
 import { Comment, Poll, Response, Valence } from "@/lib/api";
 import prisma from "@/lib/prisma";
+import { auth } from "@clerk/nextjs";
 import { UserIcon } from "@heroicons/react/20/solid";
-import clsx from "clsx";
+import { polls_visibility_enum } from "@prisma/client";
 import { notFound } from "next/navigation";
+import { useCallback } from "react";
 
 // Types
 // -----------------------------------------------------------------------------
 
-type NewPollPageProps = {
+type PollAdminPageProps = {
   params: {
     slug: string;
   };
 };
 
-type NewPollPageViewProps = {
+type PollAdminPageViewProps = {
   data: {
     poll: Poll;
     commentsById: Record<string, Comment>;
@@ -25,7 +29,7 @@ type NewPollPageViewProps = {
 // Data
 // -----------------------------------------------------------------------------
 
-async function getData({ params }: NewPollPageProps) {
+async function getData({ params }: PollAdminPageProps) {
   // Pull
 
   const poll = await prisma.polls.findUnique({
@@ -36,6 +40,15 @@ async function getData({ params }: NewPollPageProps) {
   if (!poll) {
     notFound();
   }
+
+  // Auth
+
+  const { userId } = auth();
+  if (poll.user_id !== userId) {
+    notFound();
+  }
+
+  // More pull
 
   const comments = await prisma.comments.findMany({
     where: {
@@ -76,9 +89,9 @@ async function getData({ params }: NewPollPageProps) {
 // View
 // -----------------------------------------------------------------------------
 
-const NewPollPageView = ({
+const PollAdminPageView = ({
   data: { poll, commentsById, responsesBySession },
-}: NewPollPageViewProps) => (
+}: PollAdminPageViewProps) => (
   <main className="flex flex-col items-center w-full max-w-5xl min-h-screen px-4 mx-auto gradient sm:px-0">
     <div className="flex flex-col mt-10 sm:mt-40 mb-10 text-center max-w-[800px]">
       <h1 className="mb-4 text-4xl font-bold text-black dark:text-gray-200">
@@ -86,7 +99,17 @@ const NewPollPageView = ({
       </h1>
     </div>
 
-    <div className="flex flex-col mt-10">
+    <div className="flex flex-col w-full mt-10">
+      <h2 className="text-2xl font-bold text-black dark:text-gray-200">
+        Poll Settings
+      </h2>
+
+      <div className="flex flex-col w-full mt-4">
+        <UpdatePollVisibility poll={poll} />
+      </div>
+    </div>
+
+    <div className="flex flex-col w-full mt-10">
       <h2 className="text-2xl font-bold text-black dark:text-gray-200">
         All Responses
       </h2>
@@ -118,10 +141,16 @@ const NewPollPageView = ({
 // Default export
 // -----------------------------------------------------------------------------
 
-const NewPollPage = async ({ params }: NewPollPageProps) => {
+const PollAdminPage = async ({ params }: PollAdminPageProps) => {
+  // Data
+
   const { poll, commentsById, responsesBySession } = await getData({ params });
 
-  return <NewPollPageView data={{ poll, commentsById, responsesBySession }} />;
+  // Render
+
+  return (
+    <PollAdminPageView data={{ poll, commentsById, responsesBySession }} />
+  );
 };
 
-export default NewPollPage;
+export default PollAdminPage;
