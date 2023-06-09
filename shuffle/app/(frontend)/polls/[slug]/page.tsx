@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import Poll from "./client";
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs";
-import { polls_visibility_enum } from "@prisma/client";
+import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -23,11 +23,7 @@ async function getData({ params }: PollPageProps) {
     },
   });
 
-  if (
-    !poll ||
-    (poll.visibility === polls_visibility_enum.private &&
-      poll.user_id !== userId)
-  ) {
+  if (!requirePollAdminIfPollIsPrivate(poll, userId)) {
     notFound();
   }
 

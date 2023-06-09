@@ -53,6 +53,7 @@ const CurrentPollProvider = ({ children }: PropsWithChildren<{}>) => {
   // Fetch
 
   const currentPollQuery = useQuery(["polls", currentPollSlug], async () => {
+    if (!currentPollSlug) return undefined;
     const { data } = await axios.get(`/api/polls/${currentPollSlug}`);
     return data as Poll;
   });

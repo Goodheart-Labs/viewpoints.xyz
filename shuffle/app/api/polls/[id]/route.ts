@@ -1,5 +1,6 @@
 import { Poll } from "@/lib/api";
 import prisma from "@/lib/prisma";
+import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
 import { auth } from "@clerk/nextjs";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
@@ -33,9 +34,7 @@ export async function GET(
     });
   }
 
-  if (!userId || !poll || poll.user_id !== userId) {
-    notFound();
-  }
+  requirePollAdminIfPollIsPrivate(poll, userId);
 
   return NextResponse.json(poll);
 }
@@ -57,9 +56,7 @@ export async function PATCH(
     where: { id: parseInt(id) },
   });
 
-  if (!userId || !poll || poll.user_id !== userId) {
-    notFound();
-  }
+  requirePollAdminIfPollIsPrivate(poll, userId);
 
   const data = await request.json();
 
@@ -71,7 +68,7 @@ export async function PATCH(
     return NextResponse.json(poll);
   }
 
-  let updatedPoll: Poll = poll;
+  let updatedPoll: Poll = poll as Poll;
 
   if ("visibility" in data) {
     const { visibility } = data;

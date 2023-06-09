@@ -3,6 +3,10 @@ import ValenceBadge from "@/components/ValenceBadge";
 import SelectMenuWithDetails from "@/components/ui/SelectMenuWithDetails";
 import { Comment, Poll, Response, Valence } from "@/lib/api";
 import prisma from "@/lib/prisma";
+import {
+  requirePollAdmin,
+  requirePollAdminIfPollIsPrivate,
+} from "@/utils/authutils";
 import { auth } from "@clerk/nextjs";
 import { UserIcon } from "@heroicons/react/20/solid";
 import { polls_visibility_enum } from "@prisma/client";
@@ -44,9 +48,7 @@ async function getData({ params }: PollAdminPageProps) {
   // Auth
 
   const { userId } = auth();
-  if (poll.user_id !== userId) {
-    notFound();
-  }
+  requirePollAdmin(poll, userId);
 
   // More pull
 

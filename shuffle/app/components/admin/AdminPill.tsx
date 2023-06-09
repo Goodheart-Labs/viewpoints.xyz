@@ -3,6 +3,7 @@
 import BorderedButton from "@/components/BorderedButton";
 import { Poll } from "@/lib/api";
 import { useAdminState } from "@/providers/AdminStateProvider";
+import { isPollAdmin } from "@/utils/authutils";
 import { useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 
@@ -48,7 +49,7 @@ const AdminPill = ({ poll }: { poll: Poll | null }) => {
   const setEditingAnalytics = (editingAnalytics: boolean) =>
     setAdminState((state) => ({ ...state, editingAnalytics }));
 
-  if (!userId || !poll || poll.user_id !== userId) {
+  if (!isPollAdmin(poll, userId)) {
     return null;
   }
 

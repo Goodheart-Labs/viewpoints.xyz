@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
 import { auth } from "@clerk/nextjs";
 import { polls_visibility_enum } from "@prisma/client";
 import { notFound } from "next/navigation";
@@ -29,14 +30,7 @@ export async function GET(
     where: { id: parseInt(id) },
   });
 
-  if (
-    !userId ||
-    !poll ||
-    (poll.visibility === polls_visibility_enum.private &&
-      poll.user_id !== userId)
-  ) {
-    return notFound();
-  }
+  requirePollAdminIfPollIsPrivate(poll, userId);
 
   return NextResponse.json(flaggedComments);
 }
