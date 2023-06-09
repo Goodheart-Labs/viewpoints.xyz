@@ -6,10 +6,7 @@ import Responses from "@/components/Responses";
 import TwitterShare from "@/components/TwitterShare";
 import { Comment, FlaggedComment, Poll, Response } from "@/lib/api";
 import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
-import {
-  SESSION_ID_COOKIE_NAME,
-  useSession,
-} from "@/providers/SessionProvider";
+import { SESSION_ID_COOKIE_NAME } from "@/providers/SessionProvider";
 import { useUser } from "@clerk/nextjs";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import { AnimatePresence } from "framer-motion";
@@ -19,6 +16,7 @@ import { useMutation, useQuery } from "react-query";
 import { getCookie } from "typescript-cookie";
 import { useModal } from "@/providers/ModalProvider";
 import axios from "axios";
+import { ensureItLooksLikeAQuestion } from "@/utils/stringutils";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -326,7 +324,8 @@ const Poll = ({
           {poll.title}
         </h1>
         <h2 className="text-gray-800 sm:text-xl dark:text-gray-500">
-          {poll.core_question}
+          {ensureItLooksLikeAQuestion(poll.core_question)}{" "}
+          {user?.id ? `Answer as ${user?.firstName}` : "Answer anonymously."}
         </h2>
       </div>
 
