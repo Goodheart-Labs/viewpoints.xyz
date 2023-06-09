@@ -4,11 +4,12 @@
 
 import CommentsList from "@/app/components/polls/new/CommentsList";
 import BorderedButton from "@/components/BorderedButton";
+import { slugify } from "@/utils/stringutils";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation } from "react-query";
 
@@ -24,6 +25,7 @@ type NewPollPageClientViewProps = {
   form: ReturnType<typeof useForm<FormData>>;
   callbacks: {
     onSubmit: (data: FormData) => void;
+    onBlurTitle: () => void;
   };
 };
 
@@ -48,7 +50,7 @@ const NewPollPageClientView = ({
     control,
     formState: { errors, isValid },
   },
-  callbacks: { onSubmit },
+  callbacks: { onSubmit, onBlurTitle },
 }: NewPollPageClientViewProps) => (
   <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-full px-4">
     <div className="flex flex-col w-full">
@@ -67,6 +69,7 @@ const NewPollPageClientView = ({
             )}
             autoFocus
             {...register("title", { required: "This field is required" })}
+            onBlur={onBlurTitle}
           />
           {errors?.title ? (
             <span className="mt-1 text-sm text-red-500">
@@ -173,6 +176,7 @@ const NewPollPageClient = ({}: NewPollPageClientProps) => {
   });
 
   // Mutations
+
   const newPollMutation = useMutation(
     async ({
       title,
@@ -210,6 +214,14 @@ const NewPollPageClient = ({}: NewPollPageClientProps) => {
     [newPollMutation, router]
   );
 
+  // Update slug when title changes, if slug is empty
+
+  const onBlurTitle = useCallback(() => {
+    if (form.formState.dirtyFields.title && !form.getValues("slug")) {
+      form.setValue("slug", slugify(form.getValues("title")));
+    }
+  }, [form]);
+
   // Render
 
   return (
@@ -218,7 +230,7 @@ const NewPollPageClient = ({}: NewPollPageClientProps) => {
         loading: newPollMutation.isLoading,
       }}
       form={form}
-      callbacks={{ onSubmit }}
+      callbacks={{ onSubmit, onBlurTitle }}
     />
   );
 };
