@@ -15,6 +15,7 @@
     "@clerk/nextjs": "^4.19.0",
     "@headlessui/react": "^1.7.14",
     "@heroicons/react": "^2.0.17",
+    "@hookform/resolvers": "^3.1.1",
     "@prisma/client": "^4.14.1",
     "@reecelucas/react-use-hotkeys": "^2.0.0",
     "@tailwindcss/forms": "^0.5.3",
@@ -44,7 +45,8 @@
     "ts-key-enum": "^2.0.12",
     "typescript": "5.0.4",
     "typescript-cookie": "^1.0.6",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "yup": "^1.2.0"
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.24.0",

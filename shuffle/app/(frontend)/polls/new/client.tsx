@@ -1,5 +1,3 @@
-// TODO: validation
-
 "use client";
 
 import CommentsList from "@/app/components/polls/new/CommentsList";
@@ -9,8 +7,10 @@ import { CheckIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { useMutation } from "react-query";
 
 // Types
@@ -37,6 +37,22 @@ type FormData = {
   question: string;
   comments: Comment[];
 };
+
+// Validation
+// -----------------------------------------------------------------------------
+
+const schema = yup
+  .object()
+  .shape({
+    title: yup.string().required(),
+    slug: yup
+      .string()
+      .required()
+      .matches(/^[a-z0-9-]+$/),
+    question: yup.string().required(),
+    comments: yup.array().of(yup.string().required()).min(5),
+  })
+  .required();
 
 // View
 // -----------------------------------------------------------------------------
@@ -68,8 +84,9 @@ const NewPollPageClientView = ({
               errors?.title ? "border-red-500" : ""
             )}
             autoFocus
-            {...register("title", { required: "This field is required" })}
-            onBlur={onBlurTitle}
+            {...register("title", {
+              onBlur: onBlurTitle,
+            })}
           />
           {errors?.title ? (
             <span className="mt-1 text-sm text-red-500">
@@ -92,7 +109,7 @@ const NewPollPageClientView = ({
               "w-full text-lg",
               errors?.slug ? "border-red-500" : ""
             )}
-            {...register("slug", { required: "This field is required" })}
+            {...register("slug")}
           />
           {errors?.slug ? (
             <span className="mt-1 text-sm text-red-500">
@@ -115,7 +132,7 @@ const NewPollPageClientView = ({
               "w-full text-lg",
               errors?.question ? "border-red-500" : ""
             )}
-            {...register("question", { required: "This field is required" })}
+            {...register("question")}
           />
           {errors?.question ? (
             <span className="mt-1 text-sm text-red-500">
@@ -128,7 +145,8 @@ const NewPollPageClientView = ({
       <div className="flex flex-col w-full mt-10">
         <h3 className="mb-2 text-xl font-semibold">Comments</h3>
         <h4 className="mb-4 text-lg text-gray-700 dark:text-gray-200">
-          Add 10-20 comments that people can respond to.
+          Add at least five comments that people can respond to. The more the
+          better!
         </h4>
 
         <Controller
@@ -137,8 +155,12 @@ const NewPollPageClientView = ({
           render={({ field }) => (
             <CommentsList
               data={{ title: watch("title"), question: watch("question") }}
+              state={{ errors }}
               callbacks={{
                 onCommentsChange: (comments) => {
+                  field.onChange(comments);
+                },
+                onCommentsBlur: (comments) => {
                   field.onChange(comments);
                 },
               }}
@@ -174,6 +196,7 @@ const NewPollPageClient = ({}: NewPollPageClientProps) => {
 
   const form = useForm<FormData>({
     mode: "onTouched",
+    resolver: yupResolver(schema),
   });
 
   // Mutations
@@ -219,7 +242,7 @@ const NewPollPageClient = ({}: NewPollPageClientProps) => {
 
   const onBlurTitle = useCallback(() => {
     if (form.formState.dirtyFields.title && !form.getValues("slug")) {
-      form.setValue("slug", slugify(form.getValues("title")));
+      form.setValue("slug", slugify(form.getValues("title").toLowerCase()));
     }
   }, [form]);
 
