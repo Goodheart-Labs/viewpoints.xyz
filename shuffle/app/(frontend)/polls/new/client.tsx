@@ -52,7 +52,7 @@ const NewPollPageClientView = ({
   },
   callbacks: { onSubmit, onBlurTitle },
 }: NewPollPageClientViewProps) => (
-  <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-full px-4">
+  <form className="flex flex-col w-full px-4">
     <div className="flex flex-col w-full">
       <div className="flex flex-col w-full">
         <h3 className="mb-2 text-xl font-semibold">Poll Title</h3>
@@ -150,9 +150,10 @@ const NewPollPageClientView = ({
       <div className="flex items-center justify-end w-full py-4 my-10 bg-gray-50 dark:bg-gray-950">
         <div>
           <BorderedButton
-            type="submit"
+            type="button"
             color="green"
             disabled={loading || !isValid}
+            onClick={handleSubmit(onSubmit)}
           >
             <CheckIcon className="w-5" />{" "}
             {loading ? "Saving..." : "Save and Publish Poll"}

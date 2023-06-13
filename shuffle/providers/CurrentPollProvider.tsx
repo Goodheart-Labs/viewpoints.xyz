@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import {
   PropsWithChildren,
   createContext,
-  use,
   useContext,
   useEffect,
   useMemo,
