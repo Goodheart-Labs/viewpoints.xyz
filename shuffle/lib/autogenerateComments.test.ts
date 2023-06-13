@@ -1,6 +1,4 @@
-// TODO: install and configure jest
-
-import { describe, it, expect } from "jest";
+import { describe, it, expect } from "vitest";
 import { parseResults } from "./autogenerateComments";
 
 describe("parseResults", () => {

@@ -1,4 +1,5 @@
 if (typeof window !== "undefined") {
+  console.log(window);
   throw new Error("This file should not be imported on the client side.");
 }
 

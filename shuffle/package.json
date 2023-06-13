@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node -T",
+    "test": "vitest",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -53,7 +53,10 @@
     "@types/lodash": "^4.14.191",
     "@types/uuid": "^9.0.1",
     "eslint-config-next": "^13.4.4",
+    "jest": "^29.5.0",
     "pg": "^8.11.0",
-    "prisma": "^4.14.1"
+    "prisma": "^4.14.1",
+    "vite-tsconfig-paths": "^4.2.0",
+    "vitest": "^0.32.0"
   }
 }

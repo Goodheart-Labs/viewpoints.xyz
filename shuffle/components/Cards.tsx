@@ -77,7 +77,7 @@ const Cards = ({
   // Callbacks
 
   const onSwipe = useCallback(
-    (card: Comment, valence: Valence) => {
+    async (card: Comment, valence: Valence) => {
       const response: MinimalResponse = {
         comment_id: card.id,
         valence,
@@ -86,8 +86,9 @@ const Cards = ({
         session_id: sessionId,
       };
 
-      insertResponseMutation.mutateAsync(response);
-      onResponseCreated(response);
+      insertResponseMutation
+        .mutateAsync(response)
+        .then(() => onResponseCreated(response));
 
       setCards(cards.filter((c) => c.id !== card.id));
     },
