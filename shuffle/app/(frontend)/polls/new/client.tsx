@@ -196,7 +196,8 @@ const NewPollPageClient = ({}: NewPollPageClientProps) => {
 
   const form = useForm<FormData>({
     mode: "onTouched",
-    resolver: yupResolver(schema),
+    // https://github.com/react-hook-form/resolvers/issues/234
+    resolver: yupResolver<any>(schema),
   });
 
   // Mutations
