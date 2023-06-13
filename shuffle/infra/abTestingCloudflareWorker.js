@@ -2,6 +2,7 @@
 // -----------------------------------------------------------------------------
 
 const polisBaseUrl = "https://pol.is";
+const viewpointsBaseUrl = "https://viewpoints.xyz/polls";
 const cookieName = "ab-test";
 
 // Options
@@ -34,7 +35,7 @@ const REDIRECT_BODY = `
 
 async function handleRequest(request) {
   const url = new URL(request.url);
-  const pollId = url.pathname.split("/")[2];
+  const pollId = url.pathname.split("/")[3];
   const override = url.searchParams.get("override");
 
   const headers = {
@@ -42,8 +43,8 @@ async function handleRequest(request) {
   };
 
   if (override === OPTIONS_SHUFFLE) {
-    const res = await fetch(request);
-    const body = await res.text();
+    const redirectUrl = `${viewpointsBaseUrl}/${pollId}`;
+    const body = REDIRECT_BODY.replaceAll("{{redirectUrl}}", redirectUrl);
 
     return new Response(body, { headers });
   } else if (override === OPTIONS_POLIS) {
@@ -78,13 +79,14 @@ async function handleRequest(request) {
 
   // We'll need to handle the redirect 'manually' so that the cookie is set
 
+  let redirectUrl = "";
   let body = "";
 
   if (choice === OPTIONS_SHUFFLE) {
-    const res = await fetch(request);
-    body = await res.text();
+    redirectUrl = `${viewpointsBaseUrl}/${pollId}`;
+    body = REDIRECT_BODY.replaceAll("{{redirectUrl}}", redirectUrl);
   } else {
-    const redirectUrl = `${polisBaseUrl}/${pollId}`;
+    redirectUrl = `${polisBaseUrl}/${pollId}`;
     body = REDIRECT_BODY.replaceAll("{{redirectUrl}}", redirectUrl);
   }
 
