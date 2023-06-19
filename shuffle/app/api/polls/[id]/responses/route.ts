@@ -2,13 +2,14 @@ import prisma from "@/lib/prisma";
 import { SESSION_ID_COOKIE_NAME } from "@/middleware";
 import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
 import { auth } from "@clerk/nextjs";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 // GET /api/polls/:id/responses
 // -----------------------------------------------------------------------------
 
 export async function GET(
-  request: NextRequest,
+  request: Request,
   {
     params: { id },
   }: {
@@ -16,7 +17,7 @@ export async function GET(
   }
 ) {
   const { userId } = auth();
-  const session_id = request.cookies.get(SESSION_ID_COOKIE_NAME)?.value;
+  const session_id = cookies().get(SESSION_ID_COOKIE_NAME)?.value;
 
   const { searchParams } = new URL(request.url);
 
