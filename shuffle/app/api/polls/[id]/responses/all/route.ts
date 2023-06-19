@@ -1,5 +1,4 @@
 import prisma from "@/lib/prisma";
-import { SESSION_ID_COOKIE_NAME } from "@/middleware";
 import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
 import { auth } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
@@ -8,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 // -----------------------------------------------------------------------------
 
 export async function GET(
-  request: NextRequest,
+  _: NextRequest,
   {
     params: { id },
   }: {
@@ -16,22 +15,12 @@ export async function GET(
   }
 ) {
   const { userId } = auth();
-  const session_id = request.cookies.get(SESSION_ID_COOKIE_NAME)?.value;
-
-  const { searchParams } = new URL(request.url);
-
-  const constraints = searchParams.has("all")
-    ? {}
-    : userId
-    ? { user_id: userId }
-    : { session_id };
 
   const responses = await prisma.responses.findMany({
     where: {
       comment: {
         poll_id: parseInt(id),
       },
-      ...constraints,
     },
   });
 
