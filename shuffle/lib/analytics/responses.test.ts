@@ -6,48 +6,40 @@ import {
   UserResponses,
 } from "./responses";
 
-type MinimalResponse = {
-  comment_id: number;
-  valence: string;
-  created_at: Date;
-  user_id: string | null;
-  session_id: string;
-};
-
 describe("calculateResponsePercentages", () => {
   it("works correctly", () => {
     const allResponses: AllResponses = [
       {
         comment_id: 1,
-        valence: "positive",
+        valence: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 1,
-        valence: "positive",
+        valence: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "negative",
+        valence: "disagree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "negative",
+        valence: "disagree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "positive",
+        valence: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
@@ -57,14 +49,14 @@ describe("calculateResponsePercentages", () => {
     const userResponses: UserResponses = [
       {
         comment_id: 1,
-        valence: "positive",
+        valence: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "negative",
+        valence: "disagree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
@@ -76,6 +68,53 @@ describe("calculateResponsePercentages", () => {
     expect(result[1]).toBe(100); // 100% agreement for comment 1
     expect(result[2]).toBe(66.66666666666666); // 66.7% agreement for comment 2
   });
+
+  it("ignores skips", () => {
+    const allResponses: AllResponses = [
+      {
+        comment_id: 1,
+        valence: "agree",
+        created_at: new Date(),
+        user_id: null,
+        session_id: "abc",
+      },
+      {
+        comment_id: 1,
+        valence: "agree",
+        created_at: new Date(),
+        user_id: null,
+        session_id: "bcd",
+      },
+      {
+        comment_id: 1,
+        valence: "disagree",
+        created_at: new Date(),
+        user_id: null,
+        session_id: "cde",
+      },
+      {
+        comment_id: 1,
+        valence: "skip",
+        created_at: new Date(),
+        user_id: null,
+        session_id: "def",
+      },
+    ];
+
+    const userResponses: UserResponses = [
+      {
+        comment_id: 1,
+        valence: "disagree",
+        created_at: new Date(),
+        user_id: null,
+        session_id: "cde",
+      },
+    ];
+
+    const result = calculateResponsePercentages(allResponses, userResponses);
+
+    expect(result[1]).toBe(33.33333333333333); // 33.3% agreement for comment 1, 2/3 agree, 1/3 disagree, one skip
+  });
 });
 
 describe("getUserConsensusViews", () => {
@@ -83,56 +122,56 @@ describe("getUserConsensusViews", () => {
     const allResponses: AllResponses = [
       {
         comment_id: 1,
-        valence: "positive",
+        valence: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 1,
-        valence: "positive",
+        valence: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "negative",
+        valence: "disagree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "negative",
+        valence: "disagree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "negative",
+        valence: "disagree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "positive",
+        valence: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 3,
-        valence: "negative",
+        valence: "disagree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 3,
-        valence: "positive",
+        valence: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
@@ -142,14 +181,14 @@ describe("getUserConsensusViews", () => {
     const userResponses: UserResponses = [
       {
         comment_id: 1,
-        valence: "positive",
+        valence: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "positive",
+        valence: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
@@ -158,16 +197,16 @@ describe("getUserConsensusViews", () => {
 
     const result = getUserConsensusViews(allResponses, userResponses);
 
-    // Comment 1 has 100% positive consensus
+    // Comment 1 has 100% agree consensus
 
     expect(result.mostConsensus?.comment_id).toBe(1);
-    expect(result.mostConsensus?.valence).toBe("positive");
+    expect(result.mostConsensus?.valence).toBe("agree");
     expect(result.mostConsensus?.consensusPercentage).toBe(100);
 
     // 3/4 users disagree with comment 2. Our user is in the minority.
 
     expect(result.mostControversial?.comment_id).toBe(2);
-    expect(result.mostControversial?.valence).toBe("positive");
+    expect(result.mostControversial?.valence).toBe("agree");
     expect(result.mostControversial?.consensusPercentage).toBe(25);
   });
 });

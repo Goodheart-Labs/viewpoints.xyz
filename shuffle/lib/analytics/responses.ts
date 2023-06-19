@@ -21,6 +21,8 @@ export const calculateResponsePercentages = (
   });
 
   allResponses.forEach((response) => {
+    if (response.valence === "skip") return;
+
     if (!commentResponseCounts[response.comment_id]) {
       commentResponseCounts[response.comment_id] = 0;
       commentUserAgreementCounts[response.comment_id] = 0;
