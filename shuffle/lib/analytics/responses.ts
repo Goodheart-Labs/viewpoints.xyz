@@ -44,6 +44,15 @@ export const calculateResponsePercentages = (
       100;
   }
 
+  console.log({
+    allResponses,
+    userResponses,
+    userResponseMap,
+    commentResponseCounts,
+    commentUserAgreementCounts,
+    commentPercentages,
+  });
+
   return commentPercentages;
 };
 
