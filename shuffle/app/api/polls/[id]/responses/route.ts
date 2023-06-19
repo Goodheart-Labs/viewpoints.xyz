@@ -22,11 +22,15 @@ export async function GET(
 
   const { searchParams } = new URL(request.url);
 
+  console.log({ searchParams });
+
   const constraints = searchParams.has("all")
     ? {}
     : userId
     ? { user_id: userId }
     : { session_id };
+
+  console.log({ constraints });
 
   const responses = await prisma.responses.findMany({
     where: {
