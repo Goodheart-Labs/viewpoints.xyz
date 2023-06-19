@@ -22,7 +22,7 @@ export async function GET(
 
   const { searchParams } = new URL(request.url);
 
-  console.log({ searchParams });
+  console.log({ searchParams, request });
 
   const constraints = searchParams.has("all")
     ? {}
