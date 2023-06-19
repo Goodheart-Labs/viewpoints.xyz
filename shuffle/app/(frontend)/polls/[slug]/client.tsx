@@ -93,7 +93,7 @@ const Poll = ({
   const { data: allResponses, refetch: refetchAllResponses } = useQuery<
     Response[]
   >(["responses", commentIds.join(",")], async () => {
-    const { data } = await axios.get(`/api/polls/${poll.id}/responses?all`);
+    const { data } = await axios.get(`/api/polls/${poll.id}/responses/all`);
     return data as Response[];
   });
 

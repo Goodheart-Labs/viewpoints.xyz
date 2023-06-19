@@ -51,7 +51,7 @@ const GraphsClient = ({
   const { data: responses } = useQuery(
     ["responses", poll.id],
     async () => {
-      const { data } = await axios.get(`/api/polls/${poll.id}/responses?all`);
+      const { data } = await axios.get(`/api/polls/${poll.id}/responses/all`);
       return data as Response[];
     },
     {
