@@ -1,17 +1,12 @@
+import CommentsList from "@/app/components/admin/CommentsList";
 import UpdatePollVisibility from "@/app/components/polls/admin/UpdatePollVisibility";
 import ValenceBadge from "@/components/ValenceBadge";
-import SelectMenuWithDetails from "@/components/ui/SelectMenuWithDetails";
 import { Comment, Poll, Response, Valence } from "@/lib/api";
 import prisma from "@/lib/prisma";
-import {
-  requirePollAdmin,
-  requirePollAdminIfPollIsPrivate,
-} from "@/utils/authutils";
+import { requirePollAdmin } from "@/utils/authutils";
 import { auth } from "@clerk/nextjs";
 import { UserIcon } from "@heroicons/react/20/solid";
-import { polls_visibility_enum } from "@prisma/client";
 import { notFound } from "next/navigation";
-import { useCallback } from "react";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -109,6 +104,14 @@ const PollAdminPageView = ({
       <div className="flex flex-col w-full mt-4">
         <UpdatePollVisibility poll={poll} />
       </div>
+    </div>
+
+    <div className="flex flex-col w-full mt-10">
+      <h2 className="text-2xl font-bold text-black dark:text-gray-200">
+        Comments
+      </h2>
+
+      <CommentsList poll={poll} />
     </div>
 
     <div className="flex flex-col w-full mt-10">

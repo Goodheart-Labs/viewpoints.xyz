@@ -45,7 +45,7 @@ const CurrentPollProvider = ({ children }: PropsWithChildren<{}>) => {
   const pathname = usePathname();
 
   const currentPollSlug = useMemo(
-    () => pathname.match(/\/polls\/([^/]+)\//)?.[1],
+    () => pathname.match(/\/polls\/([^/]+)\/?/)?.[1],
     [pathname]
   );
 

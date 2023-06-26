@@ -17,6 +17,8 @@ import { getCookie } from "typescript-cookie";
 import { useModal } from "@/providers/ModalProvider";
 import axios from "axios";
 import { ensureItLooksLikeAQuestion } from "@/utils/stringutils";
+import BorderedButton from "@/components/BorderedButton";
+import { ChatBubbleBottomCenterIcon } from "@heroicons/react/20/solid";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -361,6 +363,15 @@ const Poll = ({
             />
           )}
       </div>
+
+      {filteredComments.length > 0 && (
+        <div>
+          <BorderedButton onClick={() => onNewComment("click")} color="blue">
+            <ChatBubbleBottomCenterIcon width={22} className="mr-2" />
+            Add New Comment
+          </BorderedButton>
+        </div>
+      )}
 
       <AnimatePresence>
         {isCreating && (
