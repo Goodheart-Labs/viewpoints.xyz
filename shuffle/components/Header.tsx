@@ -47,12 +47,22 @@ const Header = () => {
     <div className="flex items-center justify-end w-full p-4">
       <div className={clsx(!(isSignedIn && isCurrentPollAdmin) && "mr-auto")}>
         <Link href="/" className="hover:opacity-50">
-          <Image
-            src={"/logo.png"}
-            alt="viewpoints.xyz"
-            width={200}
-            height={40}
-          />
+          <div className="dark:hidden">
+            <Image
+              src={"/logo.png"}
+              alt="viewpoints.xyz"
+              width={200}
+              height={40}
+            />
+          </div>
+          <div className="hidden dark:block">
+            <Image
+              src={"/logo-dark.png"}
+              alt="viewpoints.xyz"
+              width={200}
+              height={40}
+            />
+          </div>
         </Link>
       </div>
 
