@@ -18,9 +18,14 @@ import { useModal } from "@/providers/ModalProvider";
 import axios from "axios";
 import { ensureItLooksLikeAQuestion } from "@/utils/stringutils";
 import BorderedButton from "@/components/BorderedButton";
-import { ChatBubbleBottomCenterIcon } from "@heroicons/react/20/solid";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ChatBubbleBottomCenterIcon,
+} from "@heroicons/react/20/solid";
 import sortBySeed from "@/lib/sortBySeed";
 import KeyboardShortcutsLegend from "@/components/KeyboardShortcutsLegend";
+import JiggleDiv from "@/components/animations/JiggleDiv";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -327,6 +332,22 @@ const Poll = ({
     ]
   );
 
+  // Keep track of pages that have been viewed already
+
+  const [isFirstVisit, setIsFirstVisit] = useState(false);
+
+  useEffect(() => {
+    const visitedPages =
+      JSON.parse(localStorage.getItem("visitedPages") ?? "{}") || {};
+    const { pathname } = window.location;
+
+    if (!visitedPages[pathname]) {
+      visitedPages[pathname] = true;
+      setIsFirstVisit(true);
+      localStorage.setItem("visitedPages", JSON.stringify(visitedPages));
+    }
+  }, []);
+
   // Render
 
   return (
@@ -360,25 +381,65 @@ const Poll = ({
         <div className="z-30" onClickCapture={onShareClickCapture}>
           <TwitterShare url={twitterShareUrl} title={twitterShareTitle} />
         </div>
-        <div className="relative">
+
+        {isFirstVisit && (
+          <div
+            className="absolute top-0 left-0 z-40 w-full h-full bg-black bg-opacity-50 sm:hidden"
+            onClick={() => setIsFirstVisit(false)}
+          >
+            <div className="flex flex-col items-center justify-center w-full h-full">
+              <h1 className="px-4 text-3xl font-bold text-center text-gray-200">
+                Swipe left or right to answer
+              </h1>
+              <div className="flex mt-20">
+                <p>
+                  <ArrowLeftIcon className="w-20 h-20 text-gray-200" />
+                </p>
+                <p>
+                  <ArrowRightIcon className="w-20 h-20 text-gray-200" />
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div>
           {loading ? (
             <div className="absolute top-0 left-0 flex items-center justify-center w-full h-full">
               <div className="w-10 h-10 border-2 border-t-2 border-gray-200 rounded-full animate-spin"></div>
             </div>
           ) : (
-            <Cards
-              comments={comments ?? []}
-              filteredComments={filteredComments ?? []}
-              allResponses={allResponses ?? []}
-              userResponses={enrichedResponses}
-              onNewComment={onNewComment}
-              onNewPoll={onNewPoll}
-              onCommentEdited={onCommentEdited}
-              onCommentFlagged={refetchFlaggedComments}
-              onResponseCreated={onResponseCreated}
-            />
+            <div className="relative flex items-center justify-center text-gray-400 dark:text-gray-600">
+              <JiggleDiv className="hidden mt-8 ml-4 mr-12 sm:block">
+                Swipe
+                <ArrowLeftIcon className="w-10 h-10" />
+              </JiggleDiv>
+
+              <div className="relative">
+                <Cards
+                  comments={comments ?? []}
+                  filteredComments={filteredComments ?? []}
+                  allResponses={allResponses ?? []}
+                  userResponses={enrichedResponses}
+                  onNewComment={onNewComment}
+                  onNewPoll={onNewPoll}
+                  onCommentEdited={onCommentEdited}
+                  onCommentFlagged={refetchFlaggedComments}
+                  onResponseCreated={onResponseCreated}
+                />
+              </div>
+
+              <JiggleDiv
+                transition={{ delay: 1 }}
+                className="hidden mt-8 ml-12 mr-4 text-gray-400 dark:text-gray-600 sm:block"
+              >
+                Swipe
+                <ArrowRightIcon className="w-10 h-10" />
+              </JiggleDiv>
+            </div>
           )}
         </div>
+
         {typeof responses !== "undefined" &&
           typeof comments !== "undefined" && (
             <Responses
