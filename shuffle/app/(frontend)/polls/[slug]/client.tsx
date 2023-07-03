@@ -269,31 +269,35 @@ const Poll = ({
 
   const filteredComments = useMemo(
     () =>
-      (comments ?? []).filter((comment) => {
-        const userHasResponded = !!currentUserResponsesByCommentId[comment.id];
+      (comments ?? [])
+        .filter((comment) => {
+          const userHasResponded =
+            !!currentUserResponsesByCommentId[comment.id];
 
-        const commentHasBeenFlaggedByCurrentUser = flaggedComments?.some(
-          (flaggedComment) =>
-            flaggedComment.comment_id === comment.id &&
-            (flaggedComment.session_id === getCookie(SESSION_ID_COOKIE_NAME) ||
-              (user?.id && flaggedComment.user_id === user.id))
-        );
+          const commentHasBeenFlaggedByCurrentUser = flaggedComments?.some(
+            (flaggedComment) =>
+              flaggedComment.comment_id === comment.id &&
+              (flaggedComment.session_id ===
+                getCookie(SESSION_ID_COOKIE_NAME) ||
+                (user?.id && flaggedComment.user_id === user.id))
+          );
 
-        const commentExceedsFlagThreshold =
-          (flagCountByCommentId[comment.id] ?? 0) >=
-          MAX_NUM_FLAGS_BEFORE_REMOVAL;
+          const commentExceedsFlagThreshold =
+            (flagCountByCommentId[comment.id] ?? 0) >=
+            MAX_NUM_FLAGS_BEFORE_REMOVAL;
 
-        const commentExceedsSkipThreshold =
-          (skipCountByCommentId[comment.id] ?? 0) >=
-          MAX_NUM_SKIPS_BEFORE_REMOVAL;
+          const commentExceedsSkipThreshold =
+            (skipCountByCommentId[comment.id] ?? 0) >=
+            MAX_NUM_SKIPS_BEFORE_REMOVAL;
 
-        return !(
-          userHasResponded ||
-          commentHasBeenFlaggedByCurrentUser ||
-          commentExceedsFlagThreshold ||
-          commentExceedsSkipThreshold
-        );
-      }) as Comment[],
+          return !(
+            userHasResponded ||
+            commentHasBeenFlaggedByCurrentUser ||
+            commentExceedsFlagThreshold ||
+            commentExceedsSkipThreshold
+          );
+        })
+        .sort(() => Math.random() - 0.5) as Comment[],
     [
       comments,
       currentUserResponsesByCommentId,
