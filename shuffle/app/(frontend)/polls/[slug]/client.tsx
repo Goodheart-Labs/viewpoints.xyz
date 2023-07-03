@@ -11,7 +11,7 @@ import { useUser } from "@clerk/nextjs";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import { AnimatePresence } from "framer-motion";
 import Head from "next/head";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useMutation, useQuery } from "react-query";
 import { getCookie } from "typescript-cookie";
 import { useModal } from "@/providers/ModalProvider";
@@ -19,6 +19,7 @@ import axios from "axios";
 import { ensureItLooksLikeAQuestion } from "@/utils/stringutils";
 import BorderedButton from "@/components/BorderedButton";
 import { ChatBubbleBottomCenterIcon } from "@heroicons/react/20/solid";
+import sortBySeed from "@/lib/sortBySeed";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -267,43 +268,60 @@ const Poll = ({
 
   const loading = useMemo(() => responsesLoading, [responsesLoading]);
 
+  // Sort deterministically by seed before we filter
+
+  // Generate a seed for sorting comments
+
+  const [seed, setSeed] = useState(Math.random());
+  useEffect(() => {
+    const seed = localStorage.getItem("seed");
+    if (seed) {
+      setSeed(parseFloat(seed));
+    } else {
+      localStorage.setItem("seed", Math.random().toString());
+    }
+  }, []);
+
+  const sortedComments = useMemo(
+    () => sortBySeed(comments ?? [], seed),
+    [comments, seed]
+  );
+
+  // Filter comments
+
   const filteredComments = useMemo(
     () =>
-      (comments ?? [])
-        .filter((comment) => {
-          const userHasResponded =
-            !!currentUserResponsesByCommentId[comment.id];
+      (sortedComments ?? []).filter((comment) => {
+        const userHasResponded = !!currentUserResponsesByCommentId[comment.id];
 
-          const commentHasBeenFlaggedByCurrentUser = flaggedComments?.some(
-            (flaggedComment) =>
-              flaggedComment.comment_id === comment.id &&
-              (flaggedComment.session_id ===
-                getCookie(SESSION_ID_COOKIE_NAME) ||
-                (user?.id && flaggedComment.user_id === user.id))
-          );
+        const commentHasBeenFlaggedByCurrentUser = flaggedComments?.some(
+          (flaggedComment) =>
+            flaggedComment.comment_id === comment.id &&
+            (flaggedComment.session_id === getCookie(SESSION_ID_COOKIE_NAME) ||
+              (user?.id && flaggedComment.user_id === user.id))
+        );
 
-          const commentExceedsFlagThreshold =
-            (flagCountByCommentId[comment.id] ?? 0) >=
-            MAX_NUM_FLAGS_BEFORE_REMOVAL;
+        const commentExceedsFlagThreshold =
+          (flagCountByCommentId[comment.id] ?? 0) >=
+          MAX_NUM_FLAGS_BEFORE_REMOVAL;
 
-          const commentExceedsSkipThreshold =
-            (skipCountByCommentId[comment.id] ?? 0) >=
-            MAX_NUM_SKIPS_BEFORE_REMOVAL;
+        const commentExceedsSkipThreshold =
+          (skipCountByCommentId[comment.id] ?? 0) >=
+          MAX_NUM_SKIPS_BEFORE_REMOVAL;
 
-          return !(
-            userHasResponded ||
-            commentHasBeenFlaggedByCurrentUser ||
-            commentExceedsFlagThreshold ||
-            commentExceedsSkipThreshold
-          );
-        })
-        .sort(() => Math.random() - 0.5) as Comment[],
+        return !(
+          userHasResponded ||
+          commentHasBeenFlaggedByCurrentUser ||
+          commentExceedsFlagThreshold ||
+          commentExceedsSkipThreshold
+        );
+      }),
     [
-      comments,
       currentUserResponsesByCommentId,
       flagCountByCommentId,
       flaggedComments,
       skipCountByCommentId,
+      sortedComments,
       user?.id,
     ]
   );
