@@ -365,7 +365,7 @@ const Poll = ({
         <meta property="twitter:site" content="viewpoints.xyz" />
       </Head>
 
-      <div className="flex flex-col mt-10 sm:mt-40 text-center max-w-[800px]">
+      <div className="flex flex-col mt-10 text-center max-w-[800px]">
         <h1 className="mb-4 text-4xl font-bold text-black dark:text-gray-200">
           {poll.title}
         </h1>
@@ -375,12 +375,8 @@ const Poll = ({
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 gap-20 justify-items-center items-end max-width-[800px]">
+      <div className="grid grid-cols-1 gap-20 mt-20 justify-items-center items-end max-width-[800px]">
         <KeyboardShortcutsLegend />
-
-        <div className="z-30" onClickCapture={onShareClickCapture}>
-          <TwitterShare url={twitterShareUrl} title={twitterShareTitle} />
-        </div>
 
         {isFirstVisit && (
           <div
@@ -415,7 +411,7 @@ const Poll = ({
                 <ArrowLeftIcon className="w-10 h-10" />
               </JiggleDiv>
 
-              <div className="relative">
+              <div className="relative text-black">
                 <Cards
                   comments={comments ?? []}
                   filteredComments={filteredComments ?? []}
@@ -440,6 +436,15 @@ const Poll = ({
           )}
         </div>
 
+        {filteredComments.length > 0 && (
+          <div className="mt-10">
+            <BorderedButton onClick={() => onNewComment("click")} color="blue">
+              <ChatBubbleBottomCenterIcon width={22} className="mr-2" />
+              Add New Comment
+            </BorderedButton>
+          </div>
+        )}
+
         {typeof responses !== "undefined" &&
           typeof comments !== "undefined" && (
             <Responses
@@ -449,15 +454,6 @@ const Poll = ({
             />
           )}
       </div>
-
-      {filteredComments.length > 0 && (
-        <div>
-          <BorderedButton onClick={() => onNewComment("click")} color="blue">
-            <ChatBubbleBottomCenterIcon width={22} className="mr-2" />
-            Add New Comment
-          </BorderedButton>
-        </div>
-      )}
 
       <AnimatePresence>
         {isCreating && (

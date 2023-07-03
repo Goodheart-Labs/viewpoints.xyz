@@ -55,7 +55,7 @@ const ResponsesView = ({
   callbacks: { onClickViewAll },
 }: ResponsesViewProps) => (
   <>
-    <div className="flex flex-col mx-auto mt-4 mb-8">
+    <div className="flex flex-col mx-auto mb-8">
       <AnimatePresence>
         {responsesWithComments.map((response, i) => (
           <motion.div
