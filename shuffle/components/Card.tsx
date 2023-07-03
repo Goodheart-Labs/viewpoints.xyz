@@ -157,7 +157,10 @@ const CardView = ({
               color="red"
               disabled={!isActive}
             >
-              &larr; Disagree
+              Disagree
+              <kbd className="items-center hidden px-1 ml-1 font-sans text-xs text-gray-600 border rounded sm:inline-flex border-gray-2400">
+                &larr;
+              </kbd>
             </BorderedButton>
           </div>
           <div>
@@ -166,7 +169,10 @@ const CardView = ({
               color="yellow"
               disabled={!isActive}
             >
-              <span className="hidden sm:inline">&uarr;</span>Skip
+              Skip
+              <kbd className="items-center hidden px-1 ml-1 font-sans text-xs text-gray-600 border rounded sm:inline-flex border-gray-2400">
+                &uarr;
+              </kbd>
             </BorderedButton>
           </div>
           <div>
@@ -175,8 +181,10 @@ const CardView = ({
               color="orange"
               disabled={!isActive}
             >
-              <span className="hidden sm:inline">&darr;</span> It&apos;s
-              complicated
+              It&apos;s complicated
+              <kbd className="items-center hidden px-1 ml-1 font-sans text-xs text-gray-600 border rounded sm:inline-flex border-gray-2400">
+                &darr;
+              </kbd>
             </BorderedButton>
           </div>
           <div>
@@ -185,7 +193,10 @@ const CardView = ({
               color="green"
               disabled={!isActive}
             >
-              Agree &rarr;
+              Agree
+              <kbd className="items-center hidden px-1 ml-1 font-sans text-xs text-gray-600 border rounded sm:inline-flex border-gray-2400">
+                &rarr;
+              </kbd>
             </BorderedButton>
           </div>
         </div>

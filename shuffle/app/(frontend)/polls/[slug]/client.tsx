@@ -391,6 +391,9 @@ const Poll = ({
           <BorderedButton onClick={() => onNewComment("click")} color="blue">
             <ChatBubbleBottomCenterIcon width={22} className="mr-2" />
             Add New Comment
+            <kbd className="items-center hidden px-1 ml-1 font-sans text-xs text-gray-600 border rounded sm:inline-flex border-gray-2400">
+              C
+            </kbd>
           </BorderedButton>
         </div>
       )}
