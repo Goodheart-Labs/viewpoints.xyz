@@ -1,13 +1,10 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["jsonProtocol"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("POSTGRES_PRISMA_URL")
-  directUrl         = env("POSTGRES_URL_NON_POOLING")
-  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING")
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
 }
 
 model comments {
@@ -39,15 +36,15 @@ model flagged_comments {
 }
 
 model polls {
-  id                Int        @id @unique @default(autoincrement())
+  id                Int                   @id @unique @default(autoincrement())
   user_id           String?
-  slug              String?    @unique @db.VarChar
-  title             String     @db.VarChar
+  slug              String?               @unique @db.VarChar
+  title             String                @db.VarChar
   core_question     String
-  created_at        DateTime   @default(now()) @db.Timestamptz(6)
+  created_at        DateTime              @default(now()) @db.Timestamptz(6)
   comments          comments[]
   visibility        polls_visibility_enum @default(public)
-  analytics_filters Json       @default("{}")
+  analytics_filters Json                  @default("{}")
 }
 
 enum polls_visibility_enum {
