@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^1.10.2",
-    "@clerk/nextjs": "^4.19.0",
+    "@clerk/nextjs": "^4.23.1",
     "@headlessui/react": "^1.7.14",
     "@heroicons/react": "^2.0.17",
     "@hookform/resolvers": "^3.1.1",

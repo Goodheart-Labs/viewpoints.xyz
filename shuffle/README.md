@@ -14,7 +14,7 @@ Currently deployed at <https://viewpoints.xyz/>
 ### Installing
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### Running
@@ -34,5 +34,5 @@ npx prisma migrate dev
 Run project:
 
 ```bash
-npm run dev
+pnpm dev
 ```
