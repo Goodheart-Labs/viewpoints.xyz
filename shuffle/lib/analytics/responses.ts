@@ -1,5 +1,6 @@
-import { MinimalResponse } from "@/components/Cards";
-import { Valence } from "../api";
+import type { MinimalResponse } from "@/components/Cards";
+
+import type { Valence } from "../api";
 
 // Matching responses
 // -----------------------------------------------------------------------------

@@ -1,11 +1,11 @@
 "use client";
 
+import { useAuth } from "@clerk/nextjs";
+
 import BorderedButton from "@/components/BorderedButton";
-import { Poll } from "@/lib/api";
+import type { Poll } from "@/lib/api";
 import { useAdminState } from "@/providers/AdminStateProvider";
 import { isPollAdmin } from "@/utils/authutils";
-import { useAuth } from "@clerk/nextjs";
-import Link from "next/link";
 
 // Types
 // -----------------------------------------------------------------------------

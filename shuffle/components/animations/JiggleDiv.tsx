@@ -1,5 +1,7 @@
-import { Transition, motion } from "framer-motion";
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
+
+import type { Transition } from "framer-motion";
+import { motion } from "framer-motion";
 
 const jiggleAnimation: Transition = {
   repeat: Infinity, // loop the animation

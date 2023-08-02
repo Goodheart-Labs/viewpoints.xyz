@@ -1,11 +1,13 @@
 "use client";
 
-import Graphs, { GraphType } from "@/components/Graphs";
-import { Comment, Poll, Response } from "@/lib/api";
+import { useMemo, useState } from "react";
+import { useQuery } from "react-query";
+
 import axios from "axios";
 import Head from "next/head";
-import { useState, useMemo } from "react";
-import { useQuery } from "react-query";
+
+import Graphs, { GraphType } from "@/components/Graphs";
+import type { Comment, Poll, Response } from "@/lib/api";
 
 // Default export
 // -----------------------------------------------------------------------------

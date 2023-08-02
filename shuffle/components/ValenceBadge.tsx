@@ -1,6 +1,8 @@
-import { Valence } from "@/lib/api";
+import type { PropsWithChildren } from "react";
+
 import clsx from "clsx";
-import { PropsWithChildren } from "react";
+
+import type { Valence } from "@/lib/api";
 
 // Types
 // -----------------------------------------------------------------------------

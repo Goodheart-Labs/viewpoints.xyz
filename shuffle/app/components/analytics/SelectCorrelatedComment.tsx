@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+
 import { Combobox } from "@headlessui/react";
-import { Correlation } from "@/lib/analytics/comments";
-import { Comment } from "@/lib/api";
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
+
 import ValenceBadge from "@/components/ValenceBadge";
+import type { Correlation } from "@/lib/analytics/comments";
+import type { Comment } from "@/lib/api";
 
 // Types
 // -----------------------------------------------------------------------------

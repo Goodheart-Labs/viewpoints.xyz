@@ -1,8 +1,10 @@
-import prisma from "@/lib/prisma";
-import { SESSION_ID_COOKIE_NAME } from "@/middleware";
 import { auth } from "@clerk/nextjs";
 import { notFound } from "next/navigation";
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+
+import prisma from "@/lib/prisma";
+import { SESSION_ID_COOKIE_NAME } from "@/middleware";
 
 // POST /api/comments/:id/flag
 // -----------------------------------------------------------------------------

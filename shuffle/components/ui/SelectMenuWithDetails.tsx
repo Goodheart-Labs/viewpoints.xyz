@@ -1,8 +1,9 @@
 import { Fragment, useCallback, useState } from "react";
+
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
+import type { polls_visibility_enum } from "@prisma/client";
 import clsx from "clsx";
-import { polls_visibility_enum } from "@prisma/client";
 
 // Types
 // -----------------------------------------------------------------------------

@@ -1,10 +1,10 @@
+import { auth, currentUser } from "@clerk/nextjs";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+
 import prisma from "@/lib/prisma";
 import { SESSION_ID_COOKIE_NAME } from "@/middleware";
 import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
-import { auth, currentUser } from "@clerk/nextjs";
-import { polls_visibility_enum } from "@prisma/client";
-import { notFound } from "next/navigation";
-import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/polls/:id/comments
 // -----------------------------------------------------------------------------

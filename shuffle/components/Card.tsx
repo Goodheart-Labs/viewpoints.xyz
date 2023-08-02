@@ -1,21 +1,25 @@
 "use client";
 
-import { AnimatePresence, motion, PanInfo } from "framer-motion";
 import { useCallback, useMemo, useState } from "react";
+
 import {
   CheckIcon,
   FlagIcon,
   PencilSquareIcon,
 } from "@heroicons/react/20/solid";
-import Avatar from "@/components/Avatar";
-import BorderedButton from "./BorderedButton";
-import clsx from "clsx";
-import EditingContent from "./EditingContent";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
+import clsx from "clsx";
+import type { PanInfo } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Key } from "ts-key-enum";
-import { Comment, Valence } from "@/lib/api";
-import { anonymousAvatar } from "./Cards";
+
+import Avatar from "@/components/Avatar";
+import type { Comment, Valence } from "@/lib/api";
 import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
+
+import BorderedButton from "./BorderedButton";
+import { anonymousAvatar } from "./Cards";
+import EditingContent from "./EditingContent";
 import FlagComment from "./FlagComment";
 
 // Config

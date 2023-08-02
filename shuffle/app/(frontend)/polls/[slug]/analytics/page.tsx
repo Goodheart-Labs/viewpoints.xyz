@@ -1,5 +1,7 @@
-import prisma from "@/lib/prisma";
 import Head from "next/head";
+
+import prisma from "@/lib/prisma";
+
 import AnalyticsClient from "./client";
 
 // Data

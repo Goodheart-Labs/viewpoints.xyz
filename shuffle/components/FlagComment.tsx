@@ -1,8 +1,5 @@
 "use client";
 
-import { FlagIcon } from "@heroicons/react/20/solid";
-import clsx from "clsx";
-import { motion } from "framer-motion";
 import {
   useCallback,
   useEffect,
@@ -10,11 +7,17 @@ import {
   useRef,
   useState,
 } from "react";
-import BorderedButton from "./BorderedButton";
-import { Comment, FlaggedComment } from "@/lib/api";
-import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
 import { useMutation } from "react-query";
+
+import { FlagIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
+import clsx from "clsx";
+import { motion } from "framer-motion";
+
+import type { Comment, FlaggedComment } from "@/lib/api";
+import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
+
+import BorderedButton from "./BorderedButton";
 
 // Types
 // -----------------------------------------------------------------------------

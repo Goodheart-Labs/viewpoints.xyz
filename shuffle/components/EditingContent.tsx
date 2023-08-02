@@ -1,7 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { contentClasses, contentMinHeight } from "./Card";
+
 import clsx from "clsx";
-import { Comment } from "@/lib/api";
+
+import { contentClasses, contentMinHeight } from "./Card";
 
 // Types
 // -----------------------------------------------------------------------------

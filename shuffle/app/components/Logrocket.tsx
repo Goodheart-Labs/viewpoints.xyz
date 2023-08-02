@@ -1,8 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
+
 import { useUser } from "@clerk/nextjs";
 import Script from "next/script";
-import { useEffect } from "react";
 
 const Logrocket = () => {
   const { isSignedIn, user } = useUser();

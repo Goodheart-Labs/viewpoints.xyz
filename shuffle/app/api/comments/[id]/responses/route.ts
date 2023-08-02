@@ -1,6 +1,8 @@
-import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+
+import prisma from "@/lib/prisma";
 
 // POST /api/comments/:id/responses
 // -----------------------------------------------------------------------------

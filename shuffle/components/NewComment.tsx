@@ -1,13 +1,14 @@
+import { useCallback, useMemo, useState } from "react";
+
+import { useUser } from "@clerk/nextjs";
 import { CheckIcon, PlusIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import { motion } from "framer-motion";
-import { useCallback, useMemo, useState } from "react";
+
 import Avatar from "./Avatar";
 import BorderedButton from "./BorderedButton";
-import EditingContent from "./EditingContent";
 import { anonymousAvatar } from "./Cards";
-import { Comment } from "@/lib/api";
-import { useUser } from "@clerk/nextjs";
+import EditingContent from "./EditingContent";
 
 // Types
 // -----------------------------------------------------------------------------

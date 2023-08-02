@@ -1,18 +1,15 @@
-import BorderedButton from "@/components/BorderedButton";
-import ValenceBadge from "@/components/ValenceBadge";
-import {
-  Correlation,
-  getCorrelatedCommentPairs,
-  getTopKCorrelatedCommentPairs,
-} from "@/lib/analytics/comments";
-import { Poll, Comment, Response, AnalyticsFilters } from "@/lib/api";
-import { useAdminState } from "@/providers/AdminStateProvider";
-import { useAuth } from "@clerk/nextjs";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/20/solid";
-import axios from "axios";
-import clsx from "clsx";
 import { useCallback, useMemo, useState } from "react";
 import { useMutation } from "react-query";
+
+import axios from "axios";
+import clsx from "clsx";
+
+import ValenceBadge from "@/components/ValenceBadge";
+import type { Correlation } from "@/lib/analytics/comments";
+import { getCorrelatedCommentPairs } from "@/lib/analytics/comments";
+import type { AnalyticsFilters, Comment, Poll, Response } from "@/lib/api";
+import { useAdminState } from "@/providers/AdminStateProvider";
+
 import SelectCorrelatedComment from "./SelectCorrelatedComment";
 
 // Config

@@ -1,15 +1,18 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import useHotkeys from "@reecelucas/react-use-hotkeys";
-import BorderedButton from "./BorderedButton";
+
 import { SignIn, UserButton, useUser } from "@clerk/nextjs";
+import useHotkeys from "@reecelucas/react-use-hotkeys";
 import clsx from "clsx";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import Image from "next/image";
-import { useCurrentPoll } from "@/providers/CurrentPollProvider";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+
+import { useCurrentPoll } from "@/providers/CurrentPollProvider";
+
+import BorderedButton from "./BorderedButton";
 
 const Header = () => {
   // State

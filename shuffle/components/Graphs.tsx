@@ -1,5 +1,6 @@
-import { Comment, Response, Valence } from "@/lib/api";
 import { Fragment, useMemo } from "react";
+
+import type { Comment, Response, Valence } from "@/lib/api";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -612,9 +613,11 @@ const ClusterQuestions = ({ responses }: { responses: Response[] }) => {
 // We can use the idea of an opinion matrix, plus a projection, to create a
 // two-dimensional representation of the users.
 
-import "chart.js/auto";
 import { Scatter } from "react-chartjs-2";
+
 import { TSNE } from "@/lib/tsne";
+
+import "chart.js/auto";
 
 const computeTsne = (
   opinionMatrix: number[][],

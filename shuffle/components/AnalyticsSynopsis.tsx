@@ -1,12 +1,12 @@
-import {
-  CommentConsensus,
-  getUserConsensusViews,
-} from "@/lib/analytics/responses";
-import { Comment, Response } from "@/lib/api";
-import ValenceBadge from "./ValenceBadge";
 import { useMemo } from "react";
+
+import type { CommentConsensus } from "@/lib/analytics/responses";
+import { getUserConsensusViews } from "@/lib/analytics/responses";
+import type { Comment, Response } from "@/lib/api";
 import { valenceToHumanReadablePresentTense } from "@/utils/valenceutils";
-import { MinimalResponse } from "./Cards";
+
+import type { MinimalResponse } from "./Cards";
+import ValenceBadge from "./ValenceBadge";
 
 // Types
 // -----------------------------------------------------------------------------

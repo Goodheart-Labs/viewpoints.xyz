@@ -1,16 +1,15 @@
 "use client";
 
+import { useMemo } from "react";
+
 import CorrelatedComments from "@/app/components/analytics/CorrelatedComments";
 import ValenceBadge from "@/components/ValenceBadge";
 import {
   getCommentStatistics,
   getTopKCertainCommentIds,
-  getTopKCorrelatedCommentPairs,
   getTopKUncertainCommentIds,
 } from "@/lib/analytics/comments";
-import { Comment, Poll, Response } from "@/lib/api";
-import { useAuth } from "@clerk/nextjs";
-import { useMemo } from "react";
+import type { Comment, Poll, Response } from "@/lib/api";
 
 // Default export
 // -----------------------------------------------------------------------------

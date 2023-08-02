@@ -1,15 +1,16 @@
-import { AnimatePresence, motion } from "framer-motion";
-import BorderedButton from "./BorderedButton";
-import { MinimalResponse } from "./Cards";
-import { Comment, Valence } from "@/lib/api";
 import { useCallback, useMemo, useState } from "react";
-import ValenceBadge from "./ValenceBadge";
-import { valenceToHumanReadablePastTense } from "@/utils/valenceutils";
-import {
-  ResponsePercentages,
-  calculateResponsePercentages,
-} from "@/lib/analytics/responses";
+
 import dayjs from "dayjs";
+import { AnimatePresence, motion } from "framer-motion";
+
+import type { ResponsePercentages } from "@/lib/analytics/responses";
+import { calculateResponsePercentages } from "@/lib/analytics/responses";
+import type { Comment, Valence } from "@/lib/api";
+import { valenceToHumanReadablePastTense } from "@/utils/valenceutils";
+
+import BorderedButton from "./BorderedButton";
+import type { MinimalResponse } from "./Cards";
+import ValenceBadge from "./ValenceBadge";
 
 // Config
 // -----------------------------------------------------------------------------

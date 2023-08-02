@@ -1,5 +1,4 @@
-import { MinimalResponse } from "@/components/Cards";
-import { Comment, Response, Valence } from "@/lib/api";
+import type { Response, Valence } from "@/lib/api";
 
 // Top K 'valed' comments
 // -----------------------------------------------------------------------------

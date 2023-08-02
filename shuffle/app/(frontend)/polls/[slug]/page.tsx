@@ -1,8 +1,10 @@
-import prisma from "@/lib/prisma";
-import Poll from "./client";
-import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs";
+import { notFound } from "next/navigation";
+
+import prisma from "@/lib/prisma";
 import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
+
+import Poll from "./client";
 
 // Types
 // -----------------------------------------------------------------------------

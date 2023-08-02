@@ -1,9 +1,11 @@
-import { Poll } from "@/lib/api";
-import prisma from "@/lib/prisma";
-import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
 import { auth } from "@clerk/nextjs";
 import { notFound } from "next/navigation";
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+
+import type { Poll } from "@/lib/api";
+import prisma from "@/lib/prisma";
+import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
 
 // GET /api/polls/:id
 // -----------------------------------------------------------------------------

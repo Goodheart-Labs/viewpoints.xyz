@@ -1,31 +1,34 @@
 "use client";
 
-import Cards, { MinimalResponse } from "@/components/Cards";
-import NewComment from "@/components/NewComment";
-import Responses from "@/components/Responses";
-import TwitterShare from "@/components/TwitterShare";
-import { Comment, FlaggedComment, Poll, Response } from "@/lib/api";
-import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
-import { SESSION_ID_COOKIE_NAME } from "@/providers/SessionProvider";
-import { useUser } from "@clerk/nextjs";
-import useHotkeys from "@reecelucas/react-use-hotkeys";
-import { AnimatePresence } from "framer-motion";
-import Head from "next/head";
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "react-query";
-import { getCookie } from "typescript-cookie";
-import { useModal } from "@/providers/ModalProvider";
-import axios from "axios";
-import { ensureItLooksLikeAQuestion } from "@/utils/stringutils";
-import BorderedButton from "@/components/BorderedButton";
+
+import { useUser } from "@clerk/nextjs";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
   ChatBubbleBottomCenterIcon,
 } from "@heroicons/react/20/solid";
-import sortBySeed from "@/lib/sortBySeed";
-import KeyboardShortcutsLegend from "@/components/KeyboardShortcutsLegend";
+import useHotkeys from "@reecelucas/react-use-hotkeys";
+import axios from "axios";
+import { AnimatePresence } from "framer-motion";
+import Head from "next/head";
+import { getCookie } from "typescript-cookie";
+
 import JiggleDiv from "@/components/animations/JiggleDiv";
+import BorderedButton from "@/components/BorderedButton";
+import type { MinimalResponse } from "@/components/Cards";
+import Cards from "@/components/Cards";
+import KeyboardShortcutsLegend from "@/components/KeyboardShortcutsLegend";
+import NewComment from "@/components/NewComment";
+import Responses from "@/components/Responses";
+import type { Comment, FlaggedComment, Response } from "@/lib/api";
+import { Poll } from "@/lib/api";
+import sortBySeed from "@/lib/sortBySeed";
+import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
+import { useModal } from "@/providers/ModalProvider";
+import { SESSION_ID_COOKIE_NAME } from "@/providers/SessionProvider";
+import { ensureItLooksLikeAQuestion } from "@/utils/stringutils";
 
 // Config
 // -----------------------------------------------------------------------------

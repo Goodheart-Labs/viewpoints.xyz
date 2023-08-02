@@ -1,6 +1,7 @@
-import prisma from "@/lib/prisma";
 import { polls_visibility_enum } from "@prisma/client";
 import Link from "next/link";
+
+import prisma from "@/lib/prisma";
 
 // Data
 // -----------------------------------------------------------------------------

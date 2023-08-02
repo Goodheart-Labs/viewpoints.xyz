@@ -1,9 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+
+import type { AllResponses, UserResponses } from "./responses";
 import {
   calculateResponsePercentages,
   getUserConsensusViews,
-  AllResponses,
-  UserResponses,
 } from "./responses";
 
 describe("calculateResponsePercentages", () => {

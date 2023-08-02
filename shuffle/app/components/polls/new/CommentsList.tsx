@@ -1,14 +1,16 @@
 "use client";
 
-import ControlledInput from "@/components/ui/ControlledInput";
-import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/20/solid";
-import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { v4 } from "uuid";
-import { pullAllBy, set, values } from "lodash/fp";
+import type { useForm } from "react-hook-form";
+
+import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
+import clsx from "clsx";
+import { pullAllBy, set, values } from "lodash/fp";
+import { v4 } from "uuid";
+
+import ControlledInput from "@/components/ui/ControlledInput";
 import LoadingText from "@/components/ui/LoadingText";
-import { useForm } from "react-hook-form";
 
 // Config
 // -----------------------------------------------------------------------------
