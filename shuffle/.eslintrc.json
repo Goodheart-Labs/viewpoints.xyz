@@ -1,3 +1,90 @@
 {
-  "extends": "next/core-web-vitals"
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "extends": [
+    "next/core-web-vitals",
+    "airbnb-base",
+    "airbnb/rules/react",
+    "airbnb/hooks",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/recommended",
+    "prettier"
+  ],
+  "plugins": [
+    "@typescript-eslint",
+    "prettier",
+    "simple-import-sort",
+    "import",
+    "unused-imports"
+  ],
+  "rules": {
+    "camelcase": "off",
+    "default-case": "off",
+    "no-continue": "off",
+    "no-empty-function": ["error", { "allow": ["constructors"] }],
+    "no-plusplus": "off",
+    "no-restricted-syntax": "off",
+    "no-use-before-define": "off",
+    "no-useless-constructor": "off",
+    "radix": "off",
+
+    "prettier/prettier": "error",
+
+    "react/function-component-definition": [
+      2,
+      {
+        "namedComponents": "arrow-function"
+      }
+    ],
+    "react/prop-types": "off",
+    "react/jsx-filename-extension": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/jsx-no-useless-fragment": ["error", { "allowExpressions": true }],
+    "react/react-in-jsx-scope": "off",
+    "react/require-default-props": "off",
+    "react/destructuring-assignment": "off",
+
+    "simple-import-sort/imports": [
+      "error",
+      {
+        "groups": [
+          ["^react"],
+          ["^@?\\w"],
+          ["^@\\/"],
+          ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
+          ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"]
+        ]
+      }
+    ],
+    "simple-import-sort/exports": "error",
+
+    "import/extensions": [
+      "error",
+      {
+        "ts": "never",
+        "json": "always",
+        "html": "always",
+        "css": "always"
+      }
+    ],
+    "import/no-unresolved": "off",
+    "import/prefer-default-export": "off",
+
+    "@typescript-eslint/consistent-type-imports": [
+      "error",
+      {
+        "prefer": "type-imports"
+      }
+    ],
+
+    "unused-imports/no-unused-imports": "error"
+  }
 }
