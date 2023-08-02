@@ -3,10 +3,9 @@
 import { useCallback, useMemo, useState } from "react";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import BorderedButton from "./BorderedButton";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { SignIn, UserButton, useUser } from "@clerk/nextjs";
 import clsx from "clsx";
 import { motion } from "framer-motion";
-import { SignIn } from "@clerk/clerk-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCurrentPoll } from "@/providers/CurrentPollProvider";
