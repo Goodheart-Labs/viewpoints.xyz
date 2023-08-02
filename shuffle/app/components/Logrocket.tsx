@@ -3,30 +3,22 @@
 import { useEffect } from "react";
 
 import { useUser } from "@clerk/nextjs";
-import Script from "next/script";
+import Logrocket from "logrocket";
 
-const Logrocket = () => {
+const LogrocketWrapper = () => {
   const { isSignedIn, user } = useUser();
 
   useEffect(() => {
-    if (!isSignedIn) return;
+    if (!isSignedIn || !user || !process.env.NEXT_PUBLIC_LOGROCKET_ID) return;
 
-    (window as any).LogRocket.identify("THE_USER_ID_IN_YOUR_APP", {
-      name: user.fullName,
+    Logrocket.init(process.env.NEXT_PUBLIC_LOGROCKET_ID);
+    Logrocket.identify(user.id, {
+      name: user.fullName || user.id,
       email: user.emailAddresses[0].emailAddress,
     });
-  }, [isSignedIn, user?.emailAddresses, user?.fullName]);
+  }, [isSignedIn, user]);
 
-  return (
-    <Script
-      src="https://cdn.lr-ingest.com/LogRocket.min.js"
-      crossOrigin="anonymous"
-      onLoad={() => {
-        (window as any).LogRocket &&
-          (window as any).LogRocket.init(process.env.NEXT_PUBLIC_LOGROCKET_ID);
-      }}
-    ></Script>
-  );
+  return null;
 };
 
-export default Logrocket;
+export default LogrocketWrapper;
