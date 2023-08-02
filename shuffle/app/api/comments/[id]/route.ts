@@ -12,7 +12,7 @@ export async function DELETE(
     params: { id },
   }: {
     params: { id: string };
-  }
+  },
 ) {
   const { userId } = auth();
 

@@ -14,7 +14,7 @@ export async function GET(
     params: { id },
   }: {
     params: { id: string };
-  }
+  },
 ) {
   const { userId } = auth();
 

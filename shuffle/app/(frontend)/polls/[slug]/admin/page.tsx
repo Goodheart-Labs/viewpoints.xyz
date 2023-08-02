@@ -68,17 +68,20 @@ async function getData({ params }: PollAdminPageProps) {
       ...acc,
       [comment.id]: comment,
     }),
-    {} as Record<string, Comment>
+    {} as Record<string, Comment>,
   );
 
-  const responsesBySession = responses.reduce((acc, response) => {
-    const sessionId = response.session_id as keyof typeof acc;
-    if (!acc[sessionId]) {
-      acc[sessionId] = [];
-    }
-    acc[sessionId].push(response);
-    return acc;
-  }, {} as Record<string, Response[]>);
+  const responsesBySession = responses.reduce(
+    (acc, response) => {
+      const sessionId = response.session_id as keyof typeof acc;
+      if (!acc[sessionId]) {
+        acc[sessionId] = [];
+      }
+      acc[sessionId].push(response);
+      return acc;
+    },
+    {} as Record<string, Response[]>,
+  );
 
   return { poll, comments, commentsById, responses, responsesBySession };
 }

@@ -20,7 +20,7 @@ const ControlledInput = ({
       setValue(e.target.value);
       propOnChange(e.target.value);
     },
-    [propOnChange]
+    [propOnChange],
   );
 
   return <input type="text" value={value} onChange={onChange} {...props} />;

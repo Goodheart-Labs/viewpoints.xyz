@@ -39,7 +39,7 @@ const BorderedButton = ({
       "inline-flex items-center px-2 py-1 sm:px-4 sm:py-2 text-sm font-medium border rounded-md focus:outline-none",
       styles[color || "red"],
       "disabled:text-gray-400 disabled:border-gray-400 disabled:hover:bg-transparent dark:disabled:text-gray-700 dark:disabled:border-gray-700",
-      props.className
+      props.className,
     )}
   >
     {children}

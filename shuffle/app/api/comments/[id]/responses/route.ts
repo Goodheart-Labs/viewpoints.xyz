@@ -11,7 +11,7 @@ export async function POST(
     params: { id },
   }: {
     params: { id: string };
-  }
+  },
 ) {
   const comment = await prisma.comments.findUnique({
     where: {

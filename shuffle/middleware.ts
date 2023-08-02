@@ -45,14 +45,14 @@ export default authMiddleware({
 
   publicRoutes: (req) => {
     const isPrivateRoute = privateRoutes.some((r) =>
-      new RegExp(r).test(req.nextUrl.pathname)
+      new RegExp(r).test(req.nextUrl.pathname),
     );
     if (isPrivateRoute) {
       return false;
     }
 
     const isPublicRoute = publicRoutes.some((r) =>
-      new RegExp(r).test(req.nextUrl.pathname)
+      new RegExp(r).test(req.nextUrl.pathname),
     );
     if (isPublicRoute) {
       return true;

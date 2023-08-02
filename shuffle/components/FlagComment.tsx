@@ -102,7 +102,7 @@ const FlagCommentView = ({
       animate={{ opacity: 1 }}
       className={clsx(
         "fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50",
-        "z-40"
+        "z-40",
       )}
       onClick={onCancel}
     />
@@ -131,7 +131,7 @@ const FlagComment = ({ comment, onCreate, onCancel }: FlagCommentProps) => {
       textareaRef.current?.focus();
       textareaRef.current?.setSelectionRange(
         textareaRef.current.value.length,
-        textareaRef.current.value.length
+        textareaRef.current.value.length,
       );
     }, 0);
   }, []);
@@ -142,7 +142,7 @@ const FlagComment = ({ comment, onCreate, onCancel }: FlagCommentProps) => {
     textareaRef.current.style.height = "inherit";
     textareaRef.current.style.height = `${Math.max(
       textareaRef.current.scrollHeight,
-      80
+      80,
     )}px`;
   }, [reason]);
 
@@ -152,7 +152,7 @@ const FlagComment = ({ comment, onCreate, onCancel }: FlagCommentProps) => {
         reason,
       });
       onCreate();
-    }
+    },
   );
 
   const onSave = useCallback(() => {

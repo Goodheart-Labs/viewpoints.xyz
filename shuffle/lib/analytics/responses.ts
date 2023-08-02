@@ -10,7 +10,7 @@ export type ResponsePercentages = { [commentId: number]: number };
 
 export const calculateResponsePercentages = (
   allResponses: AllResponses,
-  userResponses: UserResponses
+  userResponses: UserResponses,
 ): ResponsePercentages => {
   const userResponseMap: { [commentId: number]: Valence } = {};
   const commentResponseCounts: ResponsePercentages = {};
@@ -67,14 +67,14 @@ export type CommentConsensus = {
 
 export const getUserConsensusViews = (
   allResponses: AllResponses,
-  userResponses: UserResponses
+  userResponses: UserResponses,
 ): {
   mostConsensus: CommentConsensus | null;
   mostControversial: CommentConsensus | null;
 } => {
   const commentPercentages = calculateResponsePercentages(
     allResponses,
-    userResponses
+    userResponses,
   );
 
   let mostConsensus: CommentConsensus | null = null;
@@ -84,7 +84,7 @@ export const getUserConsensusViews = (
     const percentage = commentPercentages[commentId];
     const valence =
       userResponses.find(
-        (response) => response.comment_id === Number(commentId)
+        (response) => response.comment_id === Number(commentId),
       )?.valence || "skip";
 
     if (valence === "skip") continue;

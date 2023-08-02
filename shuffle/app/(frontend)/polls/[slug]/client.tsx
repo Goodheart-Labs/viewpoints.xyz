@@ -59,7 +59,7 @@ const Poll = ({
   const twitterShareUrl = useMemo(
     () =>
       `${url}?utm_source=twitter&utm_medium=social&utm_campaign=share&utm_content=${poll.id}`,
-    [poll.id, url]
+    [poll.id, url],
   );
 
   const twitterShareTitle = useMemo(() => poll.title, [poll.title]);
@@ -74,12 +74,12 @@ const Poll = ({
     },
     {
       initialData,
-    }
+    },
   );
 
   const commentIds = useMemo(
     () => (comments ?? []).map((comment) => comment.id),
-    [comments]
+    [comments],
   );
 
   const userId = useMemo(
@@ -88,7 +88,7 @@ const Poll = ({
       (typeof document === "undefined"
         ? undefined
         : getCookie(SESSION_ID_COOKIE_NAME)),
-    [user?.id]
+    [user?.id],
   );
 
   const { data: responses, isLoading: responsesLoading } = useQuery<Response[]>(
@@ -96,7 +96,7 @@ const Poll = ({
     async () => {
       const { data } = await axios.get(`/api/polls/${poll.id}/responses`);
       return data as Response[];
-    }
+    },
   );
 
   const { data: allResponses, refetch: refetchAllResponses } = useQuery<
@@ -115,7 +115,7 @@ const Poll = ({
     async () => {
       const { data } = await axios.get(`/api/polls/${poll.id}/flaggedComments`);
       return data as FlaggedComment[];
-    }
+    },
   );
 
   const newCommentMutation = useMutation(
@@ -135,7 +135,7 @@ const Poll = ({
         author_avatar_url,
       });
       await refetchComments();
-    }
+    },
   );
 
   // Callbacks
@@ -149,7 +149,7 @@ const Poll = ({
         interactionMode,
       });
     },
-    [amplitude, poll.id]
+    [amplitude, poll.id],
   );
 
   const onCreateComment = useCallback(
@@ -173,14 +173,14 @@ const Poll = ({
       poll.id,
       user?.fullName,
       user?.profileImageUrl,
-    ]
+    ],
   );
 
   const onCommentEdited = useCallback(
     async ({ id, comment }: Pick<Comment, "id" | "comment">) => {
       await onCreateComment(comment, id);
     },
-    [onCreateComment]
+    [onCreateComment],
   );
 
   const onCancelCreating = useCallback(() => {
@@ -202,7 +202,7 @@ const Poll = ({
       setCachedResponses((cachedResponses) => [...cachedResponses, response]);
       await refetchAllResponses();
     },
-    [refetchAllResponses]
+    [refetchAllResponses],
   );
 
   const { setModal } = useModal();
@@ -232,9 +232,9 @@ const Poll = ({
           [flaggedComment.comment_id]:
             (acc[flaggedComment.comment_id] ?? 0) + 1,
         }),
-        {} as Record<number, number>
+        {} as Record<number, number>,
       ),
-    [flaggedComments]
+    [flaggedComments],
   );
 
   const skipCountByCommentId = useMemo(
@@ -246,18 +246,18 @@ const Poll = ({
             (acc[response.comment_id] ?? 0) +
             (response.valence === "skip" ? 1 : 0),
         }),
-        {} as Record<number, number>
+        {} as Record<number, number>,
       ),
-    [responses]
+    [responses],
   );
 
   const enrichedResponses = useMemo(
     () =>
       [...(responses || []), ...cachedResponses].filter(
         (response, index, self) =>
-          self.findIndex((r) => r.comment_id === response.comment_id) === index
+          self.findIndex((r) => r.comment_id === response.comment_id) === index,
       ),
-    [responses, cachedResponses]
+    [responses, cachedResponses],
   );
 
   const currentUserResponsesByCommentId = useMemo(
@@ -267,9 +267,9 @@ const Poll = ({
           ...acc,
           [response.comment_id]: response,
         }),
-        {} as Record<number, MinimalResponse>
+        {} as Record<number, MinimalResponse>,
       ) ?? {},
-    [enrichedResponses]
+    [enrichedResponses],
   );
 
   const loading = useMemo(() => responsesLoading, [responsesLoading]);
@@ -290,7 +290,7 @@ const Poll = ({
 
   const sortedComments = useMemo(
     () => sortBySeed(comments ?? [], seed),
-    [comments, seed]
+    [comments, seed],
   );
 
   // Filter comments
@@ -304,7 +304,7 @@ const Poll = ({
           (flaggedComment) =>
             flaggedComment.comment_id === comment.id &&
             (flaggedComment.session_id === getCookie(SESSION_ID_COOKIE_NAME) ||
-              (user?.id && flaggedComment.user_id === user.id))
+              (user?.id && flaggedComment.user_id === user.id)),
         );
 
         const commentExceedsFlagThreshold =
@@ -329,7 +329,7 @@ const Poll = ({
       skipCountByCommentId,
       sortedComments,
       user?.id,
-    ]
+    ],
   );
 
   // Keep track of pages that have been viewed already

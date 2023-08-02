@@ -53,7 +53,7 @@ const EmbeddedCards = ({
       await axios.post(`/api/comments/${response.comment_id}/responses`, {
         ...response,
       });
-    }
+    },
   );
 
   // Callbacks
@@ -73,7 +73,7 @@ const EmbeddedCards = ({
 
       setCards(cards.filter((c) => c.id !== card.id));
     },
-    [cards, insertResponseMutation, onResponseCreated, sessionId, setCards]
+    [cards, insertResponseMutation, onResponseCreated, sessionId, setCards],
   );
 
   const onCommentFlagged = useCallback(
@@ -81,7 +81,7 @@ const EmbeddedCards = ({
       setCards(cards.filter((c) => c.id !== cardId));
       parentOnCommentFlagged();
     },
-    [cards, parentOnCommentFlagged, setCards]
+    [cards, parentOnCommentFlagged, setCards],
   );
 
   // Render

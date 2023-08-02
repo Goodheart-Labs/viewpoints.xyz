@@ -81,7 +81,7 @@ const NewPollPageClientView = ({
             type="text"
             className={clsx(
               "w-full text-lg",
-              errors?.title ? "border-red-500" : ""
+              errors?.title ? "border-red-500" : "",
             )}
             autoFocus
             {...register("title", {
@@ -107,7 +107,7 @@ const NewPollPageClientView = ({
             type="text"
             className={clsx(
               "w-full text-lg",
-              errors?.slug ? "border-red-500" : ""
+              errors?.slug ? "border-red-500" : "",
             )}
             {...register("slug")}
           />
@@ -130,7 +130,7 @@ const NewPollPageClientView = ({
             type="text"
             className={clsx(
               "w-full text-lg",
-              errors?.question ? "border-red-500" : ""
+              errors?.question ? "border-red-500" : "",
             )}
             {...register("question")}
           />
@@ -220,7 +220,7 @@ const NewPollPageClient = ({}: NewPollPageClientProps) => {
         question,
         comments,
       });
-    }
+    },
   );
 
   // Callbacks
@@ -236,7 +236,7 @@ const NewPollPageClient = ({}: NewPollPageClientProps) => {
 
       router.push(`/polls/${slug}`);
     },
-    [newPollMutation, router]
+    [newPollMutation, router],
   );
 
   // Update slug when title changes, if slug is empty

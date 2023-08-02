@@ -17,7 +17,7 @@ const CommentsList = ({
     async () => {
       const { data } = await axios.get(`/api/polls/${poll.id}/comments`);
       return data as Comment[];
-    }
+    },
   );
 
   // Callbacks
@@ -30,7 +30,7 @@ const CommentsList = ({
       onSuccess: () => {
         refetchComments();
       },
-    }
+    },
   );
 
   const onClickDeleteComment = useCallback(
@@ -41,7 +41,7 @@ const CommentsList = ({
           await deleteCommentMutation.mutateAsync(String(commentId));
         }
       },
-    [deleteCommentMutation]
+    [deleteCommentMutation],
   );
 
   // Render

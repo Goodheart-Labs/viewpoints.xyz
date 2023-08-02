@@ -14,7 +14,7 @@ export async function GET(
     params: { id },
   }: {
     params: { id: string };
-  }
+  },
 ) {
   const { userId } = auth();
   const session_id = cookies().get(SESSION_ID_COOKIE_NAME)?.value;

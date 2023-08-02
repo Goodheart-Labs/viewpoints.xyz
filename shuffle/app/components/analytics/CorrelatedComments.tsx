@@ -169,7 +169,7 @@ const CorrelatedComment = ({
 }) => (
   <li
     className={clsx(
-      "flex flex-col pb-4 mb-4 border-b border-gray-300 dark:border-gray-800"
+      "flex flex-col pb-4 mb-4 border-b border-gray-300 dark:border-gray-800",
     )}
     key={[commentA, commentB, commentAValence, commentBValence].join(",")}
   >
@@ -222,19 +222,19 @@ const EditingCorrelatedComments = ({
       await axios.patch(`/api/polls/${poll.id}`, {
         analytics_filters,
       });
-    }
+    },
   );
 
   // State
 
   const isLoading = useMemo(
     () => updatePollMutation.isLoading,
-    [updatePollMutation]
+    [updatePollMutation],
   );
 
   const isDefault = useMemo(
     () => (analyticsFilters.correlatedComments || []).length === 0,
-    [analyticsFilters]
+    [analyticsFilters],
   );
 
   // Callbacks
@@ -252,7 +252,7 @@ const EditingCorrelatedComments = ({
       setAnalyticsFilters(newAnalyticsFilters);
       updatePollMutation.mutate(newAnalyticsFilters);
     },
-    [analyticsFilters, setAnalyticsFilters, updatePollMutation]
+    [analyticsFilters, setAnalyticsFilters, updatePollMutation],
   );
 
   const onClickReset = useCallback(
@@ -267,7 +267,7 @@ const EditingCorrelatedComments = ({
       setAnalyticsFilters(newAnalyticsFilters);
       updatePollMutation.mutate(newAnalyticsFilters);
     },
-    [analyticsFilters, setAnalyticsFilters, updatePollMutation]
+    [analyticsFilters, setAnalyticsFilters, updatePollMutation],
   );
 
   // Render
@@ -303,7 +303,7 @@ const CorrelatedComments = ({
 
   const allCorrelatedComments = useMemo(
     () => getCorrelatedCommentPairs(responses ?? []),
-    [responses]
+    [responses],
   );
 
   const commentIdToCommentMap = useMemo(
@@ -313,9 +313,9 @@ const CorrelatedComments = ({
           ...acc,
           [comment.id]: comment,
         }),
-        {} as Record<Comment["id"], Comment>
+        {} as Record<Comment["id"], Comment>,
       ),
-    [comments]
+    [comments],
   );
 
   // State
@@ -327,7 +327,7 @@ const CorrelatedComments = ({
   // State
 
   const [analyticsFilters, setAnalyticsFilters] = useState<AnalyticsFilters>(
-    (poll.analytics_filters as AnalyticsFilters) ?? {}
+    (poll.analytics_filters as AnalyticsFilters) ?? {},
   );
 
   const selectedCorrelatedCommentKeys = useMemo(() => {
@@ -350,16 +350,16 @@ const CorrelatedComments = ({
     }
 
     return allCorrelatedComments.filter(({ key }) =>
-      selectedCorrelatedCommentKeys.includes(key)
+      selectedCorrelatedCommentKeys.includes(key),
     );
   }, [allCorrelatedComments, selectedCorrelatedCommentKeys]);
 
   const selectedCorrelatedComments = useMemo(
     () =>
       correlatedComments.filter(({ key }) =>
-        selectedCorrelatedCommentKeys.includes(key)
+        selectedCorrelatedCommentKeys.includes(key),
       ),
-    [correlatedComments, selectedCorrelatedCommentKeys]
+    [correlatedComments, selectedCorrelatedCommentKeys],
   );
 
   // Render

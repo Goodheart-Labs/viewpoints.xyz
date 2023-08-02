@@ -70,7 +70,7 @@ const AnalyticsSynopsisView = ({
                   undefined,
                   {
                     maximumFractionDigits: 2,
-                  }
+                  },
                 )}
                 %
               </span>{" "}
@@ -101,7 +101,7 @@ const AnalyticsSynopsis = ({
 }: AnalyticsSynopsisProps) => {
   const consensusViews = useMemo(
     () => getUserConsensusViews(allResponses, userResponses),
-    [allResponses, userResponses]
+    [allResponses, userResponses],
   );
 
   const mostConsensus = useMemo(
@@ -116,7 +116,7 @@ const AnalyticsSynopsis = ({
               ]?.comment,
           }
         : undefined,
-    [commentMap, consensusViews.mostConsensus]
+    [commentMap, consensusViews.mostConsensus],
   );
 
   const mostControversial = useMemo(
@@ -131,7 +131,7 @@ const AnalyticsSynopsis = ({
               ]?.comment,
           }
         : undefined,
-    [commentMap, consensusViews.mostControversial]
+    [commentMap, consensusViews.mostControversial],
   );
 
   if (

@@ -13,7 +13,7 @@ export async function POST(
     params: { id },
   }: {
     params: { id: string };
-  }
+  },
 ) {
   const { userId } = auth();
 

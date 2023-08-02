@@ -7,7 +7,7 @@ import { Comment, Response, Valence } from "@/lib/api";
 export const getTopKCommentIds = (
   responses: Response[],
   votePercentage: keyof VotePercentages,
-  k: number
+  k: number,
 ): number[] => {
   const stats = getCommentStatistics(responses);
 
@@ -23,12 +23,12 @@ export const getTopKCommentIds = (
 
 export const getTopKAgreedCommentIds = (
   responses: Response[],
-  k: number
+  k: number,
 ): number[] => getTopKCommentIds(responses, "agree", k);
 
 export const getTopKDisagreedCommentIds = (
   responses: Response[],
-  k: number
+  k: number,
 ): number[] => getTopKCommentIds(responses, "disagree", k);
 
 // Most certain comments
@@ -36,7 +36,7 @@ export const getTopKDisagreedCommentIds = (
 
 export const getTopKCertainCommentIds = (
   responses: Response[],
-  k: number
+  k: number,
 ): number[] => {
   const stats = getCommentStatistics(responses);
 
@@ -64,7 +64,7 @@ export const getTopKCertainCommentIds = (
 
 export const getTopKUncertainCommentIds = (
   responses: Response[],
-  k: number
+  k: number,
 ): number[] => {
   const stats = getCommentStatistics(responses);
 
@@ -106,7 +106,7 @@ export type CommentStats = {
 };
 
 export function getCommentStatistics(
-  responses: Response[]
+  responses: Response[],
 ): Record<number, CommentStats> {
   const stats: Record<number, CommentStats> = {};
 
@@ -171,7 +171,7 @@ export function getCommentStatistics(
         stats[commentId].votePercentages[a as keyof VotePercentages] >
         stats[commentId].votePercentages[b as keyof VotePercentages]
           ? a
-          : b
+          : b,
     );
 
     stats[commentId].mostCommonValence = mostCommonValence as Valence;
@@ -184,18 +184,21 @@ export function getCommentStatistics(
 // -----------------------------------------------------------------------------
 
 const groupResponsesByUser = (
-  responses: Response[]
+  responses: Response[],
 ): Record<string, Response[]> =>
-  responses.reduce((groups, response) => {
-    const { user_id, session_id } = response;
-    groups[user_id ?? session_id] = groups[user_id ?? session_id] ?? [];
-    groups[user_id ?? session_id].push(response);
-    return groups;
-  }, {} as Record<string, Response[]>);
+  responses.reduce(
+    (groups, response) => {
+      const { user_id, session_id } = response;
+      groups[user_id ?? session_id] = groups[user_id ?? session_id] ?? [];
+      groups[user_id ?? session_id].push(response);
+      return groups;
+    },
+    {} as Record<string, Response[]>,
+  );
 
 export const generateCommentPairs = (commentIds: number[]): number[][] =>
   commentIds.flatMap((id1) =>
-    commentIds.filter((id2) => id2 !== id1).map((id2) => [id1, id2])
+    commentIds.filter((id2) => id2 !== id1).map((id2) => [id1, id2]),
   );
 
 export type Correlation = {
@@ -209,14 +212,14 @@ export type Correlation = {
 
 export const getTopKCorrelatedCommentPairs = (
   responses: Response[],
-  k: number
+  k: number,
 ): Correlation[] => getCorrelatedCommentPairs(responses).slice(0, k);
 
 export const getCorrelatedCommentPairs = (
-  responses: Response[]
+  responses: Response[],
 ): Correlation[] => {
   const allCommentIds = Array.from(
-    new Set(responses.map((response) => response.comment_id))
+    new Set(responses.map((response) => response.comment_id)),
   );
 
   const userGroups = groupResponsesByUser(responses);
@@ -234,7 +237,7 @@ export const getCorrelatedCommentPairs = (
         acc[response.comment_id] = response.valence as Valence;
         return acc;
       },
-      {} as Record<number, Valence>
+      {} as Record<number, Valence>,
     );
 
     const pairs = generateCommentPairs(allCommentIds);

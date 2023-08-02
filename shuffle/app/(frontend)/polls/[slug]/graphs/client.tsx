@@ -24,7 +24,7 @@ const GraphsClient = ({
   // State
 
   const [graphType, setGraphType] = useState<GraphType>(
-    GraphType.BackgroundBar
+    GraphType.BackgroundBar,
   );
 
   // Sharing
@@ -32,7 +32,7 @@ const GraphsClient = ({
   const twitterShareUrl = useMemo(
     () =>
       `${url}?utm_source=twitter&utm_medium=social&utm_campaign=share&utm_content=${poll.id}`,
-    [poll.id, url]
+    [poll.id, url],
   );
 
   // Mutations
@@ -45,7 +45,7 @@ const GraphsClient = ({
     },
     {
       initialData: initialComments,
-    }
+    },
   );
 
   const { data: responses } = useQuery(
@@ -56,12 +56,12 @@ const GraphsClient = ({
     },
     {
       initialData: initialResponses,
-    }
+    },
   );
 
   const commentIds = useMemo(
     () => (comments ?? []).map((comment) => comment.id),
-    [comments]
+    [comments],
   );
 
   // Render

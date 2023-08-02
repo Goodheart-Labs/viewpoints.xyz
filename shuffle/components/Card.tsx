@@ -95,7 +95,7 @@ const CardView = ({
             type="button"
             className={clsx(
               "mr-1 p-1 hover:text-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:hover:text-red-300 dark:focus-visible:text-red-300",
-              isFlagging ? "text-red-500" : "text-gray-400"
+              isFlagging ? "text-red-500" : "text-gray-400",
             )}
           >
             <FlagIcon
@@ -108,7 +108,7 @@ const CardView = ({
             type="button"
             className={clsx(
               "p-1 hover:text-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 dark:hover:text-indigo-300 dark:focus-visible:text-indigo-300",
-              isEditing ? "text-indigo-500" : "text-gray-400"
+              isEditing ? "text-indigo-500" : "text-gray-400",
             )}
           >
             <PencilSquareIcon
@@ -257,11 +257,11 @@ const Card = ({
         setLeaveY(1000);
         setTimeout(
           () => onSwipe(card, "itsComplicated"),
-          ANIMATION_DURATION * 1000
+          ANIMATION_DURATION * 1000,
         );
       }
     },
-    [amplitude, card, onSwipe]
+    [amplitude, card, onSwipe],
   );
 
   const onAgree = useCallback(
@@ -279,7 +279,7 @@ const Card = ({
       setLeaveX(1000);
       setTimeout(() => onSwipe(card, "agree"), ANIMATION_DURATION * 1000);
     },
-    [amplitude, card, isActive, isEditing, isFlagging, onSwipe]
+    [amplitude, card, isActive, isEditing, isFlagging, onSwipe],
   );
 
   const onDisagree = useCallback(
@@ -297,7 +297,7 @@ const Card = ({
       setLeaveX(-1000);
       setTimeout(() => onSwipe(card, "disagree"), ANIMATION_DURATION * 1000);
     },
-    [amplitude, card, isActive, isEditing, isFlagging, onSwipe]
+    [amplitude, card, isActive, isEditing, isFlagging, onSwipe],
   );
 
   const onSkip = useCallback(
@@ -315,7 +315,7 @@ const Card = ({
       setLeaveY(-1000);
       setTimeout(() => onSwipe(card, "skip"), ANIMATION_DURATION * 1000);
     },
-    [amplitude, card, isActive, isEditing, isFlagging, onSwipe]
+    [amplitude, card, isActive, isEditing, isFlagging, onSwipe],
   );
 
   const onItsComplicated = useCallback(
@@ -333,10 +333,10 @@ const Card = ({
       setLeaveY(1000);
       setTimeout(
         () => onSwipe(card, "itsComplicated"),
-        ANIMATION_DURATION * 1000
+        ANIMATION_DURATION * 1000,
       );
     },
-    [amplitude, card, isActive, isEditing, isFlagging, onSwipe]
+    [amplitude, card, isActive, isEditing, isFlagging, onSwipe],
   );
 
   const onEdit = useCallback(
@@ -352,7 +352,7 @@ const Card = ({
 
       setIsEditing((editing) => !editing);
     },
-    [amplitude, card.id, card.poll_id, isActive, isFlagging]
+    [amplitude, card.id, card.poll_id, isActive, isFlagging],
   );
 
   const onCancelEdit = useCallback(() => {
@@ -413,7 +413,7 @@ const Card = ({
 
       setIsFlagging(true);
     },
-    [amplitude, card.id, card.poll_id, isActive, isEditing]
+    [amplitude, card.id, card.poll_id, isActive, isEditing],
   );
 
   const onCancelFlag = useCallback(() => {
@@ -451,7 +451,7 @@ const Card = ({
 
   const editingDisabled = useMemo(
     () => editingValue === card.comment,
-    [card.comment, editingValue]
+    [card.comment, editingValue],
   );
 
   // Keyboard shortcuts
@@ -494,7 +494,7 @@ const Card = ({
         }}
         className={clsx(
           "absolute sm:w-[600px] flex flex-col justify-center items-center cursor-grab overflow-hidden border border-gray-300 bg-white rounded-lg shadow dark:bg-gray-700 dark:drop-shadow-lg dark:border dark:border-gray-800",
-          isEditing ? "z-50" : "z-30"
+          isEditing ? "z-50" : "z-30",
         )}
       >
         <CardView
@@ -525,7 +525,7 @@ const Card = ({
           animate={isEditing ? { opacity: 1 } : { opacity: 0 }}
           className={clsx(
             "fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50",
-            isEditing ? "z-40" : "z-0"
+            isEditing ? "z-40" : "z-0",
           )}
           onClick={onCancelEdit}
         />

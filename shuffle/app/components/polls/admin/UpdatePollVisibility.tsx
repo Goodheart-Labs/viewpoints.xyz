@@ -73,14 +73,14 @@ const UpdatePollVisibility = ({ poll }: UpdatePollVisibilityProps) => {
         visibility,
       });
       return data as { poll: Poll };
-    }
+    },
   );
 
   const onChangePollVisibility = useCallback(
     async (value: polls_visibility_enum) => {
       await updatePollVisibilityMutation.mutateAsync(value);
     },
-    [updatePollVisibilityMutation]
+    [updatePollVisibilityMutation],
   );
 
   return (

@@ -3,7 +3,7 @@ const { Pool } = require("pg");
 
 const supabase = createClient(
   "https://yrehugaawjzlqnkoodru.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyZWh1Z2Fhd2p6bHFua29vZHJ1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4MjY3MTg1NiwiZXhwIjoxOTk4MjQ3ODU2fQ.pHSKIWWzQeK8JkiBIgnq1J9huDbvq2Qq_CI5FUghznw"
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyZWh1Z2Fhd2p6bHFua29vZHJ1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4MjY3MTg1NiwiZXhwIjoxOTk4MjQ3ODU2fQ.pHSKIWWzQeK8JkiBIgnq1J9huDbvq2Qq_CI5FUghznw",
 );
 
 const connectionString =
@@ -66,7 +66,7 @@ async function fetchData() {
             poll.core_question,
             poll.created_at,
             poll.analytics_filters ?? "{}",
-          ]
+          ],
         );
 
         const { id: pollId } = row;
@@ -85,7 +85,7 @@ async function fetchData() {
               comment.author_avatar_url,
               comment.comment,
               comment.created_at,
-            ]
+            ],
           );
 
           for (const flaggedComment of comment.flagged_comments) {
@@ -97,7 +97,7 @@ async function fetchData() {
                 flaggedComment.session_id,
                 flaggedComment.reason,
                 flaggedComment.created_at,
-              ]
+              ],
             );
           }
 
@@ -110,7 +110,7 @@ async function fetchData() {
                 response.session_id,
                 response.valence,
                 response.created_at,
-              ]
+              ],
             );
           }
         }

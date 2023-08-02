@@ -71,7 +71,7 @@ const Cards = ({
       await axios.post(`/api/comments/${response.comment_id}/responses`, {
         ...response,
       });
-    }
+    },
   );
 
   // Callbacks
@@ -99,7 +99,7 @@ const Cards = ({
       sessionId,
       setCards,
       user?.id,
-    ]
+    ],
   );
 
   const onCommentFlagged = useCallback(
@@ -107,16 +107,16 @@ const Cards = ({
       setCards(cards.filter((c) => c.id !== cardId));
       parentOnCommentFlagged();
     },
-    [cards, parentOnCommentFlagged, setCards]
+    [cards, parentOnCommentFlagged, setCards],
   );
 
   const commentMap = useMemo(
     () =>
       comments.reduce(
         (acc, comment) => ({ ...acc, [comment.id]: comment }),
-        {}
+        {},
       ),
-    [comments]
+    [comments],
   );
 
   // Render

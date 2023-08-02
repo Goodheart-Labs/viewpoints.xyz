@@ -28,17 +28,17 @@ const AnalyticsClient = ({
 
   const statistics = useMemo(
     () => getCommentStatistics(responses ?? []),
-    [responses]
+    [responses],
   );
 
   const mostCertainComments = useMemo(
     () => getTopKCertainCommentIds(responses ?? [], 5),
-    [responses]
+    [responses],
   );
 
   const mostUncertainComments = useMemo(
     () => getTopKUncertainCommentIds(responses ?? [], 5),
-    [responses]
+    [responses],
   );
 
   const commentIdToCommentMap = useMemo(
@@ -48,9 +48,9 @@ const AnalyticsClient = ({
           ...acc,
           [comment.id]: comment,
         }),
-        {} as Record<Comment["id"], Comment>
+        {} as Record<Comment["id"], Comment>,
       ),
-    [comments]
+    [comments],
   );
 
   const totalUserSessions = useMemo(() => {
@@ -110,7 +110,7 @@ const AnalyticsClient = ({
                   <ValenceBadge valence="agree">
                     {statistics[commentId].votePercentages.agree.toLocaleString(
                       undefined,
-                      { minimumFractionDigits: 2 }
+                      { minimumFractionDigits: 2 },
                     )}
                     %
                   </ValenceBadge>
@@ -127,7 +127,7 @@ const AnalyticsClient = ({
                   <ValenceBadge valence="skip">
                     {statistics[commentId].votePercentages.skip.toLocaleString(
                       undefined,
-                      { minimumFractionDigits: 2 }
+                      { minimumFractionDigits: 2 },
                     )}
                     %
                   </ValenceBadge>

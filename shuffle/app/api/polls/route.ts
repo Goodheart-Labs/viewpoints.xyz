@@ -39,8 +39,8 @@ export async function POST(request: NextRequest) {
               author_name,
               author_avatar_url,
             },
-          })
-        )
+          }),
+        ),
       );
     }
 

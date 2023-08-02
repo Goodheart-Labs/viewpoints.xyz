@@ -14,7 +14,7 @@ export async function GET(
     params: { id: idOrSlug },
   }: {
     params: { id: string };
-  }
+  },
 ) {
   const { userId } = auth();
   if (!userId) {
@@ -48,7 +48,7 @@ export async function PATCH(
     params: { id },
   }: {
     params: { id: string };
-  }
+  },
 ) {
   const { userId } = auth();
 
@@ -62,7 +62,7 @@ export async function PATCH(
 
   if (
     ["analytics_filters", "visibility"].every(
-      (value) => value in data === false
+      (value) => value in data === false,
     )
   ) {
     return NextResponse.json(poll);

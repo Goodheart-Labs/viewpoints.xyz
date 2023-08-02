@@ -78,7 +78,7 @@ const SelectCorrelatedComment = ({
                 className={({ active }) =>
                   clsx(
                     "relative cursor-default select-none py-2 pl-3 pr-9 mb-2 border-b",
-                    active ? "bg-indigo-600 text-white" : "text-gray-900"
+                    active ? "bg-indigo-600 text-white" : "text-gray-900",
                   )
                 }
               >
@@ -95,7 +95,7 @@ const SelectCorrelatedComment = ({
                       <span
                         className={clsx(
                           "ml-2 mt-1",
-                          selected && "font-semibold"
+                          selected && "font-semibold",
                         )}
                       >
                         <ValenceBadge valence={correlation.commentAValence} />{" "}
@@ -105,7 +105,7 @@ const SelectCorrelatedComment = ({
                       <span
                         className={clsx(
                           "ml-2 mt-1",
-                          selected && "font-semibold"
+                          selected && "font-semibold",
                         )}
                       >
                         <ValenceBadge valence={correlation.commentBValence} />{" "}
@@ -117,7 +117,7 @@ const SelectCorrelatedComment = ({
                       <span
                         className={clsx(
                           "absolute inset-y-0 right-0 flex items-center pr-4",
-                          active ? "text-white" : "text-indigo-600"
+                          active ? "text-white" : "text-indigo-600",
                         )}
                       >
                         <CheckIcon className="w-5 h-5" aria-hidden="true" />

@@ -15,7 +15,7 @@ export async function GET(
     params: { id },
   }: {
     params: { id: string };
-  }
+  },
 ) {
   const comments = await prisma.comments.findMany({
     where: {
@@ -38,7 +38,7 @@ export async function POST(
     params: { id },
   }: {
     params: { id: string };
-  }
+  },
 ) {
   const { userId } = auth();
   const user = await currentUser();

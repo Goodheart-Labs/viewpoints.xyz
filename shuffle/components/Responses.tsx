@@ -81,7 +81,7 @@ const ResponsesView = ({
               ).toLocaleString(undefined, {
                 maximumFractionDigits: 2,
               })}% of people also ${valenceToHumanReadablePastTense(
-                response.valence as Valence
+                response.valence as Valence,
               )}`}
               data-tooltip-float
               data-tooltip-place="right"
@@ -90,7 +90,7 @@ const ResponsesView = ({
                 undefined,
                 {
                   maximumFractionDigits: 2,
-                }
+                },
               )}
               %
             </span>
@@ -130,12 +130,12 @@ const Responses = ({ responses, comments, allResponses }: ResponsesProps) => {
         }))
         .sort((a, b) => dayjs(b.created_at).diff(dayjs(a.created_at)))
         .slice(0, viewAll ? responses.length : NUM_VISIBLE_RESPONSES),
-    [responses, viewAll, comments]
+    [responses, viewAll, comments],
   );
 
   const responsePercentages = useMemo(
     () => calculateResponsePercentages(allResponses, responses),
-    [allResponses, responses]
+    [allResponses, responses],
   );
 
   return (

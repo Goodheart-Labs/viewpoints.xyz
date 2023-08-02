@@ -18,7 +18,7 @@ const PollIframeClient = ({ filteredComments }: PollIframeClientProps) => {
           throw new Error("Function not implemented.");
         }}
         onCommentEdited={function (
-          card: Pick<comments, "id" | "comment">
+          card: Pick<comments, "id" | "comment">,
         ): void {
           throw new Error("Function not implemented.");
         }}
