@@ -1,17 +1,19 @@
 "use client";
 
-import CommentsList from "@/app/components/polls/new/CommentsList";
-import BorderedButton from "@/components/BorderedButton";
-import { slugify } from "@/utils/stringutils";
+import { useCallback } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useMutation } from "react-query";
+
 import { CheckIcon } from "@heroicons/react/20/solid";
+import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useMutation } from "react-query";
+
+import CommentsList from "@/app/components/polls/new/CommentsList";
+import BorderedButton from "@/components/BorderedButton";
+import { slugify } from "@/utils/stringutils";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -81,7 +83,7 @@ const NewPollPageClientView = ({
             type="text"
             className={clsx(
               "w-full text-lg",
-              errors?.title ? "border-red-500" : ""
+              errors?.title ? "border-red-500" : "",
             )}
             autoFocus
             {...register("title", {
@@ -107,7 +109,7 @@ const NewPollPageClientView = ({
             type="text"
             className={clsx(
               "w-full text-lg",
-              errors?.slug ? "border-red-500" : ""
+              errors?.slug ? "border-red-500" : "",
             )}
             {...register("slug")}
           />
@@ -130,7 +132,7 @@ const NewPollPageClientView = ({
             type="text"
             className={clsx(
               "w-full text-lg",
-              errors?.question ? "border-red-500" : ""
+              errors?.question ? "border-red-500" : "",
             )}
             {...register("question")}
           />
@@ -220,7 +222,7 @@ const NewPollPageClient = ({}: NewPollPageClientProps) => {
         question,
         comments,
       });
-    }
+    },
   );
 
   // Callbacks
@@ -236,7 +238,7 @@ const NewPollPageClient = ({}: NewPollPageClientProps) => {
 
       router.push(`/polls/${slug}`);
     },
-    [newPollMutation, router]
+    [newPollMutation, router],
   );
 
   // Update slug when title changes, if slug is empty

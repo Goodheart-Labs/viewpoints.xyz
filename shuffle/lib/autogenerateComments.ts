@@ -35,7 +35,7 @@ const PROMPT_TEXT = (
   title: string,
   question: string,
   n: number,
-  result: string = ""
+  result: string = "",
 ) => `
 generateComments() is a function that takes a title, question, and N as parameters, then returns a JSON array of N comments that relate to the title and question.
 
@@ -51,7 +51,7 @@ ${RESULT_MARKER} [
 ]
 
 PROMPT: generateComments(${JSON.stringify(title)}, ${JSON.stringify(
-  question
+  question,
 )}, ${n})
 ${RESULT_MARKER}${result}
 `;
@@ -61,7 +61,7 @@ ${RESULT_MARKER}${result}
 
 const autogenerateComments = async (
   { title, question, numComments = 10 }: AutogenerateCommentsSettings,
-  { temperature = 0.7 }: ModelSettings = { temperature: 0.7 }
+  { temperature = 0.7 }: ModelSettings = { temperature: 0.7 },
 ): Promise<string[]> => {
   const fullPrompt = PROMPT_TEXT(title, question, numComments);
 
@@ -82,12 +82,12 @@ const autogenerateComments = async (
   const completion = response.data.choices[0].text;
   if (!completion) {
     throw new Error(
-      `Invalid response from OpenAI: ${JSON.stringify(response.data)}`
+      `Invalid response from OpenAI: ${JSON.stringify(response.data)}`,
     );
   }
 
   const results = parseResults(
-    PROMPT_TEXT(title, question, numComments, completion)
+    PROMPT_TEXT(title, question, numComments, completion),
   );
 
   if (!results || results.length !== numComments) {

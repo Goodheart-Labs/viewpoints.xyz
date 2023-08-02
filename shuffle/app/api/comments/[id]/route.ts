@@ -1,7 +1,9 @@
+import { auth } from "@clerk/nextjs";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+
 import prisma from "@/lib/prisma";
 import { requirePollAdmin } from "@/utils/authutils";
-import { auth } from "@clerk/nextjs";
-import { NextRequest, NextResponse } from "next/server";
 
 // DELETE /api/comments/:id
 // -----------------------------------------------------------------------------
@@ -12,7 +14,7 @@ export async function DELETE(
     params: { id },
   }: {
     params: { id: string };
-  }
+  },
 ) {
   const { userId } = auth();
 

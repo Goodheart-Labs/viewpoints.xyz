@@ -1,8 +1,10 @@
 // TODO: validation
 
-import prisma from "@/lib/prisma";
 import { auth, currentUser } from "@clerk/nextjs";
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+
+import prisma from "@/lib/prisma";
 
 // POST /api/polls
 // -----------------------------------------------------------------------------
@@ -39,8 +41,8 @@ export async function POST(request: NextRequest) {
               author_name,
               author_avatar_url,
             },
-          })
-        )
+          }),
+        ),
       );
     }
 

@@ -1,4 +1,3 @@
-import AdminPill from "@/app/components/admin/AdminPill";
 import prisma from "@/lib/prisma";
 import AdminStateProvider from "@/providers/AdminStateProvider";
 

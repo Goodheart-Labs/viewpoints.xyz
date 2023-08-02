@@ -1,8 +1,9 @@
 import { Fragment, useCallback, useState } from "react";
+
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
+import type { polls_visibility_enum } from "@prisma/client";
 import clsx from "clsx";
-import { polls_visibility_enum } from "@prisma/client";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -30,7 +31,7 @@ const SelectMenuWithDetails = ({
   onChange: propsOnChange,
 }: SelectMenuWithDetailsProps) => {
   const [selected, setSelected] = useState(
-    (value ? options.find((o) => o.id === value) : null) ?? options[0]
+    (value ? options.find((o) => o.id === value) : null) ?? options[0],
   );
 
   const onChange = useCallback(
@@ -38,7 +39,7 @@ const SelectMenuWithDetails = ({
       setSelected(value);
       propsOnChange?.(value.id);
     },
-    [propsOnChange]
+    [propsOnChange],
   );
 
   return (
@@ -75,7 +76,7 @@ const SelectMenuWithDetails = ({
                     className={({ active }) =>
                       clsx(
                         active ? "bg-indigo-600 text-white" : "text-gray-900",
-                        "cursor-default select-none p-4 text-sm"
+                        "cursor-default select-none p-4 text-sm",
                       )
                     }
                     value={option}
@@ -106,7 +107,7 @@ const SelectMenuWithDetails = ({
                         <p
                           className={clsx(
                             active ? "text-indigo-200" : "text-gray-500",
-                            "mt-2"
+                            "mt-2",
                           )}
                         >
                           {option.description}

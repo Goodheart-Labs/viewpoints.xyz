@@ -1,13 +1,14 @@
+import { useCallback, useMemo, useState } from "react";
+
+import { useUser } from "@clerk/nextjs";
 import { CheckIcon, PlusIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import { motion } from "framer-motion";
-import { useCallback, useMemo, useState } from "react";
+
 import Avatar from "./Avatar";
 import BorderedButton from "./BorderedButton";
-import EditingContent from "./EditingContent";
 import { anonymousAvatar } from "./Cards";
-import { Comment } from "@/lib/api";
-import { useUser } from "@clerk/nextjs";
+import EditingContent from "./EditingContent";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -94,7 +95,7 @@ const NewCommentView = ({
       animate={{ opacity: 1 }}
       className={clsx(
         "fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50",
-        "z-40"
+        "z-40",
       )}
       onClick={onCancel}
     />
@@ -114,7 +115,7 @@ const NewComment = ({ onCreate, onCancel }: NewCommentProps) => {
       author_avatar_url: user?.profileImageUrl ?? anonymousAvatar,
       comment: editingValue,
     }),
-    [editingValue, user?.fullName, user?.profileImageUrl]
+    [editingValue, user?.fullName, user?.profileImageUrl],
   );
 
   const onSave = useCallback(() => {

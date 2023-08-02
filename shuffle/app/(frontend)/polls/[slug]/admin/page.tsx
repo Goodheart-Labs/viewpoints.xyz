@@ -1,12 +1,13 @@
-import CommentsList from "@/app/components/admin/CommentsList";
-import UpdatePollVisibility from "@/app/components/polls/admin/UpdatePollVisibility";
-import ValenceBadge from "@/components/ValenceBadge";
-import { Comment, Poll, Response, Valence } from "@/lib/api";
-import prisma from "@/lib/prisma";
-import { requirePollAdmin } from "@/utils/authutils";
 import { auth } from "@clerk/nextjs";
 import { UserIcon } from "@heroicons/react/20/solid";
 import { notFound } from "next/navigation";
+
+import CommentsList from "@/app/components/admin/CommentsList";
+import UpdatePollVisibility from "@/app/components/polls/admin/UpdatePollVisibility";
+import ValenceBadge from "@/components/ValenceBadge";
+import type { Comment, Poll, Response, Valence } from "@/lib/api";
+import prisma from "@/lib/prisma";
+import { requirePollAdmin } from "@/utils/authutils";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -68,17 +69,20 @@ async function getData({ params }: PollAdminPageProps) {
       ...acc,
       [comment.id]: comment,
     }),
-    {} as Record<string, Comment>
+    {} as Record<string, Comment>,
   );
 
-  const responsesBySession = responses.reduce((acc, response) => {
-    const sessionId = response.session_id as keyof typeof acc;
-    if (!acc[sessionId]) {
-      acc[sessionId] = [];
-    }
-    acc[sessionId].push(response);
-    return acc;
-  }, {} as Record<string, Response[]>);
+  const responsesBySession = responses.reduce(
+    (acc, response) => {
+      const sessionId = response.session_id as keyof typeof acc;
+      if (!acc[sessionId]) {
+        acc[sessionId] = [];
+      }
+      acc[sessionId].push(response);
+      return acc;
+    },
+    {} as Record<string, Response[]>,
+  );
 
   return { poll, comments, commentsById, responses, responsesBySession };
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { TwitterShareButton, TwitterIcon } from "react-share";
+import { TwitterIcon, TwitterShareButton } from "react-share";
 
 interface TwitterShareProps {
   url: string;

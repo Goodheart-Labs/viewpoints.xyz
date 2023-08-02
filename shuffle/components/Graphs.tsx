@@ -1,5 +1,6 @@
-import { Comment, Response, Valence } from "@/lib/api";
 import { Fragment, useMemo } from "react";
+
+import type { Comment, Response, Valence } from "@/lib/api";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -96,17 +97,20 @@ const valenceToNumber = (valence: Response["valence"]): number => {
 const PerUserHeatmap: React.FC<{ responses: Response[] }> = ({ responses }) => {
   const totalResponseValue = (responses ?? []).reduce(
     (sum, response) => sum + valenceToNumber(response.valence),
-    0
+    0,
   );
 
   const meanResponseValue = totalResponseValue / (responses ?? []).length;
 
-  const grid = responses.reduce((acc, cur) => {
-    if (!acc[cur.user_id ?? cur.session_id])
-      acc[cur.user_id ?? cur.session_id] = {};
-    acc[cur.user_id ?? cur.session_id][cur.comment_id] = cur.valence;
-    return acc;
-  }, {} as { [userId: string]: { [commentId: string]: Response["valence"] } });
+  const grid = responses.reduce(
+    (acc, cur) => {
+      if (!acc[cur.user_id ?? cur.session_id])
+        acc[cur.user_id ?? cur.session_id] = {};
+      acc[cur.user_id ?? cur.session_id][cur.comment_id] = cur.valence;
+      return acc;
+    },
+    {} as { [userId: string]: { [commentId: string]: Response["valence"] } },
+  );
 
   return (
     <div
@@ -125,7 +129,7 @@ const PerUserHeatmap: React.FC<{ responses: Response[] }> = ({ responses }) => {
                 opacity:
                   Math.abs(
                     valenceToNumber(valence as Response["valence"]) -
-                      meanResponseValue
+                      meanResponseValue,
                   ) /
                     2 +
                   0.5,
@@ -141,13 +145,13 @@ const PerUserHeatmap: React.FC<{ responses: Response[] }> = ({ responses }) => {
 const TotalHeatmap: React.FC<{ responses: Response[] }> = ({ responses }) => {
   const totalResponseValue = (responses ?? []).reduce(
     (sum, response) => sum + valenceToNumber(response.valence),
-    0
+    0,
   );
 
   const meanResponseValue = totalResponseValue / (responses ?? []).length;
 
   const sortedResponses = responses.sort((a, b) =>
-    valenceToNumber(a.valence) > valenceToNumber(b.valence) ? 1 : -1
+    valenceToNumber(a.valence) > valenceToNumber(b.valence) ? 1 : -1,
   );
 
   return (
@@ -166,13 +170,13 @@ const TotalHeatmap: React.FC<{ responses: Response[] }> = ({ responses }) => {
             width: "20px",
             height: "20px",
             backgroundColor: valenceToColor(
-              response.valence as Response["valence"]
+              response.valence as Response["valence"],
             ),
             margin: "2px",
             opacity:
               Math.abs(
                 valenceToNumber(response.valence as Response["valence"]) -
-                  meanResponseValue
+                  meanResponseValue,
               ) /
                 2 +
               0.5,
@@ -224,7 +228,7 @@ const numericalValence = (valence: Response["valence"] | "none"): number => {
 };
 
 const stringValence = (
-  numericalValence: number
+  numericalValence: number,
 ): Response["valence"] | "none" => {
   switch (numericalValence) {
     case 1:
@@ -320,7 +324,7 @@ const getSimilarityMatrix = (opinionMatrix: number[][]) => {
   const numUsers = opinionMatrix.length;
 
   const similarityMatrix = deepClone(
-    Array(numUsers).fill(Array(numUsers).fill(0))
+    Array(numUsers).fill(Array(numUsers).fill(0)),
   );
 
   for (let i = 0; i < numUsers; i++) {
@@ -356,7 +360,7 @@ const KMEANS_THRESHOLD = 0.0001;
 const kmeans = (
   opinionMatrix: number[][],
   k: number,
-  maxIterations = 1000
+  maxIterations = 1000,
 ): { [clusterIndex: number]: number[] } => {
   let centroids = opinionMatrix
     .slice() // create a copy of the array
@@ -389,7 +393,7 @@ const kmeans = (
       return clusterUsers
         .reduce(
           (mean, user) => mean.map((value, i) => value + user[i]),
-          new Array(clusterUsers[0].length).fill(0)
+          new Array(clusterUsers[0].length).fill(0),
         )
         .map((value) => value / clusterUsers.length);
     });
@@ -398,7 +402,8 @@ const kmeans = (
   } while (
     centroids.some(
       (centroid, i) =>
-        Math.abs(cosineSimilarity(centroid, oldCentroids[i])) > KMEANS_THRESHOLD
+        Math.abs(cosineSimilarity(centroid, oldCentroids[i])) >
+        KMEANS_THRESHOLD,
     ) &&
     iteration < maxIterations
   );
@@ -448,10 +453,10 @@ const clusterUsers = (opinionMatrix: number[][], responses: Response[]) => {
             (valence, commentIndex): ClusteredComment => ({
               commentId: commentIds[commentIndex],
               valence: stringValence(valence),
-            })
+            }),
           ),
-        })
-      )
+        }),
+      ),
     );
 };
 
@@ -464,7 +469,7 @@ const ClustersList = ({ responses }: { responses: Response[] }) => {
 
   const clusters = useMemo(
     () => clusterUsers(opinionMatrix, responses),
-    [responses, opinionMatrix]
+    [responses, opinionMatrix],
   );
 
   return (
@@ -533,7 +538,7 @@ const ClusterQuestions = ({ responses }: { responses: Response[] }) => {
   const opinionMatrix = useMemo(() => getOpinionMatrix(responses), [responses]);
   const clusters = useMemo(
     () => clusterUsers(opinionMatrix, responses),
-    [responses, opinionMatrix]
+    [responses, opinionMatrix],
   );
 
   const commentIds = useMemo(() => getCommentIds(responses), [responses]);
@@ -552,7 +557,7 @@ const ClusterQuestions = ({ responses }: { responses: Response[] }) => {
           (u) =>
             u.comments
               .filter((c) => c.commentId === question.commentId)
-              .map((c) => c.valence) as Valence[]
+              .map((c) => c.valence) as Valence[],
         );
 
         question.valenceCounts.push(countValences(responses));
@@ -608,14 +613,16 @@ const ClusterQuestions = ({ responses }: { responses: Response[] }) => {
 // We can use the idea of an opinion matrix, plus a projection, to create a
 // two-dimensional representation of the users.
 
-import "chart.js/auto";
 import { Scatter } from "react-chartjs-2";
+
 import { TSNE } from "@/lib/tsne";
+
+import "chart.js/auto";
 
 const computeTsne = (
   opinionMatrix: number[][],
   perplexity: number = 30,
-  epsilon: number = 10
+  epsilon: number = 10,
 ) => {
   const model = new TSNE({
     dim: 2,
@@ -651,7 +658,7 @@ const ScatterPlot = ({
         }, ${Math.random() * 255}, 0.2)`,
         pointRadius: 5,
       })),
-    [clusters, data]
+    [clusters, data],
   );
 
   const options = {
@@ -668,7 +675,7 @@ const TwoDimensionalGraph = ({ responses }: { responses: Response[] }) => {
   const opinionMatrix = useMemo(() => getOpinionMatrix(responses), [responses]);
   const clusters = useMemo(
     () => clusterUsers(opinionMatrix, responses),
-    [responses, opinionMatrix]
+    [responses, opinionMatrix],
   );
 
   const tsneData = useMemo(() => computeTsne(opinionMatrix), [opinionMatrix]);

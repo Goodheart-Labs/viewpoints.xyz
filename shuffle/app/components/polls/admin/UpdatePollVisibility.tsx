@@ -1,11 +1,13 @@
 "use client";
 
-import SelectMenuWithDetails from "@/components/ui/SelectMenuWithDetails";
-import { Poll } from "@/lib/api";
-import { polls_visibility_enum } from "@prisma/client";
-import axios from "axios";
 import { useCallback } from "react";
 import { useMutation } from "react-query";
+
+import { polls_visibility_enum } from "@prisma/client";
+import axios from "axios";
+
+import SelectMenuWithDetails from "@/components/ui/SelectMenuWithDetails";
+import type { Poll } from "@/lib/api";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -73,14 +75,14 @@ const UpdatePollVisibility = ({ poll }: UpdatePollVisibilityProps) => {
         visibility,
       });
       return data as { poll: Poll };
-    }
+    },
   );
 
   const onChangePollVisibility = useCallback(
     async (value: polls_visibility_enum) => {
       await updatePollVisibilityMutation.mutateAsync(value);
     },
-    [updatePollVisibilityMutation]
+    [updatePollVisibilityMutation],
   );
 
   return (

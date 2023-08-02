@@ -1,31 +1,34 @@
 "use client";
 
-import Cards, { MinimalResponse } from "@/components/Cards";
-import NewComment from "@/components/NewComment";
-import Responses from "@/components/Responses";
-import TwitterShare from "@/components/TwitterShare";
-import { Comment, FlaggedComment, Poll, Response } from "@/lib/api";
-import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
-import { SESSION_ID_COOKIE_NAME } from "@/providers/SessionProvider";
-import { useUser } from "@clerk/nextjs";
-import useHotkeys from "@reecelucas/react-use-hotkeys";
-import { AnimatePresence } from "framer-motion";
-import Head from "next/head";
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "react-query";
-import { getCookie } from "typescript-cookie";
-import { useModal } from "@/providers/ModalProvider";
-import axios from "axios";
-import { ensureItLooksLikeAQuestion } from "@/utils/stringutils";
-import BorderedButton from "@/components/BorderedButton";
+
+import { useUser } from "@clerk/nextjs";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
   ChatBubbleBottomCenterIcon,
 } from "@heroicons/react/20/solid";
-import sortBySeed from "@/lib/sortBySeed";
-import KeyboardShortcutsLegend from "@/components/KeyboardShortcutsLegend";
+import useHotkeys from "@reecelucas/react-use-hotkeys";
+import axios from "axios";
+import { AnimatePresence } from "framer-motion";
+import Head from "next/head";
+import { getCookie } from "typescript-cookie";
+
 import JiggleDiv from "@/components/animations/JiggleDiv";
+import BorderedButton from "@/components/BorderedButton";
+import type { MinimalResponse } from "@/components/Cards";
+import Cards from "@/components/Cards";
+import KeyboardShortcutsLegend from "@/components/KeyboardShortcutsLegend";
+import NewComment from "@/components/NewComment";
+import Responses from "@/components/Responses";
+import type { Comment, FlaggedComment, Response } from "@/lib/api";
+import { Poll } from "@/lib/api";
+import sortBySeed from "@/lib/sortBySeed";
+import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
+import { useModal } from "@/providers/ModalProvider";
+import { SESSION_ID_COOKIE_NAME } from "@/providers/SessionProvider";
+import { ensureItLooksLikeAQuestion } from "@/utils/stringutils";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -59,7 +62,7 @@ const Poll = ({
   const twitterShareUrl = useMemo(
     () =>
       `${url}?utm_source=twitter&utm_medium=social&utm_campaign=share&utm_content=${poll.id}`,
-    [poll.id, url]
+    [poll.id, url],
   );
 
   const twitterShareTitle = useMemo(() => poll.title, [poll.title]);
@@ -74,12 +77,12 @@ const Poll = ({
     },
     {
       initialData,
-    }
+    },
   );
 
   const commentIds = useMemo(
     () => (comments ?? []).map((comment) => comment.id),
-    [comments]
+    [comments],
   );
 
   const userId = useMemo(
@@ -88,7 +91,7 @@ const Poll = ({
       (typeof document === "undefined"
         ? undefined
         : getCookie(SESSION_ID_COOKIE_NAME)),
-    [user?.id]
+    [user?.id],
   );
 
   const { data: responses, isLoading: responsesLoading } = useQuery<Response[]>(
@@ -96,7 +99,7 @@ const Poll = ({
     async () => {
       const { data } = await axios.get(`/api/polls/${poll.id}/responses`);
       return data as Response[];
-    }
+    },
   );
 
   const { data: allResponses, refetch: refetchAllResponses } = useQuery<
@@ -115,7 +118,7 @@ const Poll = ({
     async () => {
       const { data } = await axios.get(`/api/polls/${poll.id}/flaggedComments`);
       return data as FlaggedComment[];
-    }
+    },
   );
 
   const newCommentMutation = useMutation(
@@ -135,7 +138,7 @@ const Poll = ({
         author_avatar_url,
       });
       await refetchComments();
-    }
+    },
   );
 
   // Callbacks
@@ -149,7 +152,7 @@ const Poll = ({
         interactionMode,
       });
     },
-    [amplitude, poll.id]
+    [amplitude, poll.id],
   );
 
   const onCreateComment = useCallback(
@@ -173,14 +176,14 @@ const Poll = ({
       poll.id,
       user?.fullName,
       user?.profileImageUrl,
-    ]
+    ],
   );
 
   const onCommentEdited = useCallback(
     async ({ id, comment }: Pick<Comment, "id" | "comment">) => {
       await onCreateComment(comment, id);
     },
-    [onCreateComment]
+    [onCreateComment],
   );
 
   const onCancelCreating = useCallback(() => {
@@ -202,7 +205,7 @@ const Poll = ({
       setCachedResponses((cachedResponses) => [...cachedResponses, response]);
       await refetchAllResponses();
     },
-    [refetchAllResponses]
+    [refetchAllResponses],
   );
 
   const { setModal } = useModal();
@@ -232,9 +235,9 @@ const Poll = ({
           [flaggedComment.comment_id]:
             (acc[flaggedComment.comment_id] ?? 0) + 1,
         }),
-        {} as Record<number, number>
+        {} as Record<number, number>,
       ),
-    [flaggedComments]
+    [flaggedComments],
   );
 
   const skipCountByCommentId = useMemo(
@@ -246,18 +249,18 @@ const Poll = ({
             (acc[response.comment_id] ?? 0) +
             (response.valence === "skip" ? 1 : 0),
         }),
-        {} as Record<number, number>
+        {} as Record<number, number>,
       ),
-    [responses]
+    [responses],
   );
 
   const enrichedResponses = useMemo(
     () =>
       [...(responses || []), ...cachedResponses].filter(
         (response, index, self) =>
-          self.findIndex((r) => r.comment_id === response.comment_id) === index
+          self.findIndex((r) => r.comment_id === response.comment_id) === index,
       ),
-    [responses, cachedResponses]
+    [responses, cachedResponses],
   );
 
   const currentUserResponsesByCommentId = useMemo(
@@ -267,9 +270,9 @@ const Poll = ({
           ...acc,
           [response.comment_id]: response,
         }),
-        {} as Record<number, MinimalResponse>
+        {} as Record<number, MinimalResponse>,
       ) ?? {},
-    [enrichedResponses]
+    [enrichedResponses],
   );
 
   const loading = useMemo(() => responsesLoading, [responsesLoading]);
@@ -290,7 +293,7 @@ const Poll = ({
 
   const sortedComments = useMemo(
     () => sortBySeed(comments ?? [], seed),
-    [comments, seed]
+    [comments, seed],
   );
 
   // Filter comments
@@ -304,7 +307,7 @@ const Poll = ({
           (flaggedComment) =>
             flaggedComment.comment_id === comment.id &&
             (flaggedComment.session_id === getCookie(SESSION_ID_COOKIE_NAME) ||
-              (user?.id && flaggedComment.user_id === user.id))
+              (user?.id && flaggedComment.user_id === user.id)),
         );
 
         const commentExceedsFlagThreshold =
@@ -329,7 +332,7 @@ const Poll = ({
       skipCountByCommentId,
       sortedComments,
       user?.id,
-    ]
+    ],
   );
 
   // Keep track of pages that have been viewed already

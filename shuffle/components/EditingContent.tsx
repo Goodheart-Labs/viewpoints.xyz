@@ -1,7 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { contentClasses, contentMinHeight } from "./Card";
+
 import clsx from "clsx";
-import { Comment } from "@/lib/api";
+
+import { contentClasses, contentMinHeight } from "./Card";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -46,7 +47,7 @@ const EditingContentView = ({
     ref={textareaRef}
     className={clsx(
       contentClasses,
-      "w-full text-lg text-gray-700 resize-none focus:outline-none focus:text-black hover:bg-gray-100 focus:bg-gray-100"
+      "w-full text-lg text-gray-700 resize-none focus:outline-none focus:text-black hover:bg-gray-100 focus:bg-gray-100",
     )}
     value={value}
     onChange={(e) => setValue(e.target.value)}
@@ -79,7 +80,7 @@ const EditingContent = ({
       textareaRef.current?.focus();
       textareaRef.current?.setSelectionRange(
         textareaRef.current.value.length,
-        textareaRef.current.value.length
+        textareaRef.current.value.length,
       );
     }, 0);
   }, []);
@@ -92,7 +93,7 @@ const EditingContent = ({
     textareaRef.current.style.height = "inherit";
     textareaRef.current.style.height = `${Math.max(
       textareaRef.current.scrollHeight,
-      contentMinHeight
+      contentMinHeight,
     )}px`;
   }, [localValue, setValue]);
 

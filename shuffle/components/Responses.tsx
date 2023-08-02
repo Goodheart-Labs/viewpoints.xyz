@@ -1,15 +1,16 @@
-import { AnimatePresence, motion } from "framer-motion";
-import BorderedButton from "./BorderedButton";
-import { MinimalResponse } from "./Cards";
-import { Comment, Valence } from "@/lib/api";
 import { useCallback, useMemo, useState } from "react";
-import ValenceBadge from "./ValenceBadge";
-import { valenceToHumanReadablePastTense } from "@/utils/valenceutils";
-import {
-  ResponsePercentages,
-  calculateResponsePercentages,
-} from "@/lib/analytics/responses";
+
 import dayjs from "dayjs";
+import { AnimatePresence, motion } from "framer-motion";
+
+import type { ResponsePercentages } from "@/lib/analytics/responses";
+import { calculateResponsePercentages } from "@/lib/analytics/responses";
+import type { Comment, Valence } from "@/lib/api";
+import { valenceToHumanReadablePastTense } from "@/utils/valenceutils";
+
+import BorderedButton from "./BorderedButton";
+import type { MinimalResponse } from "./Cards";
+import ValenceBadge from "./ValenceBadge";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -81,7 +82,7 @@ const ResponsesView = ({
               ).toLocaleString(undefined, {
                 maximumFractionDigits: 2,
               })}% of people also ${valenceToHumanReadablePastTense(
-                response.valence as Valence
+                response.valence as Valence,
               )}`}
               data-tooltip-float
               data-tooltip-place="right"
@@ -90,7 +91,7 @@ const ResponsesView = ({
                 undefined,
                 {
                   maximumFractionDigits: 2,
-                }
+                },
               )}
               %
             </span>
@@ -130,12 +131,12 @@ const Responses = ({ responses, comments, allResponses }: ResponsesProps) => {
         }))
         .sort((a, b) => dayjs(b.created_at).diff(dayjs(a.created_at)))
         .slice(0, viewAll ? responses.length : NUM_VISIBLE_RESPONSES),
-    [responses, viewAll, comments]
+    [responses, viewAll, comments],
   );
 
   const responsePercentages = useMemo(
     () => calculateResponsePercentages(allResponses, responses),
-    [allResponses, responses]
+    [allResponses, responses],
   );
 
   return (

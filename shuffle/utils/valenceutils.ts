@@ -6,7 +6,7 @@ export const valenceToHumanReadablePresentTense = (valence: Valence) =>
     disagree: "disagree",
     skip: "skip",
     itsComplicated: "it's complicated",
-  }[valence]);
+  })[valence];
 
 export const valenceToHumanReadablePastTense = (valence: Valence) =>
   ({
@@ -14,4 +14,4 @@ export const valenceToHumanReadablePastTense = (valence: Valence) =>
     disagree: "disagreed",
     skip: "skipped",
     itsComplicated: "said that it's complicated",
-  }[valence]);
+  })[valence];

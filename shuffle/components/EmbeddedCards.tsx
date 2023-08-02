@@ -1,17 +1,19 @@
 "use client";
 
-import Card from "./Card";
-import { AnimatePresence, motion } from "framer-motion";
 import { useCallback } from "react";
-import BorderedButton from "./BorderedButton";
-import { ChatBubbleBottomCenterIcon } from "@heroicons/react/20/solid";
-import { Comment, Valence } from "@/lib/api";
-import { useSession } from "@/providers/SessionProvider";
 import { useMutation } from "react-query";
-import { useUser } from "@clerk/nextjs";
-import useOverridableState from "@/lib/useOverridableState";
+
+import { ChatBubbleBottomCenterIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
-import { MinimalResponse } from "./Cards";
+import { AnimatePresence, motion } from "framer-motion";
+
+import type { Comment, Valence } from "@/lib/api";
+import useOverridableState from "@/lib/useOverridableState";
+import { useSession } from "@/providers/SessionProvider";
+
+import BorderedButton from "./BorderedButton";
+import Card from "./Card";
+import type { MinimalResponse } from "./Cards";
 
 // Setup
 // -----------------------------------------------------------------------------
@@ -53,7 +55,7 @@ const EmbeddedCards = ({
       await axios.post(`/api/comments/${response.comment_id}/responses`, {
         ...response,
       });
-    }
+    },
   );
 
   // Callbacks
@@ -73,7 +75,7 @@ const EmbeddedCards = ({
 
       setCards(cards.filter((c) => c.id !== card.id));
     },
-    [cards, insertResponseMutation, onResponseCreated, sessionId, setCards]
+    [cards, insertResponseMutation, onResponseCreated, sessionId, setCards],
   );
 
   const onCommentFlagged = useCallback(
@@ -81,7 +83,7 @@ const EmbeddedCards = ({
       setCards(cards.filter((c) => c.id !== cardId));
       parentOnCommentFlagged();
     },
-    [cards, parentOnCommentFlagged, setCards]
+    [cards, parentOnCommentFlagged, setCards],
   );
 
   // Render

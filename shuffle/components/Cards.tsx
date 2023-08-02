@@ -1,20 +1,23 @@
 "use client";
 
-import Card from "./Card";
-import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useMemo } from "react";
-import BorderedButton from "./BorderedButton";
+import { useMutation } from "react-query";
+
+import { useUser } from "@clerk/nextjs";
 import {
   ChatBubbleBottomCenterIcon,
   PlusIcon,
 } from "@heroicons/react/20/solid";
-import { Comment, Valence, Response } from "@/lib/api";
-import { useSession } from "@/providers/SessionProvider";
-import { useMutation } from "react-query";
-import { useUser } from "@clerk/nextjs";
-import useOverridableState from "@/lib/useOverridableState";
-import AnalyticsSynopsis from "./AnalyticsSynopsis";
 import axios from "axios";
+import { AnimatePresence, motion } from "framer-motion";
+
+import type { Comment, Response, Valence } from "@/lib/api";
+import useOverridableState from "@/lib/useOverridableState";
+import { useSession } from "@/providers/SessionProvider";
+
+import AnalyticsSynopsis from "./AnalyticsSynopsis";
+import BorderedButton from "./BorderedButton";
+import Card from "./Card";
 
 // Setup
 // -----------------------------------------------------------------------------
@@ -71,7 +74,7 @@ const Cards = ({
       await axios.post(`/api/comments/${response.comment_id}/responses`, {
         ...response,
       });
-    }
+    },
   );
 
   // Callbacks
@@ -99,7 +102,7 @@ const Cards = ({
       sessionId,
       setCards,
       user?.id,
-    ]
+    ],
   );
 
   const onCommentFlagged = useCallback(
@@ -107,16 +110,16 @@ const Cards = ({
       setCards(cards.filter((c) => c.id !== cardId));
       parentOnCommentFlagged();
     },
-    [cards, parentOnCommentFlagged, setCards]
+    [cards, parentOnCommentFlagged, setCards],
   );
 
   const commentMap = useMemo(
     () =>
       comments.reduce(
         (acc, comment) => ({ ...acc, [comment.id]: comment }),
-        {}
+        {},
       ),
-    [comments]
+    [comments],
   );
 
   // Render

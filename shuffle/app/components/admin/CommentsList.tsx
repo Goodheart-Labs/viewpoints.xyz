@@ -1,9 +1,12 @@
 "use client";
 
-import { Poll, Comment } from "@/lib/api";
-import axios from "axios";
-import { PropsWithChildren, useCallback } from "react";
+import type { PropsWithChildren } from "react";
+import { useCallback } from "react";
 import { useMutation, useQuery } from "react-query";
+
+import axios from "axios";
+
+import type { Comment, Poll } from "@/lib/api";
 
 const CommentsList = ({
   poll,
@@ -17,7 +20,7 @@ const CommentsList = ({
     async () => {
       const { data } = await axios.get(`/api/polls/${poll.id}/comments`);
       return data as Comment[];
-    }
+    },
   );
 
   // Callbacks
@@ -30,7 +33,7 @@ const CommentsList = ({
       onSuccess: () => {
         refetchComments();
       },
-    }
+    },
   );
 
   const onClickDeleteComment = useCallback(
@@ -41,7 +44,7 @@ const CommentsList = ({
           await deleteCommentMutation.mutateAsync(String(commentId));
         }
       },
-    [deleteCommentMutation]
+    [deleteCommentMutation],
   );
 
   // Render

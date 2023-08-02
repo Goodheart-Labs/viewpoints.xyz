@@ -1,7 +1,9 @@
-import autogenerateComments from "@/lib/autogenerateComments";
 import { auth } from "@clerk/nextjs";
 import { notFound } from "next/navigation";
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+
+import autogenerateComments from "@/lib/autogenerateComments";
 
 // POST /api/completions
 // -----------------------------------------------------------------------------

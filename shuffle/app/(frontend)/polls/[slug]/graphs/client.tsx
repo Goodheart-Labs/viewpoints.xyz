@@ -1,11 +1,13 @@
 "use client";
 
-import Graphs, { GraphType } from "@/components/Graphs";
-import { Comment, Poll, Response } from "@/lib/api";
+import { useMemo, useState } from "react";
+import { useQuery } from "react-query";
+
 import axios from "axios";
 import Head from "next/head";
-import { useState, useMemo } from "react";
-import { useQuery } from "react-query";
+
+import Graphs, { GraphType } from "@/components/Graphs";
+import type { Comment, Poll, Response } from "@/lib/api";
 
 // Default export
 // -----------------------------------------------------------------------------
@@ -24,7 +26,7 @@ const GraphsClient = ({
   // State
 
   const [graphType, setGraphType] = useState<GraphType>(
-    GraphType.BackgroundBar
+    GraphType.BackgroundBar,
   );
 
   // Sharing
@@ -32,7 +34,7 @@ const GraphsClient = ({
   const twitterShareUrl = useMemo(
     () =>
       `${url}?utm_source=twitter&utm_medium=social&utm_campaign=share&utm_content=${poll.id}`,
-    [poll.id, url]
+    [poll.id, url],
   );
 
   // Mutations
@@ -45,7 +47,7 @@ const GraphsClient = ({
     },
     {
       initialData: initialComments,
-    }
+    },
   );
 
   const { data: responses } = useQuery(
@@ -56,12 +58,12 @@ const GraphsClient = ({
     },
     {
       initialData: initialResponses,
-    }
+    },
   );
 
   const commentIds = useMemo(
     () => (comments ?? []).map((comment) => comment.id),
-    [comments]
+    [comments],
   );
 
   // Render

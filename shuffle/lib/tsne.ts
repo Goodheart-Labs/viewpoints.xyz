@@ -327,7 +327,7 @@ export class TSNE {
             ": gradcheck analytic: " +
             analytic +
             " vs. numerical: " +
-            numerical
+            numerical,
         );
 
         this.Y[i][d] = yold;

@@ -1,9 +1,11 @@
-import { Poll } from "@/lib/api";
-import prisma from "@/lib/prisma";
-import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
 import { auth } from "@clerk/nextjs";
 import { notFound } from "next/navigation";
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+
+import type { Poll } from "@/lib/api";
+import prisma from "@/lib/prisma";
+import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
 
 // GET /api/polls/:id
 // -----------------------------------------------------------------------------
@@ -14,7 +16,7 @@ export async function GET(
     params: { id: idOrSlug },
   }: {
     params: { id: string };
-  }
+  },
 ) {
   const { userId } = auth();
   if (!userId) {
@@ -48,7 +50,7 @@ export async function PATCH(
     params: { id },
   }: {
     params: { id: string };
-  }
+  },
 ) {
   const { userId } = auth();
 
@@ -62,7 +64,7 @@ export async function PATCH(
 
   if (
     ["analytics_filters", "visibility"].every(
-      (value) => value in data === false
+      (value) => value in data === false,
     )
   ) {
     return NextResponse.json(poll);

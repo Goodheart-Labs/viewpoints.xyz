@@ -1,15 +1,18 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import useHotkeys from "@reecelucas/react-use-hotkeys";
-import BorderedButton from "./BorderedButton";
+
 import { SignIn, UserButton, useUser } from "@clerk/nextjs";
+import useHotkeys from "@reecelucas/react-use-hotkeys";
 import clsx from "clsx";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import Image from "next/image";
-import { useCurrentPoll } from "@/providers/CurrentPollProvider";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+
+import { useCurrentPoll } from "@/providers/CurrentPollProvider";
+
+import BorderedButton from "./BorderedButton";
 
 const Header = () => {
   // State
@@ -22,7 +25,7 @@ const Header = () => {
 
   const isCurrentPollAdmin = useMemo(
     () => currentPoll && currentPoll.user_id === user?.id,
-    [currentPoll, user?.id]
+    [currentPoll, user?.id],
   );
 
   // Callbacks
@@ -97,7 +100,7 @@ const Header = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className={clsx(
-              "fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-80 z-40"
+              "fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-80 z-40",
             )}
             onClick={() => setShowSignIn(false)}
           />

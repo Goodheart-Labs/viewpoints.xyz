@@ -58,7 +58,7 @@ const ModalView = () => {
         animate={{ opacity: 1 }}
         className={clsx(
           "fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-80",
-          "z-40"
+          "z-40",
         )}
         onClick={modal.permanent ? undefined : onCancel}
       />

@@ -1,5 +1,11 @@
-import { comments, flagged_comments, polls, responses } from "@prisma/client";
-import { Correlation } from "./analytics/comments";
+import type {
+  comments,
+  flagged_comments,
+  polls,
+  responses,
+} from "@prisma/client";
+
+import type { Correlation } from "./analytics/comments";
 
 export type Poll = polls;
 

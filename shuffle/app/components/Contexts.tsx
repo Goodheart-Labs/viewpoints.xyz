@@ -1,11 +1,12 @@
 "use client";
 
+import type { PropsWithChildren } from "react";
+
 import AmplitudeProvider from "@/providers/AmplitudeProvider";
 import CurrentPollProvider from "@/providers/CurrentPollProvider";
 import ModalProvider from "@/providers/ModalProvider";
 import QueryProvider from "@/providers/QueryProvider";
 import SessionProvider from "@/providers/SessionProvider";
-import { PropsWithChildren } from "react";
 
 const Contexts = ({ children }: PropsWithChildren<{}>) => (
   <SessionProvider>
