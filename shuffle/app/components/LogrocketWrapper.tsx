@@ -1,11 +1,18 @@
 "use client";
 
+import type { FC, PropsWithChildren } from "react";
 import { useEffect } from "react";
 
 import { useUser } from "@clerk/nextjs";
 import Logrocket from "logrocket";
 
-const LogrocketWrapper = () => {
+type LogrocketWrapperProps = {
+  children: React.ReactNode;
+};
+
+const LogrocketWrapper: FC<PropsWithChildren<LogrocketWrapperProps>> = ({
+  children,
+}) => {
   const { isSignedIn, user } = useUser();
 
   useEffect(() => {
@@ -18,7 +25,7 @@ const LogrocketWrapper = () => {
     });
   }, [isSignedIn, user]);
 
-  return null;
+  return <>{children}</>;
 };
 
 export default LogrocketWrapper;
