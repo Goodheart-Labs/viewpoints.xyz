@@ -51,7 +51,7 @@ const Header = () => {
         <Link href="/" className="hover:opacity-50">
           <div className="dark:hidden">
             <Image
-              src={"/logo.png"}
+              src="/logo.png"
               alt="viewpoints.xyz"
               width={200}
               height={40}
@@ -59,7 +59,7 @@ const Header = () => {
           </div>
           <div className="hidden dark:block">
             <Image
-              src={"/logo-dark.png"}
+              src="/logo-dark.png"
               alt="viewpoints.xyz"
               width={200}
               height={40}

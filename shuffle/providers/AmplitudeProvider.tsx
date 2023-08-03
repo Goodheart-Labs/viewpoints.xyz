@@ -1,7 +1,11 @@
+import type { PropsWithChildren } from "react";
+import { createContext, useContext, useEffect, useMemo } from "react";
+
 import * as amplitude from "@amplitude/analytics-browser";
-import { PropsWithChildren, createContext, useContext, useEffect } from "react";
-import { useSession } from "./SessionProvider";
+
 import amplitudeConfig from "@/config/amplitude";
+
+import { useSession } from "./SessionProvider";
 
 // Events
 // -----------------------------------------------------------------------------
@@ -48,7 +52,7 @@ export const useAmplitude = () => useContext(AmplitudeContext);
 // Provider
 // -----------------------------------------------------------------------------
 
-const AmplitudeProvider = ({ children }: PropsWithChildren<{}>) => {
+const AmplitudeProvider = ({ children }: PropsWithChildren) => {
   const { sessionId } = useSession();
 
   useEffect(() => {
@@ -62,8 +66,10 @@ const AmplitudeProvider = ({ children }: PropsWithChildren<{}>) => {
     });
   }, [sessionId]);
 
+  const value = useMemo(() => ({ amplitude }), []);
+
   return (
-    <AmplitudeContext.Provider value={{ amplitude }}>
+    <AmplitudeContext.Provider value={value}>
       {children}
     </AmplitudeContext.Provider>
   );

@@ -23,9 +23,6 @@ import BorderedButton from "./BorderedButton";
 // -----------------------------------------------------------------------------
 
 type FlagCommentViewProps = {
-  data: {
-    comment: Comment;
-  };
   refs: {
     textareaRef: React.RefObject<HTMLTextAreaElement>;
   };
@@ -68,9 +65,7 @@ const FlagCommentView = ({
         <div className="flex w-full">
           <textarea
             ref={textareaRef}
-            className={
-              "text-lg text-gray-800 dark:text-gray-400 p-2 w-full resize-none focus:outline-none focus:text-black hover:bg-gray-100 focus:bg-gray-100"
-            }
+            className="text-lg text-gray-800 dark:text-gray-400 p-2 w-full resize-none focus:outline-none focus:text-black hover:bg-gray-100 focus:bg-gray-100"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             onKeyDown={onKeyDown}
@@ -150,10 +145,8 @@ const FlagComment = ({ comment, onCreate, onCancel }: FlagCommentProps) => {
   }, [reason]);
 
   const newFlaggedCommentMutation = useMutation(
-    async ({ reason }: Pick<FlaggedComment, "reason">) => {
-      await axios.post(`/api/comments/${comment.id}/flag`, {
-        reason,
-      });
+    async (payload: Pick<FlaggedComment, "reason">) => {
+      await axios.post(`/api/comments/${comment.id}/flag`, payload);
       onCreate();
     },
   );
@@ -163,7 +156,7 @@ const FlagComment = ({ comment, onCreate, onCancel }: FlagCommentProps) => {
 
     amplitude.track(TrackingEvent.PersistFlagComment, {
       commentId: comment.id,
-      reason: reason,
+      reason,
       interactionMode: "click",
     });
 
@@ -174,7 +167,6 @@ const FlagComment = ({ comment, onCreate, onCancel }: FlagCommentProps) => {
 
   return (
     <FlagCommentView
-      data={{ comment }}
       refs={{ textareaRef }}
       state={{
         reason,

@@ -1,9 +1,8 @@
+import { Configuration, OpenAIApi } from "openai";
+
 if (typeof window !== "undefined") {
-  console.log(window);
   throw new Error("This file should not be imported on the client side.");
 }
-
-import { Configuration, OpenAIApi } from "openai";
 
 // OpenAI API library
 // -----------------------------------------------------------------------------

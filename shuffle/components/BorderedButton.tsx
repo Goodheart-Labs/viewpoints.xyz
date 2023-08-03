@@ -36,6 +36,7 @@ const BorderedButton = ({
 }: PropsWithChildren<BorderedButtonProps>) => (
   <button
     {...props}
+    type="button"
     className={clsx(
       "inline-flex items-center px-2 py-1 sm:px-4 sm:py-2 text-sm font-medium border rounded-md focus:outline-none",
       styles[color || "red"],

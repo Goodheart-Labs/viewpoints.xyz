@@ -2,7 +2,8 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import clsx from "clsx";
 
-import { contentClasses, contentMinHeight } from "./Card";
+export const contentClasses = "text-lg text-gray-800 dark:text-gray-400 p-2";
+export const contentMinHeight = 70;
 
 // Types
 // -----------------------------------------------------------------------------

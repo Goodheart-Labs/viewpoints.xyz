@@ -8,7 +8,7 @@ import ModalProvider from "@/providers/ModalProvider";
 import QueryProvider from "@/providers/QueryProvider";
 import SessionProvider from "@/providers/SessionProvider";
 
-const Contexts = ({ children }: PropsWithChildren<{}>) => (
+const Contexts = ({ children }: PropsWithChildren) => (
   <SessionProvider>
     <AmplitudeProvider>
       <ModalProvider>

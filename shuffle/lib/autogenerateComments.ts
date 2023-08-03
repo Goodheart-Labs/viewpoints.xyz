@@ -1,3 +1,4 @@
+// eslint-disable-next-line max-classes-per-file
 import { openai, tiktoken } from "./openai";
 
 // TODO:
@@ -104,6 +105,7 @@ export default autogenerateComments;
 
 class PromptTooLongError extends Error {
   actualLength: number = 0;
+
   maxLength: number = CONTEXT_LENGTH;
 
   constructor(actualLength: number, maxLength: number) {
@@ -133,32 +135,36 @@ const checkTokenLength = (prompt: string) => {
     return memoisedTokenLengths[prompt];
   }
 
-  return (memoisedTokenLengths[prompt] = tokeniser.encode(prompt).length);
+  const { length } = tokeniser.encode(prompt);
+
+  memoisedTokenLengths[prompt] = length;
+
+  return length;
 };
 
-export const parseResults = (fullResponse: string) => {
+export const parseResults = (fullResponse: string): string[] | null => {
   if (!fullResponse.includes(RESULT_MARKER)) {
-    return;
+    return null;
   }
 
   const parts = fullResponse.split(RESULT_MARKER);
   if (parts.length <= 2) {
-    return;
+    return null;
   }
 
   const lastPart = parts[parts.length - 1];
   if (!lastPart || lastPart.trim() === "") {
-    return;
+    return null;
   }
 
   try {
     const parsedLastPart = JSON.parse(lastPart);
     if (!parsedLastPart || !Array.isArray(parsedLastPart)) {
-      return;
+      return null;
     }
 
     return parsedLastPart as string[];
   } catch {
-    return;
+    return null;
   }
 };

@@ -17,23 +17,12 @@ export async function GET(
     params: { id: string };
   },
 ) {
-  const { userId } = auth();
-  const session_id = cookies().get(SESSION_ID_COOKIE_NAME)?.value;
-
-  const { searchParams } = new URL(request.url);
-
-  const constraints = searchParams.has("all")
-    ? {}
-    : userId
-    ? { user_id: userId }
-    : { session_id };
-
   const responses = await prisma.responses.findMany({
     where: {
       comment: {
         poll_id: parseInt(id),
       },
-      ...constraints,
+      ...getConstraints(new URLSearchParams(request.url)),
     },
   });
 
@@ -41,7 +30,20 @@ export async function GET(
     where: { id: parseInt(id) },
   });
 
+  const { userId } = auth();
+
   requirePollAdminIfPollIsPrivate(poll, userId);
 
   return NextResponse.json(responses);
 }
+
+const getConstraints = (searchParams: URLSearchParams) => {
+  const { userId } = auth();
+  const session_id = cookies().get(SESSION_ID_COOKIE_NAME)?.value;
+
+  if (searchParams.has("all")) {
+    return {};
+  }
+
+  return userId ? { user_id: userId } : { session_id };
+};

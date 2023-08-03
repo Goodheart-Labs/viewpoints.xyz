@@ -1,4 +1,4 @@
-import { Valence } from "@/lib/api";
+import type { Valence } from "@/lib/api";
 
 export const valenceToHumanReadablePresentTense = (valence: Valence) =>
   ({

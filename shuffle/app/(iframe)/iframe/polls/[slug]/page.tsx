@@ -41,11 +41,9 @@ async function getData({ params }: PollIframeProps) {
 // -----------------------------------------------------------------------------
 
 const PollIframe = async ({ params }: PollIframeProps) => {
-  const { poll, comments } = await getData({ params });
+  const { comments } = await getData({ params });
 
-  const filteredComments = comments.filter((comment) => true);
-
-  return <PollIframeClient filteredComments={filteredComments} />;
+  return <PollIframeClient filteredComments={comments} />;
 };
 
 export default PollIframe;

@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 
 import Avatar from "./Avatar";
 import BorderedButton from "./BorderedButton";
-import { anonymousAvatar } from "./Cards";
+import { anonymousAvatar } from "./Card";
 import EditingContent from "./EditingContent";
 
 // Types

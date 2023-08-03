@@ -65,8 +65,6 @@ const Poll = ({
     [poll.id, url],
   );
 
-  const twitterShareTitle = useMemo(() => poll.title, [poll.title]);
-
   // Queries
 
   const { data: comments, refetch: refetchComments } = useQuery<Comment[]>(
@@ -109,17 +107,12 @@ const Poll = ({
     return data as Response[];
   });
 
-  const {
-    data: flaggedComments,
-    isLoading: flaggedCommentsLoading,
-    refetch: refetchFlaggedComments,
-  } = useQuery<FlaggedComment[]>(
-    ["flaggedComments", commentIds.join(",")],
-    async () => {
-      const { data } = await axios.get(`/api/polls/${poll.id}/flaggedComments`);
-      return data as FlaggedComment[];
-    },
-  );
+  const { data: flaggedComments, refetch: refetchFlaggedComments } = useQuery<
+    FlaggedComment[]
+  >(["flaggedComments", commentIds.join(",")], async () => {
+    const { data } = await axios.get(`/api/polls/${poll.id}/flaggedComments`);
+    return data as FlaggedComment[];
+  });
 
   const newCommentMutation = useMutation(
     async ({
@@ -194,15 +187,15 @@ const Poll = ({
     setIsCreating(false);
   }, [amplitude, poll.id]);
 
-  const onShareClickCapture = useCallback(() => {
-    amplitude.track(TrackingEvent.Share, {
-      poll_id: poll.id,
-    });
-  }, [amplitude, poll.id]);
+  // const onShareClickCapture = useCallback(() => {
+  //   amplitude.track(TrackingEvent.Share, {
+  //     poll_id: poll.id,
+  //   });
+  // }, [amplitude, poll.id]);
 
   const onResponseCreated = useCallback(
     async (response: MinimalResponse) => {
-      setCachedResponses((cachedResponses) => [...cachedResponses, response]);
+      setCachedResponses((cr) => [...cr, response]);
       await refetchAllResponses();
     },
     [refetchAllResponses],
@@ -283,9 +276,9 @@ const Poll = ({
 
   const [seed, setSeed] = useState(Math.random());
   useEffect(() => {
-    const seed = localStorage.getItem("seed");
-    if (seed) {
-      setSeed(parseFloat(seed));
+    const storedSeed = localStorage.getItem("seed");
+    if (storedSeed) {
+      setSeed(parseFloat(storedSeed));
     } else {
       localStorage.setItem("seed", Math.random().toString());
     }
@@ -405,7 +398,7 @@ const Poll = ({
         <div>
           {loading ? (
             <div className="absolute top-0 left-0 flex items-center justify-center w-full h-full">
-              <div className="w-10 h-10 border-2 border-t-2 border-gray-200 rounded-full animate-spin"></div>
+              <div className="w-10 h-10 border-2 border-t-2 border-gray-200 rounded-full animate-spin" />
             </div>
           ) : (
             <div className="relative flex items-center justify-center text-gray-400 dark:text-gray-600">

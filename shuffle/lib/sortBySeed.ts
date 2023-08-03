@@ -5,8 +5,10 @@
 class SeededRNG {
   constructor(private seed: number) {}
 
-  private m = Math.pow(2, 32);
+  private m = 2 ** 32;
+
   private a = 1664525;
+
   private c = 1013904223;
 
   nextFloat(): number {
@@ -15,26 +17,28 @@ class SeededRNG {
   }
 }
 
-const sortBySeed = <T extends any>(array: T[], seed: number): T[] => {
-  let rng = new SeededRNG(seed);
-  let currentIndex = array.length,
-    temporaryValue,
-    randomIndex;
+const sortBySeed = <T>(array: T[], seed: number): T[] => {
+  const rng = new SeededRNG(seed);
+  let currentIndex = array.length;
+  let temporaryValue;
+  let randomIndex;
 
   // While there remain elements to shuffle
 
-  while (0 !== currentIndex) {
+  const newArray = array.slice();
+
+  while (currentIndex !== 0) {
     // Pick a remaining element
     randomIndex = Math.floor(rng.nextFloat() * currentIndex);
     currentIndex -= 1;
 
     // And swap it with the current one
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
+    temporaryValue = newArray[currentIndex];
+    newArray[currentIndex] = newArray[randomIndex];
+    newArray[randomIndex] = temporaryValue;
   }
 
-  return array;
+  return newArray;
 };
 
 export default sortBySeed;
