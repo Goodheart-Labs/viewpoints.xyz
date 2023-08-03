@@ -27,12 +27,12 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
   <ClerkProvider>
     <html lang="en">
       <body>
-        <Contexts>
-          <LogrocketWrapper>
+        <LogrocketWrapper>
+          <Contexts>
             <Header />
             {children}
-          </LogrocketWrapper>
-        </Contexts>
+          </Contexts>
+        </LogrocketWrapper>
         <Tooltip id="tooltip" />
       </body>
     </html>
