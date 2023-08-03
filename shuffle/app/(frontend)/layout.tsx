@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import Header from "@/components/Header";
 
 import Contexts from "../components/Contexts";
-import Logrocket from "../components/Logrocket";
+import LogrocketWrapper from "../components/LogrocketWrapper";
 
 import "@/styles/tailwind.css";
 import "@/styles/frontend.css";
@@ -27,12 +27,13 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
   <ClerkProvider>
     <html lang="en">
       <body>
-        <Contexts>
-          <Header />
-          {children}
-        </Contexts>
+        <LogrocketWrapper>
+          <Contexts>
+            <Header />
+            {children}
+          </Contexts>
+        </LogrocketWrapper>
         <Tooltip id="tooltip" />
-        <Logrocket />
       </body>
     </html>
   </ClerkProvider>
