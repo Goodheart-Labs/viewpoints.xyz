@@ -9,11 +9,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
+import slugify from "slugify";
 import * as yup from "yup";
 
 import CommentsList from "@/app/components/polls/new/CommentsList";
 import BorderedButton from "@/components/BorderedButton";
-import { slugify } from "@/utils/stringutils";
 
 // Types
 // -----------------------------------------------------------------------------
