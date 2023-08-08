@@ -1,6 +1,7 @@
-import { Poll } from "@/lib/api";
 import { polls_visibility_enum } from "@prisma/client";
 import { notFound } from "next/navigation";
+
+import type { Poll } from "@/lib/api";
 
 export const isPollAdmin = (
   poll: Poll | null | undefined,

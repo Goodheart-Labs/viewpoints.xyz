@@ -1,17 +1,13 @@
 "use client";
 
-import { Poll } from "@/lib/api";
+import type { PropsWithChildren } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { useQuery } from "react-query";
+
 import axios from "axios";
 import { usePathname } from "next/navigation";
-import {
-  PropsWithChildren,
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { useQuery } from "react-query";
+
+import type { Poll } from "@/lib/api";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -35,7 +31,7 @@ export const useCurrentPoll = () => useContext(CurrentPollContext);
 // Provider
 // -----------------------------------------------------------------------------
 
-const CurrentPollProvider = ({ children }: PropsWithChildren<{}>) => {
+const CurrentPollProvider = ({ children }: PropsWithChildren) => {
   // State
 
   const [currentPoll, setCurrentPoll] = useState<Poll | undefined>();
@@ -65,10 +61,10 @@ const CurrentPollProvider = ({ children }: PropsWithChildren<{}>) => {
     }
   }, [currentPollQuery]);
 
-  // Render
+  const value = useMemo(() => ({ currentPoll }), [currentPoll]);
 
   return (
-    <CurrentPollContext.Provider value={{ currentPoll }}>
+    <CurrentPollContext.Provider value={value}>
       {children}
     </CurrentPollContext.Provider>
   );

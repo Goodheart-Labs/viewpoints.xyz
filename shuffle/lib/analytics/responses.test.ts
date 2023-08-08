@@ -65,8 +65,8 @@ describe("calculateResponsePercentages", () => {
 
     const result = calculateResponsePercentages(allResponses, userResponses);
 
-    expect(result[1]).toBe(100); // 100% agreement for comment 1
-    expect(result[2]).toBe(66.66666666666666); // 66.7% agreement for comment 2
+    expect(result.get(1)).toBe(100); // 100% agreement for comment 1
+    expect(result.get(2)).toBe(66.66666666666666); // 66.7% agreement for comment 2
   });
 
   it("ignores skips", () => {
@@ -113,7 +113,7 @@ describe("calculateResponsePercentages", () => {
 
     const result = calculateResponsePercentages(allResponses, userResponses);
 
-    expect(result[1]).toBe(33.33333333333333); // 33.3% agreement for comment 1, 2/3 agree, 1/3 disagree, one skip
+    expect(result.get(1)).toBe(33.33333333333333); // 33.3% agreement for comment 1, 2/3 agree, 1/3 disagree, one skip
   });
 });
 

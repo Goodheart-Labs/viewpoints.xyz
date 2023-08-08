@@ -18,8 +18,6 @@ import BorderedButton from "@/components/BorderedButton";
 // Types
 // -----------------------------------------------------------------------------
 
-type NewPollPageClientProps = {};
-
 type NewPollPageClientViewProps = {
   state: {
     loading: boolean;
@@ -31,30 +29,22 @@ type NewPollPageClientViewProps = {
   };
 };
 
-type Comment = string;
-
-type FormData = {
-  title: string;
-  slug: string;
-  question: string;
-  comments: Comment[];
-};
-
 // Validation
 // -----------------------------------------------------------------------------
 
 const schema = yup
-  .object()
-  .shape({
+  .object({
     title: yup.string().required(),
     slug: yup
       .string()
       .required()
       .matches(/^[a-z0-9-]+$/),
     question: yup.string().required(),
-    comments: yup.array().of(yup.string().required()).min(5),
+    comments: yup.array().of(yup.string().required()).min(5).required(),
   })
   .required();
+
+type FormData = yup.InferType<typeof schema>;
 
 // View
 // -----------------------------------------------------------------------------
@@ -191,31 +181,20 @@ const NewPollPageClientView = ({
 // Default export
 // -----------------------------------------------------------------------------
 
-const NewPollPageClient = ({}: NewPollPageClientProps) => {
+const NewPollPageClient = () => {
   const router = useRouter();
 
   // State
 
   const form = useForm<FormData>({
     mode: "onTouched",
-    // https://github.com/react-hook-form/resolvers/issues/234
-    resolver: yupResolver<any>(schema),
+    resolver: yupResolver(schema),
   });
 
   // Mutations
 
   const newPollMutation = useMutation(
-    async ({
-      title,
-      slug,
-      question,
-      comments,
-    }: {
-      title: string;
-      slug: string;
-      question: string;
-      comments: Comment[];
-    }) => {
+    async ({ title, slug, question, comments }: FormData) => {
       await axios.post(`/api/polls`, {
         title,
         slug,

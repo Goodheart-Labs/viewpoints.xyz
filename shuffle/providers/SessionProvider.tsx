@@ -1,10 +1,6 @@
-import {
-  PropsWithChildren,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import type { PropsWithChildren } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+
 import { getCookie, setCookie } from "typescript-cookie";
 import { v4 as uuidv4 } from "uuid";
 
@@ -35,7 +31,7 @@ export const useSession = () => useContext(SessionContext);
 // Provider
 // -----------------------------------------------------------------------------
 
-const SessionProvider = ({ children }: PropsWithChildren<{}>) => {
+const SessionProvider = ({ children }: PropsWithChildren) => {
   const [sessionId, setSessionId] = useState("");
 
   useEffect(() => {
@@ -50,10 +46,10 @@ const SessionProvider = ({ children }: PropsWithChildren<{}>) => {
     }
   }, []);
 
+  const value = useMemo(() => ({ sessionId }), [sessionId]);
+
   return (
-    <SessionContext.Provider value={{ sessionId }}>
-      {children}
-    </SessionContext.Provider>
+    <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
   );
 };
 

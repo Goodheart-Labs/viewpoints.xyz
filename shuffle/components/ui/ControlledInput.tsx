@@ -1,5 +1,4 @@
-import type { ChangeEvent } from "react";
-import type { InputHTMLAttributes } from "react";
+import type { ChangeEvent, InputHTMLAttributes } from "react";
 import { useCallback, useState } from "react";
 
 type ControlledInputProps = Omit<

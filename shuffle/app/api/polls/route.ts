@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
   const { title, slug, question, comments } = await request.json();
 
   const poll = await prisma.$transaction(async (tx) => {
-    const poll = await tx.polls.create({
+    const newPoll = await tx.polls.create({
       data: {
         user_id: userId,
         title,
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
         comments.map((comment: string) =>
           tx.comments.create({
             data: {
-              poll_id: poll.id,
+              poll_id: newPoll.id,
               user_id: userId,
               reporting_type: "default",
               comment,
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return poll;
+    return newPoll;
   });
 
   return NextResponse.json(poll);

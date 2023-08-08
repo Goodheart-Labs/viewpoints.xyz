@@ -20,7 +20,7 @@ const textVariants = {
   visible: { opacity: 1, transition: { duration: 1 } },
 };
 
-const LoadingText = ({ children }: PropsWithChildren<{}>) => (
+const LoadingText = ({ children }: PropsWithChildren) => (
   <motion.span
     style={textStyles}
     variants={textVariants}

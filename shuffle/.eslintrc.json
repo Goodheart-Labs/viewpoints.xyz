@@ -10,7 +10,7 @@
     "sourceType": "module"
   },
   "extends": [
-    "next/core-web-vitals",
+    "next",
     "airbnb-base",
     "airbnb/rules/react",
     "airbnb/hooks",
@@ -32,6 +32,7 @@
     "no-empty-function": ["error", { "allow": ["constructors"] }],
     "no-plusplus": "off",
     "no-restricted-syntax": "off",
+    "no-shadow": "off",
     "no-use-before-define": "off",
     "no-useless-constructor": "off",
     "radix": "off",
@@ -84,7 +85,7 @@
         "prefer": "type-imports"
       }
     ],
-
+    "@typescript-eslint/no-shadow": "error",
     "unused-imports/no-unused-imports": "error"
   },
   "overrides": [
@@ -92,6 +93,12 @@
       "files": ["*.d.ts"],
       "rules": {
         "@typescript-eslint/no-unused-vars": "off"
+      }
+    },
+    {
+      "files": ["*.test.ts", "*.test.tsx"],
+      "rules": {
+        "import/no-extraneous-dependencies": "off"
       }
     }
   ]

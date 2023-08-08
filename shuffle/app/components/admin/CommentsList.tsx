@@ -40,6 +40,7 @@ const CommentsList = ({
     (commentId: number) =>
       async (event: React.MouseEvent<HTMLAnchorElement>) => {
         event.preventDefault();
+        // eslint-disable-next-line no-restricted-globals, no-alert
         if (confirm("Are you sure you want to delete this comment?")) {
           await deleteCommentMutation.mutateAsync(String(commentId));
         }

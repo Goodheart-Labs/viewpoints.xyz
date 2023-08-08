@@ -26,7 +26,7 @@ export async function GET(
   const id = parseInt(idOrSlug);
   let poll: Poll | null = null;
 
-  if (isNaN(id)) {
+  if (Number.isNaN(id)) {
     poll = await prisma.polls.findFirst({
       where: { slug: idOrSlug },
     });

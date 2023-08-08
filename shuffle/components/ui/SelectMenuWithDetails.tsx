@@ -35,9 +35,9 @@ const SelectMenuWithDetails = ({
   );
 
   const onChange = useCallback(
-    (value: Option) => {
-      setSelected(value);
-      propsOnChange?.(value.id);
+    (newValue: Option) => {
+      setSelected(newValue);
+      propsOnChange?.(newValue.id);
     },
     [propsOnChange],
   );
@@ -81,17 +81,17 @@ const SelectMenuWithDetails = ({
                     }
                     value={option}
                   >
-                    {({ selected, active }) => (
+                    {({ selected: isSelected, active }) => (
                       <div className="flex flex-col">
                         <div className="flex justify-between">
                           <p
                             className={
-                              selected ? "font-semibold" : "font-normal"
+                              isSelected ? "font-semibold" : "font-normal"
                             }
                           >
                             {option.title}
                           </p>
-                          {selected ? (
+                          {isSelected ? (
                             <span
                               className={
                                 active ? "text-white" : "text-indigo-600"

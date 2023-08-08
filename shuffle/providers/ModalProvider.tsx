@@ -1,20 +1,20 @@
-import clsx from "clsx";
-import { motion } from "framer-motion";
+import type { Dispatch, PropsWithChildren, SetStateAction } from "react";
 import {
-  Dispatch,
-  PropsWithChildren,
-  SetStateAction,
   createContext,
   useCallback,
   useContext,
+  useMemo,
   useState,
 } from "react";
+
+import clsx from "clsx";
+import { motion } from "framer-motion";
 
 // Types
 // -----------------------------------------------------------------------------
 
 type Modal = {
-  render: (props?: any) => React.ReactNode;
+  render: () => React.ReactNode;
   permanent?: boolean;
 };
 
@@ -22,18 +22,6 @@ type ModalContextType = {
   modal?: Modal;
   setModal: Dispatch<SetStateAction<Modal | undefined>>;
 };
-
-// Modals
-// -----------------------------------------------------------------------------
-
-export const ErrorModal = () => (
-  <div className="flex flex-col">
-    <h2 className="mb-4 text-xl font-semibold">Error</h2>
-    <div className="flex flex-col">
-      <p>An error has occurred. Please refresh and try again.</p>
-    </div>
-  </div>
-);
 
 // View
 // -----------------------------------------------------------------------------
@@ -69,17 +57,14 @@ const ModalView = () => {
 // Context
 // -----------------------------------------------------------------------------
 
-const ModalContext = createContext<ModalContextType>({
-  modal: undefined,
-  setModal: () => {},
-});
+const ModalContext = createContext<ModalContextType | null>(null);
 
 // Hook
 // -----------------------------------------------------------------------------
 
 export const useModal = () => {
   const context = useContext(ModalContext);
-  if (!context.setModal) {
+  if (!context) {
     throw new Error("useModal must be used within a ModalProvider");
   }
   return context;
@@ -88,11 +73,13 @@ export const useModal = () => {
 // Provider
 // -----------------------------------------------------------------------------
 
-const ModalProvider = ({ children }: PropsWithChildren<{}>) => {
+const ModalProvider = ({ children }: PropsWithChildren) => {
   const [modal, setModal] = useState<Modal | undefined>();
 
+  const value = useMemo(() => ({ modal, setModal }), [modal, setModal]);
+
   return (
-    <ModalContext.Provider value={{ modal, setModal }}>
+    <ModalContext.Provider value={value}>
       {children}
       <ModalView />
     </ModalContext.Provider>
