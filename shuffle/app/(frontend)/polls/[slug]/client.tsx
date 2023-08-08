@@ -162,6 +162,7 @@ const Poll = ({
         author_name: user?.fullName ?? null,
         author_avatar_url: user?.profileImageUrl ?? null,
       });
+      setIsCreating(false);
     },
     [
       amplitude,
