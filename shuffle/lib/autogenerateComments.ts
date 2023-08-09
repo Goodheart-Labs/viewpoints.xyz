@@ -1,5 +1,7 @@
 // eslint-disable-next-line max-classes-per-file
-import { openai, tiktoken } from "./openai";
+import * as tiktoken from "js-tiktoken";
+
+import { openai } from "./openai";
 
 // TODO:
 //  - add a 'get current context length' option

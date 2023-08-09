@@ -12,8 +12,3 @@ const configuration = new Configuration({
 });
 
 export const openai = new OpenAIApi(configuration);
-
-// Tokeniser
-// -----------------------------------------------------------------------------
-
-export { default as tiktoken } from "js-tiktoken";
