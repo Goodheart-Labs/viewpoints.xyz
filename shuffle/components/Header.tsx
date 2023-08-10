@@ -86,7 +86,7 @@ const Header = () => {
 
       <div className="z-50">
         {isSignedIn ? (
-          <UserButton />
+          <UserButton afterSignOutUrl="/" />
         ) : (
           <BorderedButton color="indigo" onClick={onClickLogin}>
             Login
