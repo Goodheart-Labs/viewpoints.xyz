@@ -15,7 +15,8 @@ import { Key } from "ts-key-enum";
 
 import Avatar from "@/components/Avatar";
 import type { Comment, Valence } from "@/lib/api";
-import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
+import { useAmplitude } from "@/providers/AmplitudeProvider";
+import type { InteractionMode } from "@/providers/AmplitudeProvider/types";
 
 import BorderedButton from "./BorderedButton";
 import EditingContent, {
@@ -56,10 +57,10 @@ export type CardViewProps = {
     onDisagree: () => void;
     onSkip: () => void;
     onItsComplicated: () => void;
-    onEdit: (interactionMode?: "click" | "keyboard") => void;
+    onEdit: (interactionMode?: InteractionMode) => void;
     onCancelEdit: () => void;
     onSaveEdit: () => void;
-    onFlag: (interactionMode?: "click" | "keyboard") => void;
+    onFlag: (interactionMode?: InteractionMode) => void;
   };
 };
 
@@ -152,7 +153,7 @@ const CardView = ({
         <div className="flex justify-end">
           <div>
             <BorderedButton
-              onClick={onSaveEdit}
+              onClick={() => onSaveEdit()}
               color="yellow"
               disabled={editingDisabled}
             >
@@ -165,7 +166,7 @@ const CardView = ({
         <div className="flex justify-between">
           <div>
             <BorderedButton
-              onClick={onDisagree}
+              onClick={() => onDisagree()}
               color="red"
               disabled={!isActive}
             >
@@ -174,7 +175,7 @@ const CardView = ({
           </div>
           <div>
             <BorderedButton
-              onClick={onSkip}
+              onClick={() => onSkip()}
               color="yellow"
               disabled={!isActive}
             >
@@ -183,7 +184,7 @@ const CardView = ({
           </div>
           <div>
             <BorderedButton
-              onClick={onItsComplicated}
+              onClick={() => onItsComplicated()}
               color="orange"
               disabled={!isActive}
             >
@@ -193,7 +194,7 @@ const CardView = ({
           </div>
           <div>
             <BorderedButton
-              onClick={onAgree}
+              onClick={() => onAgree()}
               color="green"
               disabled={!isActive}
             >
@@ -216,7 +217,7 @@ const Card = ({
   onCommentEdited,
   onCommentFlagged,
 }: CardProps) => {
-  const { amplitude } = useAmplitude();
+  const { track } = useAmplitude();
 
   // State
 
@@ -245,7 +246,9 @@ const Card = ({
 
   const onDragEnd = useCallback(
     (_e: unknown, info: PanInfo) => {
-      amplitude.track(TrackingEvent.Drag);
+      track({
+        type: "drag",
+      });
 
       if (info.offset.x > X_SWIPE_THRESHOLD) {
         setLeaveX(1000);
@@ -267,16 +270,17 @@ const Card = ({
         );
       }
     },
-    [amplitude, card, onSwipe],
+    [card, onSwipe, track],
   );
 
   const onAgree = useCallback(
-    (interactionMode: "click" | "keyboard" = "click") => {
+    (interactionMode: InteractionMode = "click") => {
       if (!isActive) return;
       if (isEditing) return;
       if (isFlagging) return;
 
-      amplitude.track(TrackingEvent.VoteAgreement, {
+      track({
+        type: "votes.agree",
         pollId: card.poll_id,
         cardId: card.id,
         interactionMode,
@@ -285,16 +289,17 @@ const Card = ({
       setLeaveX(1000);
       setTimeout(() => onSwipe(card, "agree"), ANIMATION_DURATION * 1000);
     },
-    [amplitude, card, isActive, isEditing, isFlagging, onSwipe],
+    [card, isActive, isEditing, isFlagging, onSwipe, track],
   );
 
   const onDisagree = useCallback(
-    (interactionMode: "click" | "keyboard" = "click") => {
+    (interactionMode: InteractionMode = "click") => {
       if (!isActive) return;
       if (isEditing) return;
       if (isFlagging) return;
 
-      amplitude.track(TrackingEvent.VoteDisagreement, {
+      track({
+        type: "votes.disagree",
         pollId: card.poll_id,
         cardId: card.id,
         interactionMode,
@@ -303,16 +308,17 @@ const Card = ({
       setLeaveX(-1000);
       setTimeout(() => onSwipe(card, "disagree"), ANIMATION_DURATION * 1000);
     },
-    [amplitude, card, isActive, isEditing, isFlagging, onSwipe],
+    [card, isActive, isEditing, isFlagging, onSwipe, track],
   );
 
   const onSkip = useCallback(
-    (interactionMode: "click" | "keyboard" = "click") => {
+    (interactionMode: InteractionMode = "click") => {
       if (!isActive) return;
       if (isEditing) return;
       if (isFlagging) return;
 
-      amplitude.track(TrackingEvent.VoteSkipped, {
+      track({
+        type: "votes.skip",
         pollId: card.poll_id,
         cardId: card.id,
         interactionMode,
@@ -321,16 +327,17 @@ const Card = ({
       setLeaveY(-1000);
       setTimeout(() => onSwipe(card, "skip"), ANIMATION_DURATION * 1000);
     },
-    [amplitude, card, isActive, isEditing, isFlagging, onSwipe],
+    [card, isActive, isEditing, isFlagging, onSwipe, track],
   );
 
   const onItsComplicated = useCallback(
-    (interactionMode: "click" | "keyboard" = "click") => {
+    (interactionMode: InteractionMode = "click") => {
       if (!isActive) return;
       if (isEditing) return;
       if (isFlagging) return;
 
-      amplitude.track(TrackingEvent.VoteItsComplicated, {
+      track({
+        type: "votes.itsComplicated",
         pollId: card.poll_id,
         cardId: card.id,
         interactionMode,
@@ -342,15 +349,16 @@ const Card = ({
         ANIMATION_DURATION * 1000,
       );
     },
-    [amplitude, card, isActive, isEditing, isFlagging, onSwipe],
+    [card, isActive, isEditing, isFlagging, onSwipe, track],
   );
 
   const onEdit = useCallback(
-    (interactionMode: "click" | "keyboard" = "click") => {
+    (interactionMode: InteractionMode = "click") => {
       if (!isActive) return;
       if (isFlagging) return;
 
-      amplitude.track(TrackingEvent.OpenEditComment, {
+      track({
+        type: "comments.edit.open",
         pollId: card.poll_id,
         cardId: card.id,
         interactionMode,
@@ -358,7 +366,7 @@ const Card = ({
 
       setIsEditing((editing) => !editing);
     },
-    [amplitude, card.id, card.poll_id, isActive, isFlagging],
+    [card.id, card.poll_id, isActive, isFlagging, track],
   );
 
   const onCancelEdit = useCallback(() => {
@@ -366,7 +374,8 @@ const Card = ({
     if (!isEditing) return;
     if (isFlagging) return;
 
-    amplitude.track(TrackingEvent.CancelEditComment, {
+    track({
+      type: "comments.edit.cancel",
       pollId: card.poll_id,
       cardId: card.id,
     });
@@ -374,13 +383,13 @@ const Card = ({
     setIsEditing(false);
     setEditingValue(card.comment);
   }, [
-    amplitude,
     card.comment,
     card.id,
     card.poll_id,
     isActive,
     isEditing,
     isFlagging,
+    track,
   ]);
 
   const onSaveEdit = useCallback(() => {
@@ -388,7 +397,8 @@ const Card = ({
     if (!isEditing) return;
     if (isFlagging) return;
 
-    amplitude.track(TrackingEvent.PersistEditComment, {
+    track({
+      type: "comments.edit.persist",
       pollId: card.poll_id,
       cardId: card.id,
     });
@@ -396,7 +406,6 @@ const Card = ({
     onCommentEdited({ id: card.id, comment: editingValue });
     setIsEditing(false);
   }, [
-    amplitude,
     card.id,
     card.poll_id,
     editingValue,
@@ -404,14 +413,16 @@ const Card = ({
     isEditing,
     isFlagging,
     onCommentEdited,
+    track,
   ]);
 
   const onFlag = useCallback(
-    (interactionMode: "click" | "keyboard" = "click") => {
+    (interactionMode: InteractionMode = "click") => {
       if (!isActive) return;
       if (isEditing) return;
 
-      amplitude.track(TrackingEvent.OpenFlagComment, {
+      track({
+        type: "comments.flag.open",
         pollId: card.poll_id,
         cardId: card.id,
         interactionMode,
@@ -419,7 +430,7 @@ const Card = ({
 
       setIsFlagging(true);
     },
-    [amplitude, card.id, card.poll_id, isActive, isEditing],
+    [card.id, card.poll_id, isActive, isEditing, track],
   );
 
   const onCancelFlag = useCallback(() => {
@@ -427,7 +438,8 @@ const Card = ({
     if (isEditing) return;
     if (!isFlagging) return;
 
-    amplitude.track(TrackingEvent.CancelFlagComment, {
+    track({
+      type: "comments.flag.cancel",
       pollId: card.poll_id,
       cardId: card.id,
     });
@@ -435,13 +447,13 @@ const Card = ({
     setIsFlagging(false);
     setEditingValue(card.comment);
   }, [
-    amplitude,
     card.comment,
     card.id,
     card.poll_id,
     isActive,
     isEditing,
     isFlagging,
+    track,
   ]);
 
   const onSaveFlag = useCallback(() => {
