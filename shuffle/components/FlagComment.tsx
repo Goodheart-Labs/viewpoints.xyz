@@ -15,7 +15,7 @@ import clsx from "clsx";
 import { motion } from "framer-motion";
 
 import type { Comment, FlaggedComment } from "@/lib/api";
-import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
+import { useAmplitude } from "@/providers/AmplitudeProvider";
 
 import BorderedButton from "./BorderedButton";
 
@@ -111,7 +111,7 @@ const FlagCommentView = ({
 // -----------------------------------------------------------------------------
 
 const FlagComment = ({ comment, onCreate, onCancel }: FlagCommentProps) => {
-  const { amplitude } = useAmplitude();
+  const { track } = useAmplitude();
 
   const [reason, setReason] = useState("");
 
@@ -154,7 +154,8 @@ const FlagComment = ({ comment, onCreate, onCancel }: FlagCommentProps) => {
   const onSave = useCallback(() => {
     if (!reason.length) return;
 
-    amplitude.track(TrackingEvent.PersistFlagComment, {
+    track({
+      type: "comments.flag.persist",
       commentId: comment.id,
       reason,
       interactionMode: "click",
@@ -163,7 +164,7 @@ const FlagComment = ({ comment, onCreate, onCancel }: FlagCommentProps) => {
     newFlaggedCommentMutation.mutateAsync({
       reason,
     });
-  }, [reason, amplitude, comment.id, newFlaggedCommentMutation]);
+  }, [reason, track, comment.id, newFlaggedCommentMutation]);
 
   return (
     <FlagCommentView

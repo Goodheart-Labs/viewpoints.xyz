@@ -139,7 +139,7 @@ const Cards = ({
                 <BorderedButton
                   color="blue"
                   className="flex items-center"
-                  onClick={onNewComment}
+                  onClick={() => onNewComment()}
                 >
                   <ChatBubbleBottomCenterIcon width={28} className="mr-1" /> Add
                   a new comment
@@ -149,7 +149,7 @@ const Cards = ({
                 <BorderedButton
                   color="orange"
                   className="flex items-center"
-                  onClick={onNewPoll}
+                  onClick={() => onNewPoll()}
                 >
                   <PlusIcon width={28} className="mr-1" /> Create a new poll
                 </BorderedButton>

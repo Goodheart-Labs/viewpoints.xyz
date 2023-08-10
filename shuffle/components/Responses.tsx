@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import type { ResponsePercentages } from "@/lib/analytics/responses";
 import { calculateResponsePercentages } from "@/lib/analytics/responses";
 import type { Comment, Valence } from "@/lib/api";
+import { useAmplitude } from "@/providers/AmplitudeProvider";
 import { valenceToHumanReadablePastTense } from "@/utils/valenceutils";
 
 import BorderedButton from "./BorderedButton";
@@ -117,8 +118,14 @@ const ResponsesView = ({
 
 const Responses = ({ responses, comments, allResponses }: ResponsesProps) => {
   const [viewAll, setViewAll] = useState(false);
+  const { track } = useAmplitude();
 
-  const onClickViewAll = useCallback(() => setViewAll(true), []);
+  const onClickViewAll = useCallback(() => {
+    setViewAll(true);
+    track({
+      type: "votes.viewAll",
+    });
+  }, [track]);
 
   const responsesWithComments = useMemo(
     () =>

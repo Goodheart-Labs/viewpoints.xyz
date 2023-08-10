@@ -25,7 +25,8 @@ import Responses from "@/components/Responses";
 import type { Comment, FlaggedComment, Response } from "@/lib/api";
 import { Poll } from "@/lib/api";
 import sortBySeed from "@/lib/sortBySeed";
-import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
+import { useAmplitude } from "@/providers/AmplitudeProvider";
+import type { InteractionMode } from "@/providers/AmplitudeProvider/types";
 import { useModal } from "@/providers/ModalProvider";
 import { SESSION_ID_COOKIE_NAME } from "@/providers/SessionProvider";
 import { ensureItLooksLikeAQuestion } from "@/utils/stringutils";
@@ -48,7 +49,7 @@ const Poll = ({
   comments: Comment[];
   url: string;
 }) => {
-  const { amplitude } = useAmplitude();
+  const { track } = useAmplitude();
   const { user } = useUser();
 
   // State
@@ -137,21 +138,23 @@ const Poll = ({
   // Callbacks
 
   const onNewComment = useCallback(
-    (interactionMode: "click" | "keyboard" = "click") => {
+    (interactionMode: InteractionMode = "click") => {
       setIsCreating(true);
 
-      amplitude.track(TrackingEvent.OpenNewComment, {
-        poll_id: poll.id,
+      track({
+        type: "comments.new.open",
+        pollId: poll.id,
         interactionMode,
       });
     },
-    [amplitude, poll.id],
+    [poll.id, track],
   );
 
   const onCreateComment = useCallback(
     async (comment: Comment["comment"], edited_from_id?: number) => {
-      amplitude.track(TrackingEvent.PersistNewComment, {
-        poll_id: poll.id,
+      track({
+        type: "comments.new.persist",
+        pollId: poll.id,
         comment,
         edited_from_id,
       });
@@ -164,13 +167,7 @@ const Poll = ({
       });
       setIsCreating(false);
     },
-    [
-      amplitude,
-      newCommentMutation,
-      poll.id,
-      user?.fullName,
-      user?.profileImageUrl,
-    ],
+    [newCommentMutation, poll.id, track, user?.fullName, user?.profileImageUrl],
   );
 
   const onCommentEdited = useCallback(
@@ -181,18 +178,13 @@ const Poll = ({
   );
 
   const onCancelCreating = useCallback(() => {
-    amplitude.track(TrackingEvent.CancelNewComment, {
-      poll_id: poll.id,
+    track({
+      type: "comments.new.cancel",
+      pollId: poll.id,
     });
 
     setIsCreating(false);
-  }, [amplitude, poll.id]);
-
-  // const onShareClickCapture = useCallback(() => {
-  //   amplitude.track(TrackingEvent.Share, {
-  //     poll_id: poll.id,
-  //   });
-  // }, [amplitude, poll.id]);
+  }, [track, poll.id]);
 
   const onResponseCreated = useCallback(
     async (response: MinimalResponse) => {
@@ -205,7 +197,9 @@ const Poll = ({
   const { setModal } = useModal();
 
   const onNewPoll = useCallback(() => {
-    amplitude.logEvent(TrackingEvent.OpenNewPoll);
+    track({
+      type: "polls.new.open",
+    });
     setModal({
       render: () => (
         <div>
@@ -213,7 +207,7 @@ const Poll = ({
         </div>
       ),
     });
-  }, [amplitude, setModal]);
+  }, [setModal, track]);
 
   // Keyboard shortcuts
 
