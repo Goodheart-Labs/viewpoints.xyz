@@ -7,7 +7,7 @@ import { ChatBubbleBottomCenterIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
 
-import type { Comment, Valence } from "@/lib/api";
+import type { Choice, Comment } from "@/lib/api";
 import useOverridableState from "@/lib/useOverridableState";
 import { useSession } from "@/providers/SessionProvider";
 
@@ -61,10 +61,10 @@ const EmbeddedCards = ({
   // Callbacks
 
   const onSwipe = useCallback(
-    (card: Comment, valence: Valence) => {
+    (card: Comment, choice: Choice) => {
       const response: MinimalResponse = {
         comment_id: card.id,
-        valence,
+        choice,
         created_at: new Date(),
         user_id: null,
         session_id: sessionId,

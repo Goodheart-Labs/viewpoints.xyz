@@ -32,7 +32,7 @@ export async function POST(
       comment_id: parseInt(id),
       session_id: body.session_id,
       user_id: body.user_id ?? null,
-      valence: body.valence,
+      choice: body.choice,
     },
   });
 

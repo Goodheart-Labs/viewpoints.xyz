@@ -4,8 +4,8 @@ import { notFound } from "next/navigation";
 
 import CommentsList from "@/app/components/admin/CommentsList";
 import UpdatePollVisibility from "@/app/components/polls/admin/UpdatePollVisibility";
-import ValenceBadge from "@/components/ValenceBadge";
-import type { Comment, Poll, Response, Valence } from "@/lib/api";
+import ChoiceBadge from "@/components/ChoiceBadge";
+import type { Comment, Poll, Response } from "@/lib/api";
 import prisma from "@/lib/prisma";
 import { requirePollAdmin } from "@/utils/authutils";
 
@@ -134,7 +134,7 @@ const PollAdminPageView = ({
               {responses.map((response) => (
                 <div key={response.id} className="flex flex-col mt-1">
                   <h4 className="text-sm text-black dark:text-gray-200">
-                    <ValenceBadge valence={response.valence as Valence} />
+                    <ChoiceBadge choice={response.choice} />
                     {commentsById[response.comment_id].comment}
                   </h4>
                 </div>

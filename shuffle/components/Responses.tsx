@@ -5,13 +5,13 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import type { ResponsePercentages } from "@/lib/analytics/responses";
 import { calculateResponsePercentages } from "@/lib/analytics/responses";
-import type { Comment, Valence } from "@/lib/api";
+import type { Comment } from "@/lib/api";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
-import { valenceToHumanReadablePastTense } from "@/utils/valenceutils";
+import { choiceToHumanReadablePastTense } from "@/utils/choiceUtils";
 
 import BorderedButton from "./BorderedButton";
 import type { MinimalResponse } from "./Cards";
-import ValenceBadge from "./ValenceBadge";
+import ChoiceBadge from "./ChoiceBadge";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -68,7 +68,7 @@ const ResponsesView = ({
           }}
           className="flex items-center w-full mb-4"
         >
-          <ValenceBadge valence={response.valence as Valence} />
+          <ChoiceBadge choice={response.choice} />
 
           <span className="ml-2 text-sm w-60 sm:w-96">
             {response.comment.comment}
@@ -81,8 +81,8 @@ const ResponsesView = ({
               responsePercentages.get(response.comment_id) ?? 0
             ).toLocaleString(undefined, {
               maximumFractionDigits: 2,
-            })}% of people also ${valenceToHumanReadablePastTense(
-              response.valence as Valence,
+            })}% of people also ${choiceToHumanReadablePastTense(
+              response.choice,
             )}`}
             data-tooltip-float
             data-tooltip-place="right"

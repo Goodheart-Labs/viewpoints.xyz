@@ -14,7 +14,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Key } from "ts-key-enum";
 
 import Avatar from "@/components/Avatar";
-import type { Comment, Valence } from "@/lib/api";
+import type { Choice, Comment } from "@/lib/api";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import type { InteractionMode } from "@/providers/AmplitudeProvider/types";
 
@@ -67,7 +67,7 @@ export type CardViewProps = {
 export type CardProps = {
   card: Comment;
   isActive: boolean;
-  onSwipe: (card: Comment, valence: Valence) => void;
+  onSwipe: (card: Comment, choice: Choice) => void;
   onCommentEdited: (card: Pick<Comment, "id" | "comment">) => void;
   onCommentFlagged: (commentId: Comment["id"]) => void;
 };

@@ -1,6 +1,6 @@
 import type { MinimalResponse } from "@/components/Cards";
 
-import type { Valence } from "../api";
+import type { Choice } from "../api";
 
 // Matching responses
 // -----------------------------------------------------------------------------
@@ -13,16 +13,16 @@ export const calculateResponsePercentages = (
   allResponses: AllResponses,
   userResponses: UserResponses,
 ): ResponsePercentages => {
-  const userResponseMap: { [commentId: number]: Valence } = {};
+  const userResponseMap: { [commentId: number]: Choice } = {};
   const commentResponseCounts: ResponsePercentages = new Map();
   const commentUserAgreementCounts: ResponsePercentages = new Map();
 
   userResponses.forEach((response) => {
-    userResponseMap[response.comment_id] = response.valence as Valence;
+    userResponseMap[response.comment_id] = response.choice;
   });
 
   allResponses.forEach((response) => {
-    if (response.valence === "skip") return;
+    if (response.choice === "skip") return;
 
     commentResponseCounts.set(
       response.comment_id,
@@ -31,7 +31,7 @@ export const calculateResponsePercentages = (
 
     if (
       userResponseMap[response.comment_id] &&
-      userResponseMap[response.comment_id] === response.valence
+      userResponseMap[response.comment_id] === response.choice
     ) {
       commentUserAgreementCounts.set(
         response.comment_id,
@@ -65,7 +65,7 @@ export const calculateResponsePercentages = (
 
 export type CommentConsensus = {
   comment_id: number;
-  valence: Valence;
+  choice: Choice;
   consensusPercentage: number;
 };
 
@@ -86,16 +86,16 @@ export const getUserConsensusViews = (
 
   for (const commentId of commentPercentages.keys()) {
     const percentage = commentPercentages.get(commentId)!;
-    const valence =
+    const choice =
       userResponses.find(
         (response) => response.comment_id === Number(commentId),
-      )?.valence || "skip";
+      )?.choice || "skip";
 
-    if (valence === "skip") continue;
+    if (choice === "skip") continue;
 
     const consensus: CommentConsensus = {
       comment_id: Number(commentId),
-      valence: valence as Valence,
+      choice,
       consensusPercentage: percentage,
     };
 

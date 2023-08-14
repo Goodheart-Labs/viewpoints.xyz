@@ -1,0 +1,28 @@
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [staging]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Test
+    defaults:
+      run:
+        working-directory: ./shuffle
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - run: pnpm i --frozen-lockfile
+      - run: pnpm format:ci
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm migrate:ci
+        env:
+          POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL_PREVIEW }}
+          POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING_PREVIEW }}
