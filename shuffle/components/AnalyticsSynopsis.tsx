@@ -3,10 +3,10 @@ import { useMemo } from "react";
 import type { CommentConsensus } from "@/lib/analytics/responses";
 import { getUserConsensusViews } from "@/lib/analytics/responses";
 import type { Comment, Response } from "@/lib/api";
-import { valenceToHumanReadablePresentTense } from "@/utils/valenceutils";
+import { choiceToHumanReadablePresentTense } from "@/utils/choiceUtils";
 
 import type { MinimalResponse } from "./Cards";
-import ValenceBadge from "./ValenceBadge";
+import ChoiceBadge from "./ChoiceBadge";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -44,9 +44,9 @@ const AnalyticsSynopsisView = ({
                 %
               </span>{" "}
               of respondents voted{" "}
-              <ValenceBadge valence={consensusView.valence}>
-                {valenceToHumanReadablePresentTense(consensusView.valence)}
-              </ValenceBadge>
+              <ChoiceBadge choice={consensusView.choice}>
+                {choiceToHumanReadablePresentTense(consensusView.choice)}
+              </ChoiceBadge>
               on
             </div>
 
@@ -75,9 +75,9 @@ const AnalyticsSynopsisView = ({
                 %
               </span>{" "}
               of respondents voted{" "}
-              <ValenceBadge valence={controversialView.valence}>
-                {valenceToHumanReadablePresentTense(controversialView.valence)}
-              </ValenceBadge>
+              <ChoiceBadge choice={controversialView.choice}>
+                {choiceToHumanReadablePresentTense(controversialView.choice)}
+              </ChoiceBadge>
               on
             </div>
 

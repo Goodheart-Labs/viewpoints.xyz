@@ -235,7 +235,7 @@ const Poll = ({
           ...acc,
           [response.comment_id]:
             (acc[response.comment_id] ?? 0) +
-            (response.valence === "skip" ? 1 : 0),
+            (response.choice === "skip" ? 1 : 0),
         }),
         {} as Record<number, number>,
       ),

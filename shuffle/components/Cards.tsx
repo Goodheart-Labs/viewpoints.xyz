@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
 
-import type { Comment, Response, Valence } from "@/lib/api";
+import type { Choice, Comment, Response } from "@/lib/api";
 import useOverridableState from "@/lib/useOverridableState";
 import { useSession } from "@/providers/SessionProvider";
 
@@ -24,7 +24,7 @@ import Card from "./Card";
 
 export type MinimalResponse = Pick<
   Response,
-  "comment_id" | "valence" | "created_at" | "user_id" | "session_id"
+  "comment_id" | "choice" | "created_at" | "user_id" | "session_id"
 >;
 
 type CardsProps = {
@@ -74,10 +74,10 @@ const Cards = ({
   // Callbacks
 
   const onSwipe = useCallback(
-    async (card: Comment, valence: Valence) => {
+    async (card: Comment, choice: Choice) => {
       const response: MinimalResponse = {
         comment_id: card.id,
-        valence,
+        choice,
         created_at: new Date(),
         user_id: user?.id ?? null,
         session_id: sessionId,

@@ -11,35 +11,35 @@ describe("calculateResponsePercentages", () => {
     const allResponses: AllResponses = [
       {
         comment_id: 1,
-        valence: "agree",
+        choice: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 1,
-        valence: "agree",
+        choice: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "disagree",
+        choice: "disagree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "disagree",
+        choice: "disagree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "agree",
+        choice: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
@@ -49,14 +49,14 @@ describe("calculateResponsePercentages", () => {
     const userResponses: UserResponses = [
       {
         comment_id: 1,
-        valence: "agree",
+        choice: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "disagree",
+        choice: "disagree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
@@ -73,28 +73,28 @@ describe("calculateResponsePercentages", () => {
     const allResponses: AllResponses = [
       {
         comment_id: 1,
-        valence: "agree",
+        choice: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 1,
-        valence: "agree",
+        choice: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "bcd",
       },
       {
         comment_id: 1,
-        valence: "disagree",
+        choice: "disagree",
         created_at: new Date(),
         user_id: null,
         session_id: "cde",
       },
       {
         comment_id: 1,
-        valence: "skip",
+        choice: "skip",
         created_at: new Date(),
         user_id: null,
         session_id: "def",
@@ -104,7 +104,7 @@ describe("calculateResponsePercentages", () => {
     const userResponses: UserResponses = [
       {
         comment_id: 1,
-        valence: "disagree",
+        choice: "disagree",
         created_at: new Date(),
         user_id: null,
         session_id: "cde",
@@ -122,56 +122,56 @@ describe("getUserConsensusViews", () => {
     const allResponses: AllResponses = [
       {
         comment_id: 1,
-        valence: "agree",
+        choice: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 1,
-        valence: "agree",
+        choice: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "disagree",
+        choice: "disagree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "disagree",
+        choice: "disagree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "disagree",
+        choice: "disagree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "agree",
+        choice: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 3,
-        valence: "disagree",
+        choice: "disagree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 3,
-        valence: "agree",
+        choice: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
@@ -181,14 +181,14 @@ describe("getUserConsensusViews", () => {
     const userResponses: UserResponses = [
       {
         comment_id: 1,
-        valence: "agree",
+        choice: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
       },
       {
         comment_id: 2,
-        valence: "agree",
+        choice: "agree",
         created_at: new Date(),
         user_id: null,
         session_id: "abc",
@@ -200,13 +200,13 @@ describe("getUserConsensusViews", () => {
     // Comment 1 has 100% agree consensus
 
     expect(result.mostConsensus?.comment_id).toBe(1);
-    expect(result.mostConsensus?.valence).toBe("agree");
+    expect(result.mostConsensus?.choice).toBe("agree");
     expect(result.mostConsensus?.consensusPercentage).toBe(100);
 
     // 3/4 users disagree with comment 2. Our user is in the minority.
 
     expect(result.mostControversial?.comment_id).toBe(2);
-    expect(result.mostControversial?.valence).toBe("agree");
+    expect(result.mostControversial?.choice).toBe("agree");
     expect(result.mostControversial?.consensusPercentage).toBe(25);
   });
 });

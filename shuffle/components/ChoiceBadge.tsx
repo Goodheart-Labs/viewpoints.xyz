@@ -2,32 +2,32 @@ import type { PropsWithChildren } from "react";
 
 import clsx from "clsx";
 
-import type { Valence } from "@/lib/api";
+import type { Choice } from "@/lib/api";
 
 // Types
 // -----------------------------------------------------------------------------
 
-type ValenceBadgeProps = {
-  valence: Valence;
+type ChoiceBadgeProps = {
+  choice: Choice;
   className?: string;
 };
 
 // Default export
 // -----------------------------------------------------------------------------
 
-const valenceBaseClasses =
+const choiceBaseClasses =
   "mr-2 inline-flex items-center px-2 py-1 text-xs font-medium rounded-md ring-1 ring-inset";
 
-const ValenceBadge = ({
-  valence,
+const ChoiceBadge = ({
+  choice,
   className,
   children,
-}: PropsWithChildren<ValenceBadgeProps>) => {
-  if (valence === "agree")
+}: PropsWithChildren<ChoiceBadgeProps>) => {
+  if (choice === "agree")
     return (
       <span
         className={clsx(
-          valenceBaseClasses,
+          choiceBaseClasses,
           "text-green-700 bg-green-50 ring-green-600/20 dark:text-green-300 dark:bg-green-900 dark:ring-green-300/20",
           className,
         )}
@@ -36,11 +36,11 @@ const ValenceBadge = ({
       </span>
     );
 
-  if (valence === "disagree")
+  if (choice === "disagree")
     return (
       <span
         className={clsx(
-          valenceBaseClasses,
+          choiceBaseClasses,
           "text-red-700 bg-red-50 ring-red-600/10 dark:text-red-300 dark:bg-red-900 dark:ring-red-300/10",
           className,
         )}
@@ -49,11 +49,11 @@ const ValenceBadge = ({
       </span>
     );
 
-  if (valence === "skip")
+  if (choice === "skip")
     return (
       <span
         className={clsx(
-          valenceBaseClasses,
+          choiceBaseClasses,
           "text-yellow-800 bg-yellow-50 ring-yellow-600/20 dark:text-yellow-300 dark:bg-yellow-900 dark:ring-yellow-300/20",
           className,
         )}
@@ -62,11 +62,11 @@ const ValenceBadge = ({
       </span>
     );
 
-  if (valence === "itsComplicated")
+  if (choice === "itsComplicated")
     return (
       <span
         className={clsx(
-          valenceBaseClasses,
+          choiceBaseClasses,
           "text-orange-600 bg-orange-50 ring-orange-600/10 dark:text-orange-300 dark:bg-orange-900 dark:ring-orange-300/10",
           className,
         )}
@@ -78,4 +78,4 @@ const ValenceBadge = ({
   return null;
 };
 
-export default ValenceBadge;
+export default ChoiceBadge;
