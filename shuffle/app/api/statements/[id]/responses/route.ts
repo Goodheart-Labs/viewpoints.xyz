@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
 
-// POST /api/comments/:id/responses
+// POST /api/statements/:id/responses
 // -----------------------------------------------------------------------------
 
 export async function POST(
@@ -15,13 +15,13 @@ export async function POST(
     params: { id: string };
   },
 ) {
-  const comment = await prisma.comments.findUnique({
+  const statement = await prisma.statement.findUnique({
     where: {
       id: parseInt(id),
     },
   });
 
-  if (!comment) {
+  if (!statement) {
     notFound();
   }
 
@@ -29,7 +29,7 @@ export async function POST(
 
   const response = await prisma.responses.create({
     data: {
-      comment_id: parseInt(id),
+      statementId: parseInt(id),
       session_id: body.session_id,
       user_id: body.user_id ?? null,
       choice: body.choice,

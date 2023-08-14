@@ -20,7 +20,7 @@ export async function GET(
 
   const responses = await prisma.responses.findMany({
     where: {
-      comment: {
+      statement: {
         poll_id: parseInt(id),
       },
     },

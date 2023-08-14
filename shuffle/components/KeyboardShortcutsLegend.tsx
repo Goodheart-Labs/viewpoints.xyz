@@ -17,13 +17,13 @@ const KeyboardShortcutsLegend = () => (
         <span className="mr-1 text-gray-500">&darr;</span> It&apos;s Complicated
       </kbd>
       <kbd className="inline-flex items-center px-1 ml-1 font-sans text-xs text-gray-400 border border-gray-200 rounded">
-        <span className="mr-1 text-gray-500">C</span> New Comment
+        <span className="mr-1 text-gray-500">C</span> New Statement
       </kbd>
       <kbd className="inline-flex items-center px-1 ml-1 font-sans text-xs text-gray-400 border border-gray-200 rounded">
-        <span className="mr-1 text-gray-500">E</span> Edit Comment
+        <span className="mr-1 text-gray-500">E</span> Edit Statement
       </kbd>
       <kbd className="inline-flex items-center px-1 ml-1 font-sans text-xs text-gray-400 border border-gray-200 rounded">
-        <span className="mr-1 text-gray-500">F</span> Flag Comment
+        <span className="mr-1 text-gray-500">F</span> Flag Statement
       </kbd>
       <kbd className="inline-flex items-center px-1 ml-1 font-sans text-xs text-gray-400 border border-gray-200 rounded">
         <span className="mr-1 text-gray-500">L</span> Login

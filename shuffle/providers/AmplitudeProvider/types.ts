@@ -15,30 +15,30 @@ export type TrackingEvent =
   | ExtendedCardEvent<"votes.disagree">
   | ExtendedCardEvent<"votes.skip">
   | ExtendedCardEvent<"votes.itsComplicated">
-  | ExtendedCardEvent<"comments.edit.open">
-  | CardEvent<"comments.edit.persist">
-  | CardEvent<"comments.edit.cancel">
-  | ExtendedCardEvent<"comments.flag.open">
+  | ExtendedCardEvent<"statement.edit.open">
+  | CardEvent<"statement.edit.persist">
+  | CardEvent<"statement.edit.cancel">
+  | ExtendedCardEvent<"statement.flag.open">
   | {
-      type: "comments.flag.persist";
-      commentId: number;
+      type: "statement.flag.persist";
+      statementId: number;
       reason: string;
       interactionMode: InteractionMode;
     }
-  | CardEvent<"comments.flag.cancel">
+  | CardEvent<"statement.flag.cancel">
   | {
-      type: "comments.new.open";
+      type: "statement.new.open";
       pollId: number;
       interactionMode: InteractionMode;
     }
   | {
-      type: "comments.new.persist";
+      type: "statement.new.persist";
       pollId: number;
-      comment: string;
+      text: string;
       edited_from_id?: number;
     }
   | {
-      type: "comments.new.cancel";
+      type: "statement.new.cancel";
       pollId: number;
     }
   | {

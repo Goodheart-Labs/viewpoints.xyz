@@ -7,6 +7,7 @@ import {
   FlagIcon,
   PencilSquareIcon,
 } from "@heroicons/react/20/solid";
+import type { Statement } from "@prisma/client";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import clsx from "clsx";
 import type { PanInfo } from "framer-motion";
@@ -14,7 +15,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Key } from "ts-key-enum";
 
 import Avatar from "@/components/Avatar";
-import type { Choice, Comment } from "@/lib/api";
+import type { Choice } from "@/lib/api";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import type { InteractionMode } from "@/providers/AmplitudeProvider/types";
 
@@ -23,7 +24,7 @@ import EditingContent, {
   contentClasses,
   contentMinHeight,
 } from "./EditingContent";
-import FlagComment from "./FlagComment";
+import FlagStatement from "./FlagStatement";
 
 // Setup
 // -----------------------------------------------------------------------------
@@ -43,7 +44,7 @@ const ANIMATION_DURATION = 0.2;
 
 export type CardViewProps = {
   data: {
-    card: Comment;
+    card: Statement;
   };
   state: {
     isActive: boolean;
@@ -65,11 +66,11 @@ export type CardViewProps = {
 };
 
 export type CardProps = {
-  card: Comment;
+  card: Statement;
   isActive: boolean;
-  onSwipe: (card: Comment, choice: Choice) => void;
-  onCommentEdited: (card: Pick<Comment, "id" | "comment">) => void;
-  onCommentFlagged: (commentId: Comment["id"]) => void;
+  onSwipe: (card: Statement, choice: Choice) => void;
+  onStatementEdited: (card: Pick<Statement, "id" | "text">) => void;
+  onStatementFlagged: (statementId: Statement["id"]) => void;
 };
 
 // View
@@ -143,7 +144,7 @@ const CardView = ({
           <div
             className={clsx(contentClasses, `min-h-[${contentMinHeight}px]`)}
           >
-            {card.comment}
+            {card.text}
           </div>
         )}
       </div>
@@ -158,7 +159,7 @@ const CardView = ({
               disabled={editingDisabled}
             >
               <CheckIcon width={22} height={22} className="mr-1" /> Add Edited
-              Comment
+              Statement
             </BorderedButton>
           </div>
         </div>
@@ -214,8 +215,8 @@ const Card = ({
   card,
   isActive,
   onSwipe,
-  onCommentEdited,
-  onCommentFlagged,
+  onStatementEdited,
+  onStatementFlagged,
 }: CardProps) => {
   const { track } = useAmplitude();
 
@@ -225,7 +226,7 @@ const Card = ({
   const [leaveY, setLeaveY] = useState(0);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [editingValue, setEditingValue] = useState(card.comment);
+  const [editingValue, setEditingValue] = useState(card.text);
 
   const [isFlagging, setIsFlagging] = useState(false);
 
@@ -358,7 +359,7 @@ const Card = ({
       if (isFlagging) return;
 
       track({
-        type: "comments.edit.open",
+        type: "statement.edit.open",
         pollId: card.poll_id,
         cardId: card.id,
         interactionMode,
@@ -375,17 +376,17 @@ const Card = ({
     if (isFlagging) return;
 
     track({
-      type: "comments.edit.cancel",
+      type: "statement.edit.cancel",
       pollId: card.poll_id,
       cardId: card.id,
     });
 
     setIsEditing(false);
-    setEditingValue(card.comment);
+    setEditingValue(card.text);
   }, [
-    card.comment,
     card.id,
     card.poll_id,
+    card.text,
     isActive,
     isEditing,
     isFlagging,
@@ -398,12 +399,12 @@ const Card = ({
     if (isFlagging) return;
 
     track({
-      type: "comments.edit.persist",
+      type: "statement.edit.persist",
       pollId: card.poll_id,
       cardId: card.id,
     });
 
-    onCommentEdited({ id: card.id, comment: editingValue });
+    onStatementEdited({ id: card.id, text: editingValue });
     setIsEditing(false);
   }, [
     card.id,
@@ -412,7 +413,7 @@ const Card = ({
     isActive,
     isEditing,
     isFlagging,
-    onCommentEdited,
+    onStatementEdited,
     track,
   ]);
 
@@ -422,7 +423,7 @@ const Card = ({
       if (isEditing) return;
 
       track({
-        type: "comments.flag.open",
+        type: "statement.flag.open",
         pollId: card.poll_id,
         cardId: card.id,
         interactionMode,
@@ -439,15 +440,15 @@ const Card = ({
     if (!isFlagging) return;
 
     track({
-      type: "comments.flag.cancel",
+      type: "statement.flag.cancel",
       pollId: card.poll_id,
       cardId: card.id,
     });
 
     setIsFlagging(false);
-    setEditingValue(card.comment);
+    setEditingValue(card.text);
   }, [
-    card.comment,
+    card.text,
     card.id,
     card.poll_id,
     isActive,
@@ -462,14 +463,14 @@ const Card = ({
     if (!isFlagging) return;
 
     setIsFlagging(false);
-    onCommentFlagged(card.id);
-  }, [card.id, isActive, isEditing, isFlagging, onCommentFlagged]);
+    onStatementFlagged(card.id);
+  }, [card.id, isActive, isEditing, isFlagging, onStatementFlagged]);
 
   // Memos
 
   const editingDisabled = useMemo(
-    () => editingValue === card.comment,
-    [card.comment, editingValue],
+    () => editingValue === card.text,
+    [card.text, editingValue],
   );
 
   // Keyboard shortcuts
@@ -551,8 +552,8 @@ const Card = ({
 
       <AnimatePresence>
         {isActive && isFlagging && (
-          <FlagComment
-            comment={card}
+          <FlagStatement
+            statement={card}
             onCreate={onSaveFlag}
             onCancel={onCancelFlag}
           />

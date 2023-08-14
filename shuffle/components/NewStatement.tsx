@@ -13,12 +13,12 @@ import EditingContent from "./EditingContent";
 // Types
 // -----------------------------------------------------------------------------
 
-type NewCommentViewProps = {
+type NewStatementViewProps = {
   data: {
     card: {
       author_name: string;
       author_avatar_url: string;
-      comment: string;
+      text: string;
     };
   };
   state: {
@@ -31,7 +31,7 @@ type NewCommentViewProps = {
   };
 };
 
-type NewCommentProps = {
+type NewStatementProps = {
   onCreate: (value: string) => void;
   onCancel: () => void;
 };
@@ -39,11 +39,11 @@ type NewCommentProps = {
 // View
 // -----------------------------------------------------------------------------
 
-const NewCommentView = ({
+const NewStatementView = ({
   data: { card },
   state: { editingValue, setEditingValue },
   callbacks: { onCancel, onSave },
-}: NewCommentViewProps) => (
+}: NewStatementViewProps) => (
   <>
     <div className="fixed z-50 flex top-[30vh] bg-white flex-col w-[600px] items-center justify-center rounded-lg">
       <div className="z-50 flex flex-col w-full px-4 py-5 sm:p-6">
@@ -70,7 +70,7 @@ const NewCommentView = ({
             card={card}
             onCancel={onCancel}
             setValue={setEditingValue}
-            placeholder="Add a comment..."
+            placeholder="Add a statement..."
           />
         </div>
       </div>
@@ -83,7 +83,7 @@ const NewCommentView = ({
               disabled={editingValue.length === 0}
             >
               <CheckIcon width={22} height={22} className="mr-1" /> Add New
-              Comment
+              Statement
             </BorderedButton>
           </div>
         </div>
@@ -105,7 +105,7 @@ const NewCommentView = ({
 // Default export
 // -----------------------------------------------------------------------------
 
-const NewComment = ({ onCreate, onCancel }: NewCommentProps) => {
+const NewStatement = ({ onCreate, onCancel }: NewStatementProps) => {
   const { user } = useUser();
   const [editingValue, setEditingValue] = useState("");
 
@@ -113,7 +113,7 @@ const NewComment = ({ onCreate, onCancel }: NewCommentProps) => {
     () => ({
       author_name: user?.fullName ?? "Anonymous",
       author_avatar_url: user?.profileImageUrl ?? anonymousAvatar,
-      comment: editingValue,
+      text: editingValue,
     }),
     [editingValue, user?.fullName, user?.profileImageUrl],
   );
@@ -123,7 +123,7 @@ const NewComment = ({ onCreate, onCancel }: NewCommentProps) => {
   }, [editingValue, onCreate]);
 
   return (
-    <NewCommentView
+    <NewStatementView
       data={{ card }}
       state={{
         editingValue,
@@ -134,4 +134,4 @@ const NewComment = ({ onCreate, onCancel }: NewCommentProps) => {
   );
 };
 
-export default NewComment;
+export default NewStatement;

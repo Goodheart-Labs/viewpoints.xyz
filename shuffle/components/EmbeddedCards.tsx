@@ -4,10 +4,11 @@ import { useCallback } from "react";
 import { useMutation } from "react-query";
 
 import { ChatBubbleBottomCenterIcon } from "@heroicons/react/20/solid";
+import type { Statement } from "@prisma/client";
 import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
 
-import type { Choice, Comment } from "@/lib/api";
+import type { Choice } from "@/lib/api";
 import useOverridableState from "@/lib/useOverridableState";
 import { useSession } from "@/providers/SessionProvider";
 
@@ -25,10 +26,10 @@ export const anonymousAvatar =
 // -----------------------------------------------------------------------------
 
 type EmbeddedCardsProps = {
-  filteredComments: Comment[];
-  onNewComment: () => void;
-  onCommentEdited: (card: Pick<Comment, "id" | "comment">) => void;
-  onCommentFlagged: () => void;
+  filteredStatements: Statement[];
+  onNewStatement: () => void;
+  onStatementEdited: (card: Pick<Statement, "id" | "text">) => void;
+  onStatementFlagged: () => void;
   onResponseCreated: (response: MinimalResponse) => void;
 };
 
@@ -36,15 +37,16 @@ type EmbeddedCardsProps = {
 // -----------------------------------------------------------------------------
 
 const EmbeddedCards = ({
-  filteredComments,
-  onNewComment,
-  onCommentEdited,
-  onCommentFlagged: parentOnCommentFlagged,
+  filteredStatements,
+  onNewStatement,
+  onStatementEdited,
+  onStatementFlagged: parentOnStatementFlagged,
   onResponseCreated,
 }: EmbeddedCardsProps) => {
   // State
 
-  const [cards, setCards] = useOverridableState<Comment[]>(filteredComments);
+  const [cards, setCards] =
+    useOverridableState<Statement[]>(filteredStatements);
 
   // Mutations
 
@@ -52,7 +54,7 @@ const EmbeddedCards = ({
 
   const insertResponseMutation = useMutation(
     async (response: MinimalResponse) => {
-      await axios.post(`/api/comments/${response.comment_id}/responses`, {
+      await axios.post(`/api/statements/${response.statementId}/responses`, {
         ...response,
       });
     },
@@ -61,9 +63,9 @@ const EmbeddedCards = ({
   // Callbacks
 
   const onSwipe = useCallback(
-    (card: Comment, choice: Choice) => {
+    (card: Statement, choice: Choice) => {
       const response: MinimalResponse = {
-        comment_id: card.id,
+        statementId: card.id,
         choice,
         created_at: new Date(),
         user_id: null,
@@ -78,12 +80,12 @@ const EmbeddedCards = ({
     [cards, insertResponseMutation, onResponseCreated, sessionId, setCards],
   );
 
-  const onCommentFlagged = useCallback(
-    (cardId: Comment["id"]) => {
+  const onStatementFlagged = useCallback(
+    (cardId: Statement["id"]) => {
       setCards(cards.filter((c) => c.id !== cardId));
-      parentOnCommentFlagged();
+      parentOnStatementFlagged();
     },
-    [cards, parentOnCommentFlagged, setCards],
+    [cards, parentOnStatementFlagged, setCards],
   );
 
   // Render
@@ -105,10 +107,10 @@ const EmbeddedCards = ({
                 <BorderedButton
                   color="blue"
                   className="flex items-center"
-                  onClick={onNewComment}
+                  onClick={onNewStatement}
                 >
                   <ChatBubbleBottomCenterIcon width={28} className="mr-1" /> Add
-                  a new comment
+                  a new statement
                 </BorderedButton>
               </div>
             </div>
@@ -116,15 +118,16 @@ const EmbeddedCards = ({
         </AnimatePresence>
       ) : (
         <div className="relative flex flex-col w-full sm:min-h-[200px] min-w-[400px]">
-          {filteredComments.map((card) => (
+          {filteredStatements.map((card) => (
             <AnimatePresence key={card.id}>
               <Card
                 card={card}
                 onSwipe={onSwipe}
-                onCommentEdited={onCommentEdited}
-                onCommentFlagged={onCommentFlagged}
+                onStatementEdited={onStatementEdited}
+                onStatementFlagged={onStatementFlagged}
                 isActive={
-                  card.id === filteredComments[filteredComments.length - 1].id
+                  card.id ===
+                  filteredStatements[filteredStatements.length - 1].id
                 }
               />
             </AnimatePresence>

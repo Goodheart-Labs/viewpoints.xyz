@@ -10,11 +10,11 @@ import {
 import { useMutation } from "react-query";
 
 import { FlagIcon } from "@heroicons/react/20/solid";
+import type { FlaggedStatement, Statement } from "@prisma/client";
 import axios from "axios";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 
-import type { Comment, FlaggedComment } from "@/lib/api";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 
 import BorderedButton from "./BorderedButton";
@@ -22,7 +22,7 @@ import BorderedButton from "./BorderedButton";
 // Types
 // -----------------------------------------------------------------------------
 
-type FlagCommentViewProps = {
+type FlagStatementViewProps = {
   refs: {
     textareaRef: React.RefObject<HTMLTextAreaElement>;
   };
@@ -38,8 +38,8 @@ type FlagCommentViewProps = {
   };
 };
 
-type FlagCommentProps = {
-  comment: Comment;
+type FlagStatementProps = {
+  statement: Statement;
   onCreate: () => void;
   onCancel: () => void;
 };
@@ -47,11 +47,11 @@ type FlagCommentProps = {
 // View
 // -----------------------------------------------------------------------------
 
-const FlagCommentView = ({
+const FlagStatementView = ({
   refs: { textareaRef },
   state: { reason, setReason, loading },
   callbacks: { onCancel, onSave, onKeyDown },
-}: FlagCommentViewProps) => (
+}: FlagStatementViewProps) => (
   <>
     <motion.div
       initial={{ opacity: 0 }}
@@ -60,7 +60,7 @@ const FlagCommentView = ({
     >
       <div className="z-50 flex flex-col w-full px-4 py-5 sm:p-6">
         <div className="flex items-center justify-between w-full mb-4">
-          <h4 className="font-semibold">Flag Comment</h4>
+          <h4 className="font-semibold">Flag Statement</h4>
         </div>
         <div className="flex w-full">
           <textarea
@@ -69,7 +69,7 @@ const FlagCommentView = ({
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder="Reason for flagging this comment"
+            placeholder="Reason for flagging this statement"
           />
         </div>
       </div>
@@ -86,7 +86,7 @@ const FlagCommentView = ({
               ) : (
                 <>
                   <FlagIcon width={22} height={22} className="mr-1" /> Flag
-                  Comment
+                  Statement
                 </>
               )}
             </BorderedButton>
@@ -110,7 +110,11 @@ const FlagCommentView = ({
 // Default export
 // -----------------------------------------------------------------------------
 
-const FlagComment = ({ comment, onCreate, onCancel }: FlagCommentProps) => {
+const FlagStatement = ({
+  statement,
+  onCreate,
+  onCancel,
+}: FlagStatementProps) => {
   const { track } = useAmplitude();
 
   const [reason, setReason] = useState("");
@@ -144,9 +148,9 @@ const FlagComment = ({ comment, onCreate, onCancel }: FlagCommentProps) => {
     )}px`;
   }, [reason]);
 
-  const newFlaggedCommentMutation = useMutation(
-    async (payload: Pick<FlaggedComment, "reason">) => {
-      await axios.post(`/api/comments/${comment.id}/flag`, payload);
+  const newFlaggedStatementMutation = useMutation(
+    async (payload: Pick<FlaggedStatement, "reason">) => {
+      await axios.post(`/api/statements/${statement.id}/flag`, payload);
       onCreate();
     },
   );
@@ -155,28 +159,28 @@ const FlagComment = ({ comment, onCreate, onCancel }: FlagCommentProps) => {
     if (!reason.length) return;
 
     track({
-      type: "comments.flag.persist",
-      commentId: comment.id,
+      type: "statement.flag.persist",
+      statementId: statement.id,
       reason,
       interactionMode: "click",
     });
 
-    newFlaggedCommentMutation.mutateAsync({
+    newFlaggedStatementMutation.mutateAsync({
       reason,
     });
-  }, [reason, track, comment.id, newFlaggedCommentMutation]);
+  }, [reason, track, statement.id, newFlaggedStatementMutation]);
 
   return (
-    <FlagCommentView
+    <FlagStatementView
       refs={{ textareaRef }}
       state={{
         reason,
         setReason,
-        loading: newFlaggedCommentMutation.isLoading,
+        loading: newFlaggedStatementMutation.isLoading,
       }}
       callbacks={{ onCancel, onSave, onKeyDown }}
     />
   );
 };
 
-export default FlagComment;
+export default FlagStatement;

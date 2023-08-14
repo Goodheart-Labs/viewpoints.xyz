@@ -13,58 +13,61 @@ export const calculateResponsePercentages = (
   allResponses: AllResponses,
   userResponses: UserResponses,
 ): ResponsePercentages => {
-  const userResponseMap: { [commentId: number]: Choice } = {};
-  const commentResponseCounts: ResponsePercentages = new Map();
-  const commentUserAgreementCounts: ResponsePercentages = new Map();
+  const userResponseMap: { [statementId: number]: Choice } = {};
+  const statementResponseCounts: ResponsePercentages = new Map();
+  const statementUserAgreementCounts: ResponsePercentages = new Map();
 
   userResponses.forEach((response) => {
-    userResponseMap[response.comment_id] = response.choice;
+    userResponseMap[response.statementId] = response.choice;
   });
 
   allResponses.forEach((response) => {
     if (response.choice === "skip") return;
 
-    commentResponseCounts.set(
-      response.comment_id,
-      (commentResponseCounts.get(response.comment_id) || 0) + 1,
+    statementResponseCounts.set(
+      response.statementId,
+      (statementResponseCounts.get(response.statementId) || 0) + 1,
     );
 
     if (
-      userResponseMap[response.comment_id] &&
-      userResponseMap[response.comment_id] === response.choice
+      userResponseMap[response.statementId] &&
+      userResponseMap[response.statementId] === response.choice
     ) {
-      commentUserAgreementCounts.set(
-        response.comment_id,
-        (commentUserAgreementCounts.get(response.comment_id) || 0) + 1,
+      statementUserAgreementCounts.set(
+        response.statementId,
+        (statementUserAgreementCounts.get(response.statementId) || 0) + 1,
       );
     }
   });
 
-  const commentPercentages: ResponsePercentages = new Map();
-  for (const commentId of commentResponseCounts.keys()) {
-    commentPercentages.set(
-      commentId,
-      ((commentUserAgreementCounts.get(commentId) ?? 0) /
-        (commentResponseCounts.get(commentId) || 1)) *
+  const statementPercentages: ResponsePercentages = new Map();
+  for (const statementId of statementResponseCounts.keys()) {
+    statementPercentages.set(
+      statementId,
+      ((statementUserAgreementCounts.get(statementId) ?? 0) /
+        (statementResponseCounts.get(statementId) || 1)) *
         100,
     );
   }
 
-  return Array.from(commentResponseCounts.keys()).reduce((acc, commentId) => {
-    const percentage =
-      ((commentUserAgreementCounts.get(commentId) ?? 0) /
-        (commentResponseCounts.get(commentId) || 1)) *
-      100;
+  return Array.from(statementResponseCounts.keys()).reduce(
+    (acc, statementId) => {
+      const percentage =
+        ((statementUserAgreementCounts.get(statementId) ?? 0) /
+          (statementResponseCounts.get(statementId) || 1)) *
+        100;
 
-    return acc.set(commentId, percentage);
-  }, new Map());
+      return acc.set(statementId, percentage);
+    },
+    new Map(),
+  );
 };
 
 // Most / least consensus
 // -----------------------------------------------------------------------------
 
-export type CommentConsensus = {
-  comment_id: number;
+export type StatementConsensus = {
+  statementId: number;
   choice: Choice;
   consensusPercentage: number;
 };
@@ -73,28 +76,28 @@ export const getUserConsensusViews = (
   allResponses: AllResponses,
   userResponses: UserResponses,
 ): {
-  mostConsensus: CommentConsensus | null;
-  mostControversial: CommentConsensus | null;
+  mostConsensus: StatementConsensus | null;
+  mostControversial: StatementConsensus | null;
 } => {
-  const commentPercentages = calculateResponsePercentages(
+  const statementPercentages = calculateResponsePercentages(
     allResponses,
     userResponses,
   );
 
-  let mostConsensus: CommentConsensus | null = null;
-  let mostControversial: CommentConsensus | null = null;
+  let mostConsensus: StatementConsensus | null = null;
+  let mostControversial: StatementConsensus | null = null;
 
-  for (const commentId of commentPercentages.keys()) {
-    const percentage = commentPercentages.get(commentId)!;
+  for (const statementId of statementPercentages.keys()) {
+    const percentage = statementPercentages.get(statementId)!;
     const choice =
       userResponses.find(
-        (response) => response.comment_id === Number(commentId),
+        (response) => response.statementId === Number(statementId),
       )?.choice || "skip";
 
     if (choice === "skip") continue;
 
-    const consensus: CommentConsensus = {
-      comment_id: Number(commentId),
+    const consensus: StatementConsensus = {
+      statementId: Number(statementId),
       choice,
       consensusPercentage: percentage,
     };

@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requirePollAdmin } from "@/utils/authutils";
 
-// DELETE /api/comments/:id
+// DELETE /api/statements/:id
 // -----------------------------------------------------------------------------
 
 export async function DELETE(
@@ -18,17 +18,17 @@ export async function DELETE(
 ) {
   const { userId } = auth();
 
-  const comment = await prisma.comments.findUnique({
+  const statement = await prisma.statement.findUnique({
     where: { id: parseInt(id) },
   });
 
   const poll = await prisma.polls.findUnique({
-    where: { id: comment?.poll_id },
+    where: { id: statement?.poll_id },
   });
 
   requirePollAdmin(poll, userId);
 
-  await prisma.comments.delete({
+  await prisma.statement.delete({
     where: { id: parseInt(id) },
   });
 

@@ -1,5 +1,6 @@
 "use client";
 
+import type { FC } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "react-query";
 
@@ -9,6 +10,7 @@ import {
   ArrowRightIcon,
   ChatBubbleBottomCenterIcon,
 } from "@heroicons/react/20/solid";
+import type { FlaggedStatement, Statement } from "@prisma/client";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import axios from "axios";
 import { AnimatePresence } from "framer-motion";
@@ -20,9 +22,9 @@ import BorderedButton from "@/components/BorderedButton";
 import type { MinimalResponse } from "@/components/Cards";
 import Cards from "@/components/Cards";
 import KeyboardShortcutsLegend from "@/components/KeyboardShortcutsLegend";
-import NewComment from "@/components/NewComment";
+import NewStatement from "@/components/NewStatement";
 import Responses from "@/components/Responses";
-import type { Comment, FlaggedComment, Response } from "@/lib/api";
+import type { Response } from "@/lib/api";
 import { Poll } from "@/lib/api";
 import sortBySeed from "@/lib/sortBySeed";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
@@ -31,24 +33,16 @@ import { useModal } from "@/providers/ModalProvider";
 import { SESSION_ID_COOKIE_NAME } from "@/providers/SessionProvider";
 import { ensureItLooksLikeAQuestion } from "@/utils/stringutils";
 
-// Config
-// -----------------------------------------------------------------------------
-
 const MAX_NUM_FLAGS_BEFORE_REMOVAL = 2;
 const MAX_NUM_SKIPS_BEFORE_REMOVAL = 5;
 
-// Default export
-// -----------------------------------------------------------------------------
-
-const Poll = ({
-  poll,
-  comments: initialData,
-  url,
-}: {
+type PollProps = {
   poll: Poll;
-  comments: Comment[];
+  statements: Statement[];
   url: string;
-}) => {
+};
+
+const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
   const { track } = useAmplitude();
   const { user } = useUser();
 
@@ -68,20 +62,22 @@ const Poll = ({
 
   // Queries
 
-  const { data: comments, refetch: refetchComments } = useQuery<Comment[]>(
-    ["comments", poll.id],
+  const { data: statements, refetch: refetchStatements } = useQuery<
+    Statement[]
+  >(
+    ["statements", poll.id],
     async () => {
-      const { data } = await axios.get(`/api/polls/${poll.id}/comments`);
-      return data as Comment[];
+      const { data } = await axios.get(`/api/polls/${poll.id}/statements`);
+      return data as Statement[];
     },
     {
       initialData,
     },
   );
 
-  const commentIds = useMemo(
-    () => (comments ?? []).map((comment) => comment.id),
-    [comments],
+  const statementIds = useMemo(
+    () => (statements ?? []).map((statement) => statement.id),
+    [statements],
   );
 
   const userId = useMemo(
@@ -94,7 +90,7 @@ const Poll = ({
   );
 
   const { data: responses, isLoading: responsesLoading } = useQuery<Response[]>(
-    [userId, "responses", commentIds.join(",")],
+    [userId, "responses", statementIds.join(",")],
     async () => {
       const { data } = await axios.get(`/api/polls/${poll.id}/responses`);
       return data as Response[];
@@ -103,46 +99,50 @@ const Poll = ({
 
   const { data: allResponses, refetch: refetchAllResponses } = useQuery<
     Response[]
-  >(["responses", commentIds.join(",")], async () => {
+  >(["responses", statementIds.join(",")], async () => {
     const { data } = await axios.get(`/api/polls/${poll.id}/responses/all`);
     return data as Response[];
   });
 
-  const { data: flaggedComments, refetch: refetchFlaggedComments } = useQuery<
-    FlaggedComment[]
-  >(["flaggedComments", commentIds.join(",")], async () => {
-    const { data } = await axios.get(`/api/polls/${poll.id}/flaggedComments`);
-    return data as FlaggedComment[];
-  });
+  const { data: flaggedStatements, refetch: refetchFlaggedStatements } =
+    useQuery<FlaggedStatement[]>(
+      ["flaggedStatements", statementIds.join(",")],
+      async () => {
+        const { data } = await axios.get(
+          `/api/polls/${poll.id}/flaggedStatements`,
+        );
+        return data as FlaggedStatement[];
+      },
+    );
 
-  const newCommentMutation = useMutation(
+  const newStatementMutation = useMutation(
     async ({
-      comment,
+      text,
       edited_from_id,
       author_name,
       author_avatar_url,
     }: Pick<
-      Comment,
-      "comment" | "edited_from_id" | "author_name" | "author_avatar_url"
+      Statement,
+      "text" | "edited_from_id" | "author_name" | "author_avatar_url"
     >) => {
-      await axios.post(`/api/polls/${poll.id}/comments`, {
-        comment,
+      await axios.post(`/api/polls/${poll.id}/statements`, {
+        text,
         edited_from_id,
         author_name,
         author_avatar_url,
       });
-      await refetchComments();
+      await refetchStatements();
     },
   );
 
   // Callbacks
 
-  const onNewComment = useCallback(
+  const onNewStatement = useCallback(
     (interactionMode: InteractionMode = "click") => {
       setIsCreating(true);
 
       track({
-        type: "comments.new.open",
+        type: "statement.new.open",
         pollId: poll.id,
         interactionMode,
       });
@@ -150,36 +150,42 @@ const Poll = ({
     [poll.id, track],
   );
 
-  const onCreateComment = useCallback(
-    async (comment: Comment["comment"], edited_from_id?: number) => {
+  const onCreateStatement = useCallback(
+    async (text: Statement["text"], edited_from_id?: number) => {
       track({
-        type: "comments.new.persist",
+        type: "statement.new.persist",
         pollId: poll.id,
-        comment,
+        text,
         edited_from_id,
       });
 
-      await newCommentMutation.mutateAsync({
-        comment,
+      await newStatementMutation.mutateAsync({
+        text,
         edited_from_id: edited_from_id ?? null,
         author_name: user?.fullName ?? null,
         author_avatar_url: user?.profileImageUrl ?? null,
       });
       setIsCreating(false);
     },
-    [newCommentMutation, poll.id, track, user?.fullName, user?.profileImageUrl],
+    [
+      newStatementMutation,
+      poll.id,
+      track,
+      user?.fullName,
+      user?.profileImageUrl,
+    ],
   );
 
-  const onCommentEdited = useCallback(
-    async ({ id, comment }: Pick<Comment, "id" | "comment">) => {
-      await onCreateComment(comment, id);
+  const onStatementEdited = useCallback(
+    async ({ id, text }: Pick<Statement, "id" | "text">) => {
+      await onCreateStatement(text, id);
     },
-    [onCreateComment],
+    [onCreateStatement],
   );
 
   const onCancelCreating = useCallback(() => {
     track({
-      type: "comments.new.cancel",
+      type: "statement.new.cancel",
       pollId: poll.id,
     });
 
@@ -211,30 +217,30 @@ const Poll = ({
 
   // Keyboard shortcuts
 
-  useHotkeys("c", () => onNewComment("keyboard"));
+  useHotkeys("c", () => onNewStatement("keyboard"));
 
   // Memos
 
-  const flagCountByCommentId = useMemo(
+  const flagCountByStatementId = useMemo(
     () =>
-      (flaggedComments ?? []).reduce(
-        (acc, flaggedComment) => ({
+      (flaggedStatements ?? []).reduce(
+        (acc, flaggedStatement) => ({
           ...acc,
-          [flaggedComment.comment_id]:
-            (acc[flaggedComment.comment_id] ?? 0) + 1,
+          [flaggedStatement.statementId]:
+            (acc[flaggedStatement.statementId] ?? 0) + 1,
         }),
         {} as Record<number, number>,
       ),
-    [flaggedComments],
+    [flaggedStatements],
   );
 
-  const skipCountByCommentId = useMemo(
+  const skipCountByStatementId = useMemo(
     () =>
       (responses ?? []).reduce(
         (acc, response) => ({
           ...acc,
-          [response.comment_id]:
-            (acc[response.comment_id] ?? 0) +
+          [response.statementId]:
+            (acc[response.statementId] ?? 0) +
             (response.choice === "skip" ? 1 : 0),
         }),
         {} as Record<number, number>,
@@ -246,17 +252,18 @@ const Poll = ({
     () =>
       [...(responses || []), ...cachedResponses].filter(
         (response, index, self) =>
-          self.findIndex((r) => r.comment_id === response.comment_id) === index,
+          self.findIndex((r) => r.statementId === response.statementId) ===
+          index,
       ),
     [responses, cachedResponses],
   );
 
-  const currentUserResponsesByCommentId = useMemo(
+  const currentUserResponsesByStatementId = useMemo(
     () =>
       enrichedResponses?.reduce(
         (acc, response) => ({
           ...acc,
-          [response.comment_id]: response,
+          [response.statementId]: response,
         }),
         {} as Record<number, MinimalResponse>,
       ) ?? {},
@@ -267,7 +274,7 @@ const Poll = ({
 
   // Sort deterministically by seed before we filter
 
-  // Generate a seed for sorting comments
+  // Generate a seed for sorting statements
 
   const [seed, setSeed] = useState(Math.random());
   useEffect(() => {
@@ -279,46 +286,48 @@ const Poll = ({
     }
   }, []);
 
-  const sortedComments = useMemo(
-    () => sortBySeed(comments ?? [], seed),
-    [comments, seed],
+  const sortedStatements = useMemo(
+    () => sortBySeed(statements ?? [], seed),
+    [statements, seed],
   );
 
-  // Filter comments
+  // Filter statements
 
-  const filteredComments = useMemo(
+  const filteredStatements = useMemo(
     () =>
-      (sortedComments ?? []).filter((comment) => {
-        const userHasResponded = !!currentUserResponsesByCommentId[comment.id];
+      (sortedStatements ?? []).filter((statement) => {
+        const userHasResponded =
+          !!currentUserResponsesByStatementId[statement.id];
 
-        const commentHasBeenFlaggedByCurrentUser = flaggedComments?.some(
-          (flaggedComment) =>
-            flaggedComment.comment_id === comment.id &&
-            (flaggedComment.session_id === getCookie(SESSION_ID_COOKIE_NAME) ||
-              (user?.id && flaggedComment.user_id === user.id)),
+        const statementHasBeenFlaggedByCurrentUser = flaggedStatements?.some(
+          (flaggedStatement) =>
+            flaggedStatement.statementId === statement.id &&
+            (flaggedStatement.session_id ===
+              getCookie(SESSION_ID_COOKIE_NAME) ||
+              (user?.id && flaggedStatement.user_id === user.id)),
         );
 
-        const commentExceedsFlagThreshold =
-          (flagCountByCommentId[comment.id] ?? 0) >=
+        const statementExceedsFlagThreshold =
+          (flagCountByStatementId[statement.id] ?? 0) >=
           MAX_NUM_FLAGS_BEFORE_REMOVAL;
 
-        const commentExceedsSkipThreshold =
-          (skipCountByCommentId[comment.id] ?? 0) >=
+        const statementExceedsSkipThreshold =
+          (skipCountByStatementId[statement.id] ?? 0) >=
           MAX_NUM_SKIPS_BEFORE_REMOVAL;
 
         return !(
           userHasResponded ||
-          commentHasBeenFlaggedByCurrentUser ||
-          commentExceedsFlagThreshold ||
-          commentExceedsSkipThreshold
+          statementHasBeenFlaggedByCurrentUser ||
+          statementExceedsFlagThreshold ||
+          statementExceedsSkipThreshold
         );
       }),
     [
-      currentUserResponsesByCommentId,
-      flagCountByCommentId,
-      flaggedComments,
-      skipCountByCommentId,
-      sortedComments,
+      currentUserResponsesByStatementId,
+      flagCountByStatementId,
+      flaggedStatements,
+      skipCountByStatementId,
+      sortedStatements,
       user?.id,
     ],
   );
@@ -404,14 +413,14 @@ const Poll = ({
 
               <div className="relative text-black">
                 <Cards
-                  comments={comments ?? []}
-                  filteredComments={filteredComments ?? []}
+                  statements={statements ?? []}
+                  filteredStatements={filteredStatements ?? []}
                   allResponses={allResponses ?? []}
                   userResponses={enrichedResponses}
-                  onNewComment={onNewComment}
+                  onNewStatement={onNewStatement}
                   onNewPoll={onNewPoll}
-                  onCommentEdited={onCommentEdited}
-                  onCommentFlagged={refetchFlaggedComments}
+                  onStatementEdited={onStatementEdited}
+                  onStatementFlagged={refetchFlaggedStatements}
                   onResponseCreated={onResponseCreated}
                 />
               </div>
@@ -427,28 +436,33 @@ const Poll = ({
           )}
         </div>
 
-        {filteredComments.length > 0 && (
+        {filteredStatements.length > 0 && (
           <div className="mt-10">
-            <BorderedButton onClick={() => onNewComment("click")} color="blue">
+            <BorderedButton
+              onClick={() => onNewStatement("click")}
+              color="blue"
+            >
               <ChatBubbleBottomCenterIcon width={22} className="mr-2" />
-              Add New Comment
+              Add New Statement
             </BorderedButton>
           </div>
         )}
 
-        {typeof responses !== "undefined" &&
-          typeof comments !== "undefined" && (
-            <Responses
-              allResponses={allResponses ?? []}
-              responses={enrichedResponses}
-              comments={comments}
-            />
-          )}
+        {responses && statements && (
+          <Responses
+            allResponses={allResponses ?? []}
+            responses={enrichedResponses}
+            statements={statements}
+          />
+        )}
       </div>
 
       <AnimatePresence>
         {isCreating && (
-          <NewComment onCreate={onCreateComment} onCancel={onCancelCreating} />
+          <NewStatement
+            onCreate={onCreateStatement}
+            onCancel={onCancelCreating}
+          />
         )}
       </AnimatePresence>
     </main>

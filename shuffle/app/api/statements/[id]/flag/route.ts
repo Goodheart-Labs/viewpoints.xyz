@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { SESSION_ID_COOKIE_NAME } from "@/middleware";
 
-// POST /api/comments/:id/flag
+// POST /api/statements/:id/flag
 // -----------------------------------------------------------------------------
 
 export async function POST(
@@ -19,21 +19,21 @@ export async function POST(
 ) {
   const { userId } = auth();
 
-  const comment = await prisma.comments.findUnique({
+  const statement = await prisma.statement.findUnique({
     where: {
       id: parseInt(id),
     },
   });
 
-  if (!comment) {
+  if (!statement) {
     notFound();
   }
 
   const body = await request.json();
 
-  const response = await prisma.flagged_comments.create({
+  const response = await prisma.flaggedStatement.create({
     data: {
-      comment_id: comment.id,
+      statementId: statement.id,
       user_id: userId,
       session_id:
         request.cookies.get(SESSION_ID_COOKIE_NAME)?.value ??

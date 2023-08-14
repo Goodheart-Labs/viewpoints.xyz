@@ -8,10 +8,11 @@ import {
   ChatBubbleBottomCenterIcon,
   PlusIcon,
 } from "@heroicons/react/20/solid";
+import type { Statement } from "@prisma/client";
 import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
 
-import type { Choice, Comment, Response } from "@/lib/api";
+import type { Choice, Response } from "@/lib/api";
 import useOverridableState from "@/lib/useOverridableState";
 import { useSession } from "@/providers/SessionProvider";
 
@@ -24,18 +25,18 @@ import Card from "./Card";
 
 export type MinimalResponse = Pick<
   Response,
-  "comment_id" | "choice" | "created_at" | "user_id" | "session_id"
+  "statementId" | "choice" | "created_at" | "user_id" | "session_id"
 >;
 
 type CardsProps = {
-  comments: Comment[];
-  filteredComments: Comment[];
+  statements: Statement[];
+  filteredStatements: Statement[];
   allResponses: Response[];
   userResponses: MinimalResponse[];
-  onNewComment: () => void;
+  onNewStatement: () => void;
   onNewPoll: () => void;
-  onCommentEdited: (card: Pick<Comment, "id" | "comment">) => void;
-  onCommentFlagged: () => void;
+  onStatementEdited: (card: Pick<Statement, "id" | "text">) => void;
+  onStatementFlagged: () => void;
   onResponseCreated: (response: MinimalResponse) => void;
 };
 
@@ -43,21 +44,22 @@ type CardsProps = {
 // -----------------------------------------------------------------------------
 
 const Cards = ({
-  comments,
-  filteredComments,
+  statements,
+  filteredStatements,
   allResponses,
   userResponses,
-  onNewComment,
+  onNewStatement,
   onNewPoll,
-  onCommentEdited,
-  onCommentFlagged: parentOnCommentFlagged,
+  onStatementEdited,
+  onStatementFlagged: parentOnStatementFlagged,
   onResponseCreated,
 }: CardsProps) => {
   const { user } = useUser();
 
   // State
 
-  const [cards, setCards] = useOverridableState<Comment[]>(filteredComments);
+  const [cards, setCards] =
+    useOverridableState<Statement[]>(filteredStatements);
 
   // Mutations
 
@@ -65,7 +67,7 @@ const Cards = ({
 
   const insertResponseMutation = useMutation(
     async (response: MinimalResponse) => {
-      await axios.post(`/api/comments/${response.comment_id}/responses`, {
+      await axios.post(`/api/statements/${response.statementId}/responses`, {
         ...response,
       });
     },
@@ -74,9 +76,9 @@ const Cards = ({
   // Callbacks
 
   const onSwipe = useCallback(
-    async (card: Comment, choice: Choice) => {
+    async (card: Statement, choice: Choice) => {
       const response: MinimalResponse = {
-        comment_id: card.id,
+        statementId: card.id,
         choice,
         created_at: new Date(),
         user_id: user?.id ?? null,
@@ -99,21 +101,21 @@ const Cards = ({
     ],
   );
 
-  const onCommentFlagged = useCallback(
-    (cardId: Comment["id"]) => {
+  const onStatementFlagged = useCallback(
+    (cardId: Statement["id"]) => {
       setCards(cards.filter((c) => c.id !== cardId));
-      parentOnCommentFlagged();
+      parentOnStatementFlagged();
     },
-    [cards, parentOnCommentFlagged, setCards],
+    [cards, parentOnStatementFlagged, setCards],
   );
 
-  const commentMap = useMemo(
+  const statementMap = useMemo(
     () =>
-      comments.reduce(
-        (acc, comment) => ({ ...acc, [comment.id]: comment }),
+      statements.reduce(
+        (acc, statement) => ({ ...acc, [statement.id]: statement }),
         {},
       ),
-    [comments],
+    [statements],
   );
 
   // Render
@@ -131,7 +133,7 @@ const Cards = ({
             <AnalyticsSynopsis
               allResponses={allResponses}
               userResponses={userResponses}
-              commentMap={commentMap}
+              statementMap={statementMap}
             />
 
             <div className="flex justify-center">
@@ -139,10 +141,10 @@ const Cards = ({
                 <BorderedButton
                   color="blue"
                   className="flex items-center"
-                  onClick={() => onNewComment()}
+                  onClick={() => onNewStatement()}
                 >
                   <ChatBubbleBottomCenterIcon width={28} className="mr-1" /> Add
-                  a new comment
+                  a new statement
                 </BorderedButton>
               </div>
               <div className="ml-4 text-center">
@@ -164,8 +166,8 @@ const Cards = ({
               <Card
                 card={card}
                 onSwipe={onSwipe}
-                onCommentEdited={onCommentEdited}
-                onCommentFlagged={onCommentFlagged}
+                onStatementEdited={onStatementEdited}
+                onStatementFlagged={onStatementFlagged}
                 isActive={card.id === cards[cards.length - 1].id}
               />
             </AnimatePresence>

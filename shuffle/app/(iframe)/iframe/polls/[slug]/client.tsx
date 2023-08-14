@@ -1,25 +1,25 @@
 "use client";
 
-import type { comments } from "@prisma/client";
+import type { Statement } from "@prisma/client";
 
 import EmbeddedCards from "@/components/EmbeddedCards";
 import QueryProvider from "@/providers/QueryProvider";
 
 type PollIframeClientProps = {
-  filteredComments: comments[];
+  filteredStatements: Statement[];
 };
 
-const PollIframeClient = ({ filteredComments }: PollIframeClientProps) => (
+const PollIframeClient = ({ filteredStatements }: PollIframeClientProps) => (
   <QueryProvider>
     <EmbeddedCards
-      filteredComments={filteredComments}
-      onNewComment={() => {
+      filteredStatements={filteredStatements}
+      onNewStatement={() => {
         throw new Error("Function not implemented.");
       }}
-      onCommentEdited={() => {
+      onStatementEdited={() => {
         throw new Error("Function not implemented.");
       }}
-      onCommentFlagged={() => {
+      onStatementFlagged={() => {
         throw new Error("Function not implemented.");
       }}
       onResponseCreated={() => {

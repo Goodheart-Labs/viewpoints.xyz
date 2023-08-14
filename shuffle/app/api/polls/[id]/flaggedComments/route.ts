@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
 
-// GET /api/polls/:id/flaggedComments
+// GET /api/polls/:id/flaggedStatements
 // -----------------------------------------------------------------------------
 
 export async function GET(
@@ -18,9 +18,9 @@ export async function GET(
 ) {
   const { userId } = auth();
 
-  const flaggedComments = await prisma.flagged_comments.findMany({
+  const flaggedStatements = await prisma.flaggedStatement.findMany({
     where: {
-      comment: {
+      statement: {
         poll_id: parseInt(id),
       },
     },
@@ -32,5 +32,5 @@ export async function GET(
 
   requirePollAdminIfPollIsPrivate(poll, userId);
 
-  return NextResponse.json(flaggedComments);
+  return NextResponse.json(flaggedStatements);
 }

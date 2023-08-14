@@ -1,11 +1,12 @@
 import { auth } from "@clerk/nextjs";
 import { UserIcon } from "@heroicons/react/20/solid";
+import type { Statement } from "@prisma/client";
 import { notFound } from "next/navigation";
 
-import CommentsList from "@/app/components/admin/CommentsList";
+import StatementList from "@/app/components/admin/StatementList";
 import UpdatePollVisibility from "@/app/components/polls/admin/UpdatePollVisibility";
 import ChoiceBadge from "@/components/ChoiceBadge";
-import type { Comment, Poll, Response } from "@/lib/api";
+import type { Poll, Response } from "@/lib/api";
 import prisma from "@/lib/prisma";
 import { requirePollAdmin } from "@/utils/authutils";
 
@@ -21,7 +22,7 @@ type PollAdminPageProps = {
 type PollAdminPageViewProps = {
   data: {
     poll: Poll;
-    commentsById: Record<string, Comment>;
+    statementsById: Record<string, Statement>;
     responsesBySession: Record<string, Response[]>;
   };
 };
@@ -48,7 +49,7 @@ async function getData({ params }: PollAdminPageProps) {
 
   // More pull
 
-  const comments = await prisma.comments.findMany({
+  const statements = await prisma.statement.findMany({
     where: {
       poll_id: poll.id,
     },
@@ -56,20 +57,20 @@ async function getData({ params }: PollAdminPageProps) {
 
   const responses = await prisma.responses.findMany({
     where: {
-      comment_id: {
-        in: comments.map((comment) => comment.id),
+      statementId: {
+        in: statements.map((statement) => statement.id),
       },
     },
   });
 
   // Transform
 
-  const commentsById = comments.reduce(
-    (acc, comment) => ({
+  const statementsById = statements.reduce(
+    (acc, statement) => ({
       ...acc,
-      [comment.id]: comment,
+      [statement.id]: statement,
     }),
-    {} as Record<string, Comment>,
+    {} as Record<string, Statement>,
   );
 
   const responsesBySession = responses.reduce(
@@ -84,14 +85,14 @@ async function getData({ params }: PollAdminPageProps) {
     {} as Record<string, Response[]>,
   );
 
-  return { poll, comments, commentsById, responses, responsesBySession };
+  return { poll, statements, statementsById, responses, responsesBySession };
 }
 
 // View
 // -----------------------------------------------------------------------------
 
 const PollAdminPageView = ({
-  data: { poll, commentsById, responsesBySession },
+  data: { poll, statementsById, responsesBySession },
 }: PollAdminPageViewProps) => (
   <main className="flex flex-col items-center w-full max-w-5xl min-h-screen px-4 mx-auto gradient sm:px-0">
     <div className="flex flex-col mt-10 sm:mt-40 mb-10 text-center max-w-[800px]">
@@ -112,10 +113,10 @@ const PollAdminPageView = ({
 
     <div className="flex flex-col w-full mt-10">
       <h2 className="text-2xl font-bold text-black dark:text-gray-200">
-        Comments
+        Statements
       </h2>
 
-      <CommentsList poll={poll} />
+      <StatementList poll={poll} />
     </div>
 
     <div className="flex flex-col w-full mt-10">
@@ -135,7 +136,7 @@ const PollAdminPageView = ({
                 <div key={response.id} className="flex flex-col mt-1">
                   <h4 className="text-sm text-black dark:text-gray-200">
                     <ChoiceBadge choice={response.choice} />
-                    {commentsById[response.comment_id].comment}
+                    {statementsById[response.statementId].text}
                   </h4>
                 </div>
               ))}
@@ -153,12 +154,14 @@ const PollAdminPageView = ({
 const PollAdminPage = async ({ params }: PollAdminPageProps) => {
   // Data
 
-  const { poll, commentsById, responsesBySession } = await getData({ params });
+  const { poll, statementsById, responsesBySession } = await getData({
+    params,
+  });
 
   // Render
 
   return (
-    <PollAdminPageView data={{ poll, commentsById, responsesBySession }} />
+    <PollAdminPageView data={{ poll, statementsById, responsesBySession }} />
   );
 };
 
