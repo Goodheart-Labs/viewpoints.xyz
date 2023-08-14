@@ -52,7 +52,6 @@
     "react/react-in-jsx-scope": "off",
     "react/require-default-props": "off",
     "react/destructuring-assignment": "off",
-    "global-require": "off",
 
     "simple-import-sort/imports": [
       "error",
