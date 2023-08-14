@@ -1,4 +1,4 @@
 {
-  "*.{js,ts,tsx,css}": ["prettier --check"],
+  "*.{js,ts,tsx,css,json}": ["pnpm format:ci"],
   "*.{ts,tsx}": ["eslint"]
 }

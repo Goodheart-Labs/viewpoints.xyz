@@ -8,8 +8,10 @@
     "start": "next start",
     "lint": "eslint .",
     "format": "prettier --write .",
+    "format:ci": "prettier --check './**/*.{js,ts,tsx,css,json}'",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
+    "migrate:ci": "prisma migrate deploy",
     "postinstall": "prisma generate",
     "prepare": "cd ../ && husky install ./shuffle/.husky"
   },

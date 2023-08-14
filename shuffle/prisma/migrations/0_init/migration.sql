@@ -84,3 +84,4 @@ ALTER TABLE "flagged_comments" ADD CONSTRAINT "flagged_comments_comment_id_fkey"
 
 -- AddForeignKey
 ALTER TABLE "responses" ADD CONSTRAINT "responses_comment_id_fkey" FOREIGN KEY ("comment_id") REFERENCES "comments"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
