@@ -17,7 +17,8 @@
     "incremental": true,
     "downlevelIteration": true,
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@/shadcn/*": ["./app/components/shadcn/ui/*"]
     },
     "plugins": [
       {

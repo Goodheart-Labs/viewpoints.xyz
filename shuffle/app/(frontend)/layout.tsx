@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => (
   <ClerkProvider>
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
         <LogrocketWrapper>
           <Contexts>
