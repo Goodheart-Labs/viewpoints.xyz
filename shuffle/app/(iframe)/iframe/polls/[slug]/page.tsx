@@ -25,7 +25,7 @@ async function getData({ params }: PollIframeProps) {
     notFound();
   }
 
-  const comments = await prisma.comments.findMany({
+  const statement = await prisma.statement.findMany({
     where: {
       poll_id: poll.id,
     },
@@ -34,16 +34,16 @@ async function getData({ params }: PollIframeProps) {
     },
   });
 
-  return { poll, comments };
+  return { poll, statement };
 }
 
 // Default export
 // -----------------------------------------------------------------------------
 
 const PollIframe = async ({ params }: PollIframeProps) => {
-  const { comments } = await getData({ params });
+  const { statement } = await getData({ params });
 
-  return <PollIframeClient filteredComments={comments} />;
+  return <PollIframeClient filteredStatements={statement} />;
 };
 
 export default PollIframe;

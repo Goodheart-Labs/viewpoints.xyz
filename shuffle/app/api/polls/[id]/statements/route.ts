@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 import { SESSION_ID_COOKIE_NAME } from "@/middleware";
 import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
 
-// GET /api/polls/:id/comments
+// GET /api/polls/:id/statements
 // -----------------------------------------------------------------------------
 
 export async function GET(
@@ -17,7 +17,7 @@ export async function GET(
     params: { id: string };
   },
 ) {
-  const comments = await prisma.comments.findMany({
+  const statements = await prisma.statement.findMany({
     where: {
       poll_id: Number(id),
     },
@@ -26,10 +26,10 @@ export async function GET(
     },
   });
 
-  return NextResponse.json(comments);
+  return NextResponse.json(statements);
 }
 
-// POST /api/polls/:id/comments
+// POST /api/polls/:id/statements
 // -----------------------------------------------------------------------------
 
 export async function POST(
@@ -53,7 +53,7 @@ export async function POST(
 
   const body = await request.json();
 
-  const response = await prisma.comments.create({
+  const response = await prisma.statement.create({
     data: {
       poll_id: parseInt(id),
       user_id: userId,
@@ -68,7 +68,7 @@ export async function POST(
         null,
       author_avatar_url:
         body.author_avatar_url ?? user?.profileImageUrl ?? null,
-      comment: body.comment,
+      text: body.statement,
       created_at: new Date(),
     },
   });

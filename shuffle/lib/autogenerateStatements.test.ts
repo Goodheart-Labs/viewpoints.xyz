@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { parseResults } from "./autogenerateComments";
+import { parseResults } from "./autogenerateStatements";
 
 describe("parseResults", () => {
   it("returns undefined when it can't find the result marker", () => {

@@ -1,7 +1,5 @@
 import type {
   choice_enum,
-  comments,
-  flagged_comments,
   polls,
   reporting_type_enum,
   responses,
@@ -9,11 +7,7 @@ import type {
 
 export type Poll = polls;
 
-export type CommentReportingType = reporting_type_enum;
-
-export type Comment = comments;
-
-export type FlaggedComment = flagged_comments;
+export type StatementReportingType = reporting_type_enum;
 
 export type Choice = choice_enum;
 

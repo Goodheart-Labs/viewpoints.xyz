@@ -28,7 +28,7 @@ type EditingContentProps = {
   card: {
     author_name: string | null;
     author_avatar_url: string | null;
-    comment: string;
+    text: string;
   };
   setValue: (value: string) => void;
   onCancel: () => void;
@@ -67,7 +67,7 @@ const EditingContent = ({
   placeholder,
 }: EditingContentProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [localValue, setLocalValue] = useState(card.comment);
+  const [localValue, setLocalValue] = useState(card.text);
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Escape") {

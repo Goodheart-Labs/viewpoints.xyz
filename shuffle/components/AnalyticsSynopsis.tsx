@@ -1,8 +1,10 @@
 import { useMemo } from "react";
 
-import type { CommentConsensus } from "@/lib/analytics/responses";
+import type { Statement } from "@prisma/client";
+
+import type { StatementConsensus } from "@/lib/analytics/responses";
 import { getUserConsensusViews } from "@/lib/analytics/responses";
-import type { Comment, Response } from "@/lib/api";
+import type { Response } from "@/lib/api";
 import { choiceToHumanReadablePresentTense } from "@/utils/choiceUtils";
 
 import type { MinimalResponse } from "./Cards";
@@ -12,14 +14,14 @@ import ChoiceBadge from "./ChoiceBadge";
 // -----------------------------------------------------------------------------
 
 type AnalyticsSynopsisViewProps = {
-  consensusView: (CommentConsensus & { commentText: string }) | null;
-  controversialView: (CommentConsensus & { commentText: string }) | null;
+  consensusView: (StatementConsensus & { statementText: string }) | null;
+  controversialView: (StatementConsensus & { statementText: string }) | null;
 };
 
 type AnalyticsSynopsisProps = {
   allResponses: Response[];
   userResponses: MinimalResponse[];
-  commentMap: Record<number, Comment>;
+  statementMap: Record<number, Statement>;
 };
 
 // View
@@ -51,7 +53,7 @@ const AnalyticsSynopsisView = ({
             </div>
 
             <div className="my-4 ml-3 text-sm italic text-gray-700 dark:text-gray-400">
-              <span>{consensusView.commentText}</span>
+              <span>{consensusView.statementText}</span>
             </div>
           </div>
         </div>
@@ -82,7 +84,7 @@ const AnalyticsSynopsisView = ({
             </div>
 
             <div className="my-4 ml-3 text-sm italic text-gray-700 dark:text-gray-400">
-              <span>{controversialView.commentText}</span>
+              <span>{controversialView.statementText}</span>
             </div>
           </div>
         </div>
@@ -97,7 +99,7 @@ const AnalyticsSynopsisView = ({
 const AnalyticsSynopsis = ({
   allResponses,
   userResponses,
-  commentMap,
+  statementMap,
 }: AnalyticsSynopsisProps) => {
   const consensusViews = useMemo(
     () => getUserConsensusViews(allResponses, userResponses),
@@ -109,14 +111,14 @@ const AnalyticsSynopsis = ({
       consensusViews.mostConsensus
         ? {
             ...consensusViews.mostConsensus,
-            commentText:
-              commentMap[
+            statementText:
+              statementMap[
                 consensusViews.mostConsensus
-                  ?.comment_id as keyof typeof commentMap
-              ]?.comment,
+                  ?.statementId as keyof typeof statementMap
+              ]?.text,
           }
         : undefined,
-    [commentMap, consensusViews.mostConsensus],
+    [statementMap, consensusViews.mostConsensus],
   );
 
   const mostControversial = useMemo(
@@ -124,21 +126,21 @@ const AnalyticsSynopsis = ({
       consensusViews.mostControversial
         ? {
             ...consensusViews.mostControversial,
-            commentText:
-              commentMap[
+            statementText:
+              statementMap[
                 consensusViews.mostControversial
-                  ?.comment_id as keyof typeof commentMap
-              ]?.comment,
+                  ?.statementId as keyof typeof statementMap
+              ]?.text,
           }
         : undefined,
-    [commentMap, consensusViews.mostControversial],
+    [statementMap, consensusViews.mostControversial],
   );
 
   if (
     !mostConsensus ||
     !mostControversial ||
-    !commentMap ||
-    !Object.keys(commentMap).length
+    !statementMap ||
+    !Object.keys(statementMap).length
   ) {
     return null;
   }

@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import slugify from "slugify";
 import * as yup from "yup";
 
-import CommentsList from "@/app/components/polls/new/CommentsList";
+import StatementList from "@/app/components/polls/new/StatementList";
 import BorderedButton from "@/components/BorderedButton";
 
 // Types
@@ -40,7 +40,7 @@ const schema = yup
       .required()
       .matches(/^[a-z0-9-]+$/),
     question: yup.string().required(),
-    comments: yup.array().of(yup.string().required()).min(5).required(),
+    statements: yup.array().of(yup.string().required()).min(5).required(),
   })
   .required();
 
@@ -135,25 +135,25 @@ const NewPollPageClientView = ({
       </div>
 
       <div className="flex flex-col w-full mt-10">
-        <h3 className="mb-2 text-xl font-semibold">Comments</h3>
+        <h3 className="mb-2 text-xl font-semibold">Statements</h3>
         <h4 className="mb-4 text-lg text-gray-700 dark:text-gray-200">
-          Add at least five comments that people can respond to. The more the
+          Add at least five statements that people can respond to. The more the
           better!
         </h4>
 
         <Controller
-          name="comments"
+          name="statements"
           control={control}
           render={({ field }) => (
-            <CommentsList
+            <StatementList
               data={{ title: watch("title"), question: watch("question") }}
               state={{ errors }}
               callbacks={{
-                onCommentsChange: (comments) => {
-                  field.onChange(comments);
+                onStatementsChange: (statements) => {
+                  field.onChange(statements);
                 },
-                onCommentsBlur: (comments) => {
-                  field.onChange(comments);
+                onStatementsBlur: (statements) => {
+                  field.onChange(statements);
                 },
               }}
             />
@@ -194,12 +194,12 @@ const NewPollPageClient = () => {
   // Mutations
 
   const newPollMutation = useMutation(
-    async ({ title, slug, question, comments }: FormData) => {
+    async ({ title, slug, question, statements }: FormData) => {
       await axios.post(`/api/polls`, {
         title,
         slug,
         question,
-        comments,
+        statements,
       });
     },
   );
@@ -207,12 +207,12 @@ const NewPollPageClient = () => {
   // Callbacks
 
   const onSubmit = useCallback(
-    async ({ title, slug, question, comments }: FormData) => {
+    async ({ title, slug, question, statements }: FormData) => {
       await newPollMutation.mutateAsync({
         title,
         slug,
         question,
-        comments: comments.filter((c) => c.trim() !== ""),
+        statements: statements.filter((c) => c.trim() !== ""),
       });
 
       router.push(`/polls/${slug}`);

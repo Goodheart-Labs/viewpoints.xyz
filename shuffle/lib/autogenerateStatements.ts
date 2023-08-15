@@ -21,10 +21,10 @@ const tokeniser = tiktoken.encodingForModel(MODEL_NAME);
 // Types
 // -----------------------------------------------------------------------------
 
-type AutogenerateCommentsSettings = {
+type AutogenerateStatementsSettings = {
   title: string;
   question: string;
-  numComments?: number;
+  numStatements?: number;
 };
 
 type ModelSettings = {
@@ -40,11 +40,11 @@ const PROMPT_TEXT = (
   n: number,
   result: string = "",
 ) => `
-generateComments() is a function that takes a title, question, and N as parameters, then returns a JSON array of N comments that relate to the title and question.
+generateStatements() is a function that takes a title, question, and N as parameters, then returns a JSON array of N statements that relate to the title and question.
 
-The comments it generates are declarative sentences that people can agree or disagree with. For instance:
+The statements it generates are declarative sentences that people can agree or disagree with. For instance:
 
-PROMPT: generateComments("AI Safety", "Do we think AI safety is important?", 5)
+PROMPT: generateStatements("AI Safety", "Do we think AI safety is important?", 5)
 ${RESULT_MARKER} [
     "The benefits of AI will be distributed evenly across the whole world",
     "I am concerned about AI risk",
@@ -53,7 +53,7 @@ ${RESULT_MARKER} [
     "I am excited about AI benefits"
 ]
 
-PROMPT: generateComments(${JSON.stringify(title)}, ${JSON.stringify(
+PROMPT: generateStatements(${JSON.stringify(title)}, ${JSON.stringify(
   question,
 )}, ${n})
 ${RESULT_MARKER}${result}
@@ -62,11 +62,11 @@ ${RESULT_MARKER}${result}
 // Default export
 // -----------------------------------------------------------------------------
 
-const autogenerateComments = async (
-  { title, question, numComments = 10 }: AutogenerateCommentsSettings,
+const autogenerateStatements = async (
+  { title, question, numStatements = 10 }: AutogenerateStatementsSettings,
   { temperature = 0.7 }: ModelSettings = { temperature: 0.7 },
 ): Promise<string[]> => {
-  const fullPrompt = PROMPT_TEXT(title, question, numComments);
+  const fullPrompt = PROMPT_TEXT(title, question, numStatements);
 
   const fullPromptTokenLength = checkTokenLength(fullPrompt);
   if (fullPromptTokenLength > CONTEXT_LENGTH) {
@@ -90,17 +90,17 @@ const autogenerateComments = async (
   }
 
   const results = parseResults(
-    PROMPT_TEXT(title, question, numComments, completion),
+    PROMPT_TEXT(title, question, numStatements, completion),
   );
 
-  if (!results || results.length !== numComments) {
+  if (!results || results.length !== numStatements) {
     throw new CantFindResponseError(completion);
   }
 
   return results;
 };
 
-export default autogenerateComments;
+export default autogenerateStatements;
 
 // Errors
 // -----------------------------------------------------------------------------

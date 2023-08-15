@@ -12,7 +12,7 @@ import prisma from "@/lib/prisma";
 export async function POST(request: NextRequest) {
   const { userId } = auth();
   const user = await currentUser();
-  const { title, slug, question, comments } = await request.json();
+  const { title, slug, question, statements } = await request.json();
 
   const poll = await prisma.$transaction(async (tx) => {
     const newPoll = await tx.polls.create({
@@ -24,20 +24,20 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    if (Array.isArray(comments) && comments.length) {
+    if (Array.isArray(statements) && statements.length) {
       const author_name = user?.firstName
         ? `${user?.firstName} ${user?.lastName}`.trim()
         : null;
       const author_avatar_url = user?.profileImageUrl || null;
 
       await Promise.all(
-        comments.map((comment: string) =>
-          tx.comments.create({
+        statements.map((statement: string) =>
+          tx.statement.create({
             data: {
               poll_id: newPoll.id,
               user_id: userId,
               reporting_type: "default",
-              comment,
+              text: statement,
               author_name,
               author_avatar_url,
             },
