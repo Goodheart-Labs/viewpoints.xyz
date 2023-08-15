@@ -7,15 +7,18 @@ import CurrentPollProvider from "@/providers/CurrentPollProvider";
 import ModalProvider from "@/providers/ModalProvider";
 import QueryProvider from "@/providers/QueryProvider";
 import SessionProvider from "@/providers/SessionProvider";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 
 const Contexts = ({ children }: PropsWithChildren) => (
   <SessionProvider>
     <AmplitudeProvider>
-      <ModalProvider>
-        <QueryProvider>
-          <CurrentPollProvider>{children}</CurrentPollProvider>
-        </QueryProvider>
-      </ModalProvider>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ModalProvider>
+          <QueryProvider>
+            <CurrentPollProvider>{children}</CurrentPollProvider>
+          </QueryProvider>
+        </ModalProvider>
+      </ThemeProvider>
     </AmplitudeProvider>
   </SessionProvider>
 );
