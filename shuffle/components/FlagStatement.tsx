@@ -9,11 +9,11 @@ import {
 } from "react";
 import { useMutation } from "react-query";
 
-import { FlagIcon } from "@heroicons/react/20/solid";
 import type { FlaggedStatement, Statement } from "@prisma/client";
 import axios from "axios";
 import clsx from "clsx";
 import { motion } from "framer-motion";
+import { FlagIcon } from "lucide-react";
 
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 
@@ -56,7 +56,7 @@ const FlagStatementView = ({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="fixed z-50 flex top-[30vh] bg-white flex-col w-[600px] items-center justify-center rounded-lg"
+      className="fixed z-50 flex top-[30vh] bg-white flex-col w-screen items-center justify-center rounded-lg"
     >
       <div className="z-50 flex flex-col w-full px-4 py-5 sm:p-6">
         <div className="flex items-center justify-between w-full mb-4">
@@ -99,7 +99,7 @@ const FlagStatementView = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={clsx(
-        "fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50",
+        "fixed top-0 left-0 w-full h-screen px-4 flex justify-center items-center bg-black bg-opacity-50",
         "z-40",
       )}
       onClick={onCancel}

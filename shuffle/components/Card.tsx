@@ -7,7 +7,7 @@ import type { Statement } from "@prisma/client";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import clsx from "clsx";
 import type { PanInfo } from "framer-motion";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Key } from "ts-key-enum";
 
 import { UserAvatar } from "@/app/components/user/UserAvatar";
@@ -16,7 +16,7 @@ import { useAmplitude } from "@/providers/AmplitudeProvider";
 import type { InteractionMode } from "@/providers/AmplitudeProvider/types";
 
 import BorderedButton from "./BorderedButton";
-import FlagStatement from "./FlagStatement";
+import { ReportStatementDialog } from "./ReportStatementDialog";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -327,7 +327,7 @@ const Card = ({
         animate={animate}
         variants={{
           default: {
-            scale: 1,
+            scale: 0.9,
             x: Number(card.id) % 2 === 0 ? -5 : 5,
             rotate: `${Number(card.id) % 2 === 0 ? -1 : 1}deg`,
           },
@@ -343,7 +343,7 @@ const Card = ({
           },
         }}
         className={clsx(
-          "flex flex-col justify-center items-center cursor-grab overflow-hidden border bg-background rounded-lg shadow dark:drop-shadow-lg border-muted",
+          "absolute w-screen sm:w-[600px] flex flex-col justify-center items-center cursor-grab overflow-hidden border border-gray-300 bg-white rounded-lg shadow dark:bg-gray-700 dark:drop-shadow-lg dark:border dark:border-gray-800",
           index > 0 && "absolute inset-0",
         )}
       >
@@ -363,15 +363,13 @@ const Card = ({
         />
       </motion.div>
 
-      <AnimatePresence>
-        {isActive && isFlagging && (
-          <FlagStatement
-            statement={card}
-            onCreate={onSaveFlag}
-            onCancel={onCancelFlag}
-          />
-        )}
-      </AnimatePresence>
+      <ReportStatementDialog
+        isActive={isActive}
+        onCancelFlag={onCancelFlag}
+        isFlagging={isFlagging}
+        onCreate={onSaveFlag}
+        statement={card}
+      />
     </>
   );
 };

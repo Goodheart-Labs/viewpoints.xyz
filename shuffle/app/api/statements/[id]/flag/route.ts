@@ -40,6 +40,7 @@ export async function POST(
         body.session_id ??
         null,
       reason: body.reason,
+      description: body.description || null,
     },
   });
 
