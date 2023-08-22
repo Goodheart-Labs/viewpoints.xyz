@@ -16,9 +16,6 @@ const PollIframeClient = ({ filteredStatements }: PollIframeClientProps) => (
       onNewStatement={() => {
         throw new Error("Function not implemented.");
       }}
-      onStatementEdited={() => {
-        throw new Error("Function not implemented.");
-      }}
       onStatementFlagged={() => {
         throw new Error("Function not implemented.");
       }}

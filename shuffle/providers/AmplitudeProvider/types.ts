@@ -15,9 +15,6 @@ export type TrackingEvent =
   | ExtendedCardEvent<"votes.disagree">
   | ExtendedCardEvent<"votes.skip">
   | ExtendedCardEvent<"votes.itsComplicated">
-  | ExtendedCardEvent<"statement.edit.open">
-  | CardEvent<"statement.edit.persist">
-  | CardEvent<"statement.edit.cancel">
   | ExtendedCardEvent<"statement.flag.open">
   | {
       type: "statement.flag.persist";
@@ -35,7 +32,6 @@ export type TrackingEvent =
       type: "statement.new.persist";
       pollId: number;
       text: string;
-      edited_from_id?: number;
     }
   | {
       type: "statement.new.cancel";

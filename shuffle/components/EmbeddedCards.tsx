@@ -28,7 +28,6 @@ export const anonymousAvatar =
 type EmbeddedCardsProps = {
   filteredStatements: Statement[];
   onNewStatement: () => void;
-  onStatementEdited: (card: Pick<Statement, "id" | "text">) => void;
   onStatementFlagged: () => void;
   onResponseCreated: (response: MinimalResponse) => void;
 };
@@ -39,7 +38,6 @@ type EmbeddedCardsProps = {
 const EmbeddedCards = ({
   filteredStatements,
   onNewStatement,
-  onStatementEdited,
   onStatementFlagged: parentOnStatementFlagged,
   onResponseCreated,
 }: EmbeddedCardsProps) => {
@@ -123,7 +121,6 @@ const EmbeddedCards = ({
               <Card
                 card={card}
                 onSwipe={onSwipe}
-                onStatementEdited={onStatementEdited}
                 onStatementFlagged={onStatementFlagged}
                 isActive={
                   card.id ===

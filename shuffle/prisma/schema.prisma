@@ -12,7 +12,6 @@ model Statement {
   id                Int                  @id @unique @default(autoincrement())
   poll_id           Int
   user_id           String?
-  edited_from_id    Int?
   session_id        String?              @db.VarChar
   reporting_type    reporting_type_enum? @default(default)
   author_name       String?
@@ -22,8 +21,6 @@ model Statement {
   poll              polls                @relation(fields: [poll_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   flaggedStatements FlaggedStatement[]
   responses         responses[]
-  editedFrom        Statement?           @relation("statementHistory", fields: [edited_from_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  editedTo          Statement[]          @relation("statementHistory")
 }
 
 model FlaggedStatement {
