@@ -5,7 +5,12 @@ import { v4 as uuidv4 } from "uuid";
 // Config
 // -----------------------------------------------------------------------------
 
-const publicRoutes = ["/", "/polls/(.*)"];
+const publicRoutes = [
+  "/",
+  "/polls/(.*)",
+  "/polls/(.*)/analytics",
+  "/polls/(.*)/graphs",
+];
 
 const privateRoutes = ["/polls/new"];
 

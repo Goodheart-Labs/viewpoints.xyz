@@ -61,7 +61,6 @@ export async function POST(
         request.cookies.get(SESSION_ID_COOKIE_NAME)?.value ??
         body.session_id ??
         null,
-      edited_from_id: body.edited_from_id ?? null,
       author_name:
         body.author_name ??
         (user?.firstName ? `${user.firstName} ${user.lastName}` : null) ??
