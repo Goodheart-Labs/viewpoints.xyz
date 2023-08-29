@@ -105,7 +105,7 @@ const Header = () => {
             onClick={() => setShowSignIn(false)}
           />
           <div className="fixed z-50 top-[30vh] h-[200px] flex w-full justify-center items-center">
-            <SignIn redirectUrl={window.location.pathname} />
+            <SignIn routing="virtual" redirectUrl={window.location.pathname} />
           </div>
         </>
       )}
