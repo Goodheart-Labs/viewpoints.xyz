@@ -195,12 +195,16 @@ const NewPollPageClient = () => {
 
   const newPollMutation = useMutation(
     async ({ title, slug, question, statements }: FormData) => {
-      await axios.post(`/api/polls`, {
-        title,
-        slug,
-        question,
-        statements,
-      });
+      try {
+        await axios.post(`/api/polls`, {
+          title,
+          slug,
+          question,
+          statements,
+        });
+      } catch (error) {
+        console.log(error);
+      }
     },
   );
 
