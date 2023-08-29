@@ -10,44 +10,51 @@ import prisma from "@/lib/prisma";
 // -----------------------------------------------------------------------------
 
 export async function POST(request: NextRequest) {
-  const { userId } = auth();
-  const user = await currentUser();
-  const { title, slug, question, statements } = await request.json();
+  try {
+    const { userId } = auth();
+    const user = await currentUser();
+    const { title, slug, question, statements } = await request.json();
 
-  const poll = await prisma.$transaction(async (tx) => {
-    const newPoll = await tx.polls.create({
-      data: {
-        user_id: userId,
-        title,
-        slug,
-        core_question: question,
-      },
+    const poll = await prisma.$transaction(async (tx) => {
+      const newPoll = await tx.polls.create({
+        data: {
+          user_id: userId,
+          title,
+          slug,
+          core_question: question,
+        },
+      });
+
+      if (Array.isArray(statements) && statements.length) {
+        const author_name = user?.firstName
+          ? `${user?.firstName} ${user?.lastName}`.trim()
+          : null;
+        const author_avatar_url = user?.profileImageUrl || null;
+
+        await Promise.all(
+          statements.map((statement: string) =>
+            tx.statement.create({
+              data: {
+                poll_id: newPoll.id,
+                user_id: userId,
+                reporting_type: "default",
+                text: statement,
+                author_name,
+                author_avatar_url,
+              },
+            }),
+          ),
+        );
+      }
+
+      return newPoll;
     });
 
-    if (Array.isArray(statements) && statements.length) {
-      const author_name = user?.firstName
-        ? `${user?.firstName} ${user?.lastName}`.trim()
-        : null;
-      const author_avatar_url = user?.profileImageUrl || null;
-
-      await Promise.all(
-        statements.map((statement: string) =>
-          tx.statement.create({
-            data: {
-              poll_id: newPoll.id,
-              user_id: userId,
-              reporting_type: "default",
-              text: statement,
-              author_name,
-              author_avatar_url,
-            },
-          }),
-        ),
-      );
-    }
-
-    return newPoll;
-  });
-
-  return NextResponse.json(poll);
+    return NextResponse.json(poll);
+  } catch (error) {
+    console.error("Error while creating poll:", error); // Log the error to server console
+    return NextResponse.json({
+      error,
+    });
+  }
 }
