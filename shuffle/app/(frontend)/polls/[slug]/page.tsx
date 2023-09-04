@@ -53,16 +53,35 @@ async function getData({ params }: PollPageProps) {
     },
   });
 
-  return { poll, statements, comments };
+  const flaggedStatements = await prisma.flaggedStatement.findMany({
+    where: {
+      poll_id: poll.id,
+    },
+  });
+
+  const statementsWithFlaggedStatements = statements.map((statement) => ({
+    ...statement,
+    flaggedStatements: flaggedStatements.filter(
+      (flaggedStatement) => flaggedStatement.statementId === statement.id,
+    ),
+  }));
+
+  const filteredStatements = statementsWithFlaggedStatements.filter(
+    (statement) => statement.flaggedStatements.length > 1,
+  );
+
+  return { poll, filteredStatements, comments };
 }
 
 // Default export
 // -----------------------------------------------------------------------------
 
 const PollPage = async ({ params }: PollPageProps) => {
-  const { poll, statements, comments } = await getData({ params });
+  const { poll, filteredStatements, comments } = await getData({ params });
 
-  return <Poll poll={poll} statements={statements} comments={comments} />;
+  return (
+    <Poll poll={poll} statements={filteredStatements} comments={comments} />
+  );
 };
 
 export default PollPage;

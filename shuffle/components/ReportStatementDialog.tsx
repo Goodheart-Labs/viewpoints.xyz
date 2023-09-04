@@ -23,6 +23,7 @@ import {
 } from "@/app/components/shadcn/ui/radio-group";
 import { Textarea } from "@/app/components/shadcn/ui/textarea";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
+import { useToast } from "@/shadcn/use-toast";
 
 type ReportStatementDialogProps = {
   isActive: boolean;
@@ -42,10 +43,12 @@ export const ReportStatementDialog = ({
   const [reason, setReason] = useState<string>("off-topic");
   const [description, setDescription] = useState<string>("");
 
+  const { toast } = useToast();
+
   const { track } = useAmplitude();
 
   const mutation = useMutation(
-    async (payload: Pick<FlaggedStatement, "reason">) => {
+    async (payload: Pick<FlaggedStatement, "reason" | "description">) => {
       await axios.post(`/api/statements/${statement.id}/flag`, payload);
       onCreate();
     },
@@ -61,10 +64,17 @@ export const ReportStatementDialog = ({
       interactionMode: "click",
     });
 
-    mutation.mutateAsync({
-      reason,
-    });
-  }, [reason, track, statement.id, mutation]);
+    mutation
+      .mutateAsync({
+        reason,
+        description,
+      })
+      .then(() => {
+        toast({
+          description: "Report submitted",
+        });
+      });
+  }, [reason, track, statement.id, mutation, description, toast]);
 
   return (
     <Dialog open={isActive && isFlagging} onOpenChange={onCancelFlag}>
@@ -73,6 +83,7 @@ export const ReportStatementDialog = ({
           <DialogTitle className="text-left text-muted font-bold text-xs border-l-2 pl-2 mb-2">
             Report statement
           </DialogTitle>
+
           <DialogTitle className="text-left text-base">
             Please choose from the following options
           </DialogTitle>
