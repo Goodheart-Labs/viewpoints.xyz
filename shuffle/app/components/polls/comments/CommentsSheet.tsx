@@ -139,7 +139,7 @@ export const CommentsSheet: FC<Props> = ({ comments }) => {
 
         <ScrollArea
           viewportRef={desktopCommentContainerRef}
-          className="hidden xl:block flex-1"
+          className="hidden xl:block flex-1 [&>div>div]:h-full"
         >
           <CommentList comments={comments} />
         </ScrollArea>
