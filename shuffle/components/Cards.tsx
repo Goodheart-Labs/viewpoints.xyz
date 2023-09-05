@@ -35,7 +35,6 @@ type CardsProps = {
   userResponses: MinimalResponse[];
   onNewStatement: () => void;
   onNewPoll: () => void;
-  onStatementEdited: (card: Pick<Statement, "id" | "text">) => void;
   onStatementFlagged: () => void;
   onResponseCreated: (response: MinimalResponse) => void;
 };
@@ -50,7 +49,6 @@ const Cards = ({
   userResponses,
   onNewStatement,
   onNewPoll,
-  onStatementEdited,
   onStatementFlagged: parentOnStatementFlagged,
   onResponseCreated,
 }: CardsProps) => {
@@ -166,7 +164,6 @@ const Cards = ({
               <Card
                 card={card}
                 onSwipe={onSwipe}
-                onStatementEdited={onStatementEdited}
                 onStatementFlagged={onStatementFlagged}
                 isActive={card.id === cards[cards.length - 1].id}
               />

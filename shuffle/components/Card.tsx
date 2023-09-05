@@ -2,11 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 
-import {
-  CheckIcon,
-  FlagIcon,
-  PencilSquareIcon,
-} from "@heroicons/react/20/solid";
+import { FlagIcon } from "@heroicons/react/20/solid";
 import type { Statement } from "@prisma/client";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import clsx from "clsx";
@@ -20,10 +16,6 @@ import { useAmplitude } from "@/providers/AmplitudeProvider";
 import type { InteractionMode } from "@/providers/AmplitudeProvider/types";
 
 import BorderedButton from "./BorderedButton";
-import EditingContent, {
-  contentClasses,
-  contentMinHeight,
-} from "./EditingContent";
 import FlagStatement from "./FlagStatement";
 
 // Setup
@@ -48,9 +40,6 @@ export type CardViewProps = {
   };
   state: {
     isActive: boolean;
-    isEditing: boolean;
-    setEditingValue: (value: string) => void;
-    editingDisabled: boolean;
     isFlagging: boolean;
   };
   callbacks: {
@@ -58,9 +47,6 @@ export type CardViewProps = {
     onDisagree: () => void;
     onSkip: () => void;
     onItsComplicated: () => void;
-    onEdit: (interactionMode?: InteractionMode) => void;
-    onCancelEdit: () => void;
-    onSaveEdit: () => void;
     onFlag: (interactionMode?: InteractionMode) => void;
   };
 };
@@ -69,7 +55,6 @@ export type CardProps = {
   card: Statement;
   isActive: boolean;
   onSwipe: (card: Statement, choice: Choice) => void;
-  onStatementEdited: (card: Pick<Statement, "id" | "text">) => void;
   onStatementFlagged: (statementId: Statement["id"]) => void;
 };
 
@@ -78,17 +63,8 @@ export type CardProps = {
 
 const CardView = ({
   data: { card },
-  state: { isActive, isEditing, setEditingValue, editingDisabled, isFlagging },
-  callbacks: {
-    onAgree,
-    onDisagree,
-    onSkip,
-    onItsComplicated,
-    onEdit,
-    onCancelEdit,
-    onSaveEdit,
-    onFlag,
-  },
+  state: { isActive, isFlagging },
+  callbacks: { onAgree, onDisagree, onSkip, onItsComplicated, onFlag },
 }: CardViewProps) => (
   <>
     <div className="flex flex-col w-full px-4 py-5 sm:p-6">
@@ -118,92 +94,52 @@ const CardView = ({
               aria-hidden="true"
             />
           </button>
-          <button
-            type="button"
-            className={clsx(
-              "p-1 hover:text-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 dark:hover:text-indigo-300 dark:focus-visible:text-indigo-300",
-              isEditing ? "text-indigo-500" : "text-gray-400",
-            )}
-          >
-            <PencilSquareIcon
-              onClick={() => onEdit("click")}
-              className="w-5 h-5"
-              aria-hidden="true"
-            />
-          </button>
         </div>
       </div>
-      <div className="flex w-full">
-        {isEditing ? (
-          <EditingContent
-            card={card}
-            onCancel={onCancelEdit}
-            setValue={setEditingValue}
-          />
-        ) : (
-          <div
-            className={clsx(contentClasses, `min-h-[${contentMinHeight}px]`)}
-          >
-            {card.text}
-          </div>
-        )}
+      <div className="flex w-full text-lg text-gray-800 dark:text-gray-400 p-2 min-h-[70px]">
+        {card.text}
       </div>
     </div>
     <div className="w-full px-4 py-4 bg-gray-50 dark:bg-gray-800 sm:px-6">
-      {isEditing ? (
-        <div className="flex justify-end">
-          <div>
-            <BorderedButton
-              onClick={() => onSaveEdit()}
-              color="yellow"
-              disabled={editingDisabled}
-            >
-              <CheckIcon width={22} height={22} className="mr-1" /> Add Edited
-              Statement
-            </BorderedButton>
-          </div>
+      <div className="flex justify-between">
+        <div>
+          <BorderedButton
+            onClick={() => onDisagree()}
+            color="red"
+            disabled={!isActive}
+          >
+            &larr; Disagree
+          </BorderedButton>
         </div>
-      ) : (
-        <div className="flex justify-between">
-          <div>
-            <BorderedButton
-              onClick={() => onDisagree()}
-              color="red"
-              disabled={!isActive}
-            >
-              &larr; Disagree
-            </BorderedButton>
-          </div>
-          <div>
-            <BorderedButton
-              onClick={() => onSkip()}
-              color="yellow"
-              disabled={!isActive}
-            >
-              <span className="hidden sm:inline">&uarr;</span>Skip
-            </BorderedButton>
-          </div>
-          <div>
-            <BorderedButton
-              onClick={() => onItsComplicated()}
-              color="orange"
-              disabled={!isActive}
-            >
-              <span className="hidden sm:inline">&darr;</span> It&apos;s
-              complicated
-            </BorderedButton>
-          </div>
-          <div>
-            <BorderedButton
-              onClick={() => onAgree()}
-              color="green"
-              disabled={!isActive}
-            >
-              Agree &rarr;
-            </BorderedButton>
-          </div>
+        <div>
+          <BorderedButton
+            onClick={() => onSkip()}
+            color="yellow"
+            disabled={!isActive}
+          >
+            <span className="hidden sm:inline">&uarr;</span>Skip
+          </BorderedButton>
         </div>
-      )}
+        <div>
+          <BorderedButton
+            onClick={() => onItsComplicated()}
+            color="orange"
+            disabled={!isActive}
+          >
+            <span className="hidden sm:inline">&darr;</span> It&apos;s
+            complicated
+          </BorderedButton>
+        </div>
+        <div>
+          <BorderedButton
+            onClick={() => onAgree()}
+            color="green"
+            disabled={!isActive}
+          >
+            Agree &rarr;
+          </BorderedButton>
+        </div>
+      </div>
     </div>
   </>
 );
@@ -211,22 +147,13 @@ const CardView = ({
 // Default export
 // -----------------------------------------------------------------------------
 
-const Card = ({
-  card,
-  isActive,
-  onSwipe,
-  onStatementEdited,
-  onStatementFlagged,
-}: CardProps) => {
+const Card = ({ card, isActive, onSwipe, onStatementFlagged }: CardProps) => {
   const { track } = useAmplitude();
 
   // State
 
   const [leaveX, setLeaveX] = useState(0);
   const [leaveY, setLeaveY] = useState(0);
-
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingValue, setEditingValue] = useState(card.text);
 
   const [isFlagging, setIsFlagging] = useState(false);
 
@@ -237,11 +164,8 @@ const Card = ({
       return "exit";
     }
 
-    if (isEditing) {
-      return "edit";
-    }
     return "default";
-  }, [isEditing, leaveX, leaveY]);
+  }, [leaveX, leaveY]);
 
   // Callbacks
 
@@ -277,7 +201,6 @@ const Card = ({
   const onAgree = useCallback(
     (interactionMode: InteractionMode = "click") => {
       if (!isActive) return;
-      if (isEditing) return;
       if (isFlagging) return;
 
       track({
@@ -290,13 +213,12 @@ const Card = ({
       setLeaveX(1000);
       setTimeout(() => onSwipe(card, "agree"), ANIMATION_DURATION * 1000);
     },
-    [card, isActive, isEditing, isFlagging, onSwipe, track],
+    [card, isActive, isFlagging, onSwipe, track],
   );
 
   const onDisagree = useCallback(
     (interactionMode: InteractionMode = "click") => {
       if (!isActive) return;
-      if (isEditing) return;
       if (isFlagging) return;
 
       track({
@@ -309,13 +231,12 @@ const Card = ({
       setLeaveX(-1000);
       setTimeout(() => onSwipe(card, "disagree"), ANIMATION_DURATION * 1000);
     },
-    [card, isActive, isEditing, isFlagging, onSwipe, track],
+    [card, isActive, isFlagging, onSwipe, track],
   );
 
   const onSkip = useCallback(
     (interactionMode: InteractionMode = "click") => {
       if (!isActive) return;
-      if (isEditing) return;
       if (isFlagging) return;
 
       track({
@@ -328,13 +249,12 @@ const Card = ({
       setLeaveY(-1000);
       setTimeout(() => onSwipe(card, "skip"), ANIMATION_DURATION * 1000);
     },
-    [card, isActive, isEditing, isFlagging, onSwipe, track],
+    [card, isActive, isFlagging, onSwipe, track],
   );
 
   const onItsComplicated = useCallback(
     (interactionMode: InteractionMode = "click") => {
       if (!isActive) return;
-      if (isEditing) return;
       if (isFlagging) return;
 
       track({
@@ -350,77 +270,12 @@ const Card = ({
         ANIMATION_DURATION * 1000,
       );
     },
-    [card, isActive, isEditing, isFlagging, onSwipe, track],
+    [card, isActive, isFlagging, onSwipe, track],
   );
-
-  const onEdit = useCallback(
-    (interactionMode: InteractionMode = "click") => {
-      if (!isActive) return;
-      if (isFlagging) return;
-
-      track({
-        type: "statement.edit.open",
-        pollId: card.poll_id,
-        cardId: card.id,
-        interactionMode,
-      });
-
-      setIsEditing((editing) => !editing);
-    },
-    [card.id, card.poll_id, isActive, isFlagging, track],
-  );
-
-  const onCancelEdit = useCallback(() => {
-    if (!isActive) return;
-    if (!isEditing) return;
-    if (isFlagging) return;
-
-    track({
-      type: "statement.edit.cancel",
-      pollId: card.poll_id,
-      cardId: card.id,
-    });
-
-    setIsEditing(false);
-    setEditingValue(card.text);
-  }, [
-    card.id,
-    card.poll_id,
-    card.text,
-    isActive,
-    isEditing,
-    isFlagging,
-    track,
-  ]);
-
-  const onSaveEdit = useCallback(() => {
-    if (!isActive) return;
-    if (!isEditing) return;
-    if (isFlagging) return;
-
-    track({
-      type: "statement.edit.persist",
-      pollId: card.poll_id,
-      cardId: card.id,
-    });
-
-    onStatementEdited({ id: card.id, text: editingValue });
-    setIsEditing(false);
-  }, [
-    card.id,
-    card.poll_id,
-    editingValue,
-    isActive,
-    isEditing,
-    isFlagging,
-    onStatementEdited,
-    track,
-  ]);
 
   const onFlag = useCallback(
     (interactionMode: InteractionMode = "click") => {
       if (!isActive) return;
-      if (isEditing) return;
 
       track({
         type: "statement.flag.open",
@@ -431,12 +286,11 @@ const Card = ({
 
       setIsFlagging(true);
     },
-    [card.id, card.poll_id, isActive, isEditing, track],
+    [card.id, card.poll_id, isActive, track],
   );
 
   const onCancelFlag = useCallback(() => {
     if (!isActive) return;
-    if (isEditing) return;
     if (!isFlagging) return;
 
     track({
@@ -446,32 +300,15 @@ const Card = ({
     });
 
     setIsFlagging(false);
-    setEditingValue(card.text);
-  }, [
-    card.text,
-    card.id,
-    card.poll_id,
-    isActive,
-    isEditing,
-    isFlagging,
-    track,
-  ]);
+  }, [card.id, card.poll_id, isActive, isFlagging, track]);
 
   const onSaveFlag = useCallback(() => {
     if (!isActive) return;
-    if (isEditing) return;
     if (!isFlagging) return;
 
     setIsFlagging(false);
     onStatementFlagged(card.id);
-  }, [card.id, isActive, isEditing, isFlagging, onStatementFlagged]);
-
-  // Memos
-
-  const editingDisabled = useMemo(
-    () => editingValue === card.text,
-    [card.text, editingValue],
-  );
+  }, [card.id, isActive, isFlagging, onStatementFlagged]);
 
   // Keyboard shortcuts
 
@@ -479,7 +316,6 @@ const Card = ({
   useHotkeys(Key.ArrowRight, () => onAgree("keyboard"));
   useHotkeys(Key.ArrowUp, () => onSkip("keyboard"));
   useHotkeys(Key.ArrowDown, () => onItsComplicated("keyboard"));
-  useHotkeys(["e", "shift+e"], () => onEdit("keyboard"));
   useHotkeys(["f", "shift+f"], () => onFlag("keyboard"));
 
   // Render
@@ -487,7 +323,6 @@ const Card = ({
   return (
     <>
       <motion.div
-        drag={!isEditing}
         dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
         onDragEnd={onDragEnd}
         initial={{
@@ -513,16 +348,12 @@ const Card = ({
         }}
         className={clsx(
           "absolute sm:w-[600px] flex flex-col justify-center items-center cursor-grab overflow-hidden border border-gray-300 bg-white rounded-lg shadow dark:bg-gray-700 dark:drop-shadow-lg dark:border dark:border-gray-800",
-          isEditing ? "z-50" : "z-30",
         )}
       >
         <CardView
           data={{ card }}
           state={{
             isActive,
-            isEditing,
-            setEditingValue,
-            editingDisabled,
             isFlagging,
           }}
           callbacks={{
@@ -530,25 +361,10 @@ const Card = ({
             onDisagree,
             onSkip,
             onItsComplicated,
-            onEdit,
-            onCancelEdit,
-            onSaveEdit,
             onFlag,
           }}
         />
       </motion.div>
-
-      {isActive && isEditing && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={isEditing ? { opacity: 1 } : { opacity: 0 }}
-          className={clsx(
-            "fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50",
-            isEditing ? "z-40" : "z-0",
-          )}
-          onClick={onCancelEdit}
-        />
-      )}
 
       <AnimatePresence>
         {isActive && isFlagging && (

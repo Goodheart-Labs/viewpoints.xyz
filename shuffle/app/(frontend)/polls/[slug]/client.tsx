@@ -118,16 +118,11 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
   const newStatementMutation = useMutation(
     async ({
       text,
-      edited_from_id,
       author_name,
       author_avatar_url,
-    }: Pick<
-      Statement,
-      "text" | "edited_from_id" | "author_name" | "author_avatar_url"
-    >) => {
+    }: Pick<Statement, "text" | "author_name" | "author_avatar_url">) => {
       await axios.post(`/api/polls/${poll.id}/statements`, {
         text,
-        edited_from_id,
         author_name,
         author_avatar_url,
       });
@@ -151,17 +146,15 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
   );
 
   const onCreateStatement = useCallback(
-    async (text: Statement["text"], edited_from_id?: number) => {
+    async (text: Statement["text"]) => {
       track({
         type: "statement.new.persist",
         pollId: poll.id,
         text,
-        edited_from_id,
       });
 
       await newStatementMutation.mutateAsync({
         text,
-        edited_from_id: edited_from_id ?? null,
         author_name: user?.fullName ?? null,
         author_avatar_url: user?.profileImageUrl ?? null,
       });
@@ -174,13 +167,6 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
       user?.fullName,
       user?.profileImageUrl,
     ],
-  );
-
-  const onStatementEdited = useCallback(
-    async ({ id, text }: Pick<Statement, "id" | "text">) => {
-      await onCreateStatement(text, id);
-    },
-    [onCreateStatement],
   );
 
   const onCancelCreating = useCallback(() => {
@@ -419,7 +405,6 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
                   userResponses={enrichedResponses}
                   onNewStatement={onNewStatement}
                   onNewPoll={onNewPoll}
-                  onStatementEdited={onStatementEdited}
                   onStatementFlagged={refetchFlaggedStatements}
                   onResponseCreated={onResponseCreated}
                 />
