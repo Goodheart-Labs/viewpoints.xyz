@@ -41,18 +41,28 @@ async function getData({ params }: PollPageProps) {
     },
   });
 
-  return { poll, statements };
+  const comments = await prisma.comment.findMany({
+    where: {
+      pollId: poll.id,
+    },
+    include: {
+      author: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return { poll, statements, comments };
 }
 
 // Default export
 // -----------------------------------------------------------------------------
 
 const PollPage = async ({ params }: PollPageProps) => {
-  const { poll, statements } = await getData({ params });
+  const { poll, statements, comments } = await getData({ params });
 
-  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/polls/${poll.slug}`;
-
-  return <Poll poll={poll} statements={statements} url={url} />;
+  return <Poll poll={poll} statements={statements} comments={comments} />;
 };
 
 export default PollPage;

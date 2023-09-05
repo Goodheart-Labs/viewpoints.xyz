@@ -48,6 +48,7 @@ export type CardViewProps = {
 export type CardProps = {
   card: StatementWithAuthor;
   isActive: boolean;
+  index: number;
   onSwipe: (card: Statement, choice: Choice) => void;
   onStatementFlagged: (statementId: Statement["id"]) => void;
 };
@@ -61,7 +62,7 @@ const CardView = ({
   callbacks: { onAgree, onDisagree, onSkip, onItsComplicated, onFlag },
 }: CardViewProps) => (
   <>
-    <div className="flex flex-col w-full px-4 py-5 sm:p-6">
+    <div className="flex flex-col w-full p-2 pt-4 sm:p-6">
       <div className="flex items-center justify-between w-full mb-4">
         <UserAvatar
           name={card.author?.name ?? null}
@@ -89,7 +90,7 @@ const CardView = ({
         {card.text}
       </div>
     </div>
-    <div className="w-full px-4 py-4 bg-gray-50 dark:bg-gray-800 sm:px-6">
+    <div className="w-full p-2 bg-gray-50 dark:bg-gray-800 sm:px-6 sm:py-4">
       <div className="flex justify-between">
         <div>
           <BorderedButton
@@ -136,7 +137,13 @@ const CardView = ({
 // Default export
 // -----------------------------------------------------------------------------
 
-const Card = ({ card, isActive, onSwipe, onStatementFlagged }: CardProps) => {
+const Card = ({
+  card,
+  isActive,
+  index,
+  onSwipe,
+  onStatementFlagged,
+}: CardProps) => {
   const { track } = useAmplitude();
 
   // State
@@ -336,7 +343,8 @@ const Card = ({ card, isActive, onSwipe, onStatementFlagged }: CardProps) => {
           },
         }}
         className={clsx(
-          "absolute sm:w-[600px] flex flex-col justify-center items-center cursor-grab overflow-hidden border border-gray-300 bg-white rounded-lg shadow dark:bg-gray-700 dark:drop-shadow-lg dark:border dark:border-gray-800",
+          "flex flex-col justify-center items-center cursor-grab overflow-hidden border bg-background rounded-lg shadow dark:drop-shadow-lg border-muted",
+          index > 0 && "absolute inset-0",
         )}
       >
         <CardView

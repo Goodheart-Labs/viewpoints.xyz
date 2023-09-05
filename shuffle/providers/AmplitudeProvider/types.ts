@@ -45,4 +45,10 @@ export type TrackingEvent =
     }
   | {
       type: "votes.viewAll";
+    }
+  | {
+      type: "comment.create";
+    }
+  | {
+      type: "comment.delete";
     };

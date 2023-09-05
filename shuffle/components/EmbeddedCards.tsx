@@ -113,9 +113,10 @@ const EmbeddedCards = ({
         </AnimatePresence>
       ) : (
         <div className="relative flex flex-col w-full sm:min-h-[200px] min-w-[400px]">
-          {filteredStatements.map((card) => (
+          {filteredStatements.map((card, index) => (
             <AnimatePresence key={card.id}>
               <Card
+                index={index}
                 card={card}
                 onSwipe={onSwipe}
                 onStatementFlagged={onStatementFlagged}

@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import clsx from "clsx";
 
-export const contentClasses = "text-lg text-gray-800 dark:text-gray-400 p-2";
+export const contentClasses = "text-lg text-gray-800 dark:text-gray-400";
 export const contentMinHeight = 70;
 
 // Types

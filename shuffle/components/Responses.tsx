@@ -99,7 +99,7 @@ const ResponsesView = ({
     </AnimatePresence>
 
     {!viewAll && totalResponses > NUM_VISIBLE_RESPONSES && (
-      <div className="z-30 flex justify-center mt-2">
+      <div className="flex justify-center mt-2">
         <BorderedButton
           color="blue"
           className="text-xs"

@@ -14,9 +14,9 @@ import type { FlaggedStatement, Statement } from "@prisma/client";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import axios from "axios";
 import { AnimatePresence } from "framer-motion";
-import Head from "next/head";
 import { getCookie } from "typescript-cookie";
 
+import { CommentsSheet } from "@/app/components/polls/comments/CommentsSheet";
 import JiggleDiv from "@/components/animations/JiggleDiv";
 import BorderedButton from "@/components/BorderedButton";
 import type { MinimalResponse } from "@/components/Cards";
@@ -24,6 +24,7 @@ import Cards from "@/components/Cards";
 import NewStatement from "@/components/NewStatement";
 import Responses from "@/components/Responses";
 import type {
+  CommentWithAuthor,
   CreateStatementBody,
   Response,
   StatementWithAuthor,
@@ -32,7 +33,6 @@ import { Poll } from "@/lib/api";
 import sortBySeed from "@/lib/sortBySeed";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import type { InteractionMode } from "@/providers/AmplitudeProvider/types";
-import { useModal } from "@/providers/ModalProvider";
 import { SESSION_ID_COOKIE_NAME } from "@/providers/SessionProvider";
 import { ensureItLooksLikeAQuestion } from "@/utils/stringutils";
 
@@ -42,10 +42,10 @@ const MAX_NUM_SKIPS_BEFORE_REMOVAL = 5;
 type PollProps = {
   poll: Poll;
   statements: StatementWithAuthor[];
-  url: string;
+  comments: CommentWithAuthor[];
 };
 
-const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
+const Poll: FC<PollProps> = ({ poll, statements: initialData, comments }) => {
   const { track } = useAmplitude();
   const { user } = useUser();
 
@@ -54,14 +54,6 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
   const [isCreating, setIsCreating] = useState(false);
 
   const [cachedResponses, setCachedResponses] = useState<MinimalResponse[]>([]);
-
-  // Sharing
-
-  const twitterShareUrl = useMemo(
-    () =>
-      `${url}?utm_source=twitter&utm_medium=social&utm_campaign=share&utm_content=${poll.id}`,
-    [poll.id, url],
-  );
 
   // Queries
 
@@ -175,21 +167,6 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
     },
     [refetchAllResponses],
   );
-
-  const { setModal } = useModal();
-
-  const onNewPoll = useCallback(() => {
-    track({
-      type: "polls.new.open",
-    });
-    setModal({
-      render: () => (
-        <div>
-          <h1>Coming Soon</h1>
-        </div>
-      ),
-    });
-  }, [setModal, track]);
 
   // Keyboard shortcuts
 
@@ -324,34 +301,15 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
     }
   }, []);
 
-  // Render
-
   return (
-    <main className="flex flex-col items-center w-full min-h-screen px-4 gradient sm:px-0">
-      <Head>
-        <title>{poll.title}</title>
-        <meta name="description" content={poll.core_question} />
-        <meta property="og:title" content={poll.title} />
-        <meta property="og:description" content={poll.core_question} />
-        <meta property="og:url" content={twitterShareUrl} />
-        <meta property="og:type" content="website" />
-        <meta property="twitter:card" content="summary" />
-        <meta property="twitter:title" content={poll.title} />
-        <meta property="twitter:description" content={poll.core_question} />
-        <meta property="twitter:site" content="viewpoints.xyz" />
-      </Head>
-
-      <div className="flex flex-col mt-10 text-center max-w-[800px]">
-        <h1 className="mb-4 text-4xl font-bold text-black dark:text-gray-200">
-          {poll.title}
-        </h1>
-        <h2 className="text-gray-800 sm:text-xl dark:text-gray-500">
+    <main className="flex-1 flex flex-col items-center w-full dark:bg-black">
+      <div className="flex flex-col justify-center mt-10 max-w-full sm:max-w-[800px] px-4 text-center h-full gap-4">
+        <h1 className="text-4xl font-bold text-foreground">{poll.title}</h1>
+        <h2 className=" sm:text-xl text-muted mb-8">
           {ensureItLooksLikeAQuestion(poll.core_question)}{" "}
           {user?.id ? `Answer as ${user?.firstName}` : "Answer anonymously."}
         </h2>
-      </div>
 
-      <div className="grid grid-cols-1 gap-20 mt-20 justify-items-center items-end max-width-[800px]">
         {isFirstVisit && (
           <div
             className="absolute top-0 left-0 z-40 w-full h-full bg-black bg-opacity-50 sm:hidden"
@@ -379,28 +337,25 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
               <div className="w-10 h-10 border-2 border-t-2 border-gray-200 rounded-full animate-spin" />
             </div>
           ) : (
-            <div className="relative flex items-center justify-center text-gray-400 dark:text-gray-600">
+            <div className="flex items-center justify-center text-muted">
               <JiggleDiv className="hidden mt-8 ml-4 mr-12 sm:block">
                 Swipe
                 <ArrowLeftIcon className="w-10 h-10" />
               </JiggleDiv>
 
-              <div className="relative text-black">
-                <Cards
-                  statements={statements ?? []}
-                  filteredStatements={filteredStatements ?? []}
-                  allResponses={allResponses ?? []}
-                  userResponses={enrichedResponses}
-                  onNewStatement={onNewStatement}
-                  onNewPoll={onNewPoll}
-                  onStatementFlagged={refetchFlaggedStatements}
-                  onResponseCreated={onResponseCreated}
-                />
-              </div>
+              <Cards
+                statements={statements ?? []}
+                filteredStatements={filteredStatements ?? []}
+                allResponses={allResponses ?? []}
+                userResponses={enrichedResponses}
+                onNewStatement={onNewStatement}
+                onStatementFlagged={refetchFlaggedStatements}
+                onResponseCreated={onResponseCreated}
+              />
 
               <JiggleDiv
                 transition={{ delay: 1 }}
-                className="hidden mt-8 ml-12 mr-4 text-gray-400 dark:text-gray-600 sm:block"
+                className="hidden mt-8 ml-12 mr-4 sm:block"
               >
                 Swipe
                 <ArrowRightIcon className="w-10 h-10" />
@@ -410,7 +365,7 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
         </div>
 
         {filteredStatements.length > 0 && (
-          <div className="mt-10">
+          <div className="my-3">
             <BorderedButton
               onClick={() => onNewStatement("click")}
               color="blue"
@@ -438,6 +393,8 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
           />
         )}
       </AnimatePresence>
+
+      <CommentsSheet comments={comments} />
     </main>
   );
 };
