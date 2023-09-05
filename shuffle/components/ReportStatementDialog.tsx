@@ -8,21 +8,18 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import axios from "axios";
 import { CheckCircle2, XCircle } from "lucide-react";
 
-import { Button } from "@/app/components/shadcn/ui/button";
+import { ReportRadioItem } from "@/app/components/polls/reportStatements/ReportRadioItem";
+import { RadioGroup } from "@/app/components/shadcn/ui/radio-group";
+import { Textarea } from "@/app/components/shadcn/ui/textarea";
+import { useAmplitude } from "@/providers/AmplitudeProvider";
+import { Button } from "@/shadcn/button";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/app/components/shadcn/ui/dialog";
-import { Label } from "@/app/components/shadcn/ui/label";
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "@/app/components/shadcn/ui/radio-group";
-import { Textarea } from "@/app/components/shadcn/ui/textarea";
-import { useAmplitude } from "@/providers/AmplitudeProvider";
+} from "@/shadcn/dialog";
 import { useToast } from "@/shadcn/use-toast";
 
 type ReportStatementDialogProps = {
@@ -92,74 +89,22 @@ export const ReportStatementDialog = ({
             onValueChange={(value) => setReason(value)}
             value={reason}
           >
-            <div
-              className={`flex ${
-                reason === "off-topic" && "bg-white"
-              } items-center space-x-2 bg-accent text-secondary p-2 rounded-full`}
-            >
-              <RadioGroupItem
-                value="off-topic"
-                id="off-topic"
-                className={`${reason === "off-topic" && "bg-black"} ''`}
-              />
-              <Label
-                htmlFor="off-topic"
-                className={`${reason === "off-topic" && "text-black"} ''`}
-              >
-                Off topic
-              </Label>
-            </div>
-            <div
-              className={`flex ${
-                reason === "rude-offensive" && "bg-white"
-              } items-center space-x-2 bg-accent text-secondary p-2 rounded-full`}
-            >
-              <RadioGroupItem
-                value="rude-offensive"
-                id="rude-offensive"
-                className={`${reason === "rude-offensive" && "bg-black"} ''`}
-              />
-              <Label
-                htmlFor="rude-offensive"
-                className={`${reason === "rude-offensive" && "text-black"} ''`}
-              >
-                Rude/offensive
-              </Label>
-            </div>
-            <div
-              className={`flex ${
-                reason === "duplicated" && "bg-white"
-              } items-center space-x-2 bg-accent text-secondary p-2 rounded-full`}
-            >
-              <RadioGroupItem
-                value="duplicated"
-                id="duplicated"
-                className={`${reason === "duplicated" && "bg-black"} ''`}
-              />
-              <Label
-                htmlFor="duplicated"
-                className={`${reason === "duplicated" && "text-black"} ''`}
-              >
-                Duplicated
-              </Label>
-            </div>
-            <div
-              className={`flex ${
-                reason === "other" && "bg-white"
-              } items-center space-x-2 bg-accent text-secondary p-2 rounded-full`}
-            >
-              <RadioGroupItem
-                value="other"
-                id="other"
-                className={`${reason === "other" && "bg-black"} ''`}
-              />
-              <Label
-                htmlFor="other"
-                className={`${reason === "other" && "text-black"} ''`}
-              >
-                Other
-              </Label>
-            </div>
+            <ReportRadioItem
+              value="off-topic"
+              reason={reason}
+              label="Off topic"
+            />
+            <ReportRadioItem
+              value="rude-offensive"
+              reason={reason}
+              label="Rude/offensive"
+            />
+            <ReportRadioItem
+              value="duplicated"
+              reason={reason}
+              label="Duplicated"
+            />
+            <ReportRadioItem value="other" reason={reason} label="Other" />
             <Textarea
               onChange={(e) => setDescription(e.target.value)}
               value={description}
