@@ -11,10 +11,9 @@ import { CheckCircle2, XCircle } from "lucide-react";
 import { InputWithLabel } from "@/app/components/InputWithLabel";
 import PollPrivacySettings from "@/components/ui/PollPrivacySettings";
 import type { Poll } from "@/lib/api";
-
-import { Button } from "../shadcn/ui/button";
-import { Card, CardContent } from "../shadcn/ui/card";
-import { useToast } from "../shadcn/ui/use-toast";
+import { Button } from "@/shadcn/button";
+import { Card, CardContent } from "@/shadcn/card";
+import { useToast } from "@/shadcn/use-toast";
 
 import StatementsList from "./StatementList";
 

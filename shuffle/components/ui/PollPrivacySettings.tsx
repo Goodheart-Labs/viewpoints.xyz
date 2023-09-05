@@ -3,12 +3,9 @@
 import type { polls_visibility_enum } from "@prisma/client";
 import { LockClosedIcon, LockOpen2Icon } from "@radix-ui/react-icons";
 
-import { Label } from "@/app/components/shadcn/ui/label";
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "@/app/components/shadcn/ui/radio-group";
 import type { Poll } from "@/lib/api";
+import { Label } from "@/shadcn/label";
+import { RadioGroup, RadioGroupItem } from "@/shadcn/radio-group";
 
 type PollPrivacySettingsProps = {
   poll: Poll;

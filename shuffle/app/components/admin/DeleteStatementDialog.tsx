@@ -1,13 +1,13 @@
 import { XCircle } from "lucide-react";
 
-import { Button } from "../shadcn/ui/button";
+import { Button } from "@/shadcn/button";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../shadcn/ui/dialog";
+} from "@/shadcn/dialog";
 
 type DeleteStatementDialogProps = {
   isOpen: boolean;

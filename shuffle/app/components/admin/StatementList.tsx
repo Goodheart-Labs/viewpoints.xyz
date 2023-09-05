@@ -10,8 +10,7 @@ import axios from "axios";
 import { CornerUpLeftIcon, TrashIcon } from "lucide-react";
 
 import type { Poll } from "@/lib/api";
-
-import { Separator } from "../shadcn/ui/separator";
+import { Separator } from "@/shadcn/separator";
 
 import DeleteFlaggedStatementDialog from "./DeleteFlaggedStatementDialog";
 import DeleteStatementDialog from "./DeleteStatementDialog";

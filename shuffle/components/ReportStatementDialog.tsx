@@ -9,8 +9,6 @@ import axios from "axios";
 import { CheckCircle2, XCircle } from "lucide-react";
 
 import { ReportRadioItem } from "@/app/components/polls/reportStatements/ReportRadioItem";
-import { RadioGroup } from "@/app/components/shadcn/ui/radio-group";
-import { Textarea } from "@/app/components/shadcn/ui/textarea";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import { Button } from "@/shadcn/button";
 import {
@@ -20,6 +18,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shadcn/dialog";
+import { RadioGroup } from "@/shadcn/radio-group";
+import { Textarea } from "@/shadcn/textarea";
 import { useToast } from "@/shadcn/use-toast";
 
 type ReportStatementDialogProps = {
