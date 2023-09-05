@@ -8,7 +8,7 @@ import type { Statement } from "@prisma/client";
 import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
 
-import type { Choice } from "@/lib/api";
+import type { Choice, StatementWithAuthor } from "@/lib/api";
 import useOverridableState from "@/lib/useOverridableState";
 import { useSession } from "@/providers/SessionProvider";
 
@@ -26,7 +26,7 @@ export const anonymousAvatar =
 // -----------------------------------------------------------------------------
 
 type EmbeddedCardsProps = {
-  filteredStatements: Statement[];
+  filteredStatements: StatementWithAuthor[];
   onNewStatement: () => void;
   onStatementFlagged: () => void;
   onResponseCreated: (response: MinimalResponse) => void;

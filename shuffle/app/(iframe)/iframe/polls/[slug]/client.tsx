@@ -1,12 +1,11 @@
 "use client";
 
-import type { Statement } from "@prisma/client";
-
 import EmbeddedCards from "@/components/EmbeddedCards";
+import type { StatementWithAuthor } from "@/lib/api";
 import QueryProvider from "@/providers/QueryProvider";
 
 type PollIframeClientProps = {
-  filteredStatements: Statement[];
+  filteredStatements: StatementWithAuthor[];
 };
 
 const PollIframeClient = ({ filteredStatements }: PollIframeClientProps) => (

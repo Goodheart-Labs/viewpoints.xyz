@@ -36,6 +36,9 @@ async function getData({ params }: PollPageProps) {
     orderBy: {
       created_at: "asc",
     },
+    include: {
+      author: true,
+    },
   });
 
   return { poll, statements };

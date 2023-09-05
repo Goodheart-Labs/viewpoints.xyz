@@ -12,7 +12,7 @@ import type { Statement } from "@prisma/client";
 import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
 
-import type { Choice, Response } from "@/lib/api";
+import type { Choice, Response, StatementWithAuthor } from "@/lib/api";
 import useOverridableState from "@/lib/useOverridableState";
 import { useSession } from "@/providers/SessionProvider";
 
@@ -29,8 +29,8 @@ export type MinimalResponse = Pick<
 >;
 
 type CardsProps = {
-  statements: Statement[];
-  filteredStatements: Statement[];
+  statements: StatementWithAuthor[];
+  filteredStatements: StatementWithAuthor[];
   allResponses: Response[];
   userResponses: MinimalResponse[];
   onNewStatement: () => void;
@@ -57,7 +57,7 @@ const Cards = ({
   // State
 
   const [cards, setCards] =
-    useOverridableState<Statement[]>(filteredStatements);
+    useOverridableState<StatementWithAuthor[]>(filteredStatements);
 
   // Mutations
 

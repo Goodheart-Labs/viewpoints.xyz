@@ -11,7 +11,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Key } from "ts-key-enum";
 
 import Avatar from "@/components/Avatar";
-import type { Choice } from "@/lib/api";
+import type { Choice, StatementWithAuthor } from "@/lib/api";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import type { InteractionMode } from "@/providers/AmplitudeProvider/types";
 
@@ -36,7 +36,7 @@ const ANIMATION_DURATION = 0.2;
 
 export type CardViewProps = {
   data: {
-    card: Statement;
+    card: StatementWithAuthor;
   };
   state: {
     isActive: boolean;
@@ -52,7 +52,7 @@ export type CardViewProps = {
 };
 
 export type CardProps = {
-  card: Statement;
+  card: StatementWithAuthor;
   isActive: boolean;
   onSwipe: (card: Statement, choice: Choice) => void;
   onStatementFlagged: (statementId: Statement["id"]) => void;
@@ -72,12 +72,12 @@ const CardView = ({
         <div className="flex items-center w-full">
           <div className="mr-2 dark:shadow-sm">
             <Avatar
-              url={card.author_avatar_url ?? anonymousAvatar}
-              alt={card.author_name ?? "Anonymous"}
+              url={card.author?.avatarUrl ?? anonymousAvatar}
+              alt={card.author?.name ?? "Anonymous"}
             />
           </div>
           <div className="text-sm font-semibold text-gray-600 dark:text-gray-400">
-            {card.author_name ?? "Anonymous"}
+            {card.author?.name ?? "Anonymous"}
           </div>
         </div>
         <div className="flex">

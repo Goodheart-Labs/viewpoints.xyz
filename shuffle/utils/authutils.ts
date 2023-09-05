@@ -10,7 +10,7 @@ export const isPollAdmin = (
 
 export const requirePollAdmin = (
   poll: Poll | null,
-  userId: string | null,
+  userId: string | null | undefined,
 ): poll is Poll => {
   if (isPollAdmin(poll, userId)) {
     return true;
@@ -23,7 +23,7 @@ export const requirePollAdmin = (
 
 export const requirePollAdminIfPollIsPrivate = (
   poll: Poll | null,
-  userId: string | null,
+  userId: string | null | undefined,
 ): poll is Poll => {
   if (poll && poll.visibility !== polls_visibility_enum.private) {
     return true;

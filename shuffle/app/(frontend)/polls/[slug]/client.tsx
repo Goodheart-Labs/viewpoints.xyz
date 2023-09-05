@@ -24,7 +24,11 @@ import Cards from "@/components/Cards";
 import KeyboardShortcutsLegend from "@/components/KeyboardShortcutsLegend";
 import NewStatement from "@/components/NewStatement";
 import Responses from "@/components/Responses";
-import type { Response } from "@/lib/api";
+import type {
+  CreateStatementBody,
+  Response,
+  StatementWithAuthor,
+} from "@/lib/api";
 import { Poll } from "@/lib/api";
 import sortBySeed from "@/lib/sortBySeed";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
@@ -38,7 +42,7 @@ const MAX_NUM_SKIPS_BEFORE_REMOVAL = 5;
 
 type PollProps = {
   poll: Poll;
-  statements: Statement[];
+  statements: StatementWithAuthor[];
   url: string;
 };
 
@@ -63,12 +67,12 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
   // Queries
 
   const { data: statements, refetch: refetchStatements } = useQuery<
-    Statement[]
+    StatementWithAuthor[]
   >(
     ["statements", poll.id],
     async () => {
       const { data } = await axios.get(`/api/polls/${poll.id}/statements`);
-      return data as Statement[];
+      return data as StatementWithAuthor[];
     },
     {
       initialData,
@@ -116,16 +120,11 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
     );
 
   const newStatementMutation = useMutation(
-    async ({
-      text,
-      author_name,
-      author_avatar_url,
-    }: Pick<Statement, "text" | "author_name" | "author_avatar_url">) => {
-      await axios.post(`/api/polls/${poll.id}/statements`, {
-        text,
-        author_name,
-        author_avatar_url,
-      });
+    async (payload: CreateStatementBody): Promise<void> => {
+      await axios.post<unknown, unknown, CreateStatementBody>(
+        `/api/polls/${poll.id}/statements`,
+        payload,
+      );
       await refetchStatements();
     },
   );
@@ -155,18 +154,10 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
 
       await newStatementMutation.mutateAsync({
         text,
-        author_name: user?.fullName ?? null,
-        author_avatar_url: user?.profileImageUrl ?? null,
       });
       setIsCreating(false);
     },
-    [
-      newStatementMutation,
-      poll.id,
-      track,
-      user?.fullName,
-      user?.profileImageUrl,
-    ],
+    [newStatementMutation, poll.id, track],
   );
 
   const onCancelCreating = useCallback(() => {
