@@ -70,6 +70,21 @@ export const CommentsSheet: FC<Props> = ({ comments }) => {
 
   const isKeyboardOpen = currentViewportHeight < initialViewportHeight.current;
 
+  const mobileCommentContainerRef = useRef<HTMLDivElement | null>(null);
+  const desktopCommentContainerRef = useRef<HTMLDivElement | null>(null);
+
+  const onNewComment = useCallback(() => {
+    mobileCommentContainerRef.current?.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
+    desktopCommentContainerRef.current?.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
   return (
     <>
       <div
@@ -108,6 +123,7 @@ export const CommentsSheet: FC<Props> = ({ comments }) => {
                       ? `${currentViewportHeight * 0.3}px`
                       : undefined,
                   }}
+                  viewportRef={mobileCommentContainerRef}
                 >
                   <CommentList comments={comments} />
                 </ScrollArea>
@@ -121,11 +137,14 @@ export const CommentsSheet: FC<Props> = ({ comments }) => {
           comments on this poll yet
         </p>
 
-        <div className="hidden xl:block flex-1 overflow-y-auto">
+        <ScrollArea
+          viewportRef={desktopCommentContainerRef}
+          className="hidden xl:block flex-1"
+        >
           <CommentList comments={comments} />
-        </div>
+        </ScrollArea>
 
-        <CommentForm form={form} open={open} />
+        <CommentForm form={form} open={open} onNewComment={onNewComment} />
       </div>
     </>
   );

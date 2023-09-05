@@ -21,11 +21,13 @@ export type CommentForm = Pick<Comment, "text">;
 type Props = {
   form: UseFormReturn<CommentForm>;
   open: () => void;
+  onNewComment: () => void;
 };
 
 export const CommentForm: FC<Props> = ({
   form: { control, handleSubmit, reset },
   open,
+  onNewComment,
 }) => {
   const { user } = useUser();
 
@@ -63,6 +65,7 @@ export const CommentForm: FC<Props> = ({
         track({
           type: "comment.create",
         });
+        onNewComment();
       });
     });
   });
