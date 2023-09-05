@@ -49,7 +49,7 @@ async function getData({ params }: PollPageProps) {
   });
 
   const filteredStatements = statements.filter(
-    (statement) => statement.flaggedStatements.length > 1,
+    (statement) => statement.flaggedStatements.length < 2,
   );
 
   return { poll, filteredStatements, comments };

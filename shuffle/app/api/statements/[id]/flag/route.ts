@@ -41,7 +41,6 @@ export async function POST(
         null,
       reason: body.reason,
       description: body.description || null,
-      poll_id: statement.poll_id,
     },
   });
 

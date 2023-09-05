@@ -37,7 +37,7 @@ export const ReportStatementDialog = ({
   onCreate,
   statement,
 }: ReportStatementDialogProps) => {
-  const [reason, setReason] = useState<string>("off-topic");
+  const [reason, setReason] = useState<string | undefined>(undefined);
   const [description, setDescription] = useState<string>("");
 
   const { toast } = useToast();
@@ -52,7 +52,7 @@ export const ReportStatementDialog = ({
   );
 
   const onSave = useCallback(() => {
-    if (!reason.length) return;
+    if (!reason) return;
 
     track({
       type: "statement.flag.persist",
@@ -85,7 +85,6 @@ export const ReportStatementDialog = ({
             Please choose from the following options
           </DialogTitle>
           <RadioGroup
-            defaultValue="option-one"
             onValueChange={(value) => setReason(value)}
             value={reason}
           >
@@ -129,6 +128,7 @@ export const ReportStatementDialog = ({
             <Button
               className="rounded-full bg-foreground"
               onClick={() => onSave()}
+              disabled={!reason || (reason === "other" && !description)}
             >
               {mutation.isLoading ? (
                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />

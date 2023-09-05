@@ -8,7 +8,7 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import axios from "axios";
 import { CheckCircle2, XCircle } from "lucide-react";
 
-import { InputWithLabel } from "@/app/components/InputWithLabel";
+import { DisabledInputWithLabel } from "@/app/components/InputWithLabel";
 import PollPrivacySettings from "@/components/ui/PollPrivacySettings";
 import type { Poll } from "@/lib/api";
 import { Button } from "@/shadcn/button";
@@ -48,8 +48,11 @@ const PollAdminForm = ({ poll }: PollAdminFormProps) => {
   return (
     <>
       <div className="w-full max-w-3xl md:border md:border-accent md:px-6">
-        <InputWithLabel label="Poll subject" value={poll.title} />
-        <InputWithLabel label="Poll description" value={poll.core_question} />
+        <DisabledInputWithLabel label="Poll subject" value={poll.title} />
+        <DisabledInputWithLabel
+          label="Poll description"
+          value={poll.core_question}
+        />
         <p className="mb-2 text-secondary text-sm">Poll type</p>
         <PollPrivacySettings
           poll={poll}

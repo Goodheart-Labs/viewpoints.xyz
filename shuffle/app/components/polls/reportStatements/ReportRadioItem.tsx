@@ -2,8 +2,8 @@ import { Label } from "@/shadcn/label";
 import { RadioGroupItem } from "@/shadcn/radio-group";
 
 type ReportRadioItemProps = {
-  reason: string;
-  value: string;
+  reason: string | undefined;
+  value: "off-topic" | "duplicated" | "rude-offensive" | "other";
   label: string;
 };
 
