@@ -302,9 +302,9 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, comments }) => {
 
   return (
     <main className="flex-1 flex flex-col items-center w-full bg-black xl:p-8 xl:flex-row xl:justify-center xl:gap-8 xl:overflow-y-hidden">
-      <div className="flex-[2] hidden xl:block w-full" />
+      <div className="hidden xl:block w-2/7" />
 
-      <div className="flex flex-col items-center gap-4 max-w-full flex-[3] p-4 text-center h-full xl:bg-zinc-900 xl:rounded-xl xl:max-h-full xl:overflow-y-auto overflow-x-hidden lg:py-6">
+      <div className="flex flex-col items-center gap-4 max-w-full w-3/7 p-4 text-center h-full xl:bg-zinc-900 xl:rounded-xl xl:max-h-full xl:overflow-y-auto overflow-x-hidden lg:py-6">
         <h1 className="text-4xl font-bold text-foreground">{poll.title}</h1>
         <h2 className=" xl:text-xl text-muted mb-8">
           {ensureItLooksLikeAQuestion(poll.core_question)}{" "}

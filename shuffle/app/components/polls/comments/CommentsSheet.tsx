@@ -94,7 +94,7 @@ export const CommentsSheet: FC<Props> = ({ comments }) => {
         )}
         onClick={close}
       />
-      <div className="sticky xl:static bottom-0 w-full bg-zinc-900 flex flex-col pointer-events-auto z-50 touch-none xl:flex-[2] xl:h-full xl:rounded-lg">
+      <div className="sticky xl:static bottom-0 w-full bg-zinc-900 flex flex-col pointer-events-auto z-50 touch-none xl:w-2/7 xl:h-full xl:rounded-lg">
         <div className="xl:hidden">
           <Accordion
             type="single"
