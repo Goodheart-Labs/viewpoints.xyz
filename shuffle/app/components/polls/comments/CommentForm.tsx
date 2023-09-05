@@ -110,7 +110,7 @@ export const CommentForm: FC<Props> = ({
 
       <form onSubmit={onSubmit} className="flex-1 flex gap-4">
         <Textarea
-          className="bg-accent w-full max-h-16 touch-auto flex-1 h-11"
+          className="bg-accent w-full max-h-16 touch-auto flex-1 h-11 leading-6"
           {...field}
           placeholder="Write your thought"
           ref={(e) => {
