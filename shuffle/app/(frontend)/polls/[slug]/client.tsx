@@ -17,7 +17,6 @@ import { AnimatePresence } from "framer-motion";
 import { getCookie } from "typescript-cookie";
 
 import { CommentsSheet } from "@/app/components/polls/comments/CommentsSheet";
-import JiggleDiv from "@/components/animations/JiggleDiv";
 import BorderedButton from "@/components/BorderedButton";
 import type { MinimalResponse } from "@/components/Cards";
 import Cards from "@/components/Cards";
@@ -302,17 +301,19 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, comments }) => {
   }, []);
 
   return (
-    <main className="flex-1 flex flex-col items-center w-full dark:bg-black">
-      <div className="flex flex-col justify-center mt-10 max-w-full sm:max-w-[800px] px-4 text-center h-full gap-4">
+    <main className="flex-1 flex flex-col items-center w-full bg-black xl:p-8 xl:flex-row xl:justify-center xl:gap-8 xl:overflow-y-hidden">
+      <div className="flex-[2] hidden xl:block w-full" />
+
+      <div className="flex flex-col items-center gap-4 max-w-full flex-[3] p-4 text-center h-full xl:bg-zinc-900 xl:rounded-xl xl:max-h-full xl:overflow-y-auto overflow-x-hidden lg:py-6">
         <h1 className="text-4xl font-bold text-foreground">{poll.title}</h1>
-        <h2 className=" sm:text-xl text-muted mb-8">
+        <h2 className=" xl:text-xl text-muted mb-8">
           {ensureItLooksLikeAQuestion(poll.core_question)}{" "}
           {user?.id ? `Answer as ${user?.firstName}` : "Answer anonymously."}
         </h2>
 
         {isFirstVisit && (
           <div
-            className="absolute top-0 left-0 z-40 w-full h-full bg-black bg-opacity-50 sm:hidden"
+            className="absolute top-0 left-0 z-40 w-full h-full bg-black bg-opacity-50 xl:hidden"
             onClick={() => setIsFirstVisit(false)}
           >
             <div className="flex flex-col items-center justify-center w-full h-full">
@@ -337,30 +338,15 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, comments }) => {
               <div className="w-10 h-10 border-2 border-t-2 border-gray-200 rounded-full animate-spin" />
             </div>
           ) : (
-            <div className="flex items-center justify-center text-muted">
-              <JiggleDiv className="hidden mt-8 ml-4 mr-12 sm:block">
-                Swipe
-                <ArrowLeftIcon className="w-10 h-10" />
-              </JiggleDiv>
-
-              <Cards
-                statements={statements ?? []}
-                filteredStatements={filteredStatements ?? []}
-                allResponses={allResponses ?? []}
-                userResponses={enrichedResponses}
-                onNewStatement={onNewStatement}
-                onStatementFlagged={refetchFlaggedStatements}
-                onResponseCreated={onResponseCreated}
-              />
-
-              <JiggleDiv
-                transition={{ delay: 1 }}
-                className="hidden mt-8 ml-12 mr-4 sm:block"
-              >
-                Swipe
-                <ArrowRightIcon className="w-10 h-10" />
-              </JiggleDiv>
-            </div>
+            <Cards
+              statements={statements ?? []}
+              filteredStatements={filteredStatements ?? []}
+              allResponses={allResponses ?? []}
+              userResponses={enrichedResponses}
+              onNewStatement={onNewStatement}
+              onStatementFlagged={refetchFlaggedStatements}
+              onResponseCreated={onResponseCreated}
+            />
           )}
         </div>
 

@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: { children: React.ReactNode }) => (
   <ClerkProvider>
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-background flex flex-col items-stretch h-screen">
+      <body className="bg-black flex flex-col items-stretch h-screen">
         <LogrocketWrapper>
           <Contexts>
             <Header />

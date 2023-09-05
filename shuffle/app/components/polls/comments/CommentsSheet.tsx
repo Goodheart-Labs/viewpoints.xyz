@@ -74,45 +74,56 @@ export const CommentsSheet: FC<Props> = ({ comments }) => {
     <>
       <div
         className={cn(
-          "fixed inset-0 opacity-0 transition-opacity duration-300 backdrop-blur-sm bg-background/80 cursor-pointer pointer-events-none z-40",
+          "xl:hidden fixed inset-0 opacity-0 transition-opacity duration-300 backdrop-blur-sm bg-background/80 cursor-pointer pointer-events-none z-40",
           showComments && "pointer-events-auto touch-none opacity-unset",
         )}
         onClick={close}
       />
-      <div className="sticky bottom-0 w-full bg-background flex flex-col pointer-events-auto z-50 touch-none">
-        <Accordion
-          type="single"
-          collapsible
-          value={showComments ? ACCORDION_VALUE : ""}
-          onValueChange={onValueChange}
-          className="transition-maxH duration-500"
-          style={{
-            maxHeight: isKeyboardOpen ? `${currentViewportHeight}px` : "80vh",
-          }}
-        >
-          <AccordionItem value={ACCORDION_VALUE} className="border-accent">
-            <AccordionTrigger className="px-5 py-3">
-              <p className="text-muted">
-                <span className="font-semibold text-accent-foreground">
-                  {comments.length}
-                </span>{" "}
-                comments on this poll yet
-              </p>
-            </AccordionTrigger>
-            <AccordionContent>
-              <ScrollArea
-                className="h-[40vh] max-h-[60%] [&>div>div]:h-full"
-                style={{
-                  height: isKeyboardOpen
-                    ? `${currentViewportHeight * 0.3}px`
-                    : undefined,
-                }}
-              >
-                <CommentList comments={comments} />
-              </ScrollArea>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+      <div className="sticky xl:static bottom-0 w-full bg-zinc-900 flex flex-col pointer-events-auto z-50 touch-none xl:flex-[2] xl:h-full xl:rounded-lg">
+        <div className="xl:hidden">
+          <Accordion
+            type="single"
+            collapsible
+            value={showComments ? ACCORDION_VALUE : ""}
+            onValueChange={onValueChange}
+            className="transition-maxH duration-500"
+            style={{
+              maxHeight: isKeyboardOpen ? `${currentViewportHeight}px` : "80vh",
+            }}
+          >
+            <AccordionItem value={ACCORDION_VALUE} className="border-accent">
+              <AccordionTrigger className="px-5 py-3">
+                <p className="text-zinc-400">
+                  <span className="font-semibold text-zinc-200">
+                    {comments.length}
+                  </span>{" "}
+                  comments on this poll yet
+                </p>
+              </AccordionTrigger>
+              <AccordionContent>
+                <ScrollArea
+                  className="h-[40vh] max-h-[60%] [&>div>div]:h-full"
+                  style={{
+                    height: isKeyboardOpen
+                      ? `${currentViewportHeight * 0.3}px`
+                      : undefined,
+                  }}
+                >
+                  <CommentList comments={comments} />
+                </ScrollArea>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+
+        <p className="hidden xl:block px-5 py-3 text-zinc-400">
+          <span className="font-semibold text-zinc-200">{comments.length}</span>{" "}
+          comments on this poll yet
+        </p>
+
+        <div className="hidden xl:block flex-1 overflow-y-auto">
+          <CommentList comments={comments} />
+        </div>
 
         <CommentForm form={form} open={open} />
       </div>

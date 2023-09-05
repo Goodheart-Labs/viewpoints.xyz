@@ -46,7 +46,7 @@ const Header = () => {
   // Render
 
   return (
-    <div className="self-start flex items-center justify-end w-full p-4 sticky top-0 bg-background z-30">
+    <div className="self-start flex items-center justify-end w-full p-4 sticky top-0 bg-zinc-900 z-30">
       <div className={clsx(!(isSignedIn && isCurrentPollAdmin) && "mr-auto")}>
         <Link href="/" className="hover:opacity-50">
           <div className="dark:hidden">

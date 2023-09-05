@@ -98,7 +98,7 @@ export const CommentForm: FC<Props> = ({
   }, [textAreaRef]);
 
   return (
-    <div className="px-5 pt-3 pb-5 flex items-center gap-2 bg-background z-[60]">
+    <div className="px-5 pt-3 pb-5 flex items-center gap-2 bg-zinc-900 z-[60] xl:rounded-b-xl border-t border-zinc-800">
       <UserAvatar
         avatarUrl={user?.profileImageUrl ?? null}
         name={null}
@@ -107,7 +107,7 @@ export const CommentForm: FC<Props> = ({
 
       <form onSubmit={onSubmit} className="flex-1 flex gap-4">
         <Textarea
-          className="bg-accent w-full max-h-16 touch-auto flex-1"
+          className="bg-accent w-full max-h-16 touch-auto flex-1 h-11"
           {...field}
           placeholder="Write your thought"
           ref={(e) => {
@@ -120,11 +120,11 @@ export const CommentForm: FC<Props> = ({
           }}
         />
 
-        <button type="submit">
+        <button type="submit" className="bg-zinc-700 rounded-md p-3">
           {isPending ? (
-            <RotateCw className="mr-2 h-4 w-4 animate-spin stroke-muted" />
+            <RotateCw className="h-5 w-5 animate-spin stroke-muted" />
           ) : (
-            <SendHorizontal className="stroke-muted" />
+            <SendHorizontal className="stroke-muted h-5 w-5" />
           )}
         </button>
       </form>

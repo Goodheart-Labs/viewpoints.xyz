@@ -57,14 +57,12 @@ export const DeleteCommentDialog: FC<Props> = ({
         <DialogFooter>
           <div className="w-full flex justify-between">
             <Button
-              className="rounded-full bg-accent text-black/50 dark:text-white/75"
+              className="rounded-full bg-zinc-700 text-zinc-200 hover:bg-zinc-600"
               onClick={onClose}
             >
               <XCircle
                 size="16"
-                fill="hsla(0, 0%, 100%, 0.75)"
-                color="black"
-                className="mr-2 text-accent"
+                className="mr-2 text-accent fill-zinc-300 stroke-zinc-800"
               />
               No, keep it
             </Button>

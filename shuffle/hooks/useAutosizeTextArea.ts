@@ -8,7 +8,9 @@ export const useAutosizeTextArea = (value: string) => {
       ref.current.style.height = "0px";
       const { scrollHeight } = ref.current;
 
-      ref.current.style.height = `${scrollHeight}px`;
+      const parentHeight = ref.current.parentElement?.clientHeight || 0;
+
+      ref.current.style.height = `${Math.max(parentHeight, scrollHeight)}px`;
     }
   }, [value]);
 

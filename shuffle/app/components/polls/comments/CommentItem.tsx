@@ -47,7 +47,7 @@ export const CommentItem: FC<Props> = ({ comment }) => {
           )}
         </div>
 
-        <p className="text-sm">{comment.text}</p>
+        <p className="text-sm text-zinc-300">{comment.text}</p>
       </div>
 
       <DeleteCommentDialog
