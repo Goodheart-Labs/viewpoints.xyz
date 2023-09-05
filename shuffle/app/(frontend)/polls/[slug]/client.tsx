@@ -21,7 +21,6 @@ import JiggleDiv from "@/components/animations/JiggleDiv";
 import BorderedButton from "@/components/BorderedButton";
 import type { MinimalResponse } from "@/components/Cards";
 import Cards from "@/components/Cards";
-import KeyboardShortcutsLegend from "@/components/KeyboardShortcutsLegend";
 import NewStatement from "@/components/NewStatement";
 import Responses from "@/components/Responses";
 import type {
@@ -353,8 +352,6 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
       </div>
 
       <div className="grid grid-cols-1 gap-20 mt-20 justify-items-center items-end max-width-[800px]">
-        <KeyboardShortcutsLegend />
-
         {isFirstVisit && (
           <div
             className="absolute top-0 left-0 z-40 w-full h-full bg-black bg-opacity-50 sm:hidden"
