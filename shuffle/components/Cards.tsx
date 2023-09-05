@@ -4,15 +4,12 @@ import { useCallback, useMemo } from "react";
 import { useMutation } from "react-query";
 
 import { useUser } from "@clerk/nextjs";
-import {
-  ChatBubbleBottomCenterIcon,
-  PlusIcon,
-} from "@heroicons/react/20/solid";
+import { ChatBubbleBottomCenterIcon } from "@heroicons/react/20/solid";
 import type { Statement } from "@prisma/client";
 import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
 
-import type { Choice, Response } from "@/lib/api";
+import type { Choice, Response, StatementWithAuthor } from "@/lib/api";
 import useOverridableState from "@/lib/useOverridableState";
 import { useSession } from "@/providers/SessionProvider";
 
@@ -29,12 +26,11 @@ export type MinimalResponse = Pick<
 >;
 
 type CardsProps = {
-  statements: Statement[];
-  filteredStatements: Statement[];
+  statements: StatementWithAuthor[];
+  filteredStatements: StatementWithAuthor[];
   allResponses: Response[];
   userResponses: MinimalResponse[];
   onNewStatement: () => void;
-  onNewPoll: () => void;
   onStatementFlagged: () => void;
   onResponseCreated: (response: MinimalResponse) => void;
 };
@@ -48,7 +44,6 @@ const Cards = ({
   allResponses,
   userResponses,
   onNewStatement,
-  onNewPoll,
   onStatementFlagged: parentOnStatementFlagged,
   onResponseCreated,
 }: CardsProps) => {
@@ -57,7 +52,7 @@ const Cards = ({
   // State
 
   const [cards, setCards] =
-    useOverridableState<Statement[]>(filteredStatements);
+    useOverridableState<StatementWithAuthor[]>(filteredStatements);
 
   // Mutations
 
@@ -119,14 +114,14 @@ const Cards = ({
   // Render
 
   return (
-    <div className="sm:w-full sm:min-w-[600px]">
+    <>
       {cards.length === 0 ? (
         <AnimatePresence>
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.1 }}
-            className="flex flex-col w-full p-10 sm:border border-gray-800 dark:border-gray-600 rounded-lg sm:min-w-[320px] max-w-[600px]"
+            className="flex flex-col w-full px-4 pb-4 sm:py-4 sm:px-10 sm:border border-gray-800 dark:border-gray-600 rounded-lg sm:min-w-[320px] max-w-[600px]"
           >
             <AnalyticsSynopsis
               allResponses={allResponses}
@@ -145,33 +140,25 @@ const Cards = ({
                   a new statement
                 </BorderedButton>
               </div>
-              <div className="ml-4 text-center">
-                <BorderedButton
-                  color="orange"
-                  className="flex items-center"
-                  onClick={() => onNewPoll()}
-                >
-                  <PlusIcon width={28} className="mr-1" /> Create a new poll
-                </BorderedButton>
-              </div>
             </div>
           </motion.div>
         </AnimatePresence>
       ) : (
-        <div className="relative flex flex-col w-full sm:min-h-[200px] min-w-[400px]">
-          {cards.map((card) => (
+        <div className="relative max-w-[90vw] sm:max-w-[600px] w-full max-h-[250px]">
+          {cards.map((card, index) => (
             <AnimatePresence key={card.id}>
               <Card
                 card={card}
                 onSwipe={onSwipe}
                 onStatementFlagged={onStatementFlagged}
+                index={index}
                 isActive={card.id === cards[cards.length - 1].id}
               />
             </AnimatePresence>
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 };
 

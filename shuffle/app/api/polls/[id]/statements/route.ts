@@ -1,7 +1,9 @@
-import { auth, currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
+import { createAuthorIfNeeded } from "@/app/api/lib/createAuthorIfNeeded";
+import type { CreateStatementBody } from "@/lib/api";
 import prisma from "@/lib/prisma";
 import { SESSION_ID_COOKIE_NAME } from "@/middleware";
 import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
@@ -24,6 +26,9 @@ export async function GET(
     orderBy: {
       created_at: "asc",
     },
+    include: {
+      author: true,
+    },
   });
 
   return NextResponse.json(statements);
@@ -40,7 +45,6 @@ export async function POST(
     params: { id: string };
   },
 ) {
-  const { userId } = auth();
   const user = await currentUser();
 
   const poll = await prisma.polls.findUnique({
@@ -49,25 +53,18 @@ export async function POST(
     },
   });
 
-  requirePollAdminIfPollIsPrivate(poll, userId);
+  requirePollAdminIfPollIsPrivate(poll, user?.id);
 
-  const body = await request.json();
+  const body = (await request.json()) as CreateStatementBody;
+
+  createAuthorIfNeeded();
 
   const response = await prisma.statement.create({
     data: {
       poll_id: parseInt(id),
-      user_id: userId,
-      session_id:
-        request.cookies.get(SESSION_ID_COOKIE_NAME)?.value ??
-        body.session_id ??
-        null,
-      author_name:
-        body.author_name ??
-        (user?.firstName ? `${user.firstName} ${user.lastName}` : null) ??
-        null,
-      author_avatar_url:
-        body.author_avatar_url ?? user?.profileImageUrl ?? null,
-      text: body.statement,
+      user_id: user?.id,
+      session_id: request.cookies.get(SESSION_ID_COOKIE_NAME)?.value,
+      text: body.text,
       created_at: new Date(),
     },
   });

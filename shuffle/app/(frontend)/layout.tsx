@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 
 import Header from "@/components/Header";
+import { Toaster } from "@/shadcn/toaster";
 
 import Contexts from "../components/Contexts";
 import LogrocketWrapper from "../components/LogrocketWrapper";
@@ -18,6 +19,8 @@ import "react-tooltip/dist/react-tooltip.css";
 export const metadata: Metadata = {
   title: "viewpoints.xyz",
   description: "what in the world are you thinking?",
+  viewport:
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
 };
 
 // Default export
@@ -26,7 +29,7 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: { children: React.ReactNode }) => (
   <ClerkProvider>
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body className="bg-black flex flex-col items-stretch h-screen">
         <LogrocketWrapper>
           <Contexts>
             <Header />
@@ -34,6 +37,8 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
           </Contexts>
         </LogrocketWrapper>
         <Tooltip id="tooltip" />
+
+        <Toaster />
       </body>
     </html>
   </ClerkProvider>

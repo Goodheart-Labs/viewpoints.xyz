@@ -14,22 +14,24 @@ import type { FlaggedStatement, Statement } from "@prisma/client";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import axios from "axios";
 import { AnimatePresence } from "framer-motion";
-import Head from "next/head";
 import { getCookie } from "typescript-cookie";
 
-import JiggleDiv from "@/components/animations/JiggleDiv";
+import { CommentsSheet } from "@/app/components/polls/comments/CommentsSheet";
 import BorderedButton from "@/components/BorderedButton";
 import type { MinimalResponse } from "@/components/Cards";
 import Cards from "@/components/Cards";
-import KeyboardShortcutsLegend from "@/components/KeyboardShortcutsLegend";
 import NewStatement from "@/components/NewStatement";
 import Responses from "@/components/Responses";
-import type { Response } from "@/lib/api";
+import type {
+  CommentWithAuthor,
+  CreateStatementBody,
+  Response,
+  StatementWithAuthor,
+} from "@/lib/api";
 import { Poll } from "@/lib/api";
 import sortBySeed from "@/lib/sortBySeed";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import type { InteractionMode } from "@/providers/AmplitudeProvider/types";
-import { useModal } from "@/providers/ModalProvider";
 import { SESSION_ID_COOKIE_NAME } from "@/providers/SessionProvider";
 import { ensureItLooksLikeAQuestion } from "@/utils/stringutils";
 
@@ -38,11 +40,11 @@ const MAX_NUM_SKIPS_BEFORE_REMOVAL = 5;
 
 type PollProps = {
   poll: Poll;
-  statements: Statement[];
-  url: string;
+  statements: StatementWithAuthor[];
+  comments: CommentWithAuthor[];
 };
 
-const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
+const Poll: FC<PollProps> = ({ poll, statements: initialData, comments }) => {
   const { track } = useAmplitude();
   const { user } = useUser();
 
@@ -52,23 +54,15 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
 
   const [cachedResponses, setCachedResponses] = useState<MinimalResponse[]>([]);
 
-  // Sharing
-
-  const twitterShareUrl = useMemo(
-    () =>
-      `${url}?utm_source=twitter&utm_medium=social&utm_campaign=share&utm_content=${poll.id}`,
-    [poll.id, url],
-  );
-
   // Queries
 
   const { data: statements, refetch: refetchStatements } = useQuery<
-    Statement[]
+    StatementWithAuthor[]
   >(
     ["statements", poll.id],
     async () => {
       const { data } = await axios.get(`/api/polls/${poll.id}/statements`);
-      return data as Statement[];
+      return data as StatementWithAuthor[];
     },
     {
       initialData,
@@ -116,16 +110,11 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
     );
 
   const newStatementMutation = useMutation(
-    async ({
-      text,
-      author_name,
-      author_avatar_url,
-    }: Pick<Statement, "text" | "author_name" | "author_avatar_url">) => {
-      await axios.post(`/api/polls/${poll.id}/statements`, {
-        text,
-        author_name,
-        author_avatar_url,
-      });
+    async (payload: CreateStatementBody): Promise<void> => {
+      await axios.post<unknown, unknown, CreateStatementBody>(
+        `/api/polls/${poll.id}/statements`,
+        payload,
+      );
       await refetchStatements();
     },
   );
@@ -155,18 +144,10 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
 
       await newStatementMutation.mutateAsync({
         text,
-        author_name: user?.fullName ?? null,
-        author_avatar_url: user?.profileImageUrl ?? null,
       });
       setIsCreating(false);
     },
-    [
-      newStatementMutation,
-      poll.id,
-      track,
-      user?.fullName,
-      user?.profileImageUrl,
-    ],
+    [newStatementMutation, poll.id, track],
   );
 
   const onCancelCreating = useCallback(() => {
@@ -185,21 +166,6 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
     },
     [refetchAllResponses],
   );
-
-  const { setModal } = useModal();
-
-  const onNewPoll = useCallback(() => {
-    track({
-      type: "polls.new.open",
-    });
-    setModal({
-      render: () => (
-        <div>
-          <h1>Coming Soon</h1>
-        </div>
-      ),
-    });
-  }, [setModal, track]);
 
   // Keyboard shortcuts
 
@@ -334,39 +300,20 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
     }
   }, []);
 
-  // Render
-
   return (
-    <main className="flex flex-col items-center w-full min-h-screen px-4 gradient sm:px-0">
-      <Head>
-        <title>{poll.title}</title>
-        <meta name="description" content={poll.core_question} />
-        <meta property="og:title" content={poll.title} />
-        <meta property="og:description" content={poll.core_question} />
-        <meta property="og:url" content={twitterShareUrl} />
-        <meta property="og:type" content="website" />
-        <meta property="twitter:card" content="summary" />
-        <meta property="twitter:title" content={poll.title} />
-        <meta property="twitter:description" content={poll.core_question} />
-        <meta property="twitter:site" content="viewpoints.xyz" />
-      </Head>
+    <main className="flex-1 flex flex-col items-center w-full bg-black xl:p-8 xl:flex-row xl:justify-center xl:gap-8 xl:overflow-y-hidden">
+      <div className="hidden xl:block w-2/7" />
 
-      <div className="flex flex-col mt-10 text-center max-w-[800px]">
-        <h1 className="mb-4 text-4xl font-bold text-black dark:text-gray-200">
-          {poll.title}
-        </h1>
-        <h2 className="text-gray-800 sm:text-xl dark:text-gray-500">
+      <div className="flex flex-col items-center gap-4 max-w-full w-3/7 p-4 text-center h-full xl:bg-zinc-900 xl:rounded-xl xl:max-h-full xl:overflow-y-auto overflow-x-hidden lg:py-6">
+        <h1 className="text-4xl font-bold text-foreground">{poll.title}</h1>
+        <h2 className=" xl:text-xl text-muted mb-8">
           {ensureItLooksLikeAQuestion(poll.core_question)}{" "}
           {user?.id ? `Answer as ${user?.firstName}` : "Answer anonymously."}
         </h2>
-      </div>
-
-      <div className="grid grid-cols-1 gap-20 mt-20 justify-items-center items-end max-width-[800px]">
-        <KeyboardShortcutsLegend />
 
         {isFirstVisit && (
           <div
-            className="absolute top-0 left-0 z-40 w-full h-full bg-black bg-opacity-50 sm:hidden"
+            className="absolute top-0 left-0 z-40 w-full h-full bg-black bg-opacity-50 xl:hidden"
             onClick={() => setIsFirstVisit(false)}
           >
             <div className="flex flex-col items-center justify-center w-full h-full">
@@ -391,38 +338,20 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
               <div className="w-10 h-10 border-2 border-t-2 border-gray-200 rounded-full animate-spin" />
             </div>
           ) : (
-            <div className="relative flex items-center justify-center text-gray-400 dark:text-gray-600">
-              <JiggleDiv className="hidden mt-8 ml-4 mr-12 sm:block">
-                Swipe
-                <ArrowLeftIcon className="w-10 h-10" />
-              </JiggleDiv>
-
-              <div className="relative text-black">
-                <Cards
-                  statements={statements ?? []}
-                  filteredStatements={filteredStatements ?? []}
-                  allResponses={allResponses ?? []}
-                  userResponses={enrichedResponses}
-                  onNewStatement={onNewStatement}
-                  onNewPoll={onNewPoll}
-                  onStatementFlagged={refetchFlaggedStatements}
-                  onResponseCreated={onResponseCreated}
-                />
-              </div>
-
-              <JiggleDiv
-                transition={{ delay: 1 }}
-                className="hidden mt-8 ml-12 mr-4 text-gray-400 dark:text-gray-600 sm:block"
-              >
-                Swipe
-                <ArrowRightIcon className="w-10 h-10" />
-              </JiggleDiv>
-            </div>
+            <Cards
+              statements={statements ?? []}
+              filteredStatements={filteredStatements ?? []}
+              allResponses={allResponses ?? []}
+              userResponses={enrichedResponses}
+              onNewStatement={onNewStatement}
+              onStatementFlagged={refetchFlaggedStatements}
+              onResponseCreated={onResponseCreated}
+            />
           )}
         </div>
 
         {filteredStatements.length > 0 && (
-          <div className="mt-10">
+          <div className="my-3">
             <BorderedButton
               onClick={() => onNewStatement("click")}
               color="blue"
@@ -450,6 +379,8 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, url }) => {
           />
         )}
       </AnimatePresence>
+
+      <CommentsSheet comments={comments} />
     </main>
   );
 };

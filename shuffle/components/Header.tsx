@@ -46,7 +46,7 @@ const Header = () => {
   // Render
 
   return (
-    <div className="flex items-center justify-end w-full p-4">
+    <div className="self-start flex items-center justify-end w-full p-4 sticky top-0 bg-zinc-900 z-30">
       <div className={clsx(!(isSignedIn && isCurrentPollAdmin) && "mr-auto")}>
         <Link href="/" className="hover:opacity-50">
           <div className="dark:hidden">
@@ -104,7 +104,7 @@ const Header = () => {
             )}
             onClick={() => setShowSignIn(false)}
           />
-          <div className="fixed z-50 top-[30vh] h-[200px] flex w-full justify-center items-center">
+          <div className="fixed z-[100] top-[30vh] h-[200px] flex w-full justify-center items-center">
             <SignIn redirectUrl={window.location.pathname} />
           </div>
         </>

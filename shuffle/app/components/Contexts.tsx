@@ -12,7 +12,7 @@ import { ThemeProvider } from "@/providers/ThemeProvider";
 const Contexts = ({ children }: PropsWithChildren) => (
   <SessionProvider>
     <AmplitudeProvider>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <ThemeProvider attribute="class" defaultTheme="dark">
         <ModalProvider>
           <QueryProvider>
             <CurrentPollProvider>{children}</CurrentPollProvider>

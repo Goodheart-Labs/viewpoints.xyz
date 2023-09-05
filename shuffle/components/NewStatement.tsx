@@ -5,9 +5,9 @@ import { CheckIcon, PlusIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 
-import Avatar from "./Avatar";
+import { UserAvatar } from "@/app/components/user/UserAvatar";
+
 import BorderedButton from "./BorderedButton";
-import { anonymousAvatar } from "./Card";
 import EditingContent from "./EditingContent";
 
 // Types
@@ -16,8 +16,8 @@ import EditingContent from "./EditingContent";
 type NewStatementViewProps = {
   data: {
     card: {
-      author_name: string;
-      author_avatar_url: string;
+      author_name: string | null;
+      author_avatar_url: string | null;
       text: string;
     };
   };
@@ -48,17 +48,11 @@ const NewStatementView = ({
     <div className="fixed z-50 flex top-[30vh] bg-white flex-col w-[600px] items-center justify-center rounded-lg">
       <div className="z-50 flex flex-col w-full px-4 py-5 sm:p-6">
         <div className="flex items-center justify-between w-full mb-4">
-          <div className="flex items-center w-full">
-            <div className="mr-2">
-              <Avatar
-                url={card.author_avatar_url ?? anonymousAvatar}
-                alt={card.author_name ?? "Anonymous"}
-              />
-            </div>
-            <div className="text-sm font-semibold text-gray-600">
-              {card.author_name ?? "Anonymous"}
-            </div>
-          </div>
+          <UserAvatar
+            name={card.author_name}
+            avatarUrl={card.author_avatar_url}
+          />
+
           <div>
             <div className="p-1 bg-blue-200 rounded-full">
               <PlusIcon className="w-5 h-5" aria-hidden="true" />
@@ -111,8 +105,8 @@ const NewStatement = ({ onCreate, onCancel }: NewStatementProps) => {
 
   const card = useMemo(
     () => ({
-      author_name: user?.fullName ?? "Anonymous",
-      author_avatar_url: user?.profileImageUrl ?? anonymousAvatar,
+      author_name: user?.fullName ?? null,
+      author_avatar_url: user?.profileImageUrl ?? null,
       text: editingValue,
     }),
     [editingValue, user?.fullName, user?.profileImageUrl],

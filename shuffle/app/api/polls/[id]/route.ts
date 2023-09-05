@@ -1,5 +1,4 @@
 import { auth } from "@clerk/nextjs";
-import { notFound } from "next/navigation";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -18,11 +17,6 @@ export async function GET(
     params: { id: string };
   },
 ) {
-  const { userId } = auth();
-  if (!userId) {
-    notFound();
-  }
-
   const id = parseInt(idOrSlug);
   let poll: Poll | null = null;
 
@@ -35,6 +29,8 @@ export async function GET(
       where: { id },
     });
   }
+
+  const { userId } = auth();
 
   requirePollAdminIfPollIsPrivate(poll, userId);
 

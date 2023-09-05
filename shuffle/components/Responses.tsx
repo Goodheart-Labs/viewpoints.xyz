@@ -66,7 +66,7 @@ const ResponsesView = ({
             opacity: 1 - (viewAll ? 0 : i * (1 / NUM_VISIBLE_RESPONSES)),
             y: 0,
           }}
-          className="flex items-center w-full mb-4"
+          className="flex items-center w-full mb-4 text-zinc-300"
         >
           <ChoiceBadge choice={response.choice} />
 
@@ -75,7 +75,7 @@ const ResponsesView = ({
           </span>
 
           <span
-            className="ml-4 text-xs font-bold text-gray-500 dark:text-gray-400"
+            className="ml-4 text-xs font-bold text-zinc-200"
             data-tooltip-id="tooltip"
             data-tooltip-content={`${(
               responsePercentages.get(response.statementId) ?? 0
@@ -99,7 +99,7 @@ const ResponsesView = ({
     </AnimatePresence>
 
     {!viewAll && totalResponses > NUM_VISIBLE_RESPONSES && (
-      <div className="z-30 flex justify-center mt-2">
+      <div className="flex justify-center mt-2">
         <BorderedButton
           color="blue"
           className="text-xs"

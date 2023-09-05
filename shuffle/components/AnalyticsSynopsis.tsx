@@ -31,65 +31,62 @@ const AnalyticsSynopsisView = ({
   consensusView,
   controversialView,
 }: AnalyticsSynopsisViewProps) => (
-  <div>
-    <div className="flex flex-col">
-      {consensusView ? (
-        <div>
-          <h4 className="mb-4 text-xl font-semibold">My most consensus view</h4>
+  <div className="flex flex-col">
+    {consensusView ? (
+      <div>
+        <h4 className="mb-4 text-xl font-semibold text-accent-foreground">
+          My most consensus view
+        </h4>
 
-          <div className="flex flex-col pb-4 mb-4 border-b border-gray-300 dark:border-gray-800">
-            <div>
-              <span className="text-lg font-bold">
-                {consensusView.consensusPercentage.toLocaleString(undefined, {
-                  maximumFractionDigits: 2,
-                })}
-                %
-              </span>{" "}
-              of respondents voted{" "}
-              <ChoiceBadge choice={consensusView.choice}>
-                {choiceToHumanReadablePresentTense(consensusView.choice)}
-              </ChoiceBadge>
-              on
-            </div>
+        <div className="flex flex-col pb-4 mb-4 border-b border-border text-accent-foreground">
+          <div>
+            <span className="text-lg font-bold text-foreground">
+              {consensusView.consensusPercentage.toLocaleString(undefined, {
+                maximumFractionDigits: 2,
+              })}
+              %
+            </span>{" "}
+            of respondents voted{" "}
+            <ChoiceBadge choice={consensusView.choice}>
+              {choiceToHumanReadablePresentTense(consensusView.choice)}
+            </ChoiceBadge>
+            on
+          </div>
 
-            <div className="my-4 ml-3 text-sm italic text-gray-700 dark:text-gray-400">
-              <span>{consensusView.statementText}</span>
-            </div>
+          <div className="my-4 ml-3 text-sm italic text-secondary-foreground">
+            <span>{consensusView.statementText}</span>
           </div>
         </div>
-      ) : null}
+      </div>
+    ) : null}
 
-      {controversialView ? (
-        <div>
-          <h4 className="mb-4 text-xl font-semibold">
-            My most controversial view
-          </h4>
+    {controversialView ? (
+      <div>
+        <h4 className="mb-4 text-xl font-semibold text-accent-foreground">
+          My most controversial view
+        </h4>
 
-          <div className="flex flex-col pb-4 mb-4">
-            <div>
-              <span className="text-lg font-bold">
-                {controversialView.consensusPercentage.toLocaleString(
-                  undefined,
-                  {
-                    maximumFractionDigits: 2,
-                  },
-                )}
-                %
-              </span>{" "}
-              of respondents voted{" "}
-              <ChoiceBadge choice={controversialView.choice}>
-                {choiceToHumanReadablePresentTense(controversialView.choice)}
-              </ChoiceBadge>
-              on
-            </div>
+        <div className="flex flex-col pb-4 mb-4 text-accent-foreground">
+          <div>
+            <span className="text-lg font-bold text-foreground">
+              {controversialView.consensusPercentage.toLocaleString(undefined, {
+                maximumFractionDigits: 2,
+              })}
+              %
+            </span>{" "}
+            of respondents voted{" "}
+            <ChoiceBadge choice={controversialView.choice}>
+              {choiceToHumanReadablePresentTense(controversialView.choice)}
+            </ChoiceBadge>
+            on
+          </div>
 
-            <div className="my-4 ml-3 text-sm italic text-gray-700 dark:text-gray-400">
-              <span>{controversialView.statementText}</span>
-            </div>
+          <div className="my-4 ml-3 text-sm italic text-secondary-foreground">
+            <span>{controversialView.statementText}</span>
           </div>
         </div>
-      ) : null}
-    </div>
+      </div>
+    ) : null}
   </div>
 );
 

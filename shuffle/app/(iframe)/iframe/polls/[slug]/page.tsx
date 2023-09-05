@@ -32,6 +32,9 @@ async function getData({ params }: PollIframeProps) {
     orderBy: {
       created_at: "asc",
     },
+    include: {
+      author: true,
+    },
   });
 
   return { poll, statement };
