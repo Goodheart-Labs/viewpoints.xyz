@@ -15,8 +15,9 @@ import type { Choice, StatementWithAuthor } from "@/lib/api";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import type { InteractionMode } from "@/providers/AmplitudeProvider/types";
 
+import { ReportStatementDialog } from "../app/components/polls/reportStatements/ReportStatementDialog";
+
 import BorderedButton from "./BorderedButton";
-import { ReportStatementDialog } from "./ReportStatementDialog";
 
 // Config
 // -----------------------------------------------------------------------------
