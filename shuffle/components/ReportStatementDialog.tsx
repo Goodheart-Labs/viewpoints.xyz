@@ -84,10 +84,7 @@ export const ReportStatementDialog = ({
           <DialogTitle className="text-left text-base">
             Please choose from the following options
           </DialogTitle>
-          <RadioGroup
-            onValueChange={(value) => setReason(value)}
-            value={reason}
-          >
+          <RadioGroup onValueChange={setReason} value={reason}>
             <ReportRadioItem
               value="off-topic"
               reason={reason}

@@ -327,7 +327,7 @@ const Card = ({
         animate={animate}
         variants={{
           default: {
-            scale: 0.9,
+            scale: 1,
             x: Number(card.id) % 2 === 0 ? -5 : 5,
             rotate: `${Number(card.id) % 2 === 0 ? -1 : 1}deg`,
           },
@@ -343,7 +343,7 @@ const Card = ({
           },
         }}
         className={clsx(
-          "absolute w-screen sm:w-[600px] flex flex-col justify-center items-center cursor-grab overflow-hidden border border-gray-300 bg-white rounded-lg shadow dark:bg-gray-700 dark:drop-shadow-lg dark:border dark:border-gray-800",
+          "flex flex-col justify-center items-center cursor-grab overflow-hidden border bg-background rounded-lg shadow dark:drop-shadow-lg border-muted",
           index > 0 && "absolute inset-0",
         )}
       >
