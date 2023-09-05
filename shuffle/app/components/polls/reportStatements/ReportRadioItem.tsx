@@ -24,7 +24,9 @@ export const ReportRadioItem = ({
     />
     <Label
       htmlFor={value}
-      className={`w-full h-full p-2 ${value === reason && "text-black"} ''`}
+      className={`w-full h-full p-2 cursor-pointer ${
+        value === reason && "text-black"
+      } ''`}
     >
       {label}
     </Label>
