@@ -48,18 +48,20 @@ const PollAdminForm = ({ poll }: PollAdminFormProps) => {
 
   return (
     <>
-      <InputWithLabel label="Poll subject" value={poll.title} />
-      <InputWithLabel label="Poll description" value={poll.core_question} />
-      <p className="mb-2 text-secondary text-sm">Poll type</p>
-      <PollPrivacySettings
-        poll={poll}
-        pollVisibilitySetter={setPollVisibility}
-      />
+      <div className="w-full max-w-3xl md:border md:border-accent md:px-6">
+        <InputWithLabel label="Poll subject" value={poll.title} />
+        <InputWithLabel label="Poll description" value={poll.core_question} />
+        <p className="mb-2 text-secondary text-sm">Poll type</p>
+        <PollPrivacySettings
+          poll={poll}
+          pollVisibilitySetter={setPollVisibility}
+        />
 
-      <h2 className="text-secondary text-sm mt-2">Poll statements</h2>
+        <h2 className="text-secondary text-sm mt-2">Poll statements</h2>
 
-      <StatementsList poll={poll} />
-      <Card className="sticky bottom-0 w-full left-0 border-none bg-black px-2 py-5">
+        <StatementsList poll={poll} />
+      </div>
+      <Card className="sticky bottom-0 w-full left-0 max-w-3xl border-t-accent border-b-0 border-x-0 md:border-accent oveflow-hidden rounded-none md:rounded-b-3xl bg-black md:bg-background py-5">
         <CardContent className="flex justify-between items-center px-5 py-0">
           <Button className="rounded-full bg-accent text-secondary">
             <XCircle

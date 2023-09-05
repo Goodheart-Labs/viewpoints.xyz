@@ -112,7 +112,7 @@ const StatementsList = ({
           <div className="mb-2">
             {statement.flaggedStatements &&
               statement?.flaggedStatements?.length > 1 && (
-                <span className="flex items-center text-xxs bg-accent py-1">
+                <span className="flex items-center text-xxs bg-accent p-1.5 rounded-sm">
                   <FlagIcon width={10} height={10} className="mr-2" />
                   This statement has been removed from poll because of 2
                   reports.

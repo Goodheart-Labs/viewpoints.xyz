@@ -119,7 +119,7 @@ async function getData({ params }: PollAdminPageProps) {
 // -----------------------------------------------------------------------------
 
 const PollAdminPageView = ({ data: { poll } }: PollAdminPageViewProps) => (
-  <main className="flex flex-col items-left w-full max-w-5xl min-h-screen px-4 mx-auto gradient sm:px-0">
+  <main className="flex flex-col w-full items-center min-h-screen px-4 gradient sm:px-0">
     <PollAdminForm poll={poll} />
   </main>
 );
