@@ -37,7 +37,6 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
           </Contexts>
         </LogrocketWrapper>
         <Tooltip id="tooltip" />
-
         <Toaster />
       </body>
     </html>

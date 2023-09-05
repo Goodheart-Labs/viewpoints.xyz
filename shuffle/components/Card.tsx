@@ -7,7 +7,7 @@ import type { Statement } from "@prisma/client";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import clsx from "clsx";
 import type { PanInfo } from "framer-motion";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Key } from "ts-key-enum";
 
 import { UserAvatar } from "@/app/components/user/UserAvatar";
@@ -15,8 +15,9 @@ import type { Choice, StatementWithAuthor } from "@/lib/api";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import type { InteractionMode } from "@/providers/AmplitudeProvider/types";
 
+import { ReportStatementDialog } from "../app/components/polls/reportStatements/ReportStatementDialog";
+
 import BorderedButton from "./BorderedButton";
-import FlagStatement from "./FlagStatement";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -363,15 +364,13 @@ const Card = ({
         />
       </motion.div>
 
-      <AnimatePresence>
-        {isActive && isFlagging && (
-          <FlagStatement
-            statement={card}
-            onCreate={onSaveFlag}
-            onCancel={onCancelFlag}
-          />
-        )}
-      </AnimatePresence>
+      <ReportStatementDialog
+        isActive={isActive}
+        onCancelFlag={onCancelFlag}
+        isFlagging={isFlagging}
+        onCreate={onSaveFlag}
+        statement={card}
+      />
     </>
   );
 };

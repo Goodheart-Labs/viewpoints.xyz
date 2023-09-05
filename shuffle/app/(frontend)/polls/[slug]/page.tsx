@@ -6,15 +6,9 @@ import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
 
 import Poll from "./client";
 
-// Types
-// -----------------------------------------------------------------------------
-
 type PollPageProps = {
   params: { slug: string };
 };
-
-// Data
-// -----------------------------------------------------------------------------
 
 async function getData({ params }: PollPageProps) {
   const { userId } = auth();
@@ -38,6 +32,7 @@ async function getData({ params }: PollPageProps) {
     },
     include: {
       author: true,
+      flaggedStatements: true,
     },
   });
 
@@ -53,16 +48,19 @@ async function getData({ params }: PollPageProps) {
     },
   });
 
-  return { poll, statements, comments };
+  const filteredStatements = statements.filter(
+    (statement) => statement.flaggedStatements.length < 2,
+  );
+
+  return { poll, filteredStatements, comments };
 }
 
-// Default export
-// -----------------------------------------------------------------------------
-
 const PollPage = async ({ params }: PollPageProps) => {
-  const { poll, statements, comments } = await getData({ params });
+  const { poll, filteredStatements, comments } = await getData({ params });
 
-  return <Poll poll={poll} statements={statements} comments={comments} />;
+  return (
+    <Poll poll={poll} statements={filteredStatements} comments={comments} />
+  );
 };
 
 export default PollPage;
