@@ -7,17 +7,10 @@ import type { Poll, Response } from "@/lib/api";
 import prisma from "@/lib/prisma";
 import { requirePollAdmin } from "@/utils/authutils";
 
-// Types
-// -----------------------------------------------------------------------------
-
 type PollAdminPageProps = {
   params: {
     slug: string;
   };
-};
-
-type FlaggedStatementsWithStatement = FlaggedStatement & {
-  statement: Statement;
 };
 
 type PollAdminPageViewProps = {
@@ -25,7 +18,7 @@ type PollAdminPageViewProps = {
     poll: Poll;
     statementsById: Record<string, Statement>;
     responsesBySession: Record<string, Response[]>;
-    flaggedStatementsWithStatement: FlaggedStatementsWithStatement[];
+    flaggedStatements: FlaggedStatement[];
   };
 };
 
@@ -71,19 +64,10 @@ async function getData({ params }: PollAdminPageProps) {
         in: statements.map((statement) => statement.id),
       },
     },
+    include: {
+      statement: true,
+    },
   });
-
-  const flaggedStatementsWithStatement = flaggedStatements.map((statement) => {
-    const statementWithStatement = {
-      ...statement,
-      statement: statements.find(
-        (s) => s.id === statement.statementId,
-      ) as Statement,
-    };
-    return statementWithStatement as FlaggedStatementsWithStatement;
-  });
-
-  // Transform
 
   const statementsById = statements.reduce(
     (acc, statement) => ({
@@ -111,12 +95,9 @@ async function getData({ params }: PollAdminPageProps) {
     statementsById,
     responses,
     responsesBySession,
-    flaggedStatementsWithStatement,
+    flaggedStatements,
   };
 }
-
-// View
-// -----------------------------------------------------------------------------
 
 const PollAdminPageView = ({ data: { poll } }: PollAdminPageViewProps) => (
   <main className="flex flex-col w-full items-center min-h-screen px-4 gradient sm:px-0">
@@ -124,22 +105,11 @@ const PollAdminPageView = ({ data: { poll } }: PollAdminPageViewProps) => (
   </main>
 );
 
-// Default export
-// -----------------------------------------------------------------------------
-
 const PollAdminPage = async ({ params }: PollAdminPageProps) => {
-  // Data
-
-  const {
-    poll,
-    statementsById,
-    responsesBySession,
-    flaggedStatementsWithStatement,
-  } = await getData({
-    params,
-  });
-
-  // Render
+  const { poll, statementsById, responsesBySession, flaggedStatements } =
+    await getData({
+      params,
+    });
 
   return (
     <PollAdminPageView
@@ -147,7 +117,7 @@ const PollAdminPage = async ({ params }: PollAdminPageProps) => {
         poll,
         statementsById,
         responsesBySession,
-        flaggedStatementsWithStatement,
+        flaggedStatements,
       }}
     />
   );

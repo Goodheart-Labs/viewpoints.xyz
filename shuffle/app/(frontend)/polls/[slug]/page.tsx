@@ -6,15 +6,9 @@ import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
 
 import Poll from "./client";
 
-// Types
-// -----------------------------------------------------------------------------
-
 type PollPageProps = {
   params: { slug: string };
 };
-
-// Data
-// -----------------------------------------------------------------------------
 
 async function getData({ params }: PollPageProps) {
   const { userId } = auth();
@@ -38,6 +32,7 @@ async function getData({ params }: PollPageProps) {
     },
     include: {
       author: true,
+      flaggedStatements: true,
     },
   });
 
@@ -53,28 +48,12 @@ async function getData({ params }: PollPageProps) {
     },
   });
 
-  const flaggedStatements = await prisma.flaggedStatement.findMany({
-    where: {
-      poll_id: poll.id,
-    },
-  });
-
-  const statementsWithFlaggedStatements = statements.map((statement) => ({
-    ...statement,
-    flaggedStatements: flaggedStatements.filter(
-      (flaggedStatement) => flaggedStatement.statementId === statement.id,
-    ),
-  }));
-
-  const filteredStatements = statementsWithFlaggedStatements.filter(
+  const filteredStatements = statements.filter(
     (statement) => statement.flaggedStatements.length > 1,
   );
 
   return { poll, filteredStatements, comments };
 }
-
-// Default export
-// -----------------------------------------------------------------------------
 
 const PollPage = async ({ params }: PollPageProps) => {
   const { poll, filteredStatements, comments } = await getData({ params });
