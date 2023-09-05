@@ -8,7 +8,7 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import axios from "axios";
 import { CheckCircle2, XCircle } from "lucide-react";
 
-import { DisabledInputWithLabel } from "@/app/components/InputWithLabel";
+import { DisabledInputWithLabel } from "@/app/components/DisabledInputWithLabel";
 import PollPrivacySettings from "@/components/ui/PollPrivacySettings";
 import type { Poll } from "@/lib/api";
 import { Button } from "@/shadcn/button";

@@ -15,7 +15,6 @@ export const DisabledInputWithLabel = ({ label, value }: Props) => (
     <Input
       className="disabled:text-secondary disabled:bg-muted"
       type="text"
-      placeholder="Email"
       disabled
       value={value}
     />
