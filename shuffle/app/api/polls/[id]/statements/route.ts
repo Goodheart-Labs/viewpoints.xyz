@@ -67,7 +67,7 @@ export async function POST(
         null,
       author_avatar_url:
         body.author_avatar_url ?? user?.profileImageUrl ?? null,
-      text: body.statement,
+      text: body.text,
       created_at: new Date(),
     },
   });
