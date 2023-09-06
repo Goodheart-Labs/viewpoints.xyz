@@ -19,7 +19,10 @@ export const createAuthorIfNeeded = async () => {
     await prisma.author.create({
       data: {
         userId: user.id,
-        name: `${user.firstName} ${user.lastName}`,
+        name:
+          user.firstName && user.lastName
+            ? `${user.firstName} ${user.lastName}`
+            : user.emailAddresses[0].emailAddress,
         avatarUrl: user.profileImageUrl,
       },
     });
