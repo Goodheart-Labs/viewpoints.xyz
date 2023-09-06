@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (Array.isArray(statements) && statements.length) {
-      createAuthorIfNeeded();
+      await createAuthorIfNeeded();
 
       await Promise.all(
         statements.map((statement: string) =>

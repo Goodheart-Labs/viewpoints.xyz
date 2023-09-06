@@ -57,7 +57,7 @@ export async function POST(
 
   const body = (await request.json()) as CreateStatementBody;
 
-  createAuthorIfNeeded();
+  await createAuthorIfNeeded();
 
   const response = await prisma.statement.create({
     data: {
