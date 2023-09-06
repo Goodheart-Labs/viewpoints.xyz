@@ -1,18 +1,24 @@
-import { comments, flagged_comments, polls, responses } from "@prisma/client";
-import { Correlation } from "./analytics/comments";
+import type {
+  Author,
+  choice_enum,
+  Comment,
+  polls,
+  responses,
+  Statement,
+} from "@prisma/client";
 
 export type Poll = polls;
 
-export type CommentReportingType = "default" | "demographic";
-
-export type Comment = comments;
-
-export type FlaggedComment = flagged_comments;
-
-export type Valence = "agree" | "disagree" | "skip" | "itsComplicated";
+export type Choice = choice_enum;
 
 export type Response = responses;
 
-export type AnalyticsFilters = {
-  correlatedComments: Correlation["key"][];
+export type CreateStatementBody = Pick<Statement, "text">;
+
+export type StatementWithAuthor = Statement & {
+  author: Author | null;
+};
+
+export type CommentWithAuthor = Comment & {
+  author: Author | null;
 };

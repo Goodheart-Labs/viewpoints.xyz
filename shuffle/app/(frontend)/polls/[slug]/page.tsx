@@ -1,18 +1,14 @@
-import prisma from "@/lib/prisma";
-import Poll from "./client";
-import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs";
+import { notFound } from "next/navigation";
+
+import prisma from "@/lib/prisma";
 import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
 
-// Types
-// -----------------------------------------------------------------------------
+import Poll from "./client";
 
 type PollPageProps = {
   params: { slug: string };
 };
-
-// Data
-// -----------------------------------------------------------------------------
 
 async function getData({ params }: PollPageProps) {
   const { userId } = auth();
@@ -27,27 +23,44 @@ async function getData({ params }: PollPageProps) {
     notFound();
   }
 
-  const comments = await prisma.comments.findMany({
+  const statements = await prisma.statement.findMany({
     where: {
       poll_id: poll.id,
     },
     orderBy: {
       created_at: "asc",
     },
+    include: {
+      author: true,
+      flaggedStatements: true,
+    },
   });
 
-  return { poll, comments };
+  const comments = await prisma.comment.findMany({
+    where: {
+      pollId: poll.id,
+    },
+    include: {
+      author: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  const filteredStatements = statements.filter(
+    (statement) => statement.flaggedStatements.length < 2,
+  );
+
+  return { poll, filteredStatements, comments };
 }
 
-// Default export
-// -----------------------------------------------------------------------------
-
 const PollPage = async ({ params }: PollPageProps) => {
-  const { poll, comments } = await getData({ params });
+  const { poll, filteredStatements, comments } = await getData({ params });
 
-  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/polls/${poll.slug}`;
-
-  return <Poll poll={poll} comments={comments} url={url} />;
+  return (
+    <Poll poll={poll} statements={filteredStatements} comments={comments} />
+  );
 };
 
 export default PollPage;

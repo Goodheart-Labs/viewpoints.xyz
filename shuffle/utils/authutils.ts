@@ -1,15 +1,16 @@
-import { Poll } from "@/lib/api";
 import { polls_visibility_enum } from "@prisma/client";
 import { notFound } from "next/navigation";
 
+import type { Poll } from "@/lib/api";
+
 export const isPollAdmin = (
   poll: Poll | null | undefined,
-  userId: string | null | undefined
+  userId: string | null | undefined,
 ): poll is Poll => Boolean(userId && poll && poll.user_id === userId);
 
 export const requirePollAdmin = (
   poll: Poll | null,
-  userId: string | null
+  userId: string | null | undefined,
 ): poll is Poll => {
   if (isPollAdmin(poll, userId)) {
     return true;
@@ -22,7 +23,7 @@ export const requirePollAdmin = (
 
 export const requirePollAdminIfPollIsPrivate = (
   poll: Poll | null,
-  userId: string | null
+  userId: string | null | undefined,
 ): poll is Poll => {
   if (poll && poll.visibility !== polls_visibility_enum.private) {
     return true;

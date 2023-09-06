@@ -5,12 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 // Config
 // -----------------------------------------------------------------------------
 
-const publicRoutes = [
-  "/",
-  "/polls/(.*)",
-  "/polls/(.*)/analytics",
-  "/polls/(.*)/graphs",
-];
+const publicRoutes = ["/", "/polls/(.*)"];
 
 const privateRoutes = ["/polls/new"];
 
@@ -45,14 +40,14 @@ export default authMiddleware({
 
   publicRoutes: (req) => {
     const isPrivateRoute = privateRoutes.some((r) =>
-      new RegExp(r).test(req.nextUrl.pathname)
+      new RegExp(r).test(req.nextUrl.pathname),
     );
     if (isPrivateRoute) {
       return false;
     }
 
     const isPublicRoute = publicRoutes.some((r) =>
-      new RegExp(r).test(req.nextUrl.pathname)
+      new RegExp(r).test(req.nextUrl.pathname),
     );
     if (isPublicRoute) {
       return true;

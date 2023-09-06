@@ -1,97 +1,104 @@
-import { MinimalResponse } from "@/components/Cards";
-import { Valence } from "../api";
+import type { MinimalResponse } from "@/components/Cards";
+
+import type { Choice } from "../api";
 
 // Matching responses
 // -----------------------------------------------------------------------------
 
 export type AllResponses = MinimalResponse[];
 export type UserResponses = MinimalResponse[];
-export type ResponsePercentages = { [commentId: number]: number };
+export type ResponsePercentages = Map<number, number>;
 
 export const calculateResponsePercentages = (
   allResponses: AllResponses,
-  userResponses: UserResponses
+  userResponses: UserResponses,
 ): ResponsePercentages => {
-  const userResponseMap: { [commentId: number]: Valence } = {};
-  const commentResponseCounts: ResponsePercentages = {};
-  const commentUserAgreementCounts: ResponsePercentages = {};
+  const userResponseMap: { [statementId: number]: Choice } = {};
+  const statementResponseCounts: ResponsePercentages = new Map();
+  const statementUserAgreementCounts: ResponsePercentages = new Map();
 
   userResponses.forEach((response) => {
-    userResponseMap[response.comment_id] = response.valence as Valence;
+    userResponseMap[response.statementId] = response.choice;
   });
 
   allResponses.forEach((response) => {
-    if (response.valence === "skip") return;
+    if (response.choice === "skip") return;
 
-    if (!commentResponseCounts[response.comment_id]) {
-      commentResponseCounts[response.comment_id] = 0;
-      commentUserAgreementCounts[response.comment_id] = 0;
-    }
-    commentResponseCounts[response.comment_id]++;
+    statementResponseCounts.set(
+      response.statementId,
+      (statementResponseCounts.get(response.statementId) || 0) + 1,
+    );
+
     if (
-      userResponseMap[response.comment_id] &&
-      userResponseMap[response.comment_id] === response.valence
+      userResponseMap[response.statementId] &&
+      userResponseMap[response.statementId] === response.choice
     ) {
-      commentUserAgreementCounts[response.comment_id]++;
+      statementUserAgreementCounts.set(
+        response.statementId,
+        (statementUserAgreementCounts.get(response.statementId) || 0) + 1,
+      );
     }
   });
 
-  const commentPercentages: ResponsePercentages = {};
-  for (let commentId in commentResponseCounts) {
-    commentPercentages[commentId] =
-      (commentUserAgreementCounts[commentId] /
-        (commentResponseCounts[commentId] ?? 1)) *
-      100;
+  const statementPercentages: ResponsePercentages = new Map();
+  for (const statementId of statementResponseCounts.keys()) {
+    statementPercentages.set(
+      statementId,
+      ((statementUserAgreementCounts.get(statementId) ?? 0) /
+        (statementResponseCounts.get(statementId) || 1)) *
+        100,
+    );
   }
 
-  console.log({
-    allResponses,
-    userResponses,
-    userResponseMap,
-    commentResponseCounts,
-    commentUserAgreementCounts,
-    commentPercentages,
-  });
+  return Array.from(statementResponseCounts.keys()).reduce(
+    (acc, statementId) => {
+      const percentage =
+        ((statementUserAgreementCounts.get(statementId) ?? 0) /
+          (statementResponseCounts.get(statementId) || 1)) *
+        100;
 
-  return commentPercentages;
+      return acc.set(statementId, percentage);
+    },
+    new Map(),
+  );
 };
 
 // Most / least consensus
 // -----------------------------------------------------------------------------
 
-export type CommentConsensus = {
-  comment_id: number;
-  valence: Valence;
+export type StatementConsensus = {
+  statementId: number;
+  choice: Choice;
   consensusPercentage: number;
 };
 
 export const getUserConsensusViews = (
   allResponses: AllResponses,
-  userResponses: UserResponses
+  userResponses: UserResponses,
 ): {
-  mostConsensus: CommentConsensus | null;
-  mostControversial: CommentConsensus | null;
+  mostConsensus: StatementConsensus | null;
+  mostControversial: StatementConsensus | null;
 } => {
-  const commentPercentages = calculateResponsePercentages(
+  const statementPercentages = calculateResponsePercentages(
     allResponses,
-    userResponses
+    userResponses,
   );
 
-  let mostConsensus: CommentConsensus | null = null;
-  let mostControversial: CommentConsensus | null = null;
+  let mostConsensus: StatementConsensus | null = null;
+  let mostControversial: StatementConsensus | null = null;
 
-  for (let commentId in commentPercentages) {
-    const percentage = commentPercentages[commentId];
-    const valence =
+  for (const statementId of statementPercentages.keys()) {
+    const percentage = statementPercentages.get(statementId)!;
+    const choice =
       userResponses.find(
-        (response) => response.comment_id === Number(commentId)
-      )?.valence || "skip";
+        (response) => response.statementId === Number(statementId),
+      )?.choice || "skip";
 
-    if (valence === "skip") continue;
+    if (choice === "skip") continue;
 
-    const consensus: CommentConsensus = {
-      comment_id: Number(commentId),
-      valence: valence as Valence,
+    const consensus: StatementConsensus = {
+      statementId: Number(statementId),
+      choice,
       consensusPercentage: percentage,
     };
 

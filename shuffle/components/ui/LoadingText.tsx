@@ -1,4 +1,6 @@
-import React, { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
+import React from "react";
+
 import { motion } from "framer-motion";
 
 import "./LoadingText.css";
@@ -18,7 +20,7 @@ const textVariants = {
   visible: { opacity: 1, transition: { duration: 1 } },
 };
 
-const LoadingText = ({ children }: PropsWithChildren<{}>) => (
+const LoadingText = ({ children }: PropsWithChildren) => (
   <motion.span
     style={textStyles}
     variants={textVariants}

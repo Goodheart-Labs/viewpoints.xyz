@@ -1,3 +1,5 @@
+import type { PropsWithChildren } from "react";
+
 import "@/styles/tailwind.css";
 
 export const metadata = {
@@ -5,16 +7,12 @@ export const metadata = {
   description: "embedded in an iframe!",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="en">
-      <body>
-        <div className="p-4">{children}</div>
-      </body>
-    </html>
-  );
-}
+const RootLayout = ({ children }: PropsWithChildren) => (
+  <html lang="en">
+    <body>
+      <div className="p-4">{children}</div>
+    </body>
+  </html>
+);
+
+export default RootLayout;

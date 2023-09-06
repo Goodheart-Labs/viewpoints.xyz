@@ -1,72 +1,90 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["jsonProtocol"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("POSTGRES_PRISMA_URL")
-  directUrl         = env("POSTGRES_URL_NON_POOLING")
-  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
-model comments {
-  id                Int                  @id @unique @default(autoincrement())
+model Author {
+  id         Int         @id @unique @default(autoincrement())
+  userId     String      @unique
+  name       String?
+  avatarUrl  String?
+  createdAt  DateTime    @default(now()) @db.Timestamptz(6)
+  statements Statement[]
+  comments   Comment[]
+}
+
+model Statement {
+  id                Int                @id @unique @default(autoincrement())
   poll_id           Int
   user_id           String?
-  edited_from_id    Int?
-  session_id        String?              @db.VarChar
-  reporting_type    reporting_type_enum? @default(default)
-  author_name       String?
-  author_avatar_url String?
-  comment           String
-  created_at        DateTime             @default(now()) @db.Timestamptz(6)
-  comments          comments?            @relation("commentsTocomments", fields: [edited_from_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  other_comments    comments[]           @relation("commentsTocomments")
-  poll              polls                @relation(fields: [poll_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  flagged_comments  flagged_comments[]
+  session_id        String?            @db.VarChar
+  text              String
+  created_at        DateTime           @default(now()) @db.Timestamptz(6)
+  poll              polls              @relation(fields: [poll_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  flaggedStatements FlaggedStatement[]
   responses         responses[]
+  author            Author?            @relation(fields: [user_id], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 }
 
-model flagged_comments {
-  id         Int      @id @unique @default(autoincrement())
-  comment_id Int
-  user_id    String?
-  session_id String   @db.VarChar
-  reason     String?
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  comment    comments @relation(fields: [comment_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+model FlaggedStatement {
+  id          Int       @id @unique @default(autoincrement())
+  statementId Int
+  user_id     String?
+  session_id  String    @db.VarChar
+  reason      String?
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  statement   Statement @relation(fields: [statementId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  description String?
 }
 
 model polls {
-  id                Int        @id @unique @default(autoincrement())
-  user_id           String?
-  slug              String?    @unique @db.VarChar
-  title             String     @db.VarChar
+  id                Int                   @id @unique @default(autoincrement())
+  user_id           String
+  slug              String?               @unique @db.VarChar
+  title             String                @db.VarChar
   core_question     String
-  created_at        DateTime   @default(now()) @db.Timestamptz(6)
-  comments          comments[]
+  created_at        DateTime              @default(now()) @db.Timestamptz(6)
   visibility        polls_visibility_enum @default(public)
-  analytics_filters Json       @default("{}")
+  analytics_filters Json                  @default("{}")
+  statements        Statement[]
+  comments          Comment[]
+}
+
+model Comment {
+  id        Int      @id @unique @default(autoincrement())
+  userId    String?
+  sessionId String   @db.VarChar
+  text      String
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  pollId    Int
+  poll      polls    @relation(fields: [pollId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  author    Author?  @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+}
+
+enum choice_enum {
+  agree
+  disagree
+  skip
+  itsComplicated
+}
+
+model responses {
+  id          Int         @id @unique @default(autoincrement())
+  user_id     String?
+  statementId Int
+  session_id  String      @db.VarChar
+  choice      choice_enum
+  created_at  DateTime    @default(now()) @db.Timestamptz(6)
+  statement   Statement   @relation(fields: [statementId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 enum polls_visibility_enum {
   public
   hidden
   private
-}
-
-model responses {
-  id         Int      @id @unique @default(autoincrement())
-  user_id    String?
-  comment_id Int
-  session_id String   @db.VarChar
-  valence    String   @db.VarChar
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  comment    comments @relation(fields: [comment_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-}
-
-enum reporting_type_enum {
-  default
-  demographic
 }

@@ -1,44 +1,52 @@
 "use client";
 
-import Cards, { MinimalResponse } from "@/components/Cards";
-import NewComment from "@/components/NewComment";
-import Responses from "@/components/Responses";
-import TwitterShare from "@/components/TwitterShare";
-import { Comment, FlaggedComment, Poll, Response } from "@/lib/api";
-import { TrackingEvent, useAmplitude } from "@/providers/AmplitudeProvider";
-import { SESSION_ID_COOKIE_NAME } from "@/providers/SessionProvider";
-import { useUser } from "@clerk/nextjs";
-import useHotkeys from "@reecelucas/react-use-hotkeys";
-import { AnimatePresence } from "framer-motion";
-import Head from "next/head";
-import { useState, useCallback, useMemo } from "react";
+import type { FC } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "react-query";
-import { getCookie } from "typescript-cookie";
-import { useModal } from "@/providers/ModalProvider";
-import axios from "axios";
-import { ensureItLooksLikeAQuestion } from "@/utils/stringutils";
-import BorderedButton from "@/components/BorderedButton";
-import { ChatBubbleBottomCenterIcon } from "@heroicons/react/20/solid";
 
-// Config
-// -----------------------------------------------------------------------------
+import { useUser } from "@clerk/nextjs";
+import type { UserResource } from "@clerk/types";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ChatBubbleBottomCenterIcon,
+} from "@heroicons/react/20/solid";
+import type { FlaggedStatement, Statement } from "@prisma/client";
+import useHotkeys from "@reecelucas/react-use-hotkeys";
+import axios from "axios";
+import { AnimatePresence } from "framer-motion";
+import { getCookie } from "typescript-cookie";
+
+import { CommentsSheet } from "@/app/components/polls/comments/CommentsSheet";
+import BorderedButton from "@/components/BorderedButton";
+import type { MinimalResponse } from "@/components/Cards";
+import Cards from "@/components/Cards";
+import NewStatement from "@/components/NewStatement";
+import Responses from "@/components/Responses";
+import type {
+  CommentWithAuthor,
+  CreateStatementBody,
+  Response,
+  StatementWithAuthor,
+} from "@/lib/api";
+import { Poll } from "@/lib/api";
+import sortBySeed from "@/lib/sortBySeed";
+import { useAmplitude } from "@/providers/AmplitudeProvider";
+import type { InteractionMode } from "@/providers/AmplitudeProvider/types";
+import { SESSION_ID_COOKIE_NAME } from "@/providers/SessionProvider";
+import { ensureItLooksLikeAQuestion } from "@/utils/stringutils";
 
 const MAX_NUM_FLAGS_BEFORE_REMOVAL = 2;
 const MAX_NUM_SKIPS_BEFORE_REMOVAL = 5;
 
-// Default export
-// -----------------------------------------------------------------------------
-
-const Poll = ({
-  poll,
-  comments: initialData,
-  url,
-}: {
+type PollProps = {
   poll: Poll;
-  comments: Comment[];
-  url: string;
-}) => {
-  const { amplitude } = useAmplitude();
+  statements: StatementWithAuthor[];
+  comments: CommentWithAuthor[];
+};
+
+const Poll: FC<PollProps> = ({ poll, statements: initialData, comments }) => {
+  const { track } = useAmplitude();
   const { user } = useUser();
 
   // State
@@ -47,32 +55,24 @@ const Poll = ({
 
   const [cachedResponses, setCachedResponses] = useState<MinimalResponse[]>([]);
 
-  // Sharing
-
-  const twitterShareUrl = useMemo(
-    () =>
-      `${url}?utm_source=twitter&utm_medium=social&utm_campaign=share&utm_content=${poll.id}`,
-    [poll.id, url]
-  );
-
-  const twitterShareTitle = useMemo(() => poll.title, [poll.title]);
-
   // Queries
 
-  const { data: comments, refetch: refetchComments } = useQuery<Comment[]>(
-    ["comments", poll.id],
+  const { data: statements, refetch: refetchStatements } = useQuery<
+    StatementWithAuthor[]
+  >(
+    ["statements", poll.id],
     async () => {
-      const { data } = await axios.get(`/api/polls/${poll.id}/comments`);
-      return data as Comment[];
+      const { data } = await axios.get(`/api/polls/${poll.id}/statements`);
+      return data as StatementWithAuthor[];
     },
     {
       initialData,
-    }
+    },
   );
 
-  const commentIds = useMemo(
-    () => (comments ?? []).map((comment) => comment.id),
-    [comments]
+  const statementIds = useMemo(
+    () => (statements ?? []).map((statement) => statement.id),
+    [statements],
   );
 
   const userId = useMemo(
@@ -81,305 +81,320 @@ const Poll = ({
       (typeof document === "undefined"
         ? undefined
         : getCookie(SESSION_ID_COOKIE_NAME)),
-    [user?.id]
+    [user?.id],
   );
 
   const { data: responses, isLoading: responsesLoading } = useQuery<Response[]>(
-    [userId, "responses", commentIds.join(",")],
+    [userId, "responses", statementIds.join(",")],
     async () => {
       const { data } = await axios.get(`/api/polls/${poll.id}/responses`);
       return data as Response[];
-    }
+    },
   );
 
   const { data: allResponses, refetch: refetchAllResponses } = useQuery<
     Response[]
-  >(["responses", commentIds.join(",")], async () => {
+  >(["responses", statementIds.join(",")], async () => {
     const { data } = await axios.get(`/api/polls/${poll.id}/responses/all`);
     return data as Response[];
   });
 
-  const {
-    data: flaggedComments,
-    isLoading: flaggedCommentsLoading,
-    refetch: refetchFlaggedComments,
-  } = useQuery<FlaggedComment[]>(
-    ["flaggedComments", commentIds.join(",")],
-    async () => {
-      const { data } = await axios.get(`/api/polls/${poll.id}/flaggedComments`);
-      return data as FlaggedComment[];
-    }
-  );
+  const { data: flaggedStatements, refetch: refetchFlaggedStatements } =
+    useQuery<FlaggedStatement[]>(
+      ["flaggedStatements", statementIds.join(",")],
+      async () => {
+        const { data } = await axios.get(
+          `/api/polls/${poll.id}/flaggedStatements`,
+        );
+        return data as FlaggedStatement[];
+      },
+    );
 
-  const newCommentMutation = useMutation(
-    async ({
-      comment,
-      edited_from_id,
-      author_name,
-      author_avatar_url,
-    }: Pick<
-      Comment,
-      "comment" | "edited_from_id" | "author_name" | "author_avatar_url"
-    >) => {
-      await axios.post(`/api/polls/${poll.id}/comments`, {
-        comment,
-        edited_from_id,
-        author_name,
-        author_avatar_url,
-      });
-      await refetchComments();
-    }
+  const newStatementMutation = useMutation(
+    async (payload: CreateStatementBody): Promise<void> => {
+      await axios.post<unknown, unknown, CreateStatementBody>(
+        `/api/polls/${poll.id}/statements`,
+        payload,
+      );
+      await refetchStatements();
+    },
   );
 
   // Callbacks
 
-  const onNewComment = useCallback(
-    (interactionMode: "click" | "keyboard" = "click") => {
+  const onNewStatement = useCallback(
+    (interactionMode: InteractionMode = "click") => {
       setIsCreating(true);
 
-      amplitude.track(TrackingEvent.OpenNewComment, {
-        poll_id: poll.id,
+      track({
+        type: "statement.new.open",
+        pollId: poll.id,
         interactionMode,
       });
     },
-    [amplitude, poll.id]
+    [poll.id, track],
   );
 
-  const onCreateComment = useCallback(
-    async (comment: Comment["comment"], edited_from_id?: number) => {
-      amplitude.track(TrackingEvent.PersistNewComment, {
-        poll_id: poll.id,
-        comment,
-        edited_from_id,
+  const onCreateStatement = useCallback(
+    async (text: Statement["text"]) => {
+      track({
+        type: "statement.new.persist",
+        pollId: poll.id,
+        text,
       });
 
-      await newCommentMutation.mutateAsync({
-        comment,
-        edited_from_id: edited_from_id ?? null,
-        author_name: user?.fullName ?? null,
-        author_avatar_url: user?.profileImageUrl ?? null,
+      await newStatementMutation.mutateAsync({
+        text,
       });
+      setIsCreating(false);
     },
-    [
-      amplitude,
-      newCommentMutation,
-      poll.id,
-      user?.fullName,
-      user?.profileImageUrl,
-    ]
-  );
-
-  const onCommentEdited = useCallback(
-    async ({ id, comment }: Pick<Comment, "id" | "comment">) => {
-      await onCreateComment(comment, id);
-    },
-    [onCreateComment]
+    [newStatementMutation, poll.id, track],
   );
 
   const onCancelCreating = useCallback(() => {
-    amplitude.track(TrackingEvent.CancelNewComment, {
-      poll_id: poll.id,
+    track({
+      type: "statement.new.cancel",
+      pollId: poll.id,
     });
 
     setIsCreating(false);
-  }, [amplitude, poll.id]);
-
-  const onShareClickCapture = useCallback(() => {
-    amplitude.track(TrackingEvent.Share, {
-      poll_id: poll.id,
-    });
-  }, [amplitude, poll.id]);
+  }, [track, poll.id]);
 
   const onResponseCreated = useCallback(
     async (response: MinimalResponse) => {
-      setCachedResponses((cachedResponses) => [...cachedResponses, response]);
+      setCachedResponses((cr) => [...cr, response]);
       await refetchAllResponses();
     },
-    [refetchAllResponses]
+    [refetchAllResponses],
   );
-
-  const { setModal } = useModal();
-
-  const onNewPoll = useCallback(() => {
-    amplitude.logEvent(TrackingEvent.OpenNewPoll);
-    setModal({
-      render: () => (
-        <div>
-          <h1>Coming Soon</h1>
-        </div>
-      ),
-    });
-  }, [amplitude, setModal]);
 
   // Keyboard shortcuts
 
-  useHotkeys("c", () => onNewComment("keyboard"));
+  useHotkeys("c", () => onNewStatement("keyboard"));
 
   // Memos
 
-  const flagCountByCommentId = useMemo(
+  const flagCountByStatementId = useMemo(
     () =>
-      (flaggedComments ?? []).reduce(
-        (acc, flaggedComment) => ({
+      (flaggedStatements ?? []).reduce(
+        (acc, flaggedStatement) => ({
           ...acc,
-          [flaggedComment.comment_id]:
-            (acc[flaggedComment.comment_id] ?? 0) + 1,
+          [flaggedStatement.statementId]:
+            (acc[flaggedStatement.statementId] ?? 0) + 1,
         }),
-        {} as Record<number, number>
+        {} as Record<number, number>,
       ),
-    [flaggedComments]
+    [flaggedStatements],
   );
 
-  const skipCountByCommentId = useMemo(
+  const skipCountByStatementId = useMemo(
     () =>
       (responses ?? []).reduce(
         (acc, response) => ({
           ...acc,
-          [response.comment_id]:
-            (acc[response.comment_id] ?? 0) +
-            (response.valence === "skip" ? 1 : 0),
+          [response.statementId]:
+            (acc[response.statementId] ?? 0) +
+            (response.choice === "skip" ? 1 : 0),
         }),
-        {} as Record<number, number>
+        {} as Record<number, number>,
       ),
-    [responses]
+    [responses],
   );
 
   const enrichedResponses = useMemo(
     () =>
       [...(responses || []), ...cachedResponses].filter(
         (response, index, self) =>
-          self.findIndex((r) => r.comment_id === response.comment_id) === index
+          self.findIndex((r) => r.statementId === response.statementId) ===
+          index,
       ),
-    [responses, cachedResponses]
+    [responses, cachedResponses],
   );
 
-  const currentUserResponsesByCommentId = useMemo(
+  const currentUserResponsesByStatementId = useMemo(
     () =>
       enrichedResponses?.reduce(
         (acc, response) => ({
           ...acc,
-          [response.comment_id]: response,
+          [response.statementId]: response,
         }),
-        {} as Record<number, MinimalResponse>
+        {} as Record<number, MinimalResponse>,
       ) ?? {},
-    [enrichedResponses]
+    [enrichedResponses],
   );
 
   const loading = useMemo(() => responsesLoading, [responsesLoading]);
 
-  const filteredComments = useMemo(
-    () =>
-      (comments ?? []).filter((comment) => {
-        const userHasResponded = !!currentUserResponsesByCommentId[comment.id];
+  // Sort deterministically by seed before we filter
 
-        const commentHasBeenFlaggedByCurrentUser = flaggedComments?.some(
-          (flaggedComment) =>
-            flaggedComment.comment_id === comment.id &&
-            (flaggedComment.session_id === getCookie(SESSION_ID_COOKIE_NAME) ||
-              (user?.id && flaggedComment.user_id === user.id))
+  // Generate a seed for sorting statements
+
+  const [seed, setSeed] = useState(Math.random());
+  useEffect(() => {
+    const storedSeed = localStorage.getItem("seed");
+    if (storedSeed) {
+      setSeed(parseFloat(storedSeed));
+    } else {
+      localStorage.setItem("seed", Math.random().toString());
+    }
+  }, []);
+
+  const sortedStatements = useMemo(
+    () => sortBySeed(statements ?? [], seed),
+    [statements, seed],
+  );
+
+  // Filter statements
+
+  const filteredStatements = useMemo(
+    () =>
+      (sortedStatements ?? []).filter((statement) => {
+        const userHasResponded =
+          !!currentUserResponsesByStatementId[statement.id];
+
+        const statementHasBeenFlaggedByCurrentUser = flaggedStatements?.some(
+          (flaggedStatement) =>
+            flaggedStatement.statementId === statement.id &&
+            (flaggedStatement.session_id ===
+              getCookie(SESSION_ID_COOKIE_NAME) ||
+              (user?.id && flaggedStatement.user_id === user.id)),
         );
 
-        const commentExceedsFlagThreshold =
-          (flagCountByCommentId[comment.id] ?? 0) >=
+        const statementExceedsFlagThreshold =
+          (flagCountByStatementId[statement.id] ?? 0) >=
           MAX_NUM_FLAGS_BEFORE_REMOVAL;
 
-        const commentExceedsSkipThreshold =
-          (skipCountByCommentId[comment.id] ?? 0) >=
+        const statementExceedsSkipThreshold =
+          (skipCountByStatementId[statement.id] ?? 0) >=
           MAX_NUM_SKIPS_BEFORE_REMOVAL;
 
         return !(
           userHasResponded ||
-          commentHasBeenFlaggedByCurrentUser ||
-          commentExceedsFlagThreshold ||
-          commentExceedsSkipThreshold
+          statementHasBeenFlaggedByCurrentUser ||
+          statementExceedsFlagThreshold ||
+          statementExceedsSkipThreshold
         );
-      }) as Comment[],
+      }),
     [
-      comments,
-      currentUserResponsesByCommentId,
-      flagCountByCommentId,
-      flaggedComments,
-      skipCountByCommentId,
+      currentUserResponsesByStatementId,
+      flagCountByStatementId,
+      flaggedStatements,
+      skipCountByStatementId,
+      sortedStatements,
       user?.id,
-    ]
+    ],
   );
 
-  // Render
+  // Keep track of pages that have been viewed already
+
+  const [isFirstVisit, setIsFirstVisit] = useState(false);
+
+  useEffect(() => {
+    const visitedPages =
+      JSON.parse(localStorage.getItem("visitedPages") ?? "{}") || {};
+    const { pathname } = window.location;
+
+    if (!visitedPages[pathname]) {
+      visitedPages[pathname] = true;
+      setIsFirstVisit(true);
+      localStorage.setItem("visitedPages", JSON.stringify(visitedPages));
+    }
+  }, []);
 
   return (
-    <main className="flex flex-col items-center w-full min-h-screen px-4 gradient sm:px-0">
-      <Head>
-        <title>{poll.title}</title>
-        <meta name="description" content={poll.core_question} />
-        <meta property="og:title" content={poll.title} />
-        <meta property="og:description" content={poll.core_question} />
-        <meta property="og:url" content={twitterShareUrl} />
-        <meta property="og:type" content="website" />
-        <meta property="twitter:card" content="summary" />
-        <meta property="twitter:title" content={poll.title} />
-        <meta property="twitter:description" content={poll.core_question} />
-        <meta property="twitter:site" content="viewpoints.xyz" />
-      </Head>
+    <main className="flex-1 flex flex-col items-center w-full bg-black xl:p-8 xl:flex-row xl:justify-center xl:gap-8 xl:overflow-y-hidden">
+      <div className="hidden xl:block w-2/7" />
 
-      <div className="flex flex-col mt-10 sm:mt-40 text-center max-w-[800px]">
-        <h1 className="mb-4 text-4xl font-bold text-black dark:text-gray-200">
-          {poll.title}
-        </h1>
-        <h2 className="text-gray-800 sm:text-xl dark:text-gray-500">
-          {ensureItLooksLikeAQuestion(poll.core_question)}{" "}
-          {user?.id ? `Answer as ${user?.firstName}` : "Answer anonymously."}
+      <div className="flex flex-col items-center gap-4 max-w-full xl:w-3/7 p-4 text-center h-full xl:bg-zinc-900 xl:rounded-xl xl:max-h-full xl:overflow-y-auto overflow-x-hidden lg:py-6">
+        <h1 className="text-4xl font-bold text-foreground">{poll.title}</h1>
+        <h2 className=" xl:text-xl text-muted mb-8">
+          {ensureItLooksLikeAQuestion(poll.core_question)} {getUserName(user)}
         </h2>
-      </div>
 
-      <div className="grid grid-cols-1 gap-20 justify-items-center items-end max-width-[800px]">
-        <div className="z-30" onClickCapture={onShareClickCapture}>
-          <TwitterShare url={twitterShareUrl} title={twitterShareTitle} />
-        </div>
-        <div className="relative">
+        {isFirstVisit && (
+          <div
+            className="absolute top-0 left-0 z-40 w-full h-full bg-black bg-opacity-50 xl:hidden"
+            onClick={() => setIsFirstVisit(false)}
+          >
+            <div className="flex flex-col items-center justify-center w-full h-full">
+              <h1 className="px-4 text-3xl font-bold text-center text-gray-200">
+                Swipe left or right to answer
+              </h1>
+              <div className="flex mt-20">
+                <p>
+                  <ArrowLeftIcon className="w-20 h-20 text-gray-200" />
+                </p>
+                <p>
+                  <ArrowRightIcon className="w-20 h-20 text-gray-200" />
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div>
           {loading ? (
             <div className="absolute top-0 left-0 flex items-center justify-center w-full h-full">
-              <div className="w-10 h-10 border-2 border-t-2 border-gray-200 rounded-full animate-spin"></div>
+              <div className="w-10 h-10 border-2 border-t-2 border-gray-200 rounded-full animate-spin" />
             </div>
           ) : (
             <Cards
-              comments={comments ?? []}
-              filteredComments={filteredComments ?? []}
+              statements={statements ?? []}
+              filteredStatements={filteredStatements ?? []}
               allResponses={allResponses ?? []}
               userResponses={enrichedResponses}
-              onNewComment={onNewComment}
-              onNewPoll={onNewPoll}
-              onCommentEdited={onCommentEdited}
-              onCommentFlagged={refetchFlaggedComments}
+              onNewStatement={onNewStatement}
+              onStatementFlagged={refetchFlaggedStatements}
               onResponseCreated={onResponseCreated}
             />
           )}
         </div>
-        {typeof responses !== "undefined" &&
-          typeof comments !== "undefined" && (
-            <Responses
-              allResponses={allResponses ?? []}
-              responses={enrichedResponses}
-              comments={comments}
-            />
-          )}
-      </div>
 
-      {filteredComments.length > 0 && (
-        <div>
-          <BorderedButton onClick={() => onNewComment("click")} color="blue">
-            <ChatBubbleBottomCenterIcon width={22} className="mr-2" />
-            Add New Comment
-          </BorderedButton>
-        </div>
-      )}
+        {filteredStatements.length > 0 && (
+          <div className="my-3">
+            <BorderedButton
+              onClick={() => onNewStatement("click")}
+              color="blue"
+            >
+              <ChatBubbleBottomCenterIcon width={22} className="mr-2" />
+              Add New Statement
+            </BorderedButton>
+          </div>
+        )}
+
+        {responses && statements && (
+          <Responses
+            allResponses={allResponses ?? []}
+            responses={enrichedResponses}
+            statements={statements}
+          />
+        )}
+      </div>
 
       <AnimatePresence>
         {isCreating && (
-          <NewComment onCreate={onCreateComment} onCancel={onCancelCreating} />
+          <NewStatement
+            onCreate={onCreateStatement}
+            onCancel={onCancelCreating}
+          />
         )}
       </AnimatePresence>
+
+      <CommentsSheet comments={comments} />
     </main>
   );
+};
+
+const getUserName = (user: UserResource | null | undefined) => {
+  if (!user) {
+    return "Answer anonymously.";
+  }
+
+  if (user.firstName) {
+    return `Answer as ${user.firstName}.`;
+  }
+
+  return `Answer as ${user.primaryEmailAddress?.emailAddress}.`;
 };
 
 export default Poll;

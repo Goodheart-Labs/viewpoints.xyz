@@ -1,5 +1,7 @@
-import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
+
+import prisma from "@/lib/prisma";
+
 import PollIframeClient from "./client";
 
 // Types
@@ -23,27 +25,28 @@ async function getData({ params }: PollIframeProps) {
     notFound();
   }
 
-  const comments = await prisma.comments.findMany({
+  const statement = await prisma.statement.findMany({
     where: {
       poll_id: poll.id,
     },
     orderBy: {
       created_at: "asc",
     },
+    include: {
+      author: true,
+    },
   });
 
-  return { poll, comments };
+  return { poll, statement };
 }
 
 // Default export
 // -----------------------------------------------------------------------------
 
 const PollIframe = async ({ params }: PollIframeProps) => {
-  const { poll, comments } = await getData({ params });
+  const { statement } = await getData({ params });
 
-  const filteredComments = comments.filter((comment) => true);
-
-  return <PollIframeClient filteredComments={filteredComments} />;
+  return <PollIframeClient filteredStatements={statement} />;
 };
 
 export default PollIframe;

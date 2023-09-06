@@ -1,15 +1,17 @@
-import { AnimatePresence, motion } from "framer-motion";
-import BorderedButton from "./BorderedButton";
-import { MinimalResponse } from "./Cards";
-import { Comment, Valence } from "@/lib/api";
 import { useCallback, useMemo, useState } from "react";
-import ValenceBadge from "./ValenceBadge";
-import { valenceToHumanReadablePastTense } from "@/utils/valenceutils";
-import {
-  ResponsePercentages,
-  calculateResponsePercentages,
-} from "@/lib/analytics/responses";
+
+import type { Statement } from "@prisma/client";
 import dayjs from "dayjs";
+import { AnimatePresence, motion } from "framer-motion";
+
+import type { ResponsePercentages } from "@/lib/analytics/responses";
+import { calculateResponsePercentages } from "@/lib/analytics/responses";
+import { useAmplitude } from "@/providers/AmplitudeProvider";
+import { choiceToHumanReadablePastTense } from "@/utils/choiceUtils";
+
+import BorderedButton from "./BorderedButton";
+import type { MinimalResponse } from "./Cards";
+import ChoiceBadge from "./ChoiceBadge";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -22,13 +24,13 @@ const NUM_VISIBLE_RESPONSES = 5;
 // MinimalResponse is used so that we can display the responses from the user's local state,
 // without a round trip to the DB.
 
-type ResponseWithComment = MinimalResponse & {
-  comment: Comment;
+type ResponseWithStatement = MinimalResponse & {
+  statement: Statement;
 };
 
 type ResponsesViewProps = {
   data: {
-    responsesWithComments: ResponseWithComment[];
+    responsesWithStatements: ResponseWithStatement[];
     responsePercentages: ResponsePercentages;
     totalResponses: number;
   };
@@ -43,105 +45,110 @@ type ResponsesViewProps = {
 type ResponsesProps = {
   responses: MinimalResponse[];
   allResponses: MinimalResponse[];
-  comments: Comment[];
+  statements: Statement[];
 };
 
 // Views
 // -----------------------------------------------------------------------------
 
 const ResponsesView = ({
-  data: { responsesWithComments, responsePercentages, totalResponses },
+  data: { responsesWithStatements, responsePercentages, totalResponses },
   state: { viewAll },
   callbacks: { onClickViewAll },
 }: ResponsesViewProps) => (
-  <>
-    <div className="flex flex-col mx-auto mt-4 mb-8">
-      <AnimatePresence>
-        {responsesWithComments.map((response, i) => (
-          <motion.div
-            key={response.comment_id}
-            initial={{ opacity: 0, y: -50 }}
-            animate={{
-              opacity: 1 - (viewAll ? 0 : i * (1 / NUM_VISIBLE_RESPONSES)),
-              y: 0,
-            }}
-            className="flex items-center w-full mb-4"
+  <div className="flex flex-col mx-auto mb-8">
+    <AnimatePresence>
+      {responsesWithStatements.map((response, i) => (
+        <motion.div
+          key={response.statementId}
+          initial={{ opacity: 0, y: -50 }}
+          animate={{
+            opacity: 1 - (viewAll ? 0 : i * (1 / NUM_VISIBLE_RESPONSES)),
+            y: 0,
+          }}
+          className="flex items-center w-full mb-4 text-zinc-300"
+        >
+          <ChoiceBadge choice={response.choice} />
+
+          <span className="ml-2 text-sm w-60 sm:w-96">
+            {response.statement.text}
+          </span>
+
+          <span
+            className="ml-4 text-xs font-bold text-zinc-200"
+            data-tooltip-id="tooltip"
+            data-tooltip-content={`${(
+              responsePercentages.get(response.statementId) ?? 0
+            ).toLocaleString(undefined, {
+              maximumFractionDigits: 2,
+            })}% of people also ${choiceToHumanReadablePastTense(
+              response.choice,
+            )}`}
+            data-tooltip-float
+            data-tooltip-place="right"
           >
-            <ValenceBadge valence={response.valence as Valence} />
+            {(
+              responsePercentages.get(response.statementId) ?? 0
+            ).toLocaleString(undefined, {
+              maximumFractionDigits: 2,
+            })}
+            %
+          </span>
+        </motion.div>
+      ))}
+    </AnimatePresence>
 
-            <span className="ml-2 text-sm w-60 sm:w-96">
-              {response.comment.comment}
-            </span>
-
-            <span
-              className="ml-4 text-xs font-bold text-gray-500 dark:text-gray-400"
-              data-tooltip-id="tooltip"
-              data-tooltip-content={`${(
-                responsePercentages[response.comment_id] ?? 0
-              ).toLocaleString(undefined, {
-                maximumFractionDigits: 2,
-              })}% of people also ${valenceToHumanReadablePastTense(
-                response.valence as Valence
-              )}`}
-              data-tooltip-float
-              data-tooltip-place="right"
-            >
-              {(responsePercentages[response.comment_id] ?? 0).toLocaleString(
-                undefined,
-                {
-                  maximumFractionDigits: 2,
-                }
-              )}
-              %
-            </span>
-          </motion.div>
-        ))}
-      </AnimatePresence>
-
-      {!viewAll && totalResponses > NUM_VISIBLE_RESPONSES && (
-        <div className="z-30 flex justify-center mt-2">
-          <BorderedButton
-            color="blue"
-            className="text-xs"
-            onClick={onClickViewAll}
-          >
-            View All
-          </BorderedButton>
-        </div>
-      )}
-    </div>
-  </>
+    {!viewAll && totalResponses > NUM_VISIBLE_RESPONSES && (
+      <div className="flex justify-center mt-2">
+        <BorderedButton
+          color="blue"
+          className="text-xs"
+          onClick={onClickViewAll}
+        >
+          View All
+        </BorderedButton>
+      </div>
+    )}
+  </div>
 );
 
 // Default export
 // -----------------------------------------------------------------------------
 
-const Responses = ({ responses, comments, allResponses }: ResponsesProps) => {
+const Responses = ({ responses, statements, allResponses }: ResponsesProps) => {
   const [viewAll, setViewAll] = useState(false);
+  const { track } = useAmplitude();
 
-  const onClickViewAll = useCallback(() => setViewAll(true), []);
+  const onClickViewAll = useCallback(() => {
+    setViewAll(true);
+    track({
+      type: "votes.viewAll",
+    });
+  }, [track]);
 
-  const responsesWithComments = useMemo(
+  const responsesWithStatements = useMemo(
     () =>
       responses
         .map((r) => ({
           ...r,
-          comment: comments.find((c) => c.id === r.comment_id) as Comment,
+          statement: statements.find(
+            (c) => c.id === r.statementId,
+          ) as Statement,
         }))
         .sort((a, b) => dayjs(b.created_at).diff(dayjs(a.created_at)))
         .slice(0, viewAll ? responses.length : NUM_VISIBLE_RESPONSES),
-    [responses, viewAll, comments]
+    [responses, viewAll, statements],
   );
 
   const responsePercentages = useMemo(
     () => calculateResponsePercentages(allResponses, responses),
-    [allResponses, responses]
+    [allResponses, responses],
   );
 
   return (
     <ResponsesView
       data={{
-        responsesWithComments,
+        responsesWithStatements,
         responsePercentages,
         totalResponses: responses.length,
       }}

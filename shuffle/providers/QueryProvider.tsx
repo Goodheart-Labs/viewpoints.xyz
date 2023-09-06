@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 
 const queryClient = new QueryClient({
@@ -9,7 +9,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const QueryProvider = ({ children }: PropsWithChildren<{}>) => (
+const QueryProvider = ({ children }: PropsWithChildren) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 

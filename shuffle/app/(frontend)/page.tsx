@@ -1,6 +1,7 @@
-import prisma from "@/lib/prisma";
 import { polls_visibility_enum } from "@prisma/client";
 import Link from "next/link";
+
+import prisma from "@/lib/prisma";
 
 // Data
 // -----------------------------------------------------------------------------
@@ -27,7 +28,7 @@ const Index = async () => {
   const { polls } = await getData();
 
   return (
-    <main className="flex flex-col items-center w-full h-screen gradient">
+    <main className="flex flex-col items-center w-full h-screen">
       <h1 className="mt-40 mb-4 text-4xl font-bold text-black dark:text-gray-200">
         Polls
       </h1>

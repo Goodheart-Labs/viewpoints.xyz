@@ -2,29 +2,37 @@
 
 New UI experiment for polislike
 
-Currently deployed at [https://polislike.vercel.app](https://polislike.vercel.app)
+Currently deployed at <https://viewpoints.xyz/>
 
 ## Getting Started
 
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/en/) (>= 18)
-- [PostgreSQL](https://www.postgresql.org/) (>= 14; use `brew install postgresql`)
+- [Docker desktop](https://www.docker.com/products/docker-desktop/)
 
 ### Installing
 
 ```bash
-npm install
-```
-
-You'll also want to setup the database. The defaults in this script will match those in .env.example:
-
-```bash
-bash infra/setup-database.sh
+pnpm install
 ```
 
 ### Running
 
+Start database:
+
 ```bash
-npm run dev
+docker-compose up -d
+```
+
+Deploying migrations (if needed):
+
+```bash
+npx prisma migrate dev
+```
+
+Run project:
+
+```bash
+pnpm dev
 ```

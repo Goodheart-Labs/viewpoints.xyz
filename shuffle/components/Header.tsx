@@ -1,16 +1,18 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+
+import { SignIn, UserButton, useUser } from "@clerk/nextjs";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
-import BorderedButton from "./BorderedButton";
-import { UserButton, useUser } from "@clerk/nextjs";
 import clsx from "clsx";
 import { motion } from "framer-motion";
-import { SignIn } from "@clerk/clerk-react";
-import Link from "next/link";
 import Image from "next/image";
-import { useCurrentPoll } from "@/providers/CurrentPollProvider";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+
+import { useCurrentPoll } from "@/providers/CurrentPollProvider";
+
+import BorderedButton from "./BorderedButton";
 
 const Header = () => {
   // State
@@ -23,7 +25,7 @@ const Header = () => {
 
   const isCurrentPollAdmin = useMemo(
     () => currentPoll && currentPoll.user_id === user?.id,
-    [currentPoll, user?.id]
+    [currentPoll, user?.id],
   );
 
   // Callbacks
@@ -44,12 +46,12 @@ const Header = () => {
   // Render
 
   return (
-    <div className="flex items-center justify-end w-full p-4">
+    <div className="self-start flex items-center justify-end w-full p-4 sticky top-0 bg-zinc-900 z-30">
       <div className={clsx(!(isSignedIn && isCurrentPollAdmin) && "mr-auto")}>
         <Link href="/" className="hover:opacity-50">
           <div className="dark:hidden">
             <Image
-              src={"/logo.png"}
+              src="/logo.png"
               alt="viewpoints.xyz"
               width={200}
               height={40}
@@ -57,7 +59,7 @@ const Header = () => {
           </div>
           <div className="hidden dark:block">
             <Image
-              src={"/logo-dark.png"}
+              src="/logo-dark.png"
               alt="viewpoints.xyz"
               width={200}
               height={40}
@@ -84,7 +86,7 @@ const Header = () => {
 
       <div className="z-50">
         {isSignedIn ? (
-          <UserButton />
+          <UserButton afterSignOutUrl="/" />
         ) : (
           <BorderedButton color="indigo" onClick={onClickLogin}>
             Login
@@ -98,11 +100,11 @@ const Header = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className={clsx(
-              "fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-80 z-40"
+              "fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-80 z-40",
             )}
             onClick={() => setShowSignIn(false)}
           />
-          <div className="fixed z-50 top-[30vh] h-[200px] flex w-full justify-center items-center">
+          <div className="fixed z-[100] top-[30vh] h-[200px] flex w-full justify-center items-center">
             <SignIn redirectUrl={window.location.pathname} />
           </div>
         </>
