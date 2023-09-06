@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "react-query";
 
 import { useUser } from "@clerk/nextjs";
+import type { UserResource } from "@clerk/types";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -307,8 +308,7 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, comments }) => {
       <div className="flex flex-col items-center gap-4 max-w-full xl:w-3/7 p-4 text-center h-full xl:bg-zinc-900 xl:rounded-xl xl:max-h-full xl:overflow-y-auto overflow-x-hidden lg:py-6">
         <h1 className="text-4xl font-bold text-foreground">{poll.title}</h1>
         <h2 className=" xl:text-xl text-muted mb-8">
-          {ensureItLooksLikeAQuestion(poll.core_question)}{" "}
-          {user?.id ? `Answer as ${user?.firstName}` : "Answer anonymously."}
+          {ensureItLooksLikeAQuestion(poll.core_question)} {getUserName(user)}
         </h2>
 
         {isFirstVisit && (
@@ -383,6 +383,18 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, comments }) => {
       <CommentsSheet comments={comments} />
     </main>
   );
+};
+
+const getUserName = (user: UserResource | null | undefined) => {
+  if (!user) {
+    return "Answer anonymously.";
+  }
+
+  if (user.firstName) {
+    return `Answer as ${user.firstName}.`;
+  }
+
+  return `Answer as ${user.primaryEmailAddress?.emailAddress}.`;
 };
 
 export default Poll;
