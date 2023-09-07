@@ -11,6 +11,9 @@ export const deleteComment = async (id: number) => {
     where: {
       id,
     },
+    include: {
+      poll: true,
+    },
   });
 
   if (!comment) {
@@ -19,7 +22,7 @@ export const deleteComment = async (id: number) => {
 
   const { userId } = auth();
 
-  if (comment.userId !== userId) {
+  if (comment.userId !== userId && comment.poll.user_id !== userId) {
     return;
   }
 

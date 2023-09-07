@@ -6,6 +6,7 @@ import { DateTime } from "luxon";
 import { useBoolean } from "usehooks-ts";
 
 import type { CommentWithAuthor } from "@/lib/api";
+import { useCurrentPoll } from "@/providers/CurrentPollProvider";
 
 import { UserAvatar } from "../../user/UserAvatar";
 
@@ -26,6 +27,8 @@ export const CommentItem: FC<Props> = ({ comment }) => {
 
   const { user } = useUser();
 
+  const { currentPoll } = useCurrentPoll();
+
   return (
     <>
       <div className="flex flex-col gap-3">
@@ -36,15 +39,17 @@ export const CommentItem: FC<Props> = ({ comment }) => {
             subtitle={date.toFormat("MMM dd. HH:mm")}
           />
 
-          {user && user.id === comment.author?.userId && (
-            <button
-              type="button"
-              className="text-xs text-muted font-medium"
-              onClick={openDeleteDialog}
-            >
-              Delete
-            </button>
-          )}
+          {user &&
+            (user.id === comment.author?.userId ||
+              user.id === currentPoll?.user_id) && (
+              <button
+                type="button"
+                className="text-xs text-muted font-medium"
+                onClick={openDeleteDialog}
+              >
+                Delete
+              </button>
+            )}
         </div>
 
         <p className="text-sm text-zinc-300">{comment.text}</p>

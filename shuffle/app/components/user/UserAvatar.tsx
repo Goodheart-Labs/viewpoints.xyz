@@ -23,18 +23,18 @@ export const UserAvatar: FC<Props> = ({
   <div className="flex gap-2">
     <Avatar className="w-8 h-8">
       <AvatarImage src={avatarUrl ?? anonymousAvatar} />
-      <AvatarFallback>{name ?? "Anonym user"}</AvatarFallback>
+      <AvatarFallback>{name ?? "Anonymous user"}</AvatarFallback>
     </Avatar>
 
     <div
       className={cn(
-        "flex flex-col",
+        "flex flex-col text-left",
         showName && subtitle ? "justify-between" : "justify-center",
       )}
     >
       {showName && (
         <span className="text-sm leading-3 font-medium text-slate-700 dark:text-white/75">
-          {name ?? "Anonym user"}
+          {name ?? "Anonymous user"}
         </span>
       )}
 
