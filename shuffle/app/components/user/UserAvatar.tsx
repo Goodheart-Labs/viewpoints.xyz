@@ -28,7 +28,7 @@ export const UserAvatar: FC<Props> = ({
 
     <div
       className={cn(
-        "flex flex-col",
+        "flex flex-col text-left",
         showName && subtitle ? "justify-between" : "justify-center",
       )}
     >
