@@ -63,8 +63,10 @@ const NewPollPageClientView = ({
   <form className="flex flex-col w-full px-4">
     <div className="flex flex-col w-full">
       <div className="flex flex-col w-full">
-        <h3 className="mb-2 text-xl font-semibold">Poll Title</h3>
-        <h4 className="mb-4 text-lg text-gray-700 dark:text-gray-200">
+        <h3 className="mb-2 text-xl font-semibold dark:text-white">
+          Poll Title
+        </h3>
+        <h4 className="mb-4 text-lg dark:text-gray-200">
           Give it a catchy name
         </h4>
 
@@ -72,7 +74,7 @@ const NewPollPageClientView = ({
           <input
             type="text"
             className={clsx(
-              "w-full text-lg",
+              "w-full text-lg dark:text-white",
               errors?.title ? "border-red-500" : "",
             )}
             autoFocus
@@ -89,7 +91,7 @@ const NewPollPageClientView = ({
       </div>
 
       <div className="flex flex-col w-full mt-10">
-        <h3 className="mb-2 text-xl font-semibold">Slug</h3>
+        <h3 className="mb-2 text-xl font-semibold dark:text-white">Slug</h3>
         <h4 className="mb-4 text-lg text-gray-700 dark:text-gray-200">
           This will be in the URL for your poll.
         </h4>
@@ -98,7 +100,7 @@ const NewPollPageClientView = ({
           <input
             type="text"
             className={clsx(
-              "w-full text-lg",
+              "w-full text-lg dark:text-white",
               errors?.slug ? "border-red-500" : "",
             )}
             {...register("slug")}
@@ -112,7 +114,9 @@ const NewPollPageClientView = ({
       </div>
 
       <div className="flex flex-col w-full mt-10">
-        <h3 className="mb-2 text-xl font-semibold">Main Question</h3>
+        <h3 className="mb-2 text-xl font-semibold dark:text-white">
+          Main Question
+        </h3>
         <h4 className="mb-4 text-lg text-gray-700 dark:text-gray-200">
           What&apos;s the key question you&apos;re trying to answer?
         </h4>
@@ -121,7 +125,7 @@ const NewPollPageClientView = ({
           <input
             type="text"
             className={clsx(
-              "w-full text-lg",
+              "w-full text-lg dark:text-white",
               errors?.question ? "border-red-500" : "",
             )}
             {...register("question")}
@@ -135,7 +139,9 @@ const NewPollPageClientView = ({
       </div>
 
       <div className="flex flex-col w-full mt-10">
-        <h3 className="mb-2 text-xl font-semibold">Statements</h3>
+        <h3 className="mb-2 text-xl font-semibold dark:text-white">
+          Statements
+        </h3>
         <h4 className="mb-4 text-lg text-gray-700 dark:text-gray-200">
           Add at least five statements that people can respond to. The more the
           better!
