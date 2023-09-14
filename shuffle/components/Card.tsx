@@ -92,7 +92,7 @@ const CardView = ({
       </div>
     </div>
     <div className="w-full p-2 bg-gray-50 dark:bg-gray-800 sm:px-6 sm:py-4">
-      <div className="flex justify-between">
+      <div className="flex justify-between whitespace-nowrap">
         <div>
           <BorderedButton
             onClick={() => onDisagree()}
