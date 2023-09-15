@@ -1,57 +1,72 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
-import type { Comment } from "@prisma/client";
+import type { Comment, Statement } from "@prisma/client";
 
-import CorrelatedComments from "@/app/components/analytics/CorrelatedComments";
 import ChoiceBadge from "@/components/ChoiceBadge";
-import {
-  getCommentStatistics,
-  getTopKCertainCommentIds,
-  getTopKUncertainCommentIds,
-} from "@/lib/analytics/comments";
-import type { Poll, Response } from "@/lib/api";
+import type { StatementStats } from "@/lib/analytics/comments";
+import { getStatementStatistics } from "@/lib/analytics/comments";
+import type { Response } from "@/lib/api";
+
+const sortOptions: {
+  name: string;
+  key: string;
+  sortFn: (
+    stats: Record<number, StatementStats>,
+  ) => (a: Statement, b: Statement) => number;
+}[] = [
+  {
+    name: "Most Consensus",
+    key: "consensus",
+    sortFn: (stats) => (a, b) => {
+      const aStats = stats[a.id];
+      const bStats = stats[b.id];
+      if (!aStats || !bStats) return 0;
+      return bStats.consensus - aStats.consensus;
+    },
+  },
+  {
+    name: "Most Conflict",
+    key: "controversial",
+    sortFn: (stats) => (a, b) => {
+      const aStats = stats[a.id];
+      const bStats = stats[b.id];
+      if (!aStats || !bStats) return 0;
+      return bStats.conflict - aStats.conflict;
+    },
+  },
+  {
+    name: "Most Uncertain",
+    key: "uncertain",
+    sortFn: (stats) => (a, b) => {
+      const aStats = stats[a.id];
+      const bStats = stats[b.id];
+      if (!aStats || !bStats) return 0;
+      return (
+        bStats.votePercentages.itsComplicated -
+        aStats.votePercentages.itsComplicated
+      );
+    },
+  },
+];
 
 // Default export
 // -----------------------------------------------------------------------------
 
 const AnalyticsClient = ({
-  poll,
   comments,
   responses,
+  statements,
 }: {
-  poll: Poll;
   comments: Comment[];
   responses: Response[];
+  statements: Statement[];
 }) => {
   // Statistics
-
   const statistics = useMemo(
-    () => getCommentStatistics(responses ?? []),
+    () => getStatementStatistics(responses ?? []),
     [responses],
-  );
-
-  const mostCertainComments = useMemo(
-    () => getTopKCertainCommentIds(responses ?? [], 5),
-    [responses],
-  );
-
-  const mostUncertainComments = useMemo(
-    () => getTopKUncertainCommentIds(responses ?? [], 5),
-    [responses],
-  );
-
-  const commentIdToCommentMap = useMemo(
-    () =>
-      (comments ?? []).reduce(
-        (acc, comment) => ({
-          ...acc,
-          [comment.id]: comment,
-        }),
-        {} as Record<Comment["id"], Comment>,
-      ),
-    [comments],
   );
 
   const totalUserSessions = useMemo(() => {
@@ -66,93 +81,70 @@ const AnalyticsClient = ({
     return userSessions.size;
   }, [responses]);
 
+  const [sort, setSort] = useState<(typeof sortOptions)[number]["key"]>(
+    sortOptions[0].key,
+  );
+
   // Render
 
   return (
-    <div className="flex flex-col">
+    <div className="grid gap-6">
       {/* stats box */}
-      <div className="flex flex-col gap-2 px-3 py-2 mb-8 border border-black rounded-md">
-        <h5>Total Comments: {comments.length}</h5>
-        <h5>Total Responses: {responses.length}</h5>
-        <h5>Individual Respondents: {totalUserSessions}</h5>
+      <div className="grid sm:flex text-sm gap-5 text-neutral-300 p-2 rounded-lg bg-neutral-800">
+        <h5>Responses: {responses.length}</h5>
+        <h5>Respondents: {totalUserSessions}</h5>
+        <h5>Comments: {comments.length}</h5>
       </div>
-
-      <div className="flex gap-8">
-        <div className="w-1/2">
-          <h3 className="mb-4 font-semibold">Most Agreed Upon</h3>
-          <ul>
-            {mostCertainComments.map((commentId) => (
-              <li className="mb-8" key={commentId}>
-                <ChoiceBadge choice={statistics[commentId].mostCommonValence}>
-                  {statistics[commentId].votePercentages[
-                    statistics[commentId].mostCommonValence
-                  ].toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                  %
-                </ChoiceBadge>
-
-                <span>{commentIdToCommentMap[commentId].text}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="w-1/2">
-          <h3 className="mb-4 font-semibold">Most Uncertain Comments</h3>
-          <ul>
-            {mostUncertainComments.map((commentId) => (
-              <li
-                className="flex flex-col pb-4 mb-4 border-b border-gray-300 dark:border-gray-800"
-                key={commentId}
-              >
-                <div className="mb-1">
-                  <span>{commentIdToCommentMap[commentId].text}</span>
-                </div>
-                <div className="flex gap-1/2">
-                  <ChoiceBadge choice="agree">
-                    {statistics[commentId].votePercentages.agree.toLocaleString(
-                      undefined,
-                      { minimumFractionDigits: 2 },
-                    )}
-                    %
+      <div className="grid sm:flex justify-center gap-4 mt-6">
+        {sortOptions.map((option) => (
+          <button
+            key={option.name}
+            type="button"
+            data-state-active={option.key === sort}
+            className="py-.5 border-b border-transparent data-[state-active=true]:border-neutral-200 text-neutral-400 data-[state-active=true]:text-neutral-50 hover:text-neutral-100"
+            onClick={() => setSort(option.key)}
+          >
+            {option.name}
+          </button>
+        ))}
+      </div>
+      <div className="grid gap-2">
+        {statements
+          .sort(
+            (
+              sortOptions.find((option) => option.key === sort)?.sortFn ??
+              sortOptions[0].sortFn
+            )(statistics),
+          )
+          .map((statement) => {
+            const stats = statistics[statement.id];
+            if (!stats) return null;
+            const { agree, disagree, itsComplicated, skip } =
+              stats.votePercentages;
+            return (
+              <div className="border rounded p-3 bg-neutral-900 border-neutral-700 grid gap-2">
+                <span>{statement.text}</span>
+                <div className="grid gap-1 grid-cols-4 justify-start max-w-[240px]">
+                  <ChoiceBadge choice="agree" disabled={!agree}>
+                    {agree}
                   </ChoiceBadge>
-
-                  <ChoiceBadge choice="disagree">
-                    {statistics[
-                      commentId
-                    ].votePercentages.disagree.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                    })}
-                    %
+                  <ChoiceBadge choice="disagree" disabled={!disagree}>
+                    {disagree}
                   </ChoiceBadge>
-
-                  <ChoiceBadge choice="skip">
-                    {statistics[commentId].votePercentages.skip.toLocaleString(
-                      undefined,
-                      { minimumFractionDigits: 2 },
-                    )}
-                    %
+                  <ChoiceBadge
+                    choice="itsComplicated"
+                    disabled={!itsComplicated}
+                  >
+                    {itsComplicated}
                   </ChoiceBadge>
-
-                  <ChoiceBadge choice="itsComplicated">
-                    {statistics[
-                      commentId
-                    ].votePercentages.itsComplicated.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                    })}
-                    %
+                  <ChoiceBadge choice="skip" disabled={skip === 0}>
+                    {skip}
                   </ChoiceBadge>
                 </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+              </div>
+            );
+          })}
       </div>
-
-      <CorrelatedComments
-        poll={poll}
-        comments={comments}
-        responses={responses}
-      />
     </div>
   );
 };

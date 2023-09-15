@@ -1,6 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-
 import type { Choice, Response } from "@/lib/api";
 
 // Top K 'valed' comments
@@ -11,7 +8,7 @@ export const getTopKCommentIds = (
   votePercentage: keyof VotePercentages,
   k: number,
 ): number[] => {
-  const stats = getCommentStatistics(responses);
+  const stats = getStatementStatistics(responses);
 
   return Object.keys(stats)
     .map((commentId) => ({
@@ -33,60 +30,6 @@ export const getTopKDisagreedCommentIds = (
   k: number,
 ): number[] => getTopKCommentIds(responses, "disagree", k);
 
-// Most certain comments
-// -----------------------------------------------------------------------------
-
-export const getTopKCertainCommentIds = (
-  responses: Response[],
-  k: number,
-): number[] => {
-  const stats = getCommentStatistics(responses);
-
-  return Object.keys(stats)
-    .map((commentId) => {
-      const { agree } = stats[Number(commentId)].votePercentages;
-      const { disagree } = stats[Number(commentId)].votePercentages;
-      const { itsComplicated } = stats[Number(commentId)].votePercentages;
-      const balance = 1 - Math.abs(agree - disagree) / 100; // 0 (perfect balance) to 1 (total imbalance)
-      const uncertainty = (balance + itsComplicated / 100) / 2; // average of balance and itsComplicated
-
-      return {
-        comment_id: Number(commentId),
-        uncertainty,
-      };
-    })
-    .sort((a, b) => a.uncertainty - b.uncertainty)
-    .slice(0, k)
-    .map((comment) => comment.comment_id);
-};
-
-// Most uncertain comments
-// -----------------------------------------------------------------------------
-
-export const getTopKUncertainCommentIds = (
-  responses: Response[],
-  k: number,
-): number[] => {
-  const stats = getCommentStatistics(responses);
-
-  return Object.keys(stats)
-    .map((commentId) => {
-      const { agree } = stats[Number(commentId)].votePercentages;
-      const { disagree } = stats[Number(commentId)].votePercentages;
-      const { itsComplicated } = stats[Number(commentId)].votePercentages;
-      const balance = 1 - Math.abs(agree - disagree) / 100; // 0 (perfect balance) to 1 (total imbalance)
-      const uncertainty = (balance + itsComplicated / 100) / 2; // average of balance and itsComplicated
-
-      return {
-        comment_id: Number(commentId),
-        uncertainty,
-      };
-    })
-    .sort((a, b) => b.uncertainty - a.uncertainty)
-    .slice(0, k)
-    .map((comment) => comment.comment_id);
-};
-
 // Per-comment statistics
 // -----------------------------------------------------------------------------
 
@@ -98,92 +41,121 @@ export type VotePercentages = {
   [key in Choice]: number;
 };
 
-export type CommentStats = {
+export type StatementStats = {
   totalResponses: number;
   votes: Votes;
   votePercentages: VotePercentages;
-  mostCommonValence: Choice;
+  mostCommonChoice: Choice;
+  /**
+   * The maximum of the agree percentage and the disagree percentage.
+   */
+  consensus: number;
+
+  /**
+   * min(agreePercent / (agreePercent + disagreePercent),  disagreePercent / (agreePercent + disagreePercent))
+   */
+  conflict: number;
 };
 
-export function getCommentStatistics(
+/**
+ * For a list of responses to statements, return a map of statement IDs to
+ * statistics containing the total number of responses, the number of votes for
+ * each choice, the percentage of votes for each choice, and the most common
+ * choice.
+ */
+export function getStatementStatistics(
   responses: Response[],
-): Record<number, CommentStats> {
-  const stats: Record<number, CommentStats> = {};
+): Record<number, StatementStats> {
+  const stats: Record<number, StatementStats> = {};
 
-  console.log(`Responses:`);
-  console.log(responses);
+  for (const response of responses) {
+    if (!stats[response.statementId]) {
+      stats[response.statementId] = {
+        totalResponses: 0,
+        votes: {
+          agree: 0,
+          disagree: 0,
+          skip: 0,
+          itsComplicated: 0,
+        },
+        votePercentages: {
+          agree: 0,
+          disagree: 0,
+          skip: 0,
+          itsComplicated: 0,
+        },
+        mostCommonChoice: response.choice,
+        consensus: 0,
+        conflict: 0,
+      };
+    }
+
+    const statementStat = stats[response.statementId];
+    statementStat.totalResponses++;
+    switch (response.choice) {
+      case "agree":
+        statementStat.votes.agree++;
+        break;
+      case "disagree":
+        statementStat.votes.disagree++;
+        break;
+      case "skip":
+        statementStat.votes.skip++;
+        break;
+      case "itsComplicated":
+        statementStat.votes.itsComplicated++;
+        break;
+    }
+  }
+
+  // Post-processing
+
+  for (const statementId in stats) {
+    if (!Object.prototype.hasOwnProperty.call(stats, statementId)) continue;
+
+    // Percentages
+    stats[statementId].votePercentages.agree =
+      (stats[statementId].votes.agree / stats[statementId].totalResponses) *
+      100;
+    stats[statementId].votePercentages.disagree =
+      (stats[statementId].votes.disagree / stats[statementId].totalResponses) *
+      100;
+    stats[statementId].votePercentages.skip =
+      (stats[statementId].votes.skip / stats[statementId].totalResponses) * 100;
+    stats[statementId].votePercentages.itsComplicated =
+      (stats[statementId].votes.itsComplicated /
+        stats[statementId].totalResponses) *
+      100;
+
+    // Most common Choice
+    const mostCommonChoice = Object.keys(stats[statementId].votes).reduce(
+      (a, b) =>
+        stats[statementId].votePercentages[a as keyof VotePercentages] >
+        stats[statementId].votePercentages[b as keyof VotePercentages]
+          ? a
+          : b,
+    );
+
+    stats[statementId].mostCommonChoice = mostCommonChoice as Choice;
+
+    // Consensus
+    stats[statementId].consensus = Math.max(
+      stats[statementId].votePercentages.agree,
+      stats[statementId].votePercentages.disagree,
+    );
+
+    // Conflict
+    stats[statementId].conflict = Math.min(
+      stats[statementId].votePercentages.agree /
+        (stats[statementId].votePercentages.agree +
+          stats[statementId].votePercentages.disagree),
+      stats[statementId].votePercentages.disagree /
+        (stats[statementId].votePercentages.agree +
+          stats[statementId].votePercentages.disagree),
+    );
+  }
 
   return stats;
-
-  // responses.forEach((response) => {
-  //   if (!stats[response.comment_id]) {
-  //     stats[response.comment_id] = {
-  //       totalResponses: 0,
-  //       votes: {
-  //         agree: 0,
-  //         disagree: 0,
-  //         skip: 0,
-  //         itsComplicated: 0,
-  //       },
-  //       votePercentages: {
-  //         agree: 0,
-  //         disagree: 0,
-  //         skip: 0,
-  //         itsComplicated: 0,
-  //       },
-  //       mostCommonValence: response.choice,
-  //     };
-  //   }
-
-  //   const commentStat = stats[response.comment_id];
-  //   commentStat.totalResponses++;
-  //   switch (response.valence) {
-  //     case "agree":
-  //       commentStat.votes.agree++;
-  //       break;
-  //     case "disagree":
-  //       commentStat.votes.disagree++;
-  //       break;
-  //     case "skip":
-  //       commentStat.votes.skip++;
-  //       break;
-  //     case "itsComplicated":
-  //       commentStat.votes.itsComplicated++;
-  //       break;
-  //   }
-  // });
-
-  // // Post-processing
-
-  // for (const commentId in stats) {
-  //   if (!Object.prototype.hasOwnProperty.call(stats, commentId)) continue;
-  //   // Percentages
-
-  //   stats[commentId].votePercentages.agree =
-  //     (stats[commentId].votes.agree / stats[commentId].totalResponses) * 100;
-  //   stats[commentId].votePercentages.disagree =
-  //     (stats[commentId].votes.disagree / stats[commentId].totalResponses) * 100;
-  //   stats[commentId].votePercentages.skip =
-  //     (stats[commentId].votes.skip / stats[commentId].totalResponses) * 100;
-  //   stats[commentId].votePercentages.itsComplicated =
-  //     (stats[commentId].votes.itsComplicated /
-  //       stats[commentId].totalResponses) *
-  //     100;
-
-  //   // Most common valence
-
-  //   const mostCommonValence = Object.keys(stats[commentId].votes).reduce(
-  //     (a, b) =>
-  //       stats[commentId].votePercentages[a as keyof VotePercentages] >
-  //       stats[commentId].votePercentages[b as keyof VotePercentages]
-  //         ? a
-  //         : b,
-  //   );
-
-  //   stats[commentId].mostCommonValence = mostCommonValence as Choice;
-  // }
-
-  // return stats;
 }
 
 // Comment pairings
@@ -210,23 +182,23 @@ export const generateCommentPairs = (commentIds: number[]): number[][] =>
 
 export type Correlation = {
   key: string;
-  commentA: number;
-  commentB: number;
-  commentAValence: Choice;
-  commentBValence: Choice;
+  statementA: number;
+  statementB: number;
+  statementAChoice: Choice;
+  statementBChoice: Choice;
   percentage: number;
 };
 
-export const getTopKCorrelatedCommentPairs = (
+export const getTopKCorrelatedStatementPairs = (
   responses: Response[],
   k: number,
-): Correlation[] => getCorrelatedCommentPairs(responses).slice(0, k);
+): Correlation[] => getCorrelatedStatementPairs(responses).slice(0, k);
 
-export const getCorrelatedCommentPairs = (
+export const getCorrelatedStatementPairs = (
   responses: Response[],
 ): Correlation[] => {
   const allCommentIds = Array.from(
-    new Set(responses.map((response) => response.comment_id)),
+    new Set(responses.map((response) => response.statementId)),
   );
 
   const userGroups = groupResponsesByUser(responses);
@@ -241,7 +213,7 @@ export const getCorrelatedCommentPairs = (
   for (const userResponses of Object.values(userGroups)) {
     const commentIdsToValences: Record<number, Choice> = userResponses.reduce(
       (acc, response) => {
-        acc[response.comment_id] = response.valence as Choice;
+        acc[response.statementId] = response.choice;
         return acc;
       },
       {} as Record<number, Choice>,
@@ -289,12 +261,12 @@ export const getCorrelatedCommentPairs = (
 
   return Object.entries(pairCounts)
     .map(([key, count]) => {
-      const [commentA, commentB, commentAValence, commentBValence] =
+      const [statementA, statementB, statementAChoice, statementBChoice] =
         key.split("-");
 
-      const pairTotalsKey = `${commentA}-${commentB}`;
-      const didntVoteACountsKey = `${commentA}-${commentB}-${commentBValence}`;
-      const didntVoteBCountsKey = `${commentA}-${commentB}-${commentAValence}`;
+      const pairTotalsKey = `${statementA}-${statementB}`;
+      const didntVoteACountsKey = `${statementA}-${statementB}-${statementBChoice}`;
+      const didntVoteBCountsKey = `${statementA}-${statementB}-${statementAChoice}`;
 
       const denominator =
         (pairTotals[pairTotalsKey] ?? 0) +
@@ -305,10 +277,10 @@ export const getCorrelatedCommentPairs = (
 
       return {
         key,
-        commentA: Number(commentA),
-        commentB: Number(commentB),
-        commentAValence: commentAValence as Choice,
-        commentBValence: commentBValence as Choice,
+        statementA: Number(statementA),
+        statementB: Number(statementB),
+        statementAChoice: statementAChoice as Choice,
+        statementBChoice: statementBChoice as Choice,
         percentage,
       };
     })
