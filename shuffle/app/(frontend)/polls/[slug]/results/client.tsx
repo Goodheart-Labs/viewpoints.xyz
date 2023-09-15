@@ -124,21 +124,21 @@ const AnalyticsClient = ({
             return (
               <div className="border rounded p-3 bg-neutral-900 border-neutral-700 grid gap-2">
                 <span>{statement.text}</span>
-                <div className="grid gap-1 grid-cols-4 justify-start max-w-[240px]">
+                <div className="flex gap-1 justify-start">
                   <ChoiceBadge choice="agree" disabled={!agree}>
-                    {agree}
+                    {Math.round(agree)}%
                   </ChoiceBadge>
                   <ChoiceBadge choice="disagree" disabled={!disagree}>
-                    {disagree}
+                    {Math.round(disagree)}%
                   </ChoiceBadge>
                   <ChoiceBadge
                     choice="itsComplicated"
                     disabled={!itsComplicated}
                   >
-                    {itsComplicated}
+                    {Math.round(itsComplicated)}%
                   </ChoiceBadge>
                   <ChoiceBadge choice="skip" disabled={skip === 0}>
-                    {skip}
+                    {Math.round(skip)}%
                   </ChoiceBadge>
                 </div>
               </div>

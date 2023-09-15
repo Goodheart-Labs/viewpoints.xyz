@@ -34,7 +34,7 @@ const ChoiceBadge = ({
           choice === "skip",
         "text-orange-600 bg-orange-50 ring-orange-600/10 dark:text-orange-300 dark:bg-orange-900 dark:ring-orange-300/10":
           choice === "itsComplicated",
-        "opacity-20": disabled,
+        "opacity-40": disabled,
       },
       className,
     )}
