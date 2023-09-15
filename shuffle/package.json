@@ -13,7 +13,8 @@
     "test": "vitest",
     "migrate:ci": "prisma migrate deploy",
     "postinstall": "prisma generate",
-    "prepare": "cd ../ && husky install ./shuffle/.husky"
+    "prepare": "cd ../ && husky install ./shuffle/.husky",
+    "env:pull": "vercel env pull .env"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^1.10.2",
