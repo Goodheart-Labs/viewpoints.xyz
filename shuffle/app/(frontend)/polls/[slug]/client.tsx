@@ -6,11 +6,7 @@ import { useMutation, useQuery } from "react-query";
 
 import { useUser } from "@clerk/nextjs";
 import type { UserResource } from "@clerk/types";
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  ChatBubbleBottomCenterIcon,
-} from "@heroicons/react/20/solid";
+import { ChatBubbleBottomCenterIcon } from "@heroicons/react/20/solid";
 import type { FlaggedStatement, Statement } from "@prisma/client";
 import useHotkeys from "@reecelucas/react-use-hotkeys";
 import axios from "axios";
@@ -285,22 +281,6 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, comments }) => {
     ],
   );
 
-  // Keep track of pages that have been viewed already
-
-  const [isFirstVisit, setIsFirstVisit] = useState(false);
-
-  useEffect(() => {
-    const visitedPages =
-      JSON.parse(localStorage.getItem("visitedPages") ?? "{}") || {};
-    const { pathname } = window.location;
-
-    if (!visitedPages[pathname]) {
-      visitedPages[pathname] = true;
-      setIsFirstVisit(true);
-      localStorage.setItem("visitedPages", JSON.stringify(visitedPages));
-    }
-  }, []);
-
   return (
     <main className="flex-1 flex flex-col items-center w-full bg-black xl:p-8 xl:flex-row xl:justify-center xl:gap-8 xl:overflow-y-hidden">
       <div className="hidden xl:block w-2/7" />
@@ -310,27 +290,6 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, comments }) => {
         <h2 className=" xl:text-xl text-muted mb-8">
           {ensureItLooksLikeAQuestion(poll.core_question)} {getUserName(user)}
         </h2>
-
-        {isFirstVisit && (
-          <div
-            className="absolute top-0 left-0 z-40 w-full h-full bg-black bg-opacity-50 xl:hidden"
-            onClick={() => setIsFirstVisit(false)}
-          >
-            <div className="flex flex-col items-center justify-center w-full h-full">
-              <h1 className="px-4 text-3xl font-bold text-center text-gray-200">
-                Swipe left or right to answer
-              </h1>
-              <div className="flex mt-20">
-                <p>
-                  <ArrowLeftIcon className="w-20 h-20 text-gray-200" />
-                </p>
-                <p>
-                  <ArrowRightIcon className="w-20 h-20 text-gray-200" />
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
 
         <div>
           {loading ? (
