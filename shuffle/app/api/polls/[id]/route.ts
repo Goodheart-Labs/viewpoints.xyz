@@ -1,10 +1,8 @@
-import { auth } from "@clerk/nextjs";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import type { Poll } from "@/lib/api";
 import prisma from "@/lib/prisma";
-import { requirePollAdminIfPollIsPrivate } from "@/utils/authutils";
 
 // GET /api/polls/:id
 // -----------------------------------------------------------------------------
@@ -29,10 +27,6 @@ export async function GET(
       where: { id },
     });
   }
-
-  const { userId } = auth();
-
-  requirePollAdminIfPollIsPrivate(poll, userId);
 
   return NextResponse.json(poll);
 }

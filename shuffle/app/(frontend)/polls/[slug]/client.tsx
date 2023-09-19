@@ -8,6 +8,8 @@ import { AnimatePresence } from "framer-motion";
 import { PlusCircle } from "lucide-react";
 
 import { CommentsSheet } from "@/app/components/polls/comments/CommentsSheet";
+import type { UserResponseItem } from "@/app/components/polls/responses/UserResponses";
+import UserResponses from "@/app/components/polls/responses/UserResponses";
 import Cards from "@/app/components/polls/statements/Cards";
 import { CreateStatementDialog } from "@/app/components/polls/statements/CreateStatementDialog";
 import type { CommentWithAuthor, StatementWithAuthor } from "@/lib/api";
@@ -17,11 +19,17 @@ import { ScrollArea } from "@/shadcn/scroll-area";
 
 type PollProps = {
   poll: Poll;
-  statements: StatementWithAuthor[];
+  userResponses: UserResponseItem[];
+  statementsToAnswer: StatementWithAuthor[];
   comments: CommentWithAuthor[];
 };
 
-const Poll: FC<PollProps> = ({ poll, statements, comments }) => {
+const Poll: FC<PollProps> = ({
+  poll,
+  userResponses,
+  statementsToAnswer,
+  comments,
+}) => {
   const { track } = useAmplitude();
 
   const [isCreating, setIsCreating] = useState(false);
@@ -49,7 +57,7 @@ const Poll: FC<PollProps> = ({ poll, statements, comments }) => {
     <main className="flex-1 flex flex-col items-center w-full bg-black xl:p-8 xl:flex-row xl:justify-center xl:gap-8 xl:overflow-y-hidden">
       <div className="hidden xl:block w-2/7" />
 
-      <div className="flex flex-col items-stretch max-w-full xl:w-3/7 h-full xl:bg-zinc-900 xl:rounded-xl pb-8">
+      <div className="flex flex-col items-stretch max-w-full xl:w-3/7 h-full xl:bg-zinc-900 xl:rounded-xl pb-4">
         <div className="bg-zinc-800 p-6 xl:rounded-t-xl">
           <div className="flex justify-between items-center">
             <p className="text-left text-zinc-400 uppercase font-bold text-xs border-l-2 border-l-zinc-400 pl-2 mb-2">
@@ -68,9 +76,7 @@ const Poll: FC<PollProps> = ({ poll, statements, comments }) => {
           </h2>
         </div>
 
-        <ScrollArea className="px-6 pt-8 flex-1">
-          <Cards statements={statements} />
-        </ScrollArea>
+        <Cards statements={statementsToAnswer} />
 
         <div className="flex justify-center">
           <button
@@ -83,6 +89,10 @@ const Poll: FC<PollProps> = ({ poll, statements, comments }) => {
             <span className="text-xs text-zinc-300">Add new statement</span>
           </button>
         </div>
+
+        <ScrollArea className="h-full min-h-[300px] mt-4">
+          <UserResponses responses={userResponses} />
+        </ScrollArea>
       </div>
 
       <AnimatePresence>
