@@ -5,8 +5,8 @@ import { useMemo, useState } from "react";
 import type { Comment, Statement } from "@prisma/client";
 
 import ChoiceBadge from "@/components/ChoiceBadge";
-import type { StatementStats } from "@/lib/analytics/comments";
-import { getStatementStatistics } from "@/lib/analytics/comments";
+import type { StatementStats } from "@/lib/analytics/statements";
+import { getStatementStatistics } from "@/lib/analytics/statements";
 import type { Response } from "@/lib/api";
 
 const sortOptions: {
