@@ -29,6 +29,7 @@
     "camelcase": "off",
     "default-case": "off",
     "no-continue": "off",
+    "no-underscore-dangle": "off",
     "no-empty-function": ["error", { "allow": ["constructors"] }],
     "no-plusplus": "off",
     "no-restricted-syntax": "off",

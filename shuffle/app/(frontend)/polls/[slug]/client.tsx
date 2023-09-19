@@ -95,16 +95,15 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, comments }) => {
     return data as Response[];
   });
 
-  const { data: flaggedStatements, refetch: refetchFlaggedStatements } =
-    useQuery<FlaggedStatement[]>(
-      ["flaggedStatements", statementIds.join(",")],
-      async () => {
-        const { data } = await axios.get(
-          `/api/polls/${poll.id}/flaggedStatements`,
-        );
-        return data as FlaggedStatement[];
-      },
-    );
+  const { data: flaggedStatements } = useQuery<FlaggedStatement[]>(
+    ["flaggedStatements", statementIds.join(",")],
+    async () => {
+      const { data } = await axios.get(
+        `/api/polls/${poll.id}/flaggedStatements`,
+      );
+      return data as FlaggedStatement[];
+    },
+  );
 
   const newStatementMutation = useMutation(
     async (payload: CreateStatementBody): Promise<void> => {
@@ -303,7 +302,6 @@ const Poll: FC<PollProps> = ({ poll, statements: initialData, comments }) => {
               allResponses={allResponses ?? []}
               userResponses={enrichedResponses}
               onNewStatement={onNewStatement}
-              onStatementFlagged={refetchFlaggedStatements}
               onResponseCreated={onResponseCreated}
             />
           )}

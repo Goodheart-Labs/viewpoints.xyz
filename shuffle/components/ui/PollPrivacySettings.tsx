@@ -3,21 +3,20 @@
 import type { polls_visibility_enum } from "@prisma/client";
 import { LockClosedIcon, LockOpen2Icon } from "@radix-ui/react-icons";
 
-import type { Poll } from "@/lib/api";
 import { Label } from "@/shadcn/label";
 import { RadioGroup, RadioGroupItem } from "@/shadcn/radio-group";
 
 type PollPrivacySettingsProps = {
-  poll: Poll;
+  visibility: polls_visibility_enum;
   pollVisibilitySetter: (visibility: polls_visibility_enum) => void;
 };
 
 const PollPrivacySettings = ({
-  poll,
+  visibility,
   pollVisibilitySetter,
 }: PollPrivacySettingsProps) => (
   <RadioGroup
-    defaultValue={poll.visibility}
+    value={visibility}
     className="flex w-full bg-background gap-0 rounded-l-xl rounded-r-xl"
     onValueChange={(value) =>
       pollVisibilitySetter(value as polls_visibility_enum)
@@ -31,7 +30,7 @@ const PollPrivacySettings = ({
       />
       <Label
         htmlFor="public"
-        className="w-full h-full absolute flex items-center justify-center peer-aria-checked:text-black rounded-r-sm"
+        className="w-full h-full absolute flex items-center justify-center peer-aria-checked:text-black rounded-r-sm cursor-pointer"
       >
         <LockOpen2Icon className="mr-2" />
         Public
@@ -45,7 +44,7 @@ const PollPrivacySettings = ({
       />
       <Label
         htmlFor="private"
-        className="w-full h-full absolute flex items-center justify-center peer-aria-checked:text-black"
+        className="w-full h-full absolute flex items-center justify-center peer-aria-checked:text-black cursor-pointer"
       >
         <LockClosedIcon className="mr-2" />
         Private

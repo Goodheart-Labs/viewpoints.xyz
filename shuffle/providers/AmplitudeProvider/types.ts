@@ -20,7 +20,6 @@ export type TrackingEvent =
       type: "statement.flag.persist";
       statementId: number;
       reason: string;
-      interactionMode: InteractionMode;
     }
   | CardEvent<"statement.flag.cancel">
   | {

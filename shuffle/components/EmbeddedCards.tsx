@@ -25,7 +25,6 @@ import type { MinimalResponse } from "./Cards";
 type EmbeddedCardsProps = {
   filteredStatements: StatementWithAuthor[];
   onNewStatement: () => void;
-  onStatementFlagged: () => void;
   onResponseCreated: (response: MinimalResponse) => void;
 };
 
@@ -35,7 +34,6 @@ type EmbeddedCardsProps = {
 const EmbeddedCards = ({
   filteredStatements,
   onNewStatement,
-  onStatementFlagged: parentOnStatementFlagged,
   onResponseCreated,
 }: EmbeddedCardsProps) => {
   // State
@@ -75,14 +73,6 @@ const EmbeddedCards = ({
     [cards, insertResponseMutation, onResponseCreated, sessionId, setCards],
   );
 
-  const onStatementFlagged = useCallback(
-    (cardId: Statement["id"]) => {
-      setCards(cards.filter((c) => c.id !== cardId));
-      parentOnStatementFlagged();
-    },
-    [cards, parentOnStatementFlagged, setCards],
-  );
-
   // Render
 
   return (
@@ -119,7 +109,6 @@ const EmbeddedCards = ({
                 index={index}
                 card={card}
                 onSwipe={onSwipe}
-                onStatementFlagged={onStatementFlagged}
                 isActive={
                   card.id ===
                   filteredStatements[filteredStatements.length - 1].id

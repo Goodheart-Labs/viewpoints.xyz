@@ -10,12 +10,11 @@ import type { PanInfo } from "framer-motion";
 import { motion } from "framer-motion";
 import { Key } from "ts-key-enum";
 
+import { ReportStatementDialog } from "@/app/components/polls/statements/ReportStatementDialog";
 import { UserAvatar } from "@/app/components/user/UserAvatar";
 import type { Choice, StatementWithAuthor } from "@/lib/api";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import type { InteractionMode } from "@/providers/AmplitudeProvider/types";
-
-import { ReportStatementDialog } from "../app/components/polls/reportStatements/ReportStatementDialog";
 
 import BorderedButton from "./BorderedButton";
 
@@ -51,7 +50,6 @@ export type CardProps = {
   isActive: boolean;
   index: number;
   onSwipe: (card: Statement, choice: Choice) => void;
-  onStatementFlagged: (statementId: Statement["id"]) => void;
 };
 
 // View
@@ -138,13 +136,7 @@ const CardView = ({
 // Default export
 // -----------------------------------------------------------------------------
 
-const Card = ({
-  card,
-  isActive,
-  index,
-  onSwipe,
-  onStatementFlagged,
-}: CardProps) => {
+const Card = ({ card, isActive, index, onSwipe }: CardProps) => {
   const { track } = useAmplitude();
 
   // State
@@ -286,26 +278,9 @@ const Card = ({
     [card.id, card.poll_id, isActive, track],
   );
 
-  const onCancelFlag = useCallback(() => {
-    if (!isActive) return;
-    if (!isFlagging) return;
-
-    track({
-      type: "statement.flag.cancel",
-      pollId: card.poll_id,
-      cardId: card.id,
-    });
-
+  const onClose = useCallback(() => {
     setIsFlagging(false);
-  }, [card.id, card.poll_id, isActive, isFlagging, track]);
-
-  const onSaveFlag = useCallback(() => {
-    if (!isActive) return;
-    if (!isFlagging) return;
-
-    setIsFlagging(false);
-    onStatementFlagged(card.id);
-  }, [card.id, isActive, isFlagging, onStatementFlagged]);
+  }, []);
 
   // Keyboard shortcuts
 
@@ -367,9 +342,8 @@ const Card = ({
 
       <ReportStatementDialog
         isActive={isActive}
-        onCancelFlag={onCancelFlag}
+        close={onClose}
         isFlagging={isFlagging}
-        onCreate={onSaveFlag}
         statement={card}
       />
     </>
