@@ -31,7 +31,6 @@ type CardsProps = {
   allResponses: Response[];
   userResponses: MinimalResponse[];
   onNewStatement: () => void;
-  onStatementFlagged: () => void;
   onResponseCreated: (response: MinimalResponse) => void;
 };
 
@@ -44,7 +43,6 @@ const Cards = ({
   allResponses,
   userResponses,
   onNewStatement,
-  onStatementFlagged: parentOnStatementFlagged,
   onResponseCreated,
 }: CardsProps) => {
   const { user } = useUser();
@@ -92,14 +90,6 @@ const Cards = ({
       setCards,
       user?.id,
     ],
-  );
-
-  const onStatementFlagged = useCallback(
-    (cardId: Statement["id"]) => {
-      setCards(cards.filter((c) => c.id !== cardId));
-      parentOnStatementFlagged();
-    },
-    [cards, parentOnStatementFlagged, setCards],
   );
 
   const statementMap = useMemo(
@@ -150,7 +140,6 @@ const Cards = ({
               <Card
                 card={card}
                 onSwipe={onSwipe}
-                onStatementFlagged={onStatementFlagged}
                 index={index}
                 isActive={card.id === cards[cards.length - 1].id}
               />

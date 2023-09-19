@@ -14,4 +14,5 @@ export const refreshPoll = async (id: number) => {
   }
 
   revalidatePath(`/polls/${poll.slug}`);
+  revalidatePath(`/polls/${poll.slug}/admin`);
 };
