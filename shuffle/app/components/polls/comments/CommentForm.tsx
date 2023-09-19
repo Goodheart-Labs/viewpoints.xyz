@@ -13,6 +13,7 @@ import { useAutosizeTextArea } from "@/hooks/useAutosizeTextArea";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import { useCurrentPoll } from "@/providers/CurrentPollProvider";
 import { Textarea } from "@/shadcn/textarea";
+import { cn } from "@/utils/style-utils";
 
 import { UserAvatar } from "../../user/UserAvatar";
 
@@ -103,14 +104,14 @@ export const CommentForm: FC<Props> = ({
   return (
     <div className="px-5 pt-3 pb-5 flex items-center gap-2 bg-zinc-900 z-[60] xl:rounded-b-xl border-t border-zinc-800">
       <UserAvatar
-        avatarUrl={user?.profileImageUrl ?? null}
+        avatarUrl={user?.imageUrl ?? null}
         name={null}
         showName={false}
       />
 
       <form onSubmit={onSubmit} className="flex-1 flex gap-4">
         <Textarea
-          className="bg-accent w-full max-h-16 touch-auto flex-1 h-11 leading-6"
+          className="bg-zinc-700 w-full max-h-16 touch-auto flex-1 h-11 leading-6"
           {...field}
           placeholder="Write your thought"
           ref={(e) => {
@@ -123,11 +124,22 @@ export const CommentForm: FC<Props> = ({
           }}
         />
 
-        <button type="submit" className="bg-zinc-700 rounded-md p-3">
+        <button
+          type="submit"
+          className={cn(
+            "bg-zinc-700 rounded-md p-3 cursor-default",
+            textAreaValue?.length && !isPending && "cursor-pointer",
+          )}
+        >
           {isPending ? (
             <RotateCw className="h-5 w-5 animate-spin stroke-muted" />
           ) : (
-            <SendHorizontal className="stroke-muted h-5 w-5" />
+            <SendHorizontal
+              className={cn(
+                "stroke-muted h-5 w-5",
+                textAreaValue?.length && "stroke-zinc-300",
+              )}
+            />
           )}
         </button>
       </form>

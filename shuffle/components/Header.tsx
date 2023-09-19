@@ -3,7 +3,6 @@
 import { useCallback, useMemo, useState } from "react";
 
 import { SignIn, UserButton, useUser } from "@clerk/nextjs";
-import useHotkeys from "@reecelucas/react-use-hotkeys";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -37,11 +36,6 @@ const Header = () => {
   const onClickPollAdmin = useCallback(() => {
     router.push(`/polls/${currentPoll?.slug}/admin`);
   }, [currentPoll?.slug, router]);
-
-  useHotkeys(["l", "shift+l"], () => {
-    if (isSignedIn) return;
-    onClickLogin();
-  });
 
   // Render
 

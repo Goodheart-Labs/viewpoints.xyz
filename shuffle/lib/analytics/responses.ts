@@ -1,4 +1,4 @@
-import type { MinimalResponse } from "@/components/Cards";
+import type { MinimalResponse } from "@/app/components/polls/statements/Cards";
 
 import type { Choice } from "../api";
 
