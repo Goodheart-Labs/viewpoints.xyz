@@ -44,7 +44,7 @@ export const CommentItem: FC<Props> = ({ comment }) => {
               user.id === currentPoll?.user_id) && (
               <button
                 type="button"
-                className="text-xs text-muted font-medium"
+                className="text-xs text-zinc-500 font-medium hover:text-zinc-300"
                 onClick={openDeleteDialog}
               >
                 Delete
