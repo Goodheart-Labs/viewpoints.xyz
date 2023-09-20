@@ -30,7 +30,7 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
     <main className="flex-1 flex flex-col items-center w-full bg-black xl:p-8 xl:flex-row xl:justify-center xl:gap-8 xl:overflow-y-hidden">
       <div className="hidden xl:block w-1/4" />
 
-      <div className="flex flex-col items-stretch max-w-full xl:w-1/2 h-full xl:bg-zinc-900 xl:rounded-xl">
+      <div className="flex flex-col items-stretch max-w-full w-full xl:w-1/2 h-full xl:bg-zinc-900 xl:rounded-xl">
         <div className="bg-zinc-800 p-6 xl:rounded-t-xl">
           <div className="flex justify-between items-center">
             <p className="text-left text-zinc-400 uppercase font-bold text-xs border-l-2 border-l-zinc-400 pl-2 mb-2">

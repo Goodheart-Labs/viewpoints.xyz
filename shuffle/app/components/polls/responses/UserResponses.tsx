@@ -25,7 +25,7 @@ const UserResponses: FC<Props> = ({ responses }) => (
           index < responses.size - 1 && "border-b mb-2",
         )}
       >
-        <div className="bg-zinc-800 rounded-full px-2 py-[6px] text-sm text-zinc-300 w-fit">
+        <div className="bg-zinc-800 rounded-full px-2 py-[6px] text-xs sm:text-sm text-zinc-300 w-fit">
           <span className="mr-1">{getChoiceEmoji(response.choice)}</span> You{" "}
           {choiceToHumanReadablePastTense(response.choice)} and{" "}
           {response.percentage}% of people think the same

@@ -37,7 +37,7 @@ export const Statistics = async ({
         {children}
 
         {mostConsensus && mostControversial && (
-          <div className="flex gap-3">
+          <div className="flex flex-col md:flex-row gap-3">
             <HighlightedStatement
               statement={mostConsensus.statement}
               userChoice={mostConsensus.choice}

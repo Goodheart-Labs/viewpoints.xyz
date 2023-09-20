@@ -16,7 +16,7 @@ import { useCardHandlers } from "./useCardResponse";
 const ANIMATION_DURATION = 0.5;
 export const CARD_VERTICAL_OFFSET = 25;
 export const CARD_SCALE_OFFSET = 0.05;
-const CARD_BRIGHTNESS_OFFSET = 20;
+const CARD_BRIGHTNESS_OFFSET = 35;
 
 type CardProps = {
   statement: StatementWithAuthor;

@@ -51,15 +51,15 @@ export const Dialog: FC<Props> = ({
     <RawDialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="rounded-xl w-10/12 p-4" asChild={false}>
         <DialogHeader>
-          <DialogTitle className="text-zinc-400 font-bold text-xs border-l-2 pl-2 mb-2">
+          <DialogTitle className="text-zinc-400 font-bold text-xs border-l-2 pl-2 mb-2 text-left">
             {title}
           </DialogTitle>
 
-          <DialogTitle className="text-white">{subtitle}</DialogTitle>
+          <DialogTitle className="text-white text-left">{subtitle}</DialogTitle>
         </DialogHeader>
         <div>{children}</div>
         <DialogFooter>
-          <div className="w-full flex justify-between">
+          <div className="w-full flex justify-between gap-4">
             <Button
               className="rounded-full bg-zinc-700 text-zinc-400 hover:bg-zinc-600 [&:hover>svg]:stroke-zinc-600"
               onClick={onCancel}
