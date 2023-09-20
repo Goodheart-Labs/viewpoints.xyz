@@ -1,3 +1,5 @@
+"use client";
+
 import type { FC } from "react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -94,7 +96,7 @@ export const CommentsSheet: FC<Props> = ({ comments }) => {
         )}
         onClick={close}
       />
-      <div className="sticky xl:static bottom-0 w-full bg-zinc-900 flex flex-col pointer-events-auto z-50 touch-none xl:w-2/7 xl:h-full xl:rounded-lg">
+      <div className="sticky xl:static bottom-0 w-full bg-zinc-900 flex flex-col pointer-events-auto z-40 touch-none xl:w-1/4 xl:h-full xl:rounded-lg">
         <div className="xl:hidden">
           <Accordion
             type="single"

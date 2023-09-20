@@ -27,6 +27,16 @@ export const getData = async (slug: string) => {
           createdAt: "desc",
         },
       },
+      statements: {
+        orderBy: {
+          id: "desc",
+        },
+        include: {
+          author: true,
+          flaggedStatements: true,
+          responses: true,
+        },
+      },
     },
   });
 
@@ -34,24 +44,10 @@ export const getData = async (slug: string) => {
     notFound();
   }
 
-  const statements = await prisma.statement.findMany({
-    where: {
-      poll_id: poll.id,
-    },
-    orderBy: {
-      id: "desc",
-    },
-    include: {
-      author: true,
-      flaggedStatements: true,
-      responses: true,
-    },
-  });
-
   const filteredStatements: StatementWithAuthor[] = [];
-  const userResponses: UserResponseItem[] = [];
+  const userResponses = new Map<number, UserResponseItem>();
 
-  for (const statement of statements) {
+  for (const statement of poll.statements) {
     if (statement.flaggedStatements.length > MAX_NUM_FLAGS_BEFORE_REMOVAL) {
       continue;
     }
@@ -101,7 +97,7 @@ export const getData = async (slug: string) => {
         0,
       );
 
-      userResponses.push({
+      userResponses.set(userResponse.statementId, {
         ...userResponse,
         percentage: Math.round(
           (responseCountMap.get(userResponse.choice)! / totalResponses) * 100,

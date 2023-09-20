@@ -12,17 +12,17 @@ export type UserResponseItem = Response & {
 };
 
 type Props = {
-  responses: UserResponseItem[];
+  responses: Map<number, UserResponseItem>;
 };
 
 const UserResponses: FC<Props> = ({ responses }) => (
   <div className="flex flex-col h-full">
-    {responses.map((response, index) => (
+    {Array.from(responses.values()).map((response, index) => (
       <div
         key={response.id}
         className={cn(
           "border-zinc-700 mx-6",
-          index < responses.length - 1 && "border-b mb-2",
+          index < responses.size - 1 && "border-b mb-2",
         )}
       >
         <div className="bg-zinc-800 rounded-full px-2 py-[6px] text-sm text-zinc-300 w-fit">

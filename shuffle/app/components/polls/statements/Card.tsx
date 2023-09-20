@@ -80,7 +80,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
             },
           }}
           style={{ height }}
-          className="absolute top-0 left-0 right-0 flex flex-col gap-4 cursor-grab overflow-hidden border border-zinc-600 bg-zinc-800 rounded-2xl px-4 py-3 z-[100]"
+          className="absolute top-0 left-0 right-0 flex flex-col gap-4 cursor-grab overflow-hidden border border-zinc-600 bg-zinc-800 rounded-2xl px-4 py-3 z-50"
         >
           <div className="flex items-center justify-between w-full">
             <UserAvatar
