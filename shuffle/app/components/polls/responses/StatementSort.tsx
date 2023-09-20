@@ -6,7 +6,7 @@ import React, { useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import type { SortKey } from "@/lib/pollResults/constants";
-import { sortOptions } from "@/lib/pollResults/constants";
+import { SORT_PARAM, sortOptions } from "@/lib/pollResults/constants";
 import {
   Select,
   SelectContent,
@@ -25,7 +25,7 @@ export const StatementSort: FC<Props> = ({ value = "consensus" }) => {
 
   const handleChange = useCallback(
     (newValue: SortKey) => {
-      router.push(`${pathname}?sort=${newValue}`);
+      router.push(`${pathname}?${SORT_PARAM}=${newValue}`);
     },
     [pathname, router],
   );

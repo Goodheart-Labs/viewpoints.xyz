@@ -5,14 +5,14 @@ import { Statistics } from "@/app/components/polls/responses/Statistics";
 import UserResponses from "@/app/components/polls/responses/UserResponses";
 import Cards from "@/app/components/polls/statements/Cards";
 import { CreateStatementButton } from "@/app/components/polls/statements/CreateStatementButton";
-import type { SortKey } from "@/lib/pollResults/constants";
+import type { SORT_PARAM, SortKey } from "@/lib/pollResults/constants";
 import { ScrollArea } from "@/shadcn/scroll-area";
 
 import { getData } from "./getData";
 
 type PollPageProps = {
   params: { slug: string };
-  searchParams: { sort?: SortKey };
+  searchParams: { [SORT_PARAM]?: SortKey };
 };
 
 const PollPage = async ({ params, searchParams }: PollPageProps) => {
