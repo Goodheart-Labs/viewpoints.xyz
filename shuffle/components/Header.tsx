@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 
 import { SignIn, UserButton, useUser } from "@clerk/nextjs";
 import clsx from "clsx";
@@ -22,25 +22,22 @@ const Header = () => {
 
   const { currentPoll } = useCurrentPoll();
 
-  const isCurrentPollAdmin = useMemo(
-    () => currentPoll && currentPoll.user_id === user?.id,
-    [currentPoll, user?.id],
-  );
+  const isCurrentPollAdmin = currentPoll && currentPoll.user_id === user?.id;
 
   // Callbacks
 
-  const onClickLogin = useCallback(() => {
+  const onClickLogin = () => {
     setShowSignIn(true);
-  }, []);
+  };
 
-  const onClickPollAdmin = useCallback(() => {
+  const onClickPollAdmin = () => {
     router.push(`/polls/${currentPoll?.slug}/admin`);
-  }, [currentPoll?.slug, router]);
+  };
 
   // Render
 
   return (
-    <div className="self-start flex items-center justify-end w-full p-4 sticky top-0 bg-zinc-900 z-30">
+    <div className="self-start flex items-center justify-end w-full p-4 sticky top-0 bg-zinc-900 z-[60]">
       <div className={clsx(!(isSignedIn && isCurrentPollAdmin) && "mr-auto")}>
         <Link href="/" className="hover:opacity-50">
           <div className="dark:hidden">

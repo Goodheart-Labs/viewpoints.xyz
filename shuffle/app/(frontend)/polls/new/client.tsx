@@ -1,6 +1,5 @@
 "use client";
 
-import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation } from "react-query";
 
@@ -212,27 +211,24 @@ const NewPollPageClient = () => {
 
   // Callbacks
 
-  const onSubmit = useCallback(
-    async ({ title, slug, question, statements }: FormData) => {
-      await newPollMutation.mutateAsync({
-        title,
-        slug,
-        question,
-        statements: statements.filter((c) => c.trim() !== ""),
-      });
+  const onSubmit = async ({ title, slug, question, statements }: FormData) => {
+    await newPollMutation.mutateAsync({
+      title,
+      slug,
+      question,
+      statements: statements.filter((c) => c.trim() !== ""),
+    });
 
-      router.push(`/polls/${slug}`);
-    },
-    [newPollMutation, router],
-  );
+    router.push(`/polls/${slug}`);
+  };
 
   // Update slug when title changes, if slug is empty
 
-  const onBlurTitle = useCallback(() => {
+  const onBlurTitle = () => {
     if (form.formState.dirtyFields.title && !form.getValues("slug")) {
       form.setValue("slug", slugify(form.getValues("title").toLowerCase()));
     }
-  }, [form]);
+  };
 
   // Render
 

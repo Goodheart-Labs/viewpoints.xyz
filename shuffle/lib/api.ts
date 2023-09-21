@@ -7,8 +7,6 @@ import type {
   Statement,
 } from "@prisma/client";
 
-import type { Correlation } from "./analytics/comments";
-
 export type Poll = polls;
 
 export type Choice = choice_enum;
@@ -23,8 +21,4 @@ export type StatementWithAuthor = Statement & {
 
 export type CommentWithAuthor = Comment & {
   author: Author | null;
-};
-
-export type AnalyticsFilters = {
-  correlatedComments: Correlation["key"][];
 };

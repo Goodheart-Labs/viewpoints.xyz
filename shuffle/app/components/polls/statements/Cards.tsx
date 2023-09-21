@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { Response, StatementWithAuthor } from "@/lib/api";
 
-import Card from "./Card";
+import Card, { CARD_VERTICAL_OFFSET } from "./Card";
 
 export type MinimalResponse = Pick<
   Response,
@@ -38,7 +38,16 @@ const Cards = ({ statements }: CardsProps) => {
   }, [statementsToDisplay]);
 
   return (
-    <div className="relative" ref={containerRef}>
+    <div
+      className="relative m-6 mb-4 flex-shrink-0"
+      ref={containerRef}
+      style={{
+        height: `${
+          (cardHeight ?? 0) +
+          (statementsToDisplay.length - 1) * CARD_VERTICAL_OFFSET
+        }px`,
+      }}
+    >
       {statementsToDisplay.map((statement, index) => (
         <Card
           key={statement.id}

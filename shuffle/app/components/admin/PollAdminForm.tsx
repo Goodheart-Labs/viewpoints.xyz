@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useTransition } from "react";
+import { useTransition } from "react";
 import { useController, useForm, useFormState } from "react-hook-form";
 
 import type { polls, polls_visibility_enum, Statement } from "@prisma/client";
@@ -52,9 +52,9 @@ const PollAdminForm = ({ poll }: PollAdminFormProps) => {
 
   const { toast } = useToast();
 
-  const onCancel = useCallback(() => {
+  const onCancel = () => {
     reset();
-  }, [reset]);
+  };
 
   const onSubmit = handleSubmit(() => {
     startTransition(() => {
@@ -67,7 +67,7 @@ const PollAdminForm = ({ poll }: PollAdminFormProps) => {
   });
 
   return (
-    <div className="flex flex-col items-stretch w-full  max-w-3xl h-full xl:bg-zinc-950 xl:rounded-xl">
+    <div className="flex flex-col items-stretch w-full xl:max-w-3xl h-full bg-zinc-950 xl:rounded-xl">
       <div className="p-6">
         <DisabledInputWithLabel label="Poll subject" value={poll.title} />
         <DisabledInputWithLabel
@@ -89,7 +89,7 @@ const PollAdminForm = ({ poll }: PollAdminFormProps) => {
         <StatementsList poll={poll} />
       </ScrollArea>
 
-      <div className="p-6 sticky bottom-0 xl:static bg-zinc-950 xl:bg-zinc-900 xl:rounded-b-xl">
+      <div className="p-6 sticky bottom-0 xl:static bg-zinc-900 xl:rounded-b-xl">
         <div className="w-full flex justify-between">
           <Button
             className="rounded-full bg-zinc-700 text-zinc-400 hover:bg-zinc-600 [&:hover>svg]:stroke-zinc-600"

@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import React, { useCallback, useEffect, useTransition } from "react";
+import React, { useEffect, useTransition } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import { useController, useWatch } from "react-hook-form";
 
@@ -71,16 +71,13 @@ export const CommentForm: FC<Props> = ({
     });
   });
 
-  const onEnterPress = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === Key.Enter && !e.shiftKey) {
-        e.preventDefault();
-        onSubmit();
-        textAreaRef.current?.blur();
-      }
-    },
-    [onSubmit, textAreaRef],
-  );
+  const onEnterPress = (e: React.KeyboardEvent) => {
+    if (e.key === Key.Enter && !e.shiftKey) {
+      e.preventDefault();
+      onSubmit();
+      textAreaRef.current?.blur();
+    }
+  };
 
   useEffect(() => {
     const textArea = textAreaRef.current;

@@ -1,5 +1,7 @@
+"use client";
+
 import type { FC } from "react";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { useBoolean } from "usehooks-ts";
@@ -34,12 +36,9 @@ export const CommentsSheet: FC<Props> = ({ comments }) => {
     setValue: setShowComments,
   } = useBoolean(false);
 
-  const onValueChange = useCallback(
-    (v: string) => {
-      setShowComments(v === ACCORDION_VALUE);
-    },
-    [setShowComments],
-  );
+  const onValueChange = (v: string) => {
+    setShowComments(v === ACCORDION_VALUE);
+  };
 
   const [currentViewportHeight, setCurrentViewportHeight] = useState(0);
 
@@ -73,7 +72,7 @@ export const CommentsSheet: FC<Props> = ({ comments }) => {
   const mobileCommentContainerRef = useRef<HTMLDivElement | null>(null);
   const desktopCommentContainerRef = useRef<HTMLDivElement | null>(null);
 
-  const onNewComment = useCallback(() => {
+  const onNewComment = () => {
     mobileCommentContainerRef.current?.scrollTo({
       top: 0,
       behavior: "smooth",
@@ -83,7 +82,7 @@ export const CommentsSheet: FC<Props> = ({ comments }) => {
       top: 0,
       behavior: "smooth",
     });
-  }, []);
+  };
 
   return (
     <>
@@ -94,7 +93,7 @@ export const CommentsSheet: FC<Props> = ({ comments }) => {
         )}
         onClick={close}
       />
-      <div className="sticky xl:static bottom-0 w-full bg-zinc-900 flex flex-col pointer-events-auto z-50 touch-none xl:w-2/7 xl:h-full xl:rounded-lg">
+      <div className="sticky xl:static bottom-0 w-full bg-zinc-900 flex flex-col pointer-events-auto z-40 touch-none xl:w-1/4 xl:h-full xl:rounded-lg">
         <div className="xl:hidden">
           <Accordion
             type="single"

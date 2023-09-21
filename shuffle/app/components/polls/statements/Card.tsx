@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useCallback, useState } from "react";
+import { forwardRef, useState } from "react";
 
 import { motion } from "framer-motion";
 import { FlagIcon } from "lucide-react";
@@ -9,14 +9,14 @@ import { UserAvatar } from "@/app/components/user/UserAvatar";
 import type { StatementWithAuthor } from "@/lib/api";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 
-import { CardButtons } from "./CardButtons";
+import { CardButton } from "./CardButton";
 import { ReportStatementDialog } from "./ReportStatementDialog";
-import { useCardHandlers } from "./useCardResponse";
+import { useCardHandlers } from "./useCardHandlers";
 
 const ANIMATION_DURATION = 0.5;
-const CARD_VERTICAL_OFFSET = 20;
-const CARD_SCALE_OFFSET = 0.02;
-const CARD_BRIGHTNESS_OFFSET = 20;
+export const CARD_VERTICAL_OFFSET = 25;
+export const CARD_SCALE_OFFSET = 0.05;
+const CARD_BRIGHTNESS_OFFSET = 35;
 
 type CardProps = {
   statement: StatementWithAuthor;
@@ -39,7 +39,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
 
     const animate = leaveX !== 0 || leaveY !== 0 ? "exit" : "default";
 
-    const onFlag = useCallback(() => {
+    const onFlag = () => {
       track({
         type: "statement.flag.open",
         pollId: statement.poll_id,
@@ -47,11 +47,11 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       });
 
       setIsFlagging(true);
-    }, [statement.id, statement.poll_id, track]);
+    };
 
-    const onClose = useCallback(() => {
+    const onClose = () => {
       setIsFlagging(false);
-    }, []);
+    };
 
     return (
       <>
@@ -80,7 +80,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
             },
           }}
           style={{ height }}
-          className="absolute top-0 left-0 right-0 flex flex-col gap-4 cursor-grab overflow-hidden border border-zinc-600 bg-zinc-800 rounded-2xl px-4 py-3"
+          className="absolute top-0 left-0 right-0 flex flex-col gap-4 cursor-grab overflow-hidden border border-zinc-600 bg-zinc-800 rounded-2xl px-4 py-3 z-50"
         >
           <div className="flex items-center justify-between w-full">
             <UserAvatar
@@ -104,8 +104,12 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
               </div>
             )}
           </div>
-
-          <CardButtons onResponse={onResponse} />
+          <div className="flex justify-between items-center">
+            <CardButton choice="itsComplicated" onResponse={onResponse} />
+            <CardButton choice="disagree" onResponse={onResponse} />
+            <CardButton choice="agree" onResponse={onResponse} />
+            <CardButton choice="skip" onResponse={onResponse} />
+          </div>
         </motion.div>
 
         <ReportStatementDialog

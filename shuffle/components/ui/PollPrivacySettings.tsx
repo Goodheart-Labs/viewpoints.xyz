@@ -30,7 +30,7 @@ const PollPrivacySettings = ({
       />
       <Label
         htmlFor="public"
-        className="w-full h-full absolute flex items-center justify-center peer-aria-checked:text-black rounded-r-sm cursor-pointer"
+        className="w-full h-full absolute flex items-center justify-center text-white peer-aria-checked:text-black rounded-r-sm cursor-pointer"
       >
         <LockOpen2Icon className="mr-2" />
         Public
@@ -44,7 +44,7 @@ const PollPrivacySettings = ({
       />
       <Label
         htmlFor="private"
-        className="w-full h-full absolute flex items-center justify-center peer-aria-checked:text-black cursor-pointer"
+        className="w-full h-full absolute flex items-center justify-center text-white peer-aria-checked:text-black cursor-pointer"
       >
         <LockClosedIcon className="mr-2" />
         Private

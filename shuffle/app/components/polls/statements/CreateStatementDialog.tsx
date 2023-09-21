@@ -1,7 +1,7 @@
 "use client";
 
 import type { FC } from "react";
-import { useCallback, useTransition } from "react";
+import { useTransition } from "react";
 import { useController, useForm } from "react-hook-form";
 
 import type { Statement } from "@prisma/client";
@@ -67,14 +67,14 @@ export const CreateStatementDialog: FC<CreateStatementDialogProps> = ({
     });
   });
 
-  const onCancel = useCallback(() => {
+  const onCancel = () => {
     track({
       type: "statement.new.cancel",
       pollId,
     });
 
     close();
-  }, [track, pollId, close]);
+  };
 
   return (
     <Dialog

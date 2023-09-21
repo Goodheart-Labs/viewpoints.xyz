@@ -1,5 +1,5 @@
 import type { ChangeEvent, InputHTMLAttributes } from "react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 type ControlledInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -15,13 +15,10 @@ const ControlledInput = ({
 }: ControlledInputProps) => {
   const [value, setValue] = useState(propValue);
 
-  const onChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setValue(e.target.value);
-      propOnChange(e.target.value);
-    },
-    [propOnChange],
-  );
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+    propOnChange(e.target.value);
+  };
 
   return <input type="text" value={value} onChange={onChange} {...props} />;
 };
