@@ -1,5 +1,5 @@
 import type { FC, PropsWithChildren } from "react";
-import React, { useCallback } from "react";
+import React from "react";
 
 import { CheckCircle2, RotateCw, XCircle } from "lucide-react";
 
@@ -38,14 +38,11 @@ export const Dialog: FC<Props> = ({
   loading,
   loadingText,
 }) => {
-  const handleOpenChange = useCallback(
-    (open: boolean) => {
-      if (!open) {
-        onCancel();
-      }
-    },
-    [onCancel],
-  );
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      onCancel();
+    }
+  };
 
   return (
     <RawDialog open={isOpen} onOpenChange={handleOpenChange}>

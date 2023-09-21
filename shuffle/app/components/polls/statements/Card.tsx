@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useCallback, useState } from "react";
+import { forwardRef, useState } from "react";
 
 import { motion } from "framer-motion";
 import { FlagIcon } from "lucide-react";
@@ -11,7 +11,7 @@ import { useAmplitude } from "@/providers/AmplitudeProvider";
 
 import { CardButton } from "./CardButton";
 import { ReportStatementDialog } from "./ReportStatementDialog";
-import { useCardHandlers } from "./useCardResponse";
+import { useCardHandlers } from "./useCardHandlers";
 
 const ANIMATION_DURATION = 0.5;
 export const CARD_VERTICAL_OFFSET = 25;
@@ -39,7 +39,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
 
     const animate = leaveX !== 0 || leaveY !== 0 ? "exit" : "default";
 
-    const onFlag = useCallback(() => {
+    const onFlag = () => {
       track({
         type: "statement.flag.open",
         pollId: statement.poll_id,
@@ -47,11 +47,11 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       });
 
       setIsFlagging(true);
-    }, [statement.id, statement.poll_id, track]);
+    };
 
-    const onClose = useCallback(() => {
+    const onClose = () => {
       setIsFlagging(false);
-    }, []);
+    };
 
     return (
       <>

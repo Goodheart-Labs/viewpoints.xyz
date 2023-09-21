@@ -1,4 +1,4 @@
-import { useCallback, useTransition } from "react";
+import { useTransition } from "react";
 
 import { deleteStatement } from "@/app/api/statements/deleteStatement";
 import { useToast } from "@/shadcn/use-toast";
@@ -22,7 +22,7 @@ const DeleteStatementDialog = ({
 
   const { toast } = useToast();
 
-  const onAccept = useCallback(() => {
+  const onAccept = () => {
     startTransition(() => {
       deleteStatement(pollId, statementId).then(() => {
         closeModal();
@@ -32,7 +32,7 @@ const DeleteStatementDialog = ({
         });
       });
     });
-  }, [closeModal, pollId, statementId, toast]);
+  };
 
   return (
     <Dialog

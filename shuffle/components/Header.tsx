@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 
 import { SignIn, UserButton, useUser } from "@clerk/nextjs";
 import clsx from "clsx";
@@ -22,20 +22,17 @@ const Header = () => {
 
   const { currentPoll } = useCurrentPoll();
 
-  const isCurrentPollAdmin = useMemo(
-    () => currentPoll && currentPoll.user_id === user?.id,
-    [currentPoll, user?.id],
-  );
+  const isCurrentPollAdmin = currentPoll && currentPoll.user_id === user?.id;
 
   // Callbacks
 
-  const onClickLogin = useCallback(() => {
+  const onClickLogin = () => {
     setShowSignIn(true);
-  }, []);
+  };
 
-  const onClickPollAdmin = useCallback(() => {
+  const onClickPollAdmin = () => {
     router.push(`/polls/${currentPoll?.slug}/admin`);
-  }, [currentPoll?.slug, router]);
+  };
 
   // Render
 

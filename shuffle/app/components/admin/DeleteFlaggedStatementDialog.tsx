@@ -1,4 +1,4 @@
-import { useCallback, useTransition } from "react";
+import { useTransition } from "react";
 
 import { deleteStatementFlags } from "@/app/api/statements/deleteStatementFlags";
 import { useToast } from "@/shadcn/use-toast";
@@ -22,7 +22,7 @@ const DeleteFlaggedStatementDialog = ({
 
   const { toast } = useToast();
 
-  const onAccept = useCallback(() => {
+  const onAccept = () => {
     startTransition(() => {
       deleteStatementFlags(pollId, statementId).then(() => {
         closeModal();
@@ -32,7 +32,7 @@ const DeleteFlaggedStatementDialog = ({
         });
       });
     });
-  }, [closeModal, pollId, statementId, toast]);
+  };
 
   return (
     <Dialog

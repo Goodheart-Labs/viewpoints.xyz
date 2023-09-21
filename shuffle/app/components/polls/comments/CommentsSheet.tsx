@@ -1,7 +1,7 @@
 "use client";
 
 import type { FC } from "react";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { useBoolean } from "usehooks-ts";
@@ -36,12 +36,9 @@ export const CommentsSheet: FC<Props> = ({ comments }) => {
     setValue: setShowComments,
   } = useBoolean(false);
 
-  const onValueChange = useCallback(
-    (v: string) => {
-      setShowComments(v === ACCORDION_VALUE);
-    },
-    [setShowComments],
-  );
+  const onValueChange = (v: string) => {
+    setShowComments(v === ACCORDION_VALUE);
+  };
 
   const [currentViewportHeight, setCurrentViewportHeight] = useState(0);
 
@@ -75,7 +72,7 @@ export const CommentsSheet: FC<Props> = ({ comments }) => {
   const mobileCommentContainerRef = useRef<HTMLDivElement | null>(null);
   const desktopCommentContainerRef = useRef<HTMLDivElement | null>(null);
 
-  const onNewComment = useCallback(() => {
+  const onNewComment = () => {
     mobileCommentContainerRef.current?.scrollTo({
       top: 0,
       behavior: "smooth",
@@ -85,7 +82,7 @@ export const CommentsSheet: FC<Props> = ({ comments }) => {
       top: 0,
       behavior: "smooth",
     });
-  }, []);
+  };
 
   return (
     <>

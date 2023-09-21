@@ -1,7 +1,7 @@
 "use client";
 
 import type { FC } from "react";
-import React, { useCallback } from "react";
+import React from "react";
 
 import { usePathname, useRouter } from "next/navigation";
 
@@ -23,12 +23,9 @@ export const StatementSort: FC<Props> = ({ value = "consensus" }) => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleChange = useCallback(
-    (newValue: SortKey) => {
-      router.push(`${pathname}?${SORT_PARAM}=${newValue}`);
-    },
-    [pathname, router],
-  );
+  const handleChange = (newValue: SortKey) => {
+    router.push(`${pathname}?${SORT_PARAM}=${newValue}`);
+  };
 
   return (
     <Select defaultValue={value} onValueChange={handleChange}>

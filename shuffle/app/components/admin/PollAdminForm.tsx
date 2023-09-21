@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useTransition } from "react";
+import { useTransition } from "react";
 import { useController, useForm, useFormState } from "react-hook-form";
 
 import type { polls, polls_visibility_enum, Statement } from "@prisma/client";
@@ -52,9 +52,9 @@ const PollAdminForm = ({ poll }: PollAdminFormProps) => {
 
   const { toast } = useToast();
 
-  const onCancel = useCallback(() => {
+  const onCancel = () => {
     reset();
-  }, [reset]);
+  };
 
   const onSubmit = handleSubmit(() => {
     startTransition(() => {

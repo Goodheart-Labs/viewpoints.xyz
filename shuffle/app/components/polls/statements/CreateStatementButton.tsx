@@ -1,7 +1,7 @@
 "use client";
 
 import type { FC } from "react";
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 
 import { AnimatePresence } from "framer-motion";
 import { PlusCircle } from "lucide-react";
@@ -19,18 +19,18 @@ export const CreateStatementButton: FC<Props> = ({ pollId }) => {
 
   const [isCreating, setIsCreating] = useState(false);
 
-  const closeDialog = useCallback(() => {
+  const closeDialog = () => {
     setIsCreating(false);
-  }, []);
+  };
 
-  const onNewStatement = useCallback(() => {
+  const onNewStatement = () => {
     setIsCreating(true);
 
     track({
       type: "statement.new.open",
       pollId,
     });
-  }, [pollId, track]);
+  };
 
   return (
     <>
