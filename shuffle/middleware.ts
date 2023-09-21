@@ -10,6 +10,8 @@ const publicRoutes = ["/", "/polls/(.*)"];
 const privateRoutes = ["/polls/new"];
 
 export const SESSION_ID_COOKIE_NAME = "sessionId";
+const INFINITE_REDIRECTION_LOOP_COOKIE = "__clerk_redirection_loop";
+const CLERK_CLIENT_UAT_COOKIE = "__client_uat";
 
 export const config = {
   matcher: ["/((?!.*\\..*|_next|iframe).*)", "/'"],
@@ -35,6 +37,10 @@ export default authMiddleware({
       return response;
     }
 
+    if (req.cookies.get(INFINITE_REDIRECTION_LOOP_COOKIE)?.value) {
+      req.cookies.delete(CLERK_CLIENT_UAT_COOKIE);
+    }
+
     return NextResponse.next();
   },
 
@@ -55,5 +61,4 @@ export default authMiddleware({
 
     return false;
   },
-  debug: true,
 });
