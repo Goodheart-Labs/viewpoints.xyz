@@ -29,7 +29,9 @@ export default authMiddleware({
       req.cookies.delete(CLERK_CLIENT_UAT_COOKIE);
       req.cookies.delete(INFINITE_REDIRECTION_LOOP_COOKIE);
 
-      return false;
+      const res = NextResponse.next();
+      res.headers.set("Location", "/");
+      return res;
     }
 
     if (!req.cookies.has(SESSION_ID_COOKIE_NAME)) {
