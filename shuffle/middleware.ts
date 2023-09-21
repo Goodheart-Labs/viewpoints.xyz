@@ -22,6 +22,10 @@ export const config = {
 
 export default authMiddleware({
   beforeAuth: async (req) => {
+    if (req.cookies.get(INFINITE_REDIRECTION_LOOP_COOKIE)?.value) {
+      req.cookies.delete(CLERK_CLIENT_UAT_COOKIE);
+    }
+
     if (!req.cookies.has(SESSION_ID_COOKIE_NAME)) {
       const newSessionId = uuidv4();
       const cookie = {
@@ -35,10 +39,6 @@ export default authMiddleware({
       response.cookies.set({ ...cookie, expires: Infinity });
 
       return response;
-    }
-
-    if (req.cookies.get(INFINITE_REDIRECTION_LOOP_COOKIE)?.value) {
-      req.cookies.delete(CLERK_CLIENT_UAT_COOKIE);
     }
 
     return NextResponse.next();
