@@ -91,7 +91,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
 
             <button
               type="button"
-              className="text-zinc-400 hover:text-zinc-300 w-10 h-10 bg-zinc-700 rounded-full"
+              className="text-zinc-400 hover:text-zinc-300 w-10 h-10 bg-zinc-700 rounded-full focus-visible:outline-none"
               onClick={onFlag}
             >
               <FlagIcon className="w-5 h-5 mx-auto" aria-hidden="true" />
