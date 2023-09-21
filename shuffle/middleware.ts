@@ -55,4 +55,5 @@ export default authMiddleware({
 
     return false;
   },
+  debug: true,
 });
