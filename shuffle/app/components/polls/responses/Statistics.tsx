@@ -52,7 +52,7 @@ export const Statistics = async ({
         )}
 
         <div className="flex justify-between items-center">
-          <div>Results</div>
+          <div className="text-zinc-100">Results</div>
 
           <StatementSort value={sortBy} />
         </div>

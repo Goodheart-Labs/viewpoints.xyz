@@ -26,7 +26,7 @@ export const HighlightedStatement: FC<Props> = ({
       <span className="mr-1">{getChoiceEmoji(userChoice)}</span> {highlightText}
     </div>
 
-    <p className="flex-1">{text}</p>
+    <p className="flex-1 text-zinc-100">{text}</p>
 
     <div className="flex gap-2 mt-2">
       <ChoicePercentages

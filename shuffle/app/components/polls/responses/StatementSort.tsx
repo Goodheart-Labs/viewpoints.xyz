@@ -29,7 +29,7 @@ export const StatementSort: FC<Props> = ({ value = "consensus" }) => {
 
   return (
     <Select defaultValue={value} onValueChange={handleChange}>
-      <SelectTrigger>
+      <SelectTrigger className="text-zinc-100">
         Sort by: <SelectValue />
       </SelectTrigger>
       <SelectContent>

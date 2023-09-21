@@ -68,7 +68,7 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
             sortBy={searchParams.sort}
           >
             <div className="flex justify-between items-center">
-              <p>End of statements</p>
+              <p className="text-zinc-100">End of statements</p>
               <CreateStatementButton pollId={poll.id} />
             </div>
           </Statistics>
