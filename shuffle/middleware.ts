@@ -25,11 +25,11 @@ export default authMiddleware({
     const redirectCount = req.cookies.get(INFINITE_REDIRECTION_LOOP_COOKIE)
       ?.value;
 
-    if (redirectCount && parseInt(redirectCount) > 0) {
+    if (redirectCount) {
       req.cookies.delete(CLERK_CLIENT_UAT_COOKIE);
       req.cookies.delete(INFINITE_REDIRECTION_LOOP_COOKIE);
 
-      return false;
+      return NextResponse.redirect(new URL("/", req.url));
     }
 
     if (!req.cookies.has(SESSION_ID_COOKIE_NAME)) {
