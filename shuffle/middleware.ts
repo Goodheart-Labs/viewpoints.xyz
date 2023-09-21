@@ -22,8 +22,14 @@ export const config = {
 
 export default authMiddleware({
   beforeAuth: async (req) => {
+    console.log("beforeAuth");
+    console.log(req.cookies.get(CLERK_CLIENT_UAT_COOKIE)?.value);
+    console.log(req.cookies.get(INFINITE_REDIRECTION_LOOP_COOKIE)?.value);
+
     if (req.cookies.get(INFINITE_REDIRECTION_LOOP_COOKIE)?.value) {
+      console.log("Deleting cookie");
       req.cookies.delete(CLERK_CLIENT_UAT_COOKIE);
+      req.cookies.delete(INFINITE_REDIRECTION_LOOP_COOKIE);
     }
 
     if (!req.cookies.has(SESSION_ID_COOKIE_NAME)) {
@@ -61,4 +67,5 @@ export default authMiddleware({
 
     return false;
   },
+  debug: true,
 });
