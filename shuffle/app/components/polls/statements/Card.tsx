@@ -13,7 +13,7 @@ import { CardButton } from "./CardButton";
 import { ReportStatementDialog } from "./ReportStatementDialog";
 import { useCardHandlers } from "./useCardHandlers";
 
-const ANIMATION_DURATION = 0.5;
+const ANIMATION_DURATION = 0.3;
 export const CARD_VERTICAL_OFFSET = 25;
 export const CARD_SCALE_OFFSET = 0.05;
 const CARD_BRIGHTNESS_OFFSET = 35;
@@ -34,7 +34,6 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     const { leaveX, leaveY, onDragEnd, onResponse } = useCardHandlers({
       statementId: statement.id,
       pollId: statement.poll_id,
-      animationDuration: ANIMATION_DURATION,
     });
 
     const animate = leaveX !== 0 || leaveY !== 0 ? "exit" : "default";
