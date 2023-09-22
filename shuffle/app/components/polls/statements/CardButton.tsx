@@ -14,7 +14,7 @@ export const CardButton: FC<Props> = ({ choice, onResponse }) => (
     type="button"
     onClick={() => onResponse(choice)}
     className={cn(
-      "bg-zinc-700 hover:bg-zinc-600 rounded-full",
+      "bg-zinc-700 hover:bg-zinc-600 rounded-full aspect-square",
       getButtonSize(choice),
     )}
   >
@@ -26,10 +26,10 @@ export const getButtonSize = (choice: Choice) => {
   switch (choice) {
     case "agree":
     case "disagree":
-      return "w-14 h-14";
+      return "w-14 max-w-[25%]";
   }
 
-  return "w-10 h-10";
+  return "w-10 max-w-[20%]";
 };
 
 export const getChoiceEmoji = (choice: Choice) => {

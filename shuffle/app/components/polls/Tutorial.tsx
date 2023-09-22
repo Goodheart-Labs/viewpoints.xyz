@@ -64,7 +64,7 @@ export const Tutorial = () => {
   return (
     <Dialog open>
       <DialogContent
-        className="sm:max-w-[425px] gap-6 max-h-screen overflow-auto text-zinc-100"
+        className="sm:max-w-[425px] gap-6 max-h-full overflow-auto text-zinc-100"
         onPointerDownOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
@@ -76,14 +76,14 @@ export const Tutorial = () => {
           by dragging the card in the direction of your response.
         </p>
 
-        <div className="flex flex-col items-center w-full">
+        <div className="flex flex-col items-center w-full text-sm">
           <motion.div
             className="text-center"
             animate={{ y: -10 }}
             transition={transition}
           >
             {getChoiceEmoji("skip")}
-            <ArrowUp className="my-1" />
+            <ArrowUp size={20} className="my-1" />
           </motion.div>
 
           <div className="flex items-center self-stretch">
@@ -93,7 +93,7 @@ export const Tutorial = () => {
               transition={transition}
             >
               {getChoiceEmoji("disagree")}
-              <ArrowLeft className="mx-1" />
+              <ArrowLeft size={20} className="mx-1" />
             </motion.div>
 
             <div className="relative h-44 pointer-events-none flex-1 w-full">
@@ -110,7 +110,7 @@ export const Tutorial = () => {
               animate={{ x: 10 }}
               transition={transition}
             >
-              <ArrowRight className="mx-1" />
+              <ArrowRight size={20} className="mx-1" />
               {getChoiceEmoji("agree")}
             </motion.div>
           </div>
@@ -120,7 +120,7 @@ export const Tutorial = () => {
             animate={{ y: 10 }}
             transition={transition}
           >
-            <ArrowDown className="my-1" />
+            <ArrowDown size={20} className="my-1" />
             {getChoiceEmoji("itsComplicated")}
           </motion.div>
         </div>
