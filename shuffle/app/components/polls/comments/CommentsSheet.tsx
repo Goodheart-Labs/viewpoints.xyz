@@ -88,12 +88,12 @@ export const CommentsSheet: FC<Props> = ({ comments }) => {
     <>
       <div
         className={cn(
-          "xl:hidden fixed inset-0 opacity-0 transition-opacity duration-300 backdrop-blur-sm bg-background/80 cursor-pointer pointer-events-none z-40",
+          "xl:hidden fixed inset-0 opacity-0 transition-opacity duration-300 backdrop-blur-sm bg-background/80 cursor-pointer pointer-events-none z-[60]",
           showComments && "pointer-events-auto touch-none opacity-unset",
         )}
         onClick={close}
       />
-      <div className="sticky xl:static bottom-0 w-full bg-zinc-900 flex flex-col pointer-events-auto z-40 touch-none xl:w-1/4 xl:h-full xl:rounded-lg">
+      <div className="sticky xl:static bottom-0 w-full bg-zinc-900 flex flex-col pointer-events-auto z-[60] touch-none xl:w-1/4 xl:h-full xl:rounded-lg">
         <div className="xl:hidden">
           <Accordion
             type="single"
