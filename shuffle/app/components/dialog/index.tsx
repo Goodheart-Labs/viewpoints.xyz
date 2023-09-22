@@ -46,7 +46,11 @@ export const Dialog: FC<Props> = ({
 
   return (
     <RawDialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="rounded-xl w-10/12 p-4" asChild={false}>
+      <DialogContent
+        className="rounded-xl w-10/12 p-4"
+        asChild={false}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle className="text-zinc-400 font-bold text-xs border-l-2 pl-2 mb-2 text-left">
             {title}
