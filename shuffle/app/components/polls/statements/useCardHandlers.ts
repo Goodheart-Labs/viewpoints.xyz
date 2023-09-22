@@ -18,14 +18,9 @@ const choiceEvents = {
 type HookArgs = {
   statementId: number;
   pollId: number;
-  animationDuration: number;
 };
 
-export const useCardHandlers = ({
-  statementId,
-  pollId,
-  animationDuration,
-}: HookArgs) => {
+export const useCardHandlers = ({ statementId, pollId }: HookArgs) => {
   const { track } = useAmplitude();
 
   const [leaveX, setLeaveX] = useState(0);
@@ -38,6 +33,8 @@ export const useCardHandlers = ({
   };
 
   const onResponse = (choice: Choice) => {
+    onSwipe(choice);
+
     track({
       type: choiceEvents[choice],
       pollId,
@@ -58,8 +55,6 @@ export const useCardHandlers = ({
         setLeaveY(1000);
         break;
     }
-
-    setTimeout(() => onSwipe(choice), (animationDuration - 0.4) * 1000);
   };
 
   const onDragEnd = (_e: unknown, info: PanInfo) => {

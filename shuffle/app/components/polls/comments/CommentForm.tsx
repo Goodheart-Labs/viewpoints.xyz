@@ -99,7 +99,7 @@ export const CommentForm: FC<Props> = ({
   }, [textAreaRef]);
 
   return (
-    <div className="px-5 pt-3 pb-5 flex items-center gap-2 bg-zinc-900 z-[60] xl:rounded-b-xl border-t border-zinc-800">
+    <div className="px-5 pt-3 pb-5 flex items-center gap-2 bg-zinc-900 xl:rounded-b-xl border-t border-zinc-800">
       <UserAvatar
         avatarUrl={user?.imageUrl ?? null}
         name={null}

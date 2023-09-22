@@ -24,7 +24,9 @@ export const StatementSort: FC<Props> = ({ value = "consensus" }) => {
   const pathname = usePathname();
 
   const handleChange = (newValue: SortKey) => {
-    router.push(`${pathname}?${SORT_PARAM}=${newValue}`);
+    router.push(`${pathname}?${SORT_PARAM}=${newValue}`, {
+      scroll: false,
+    });
   };
 
   return (
