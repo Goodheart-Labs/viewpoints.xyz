@@ -1,25 +1,23 @@
 "use client";
 
-import type { PropsWithChildren } from "react";
-import { useCallback, useState } from "react";
-import { useMutation, useQuery } from "react-query";
+import type { FC } from "react";
+import { useState } from "react";
 
 import { FlagIcon } from "@heroicons/react/20/solid";
-import type { FlaggedStatement, Statement } from "@prisma/client";
-import axios from "axios";
 import { CornerUpLeftIcon, TrashIcon } from "lucide-react";
 
-import type { Poll } from "@/lib/api";
+import { ScrollArea } from "@/shadcn/scroll-area";
 import { Separator } from "@/shadcn/separator";
 
 import DeleteFlaggedStatementDialog from "./DeleteFlaggedStatementDialog";
 import DeleteStatementDialog from "./DeleteStatementDialog";
+import type { PollWithStatements } from "./PollAdminForm";
 
-const StatementsList = ({
-  poll,
-}: PropsWithChildren<{
-  poll: Poll;
-}>) => {
+type Props = {
+  poll: PollWithStatements;
+};
+
+const StatementsList: FC<Props> = ({ poll }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const [selectedStatementId, setSelectedStatementId] = useState<number | null>(
@@ -40,83 +38,17 @@ const StatementsList = ({
     setIsOpen(true);
   };
 
-  const { data: statements, refetch: refetchStatements } = useQuery<
-    Statement[]
-  >(["statements", poll.id], async () => {
-    const { data } = await axios.get(`/api/polls/${poll.id}/statements`);
-    return data as Statement[];
-  });
-
-  const { data: flaggedStatements, refetch: refetchFlaggedStatements } =
-    useQuery<FlaggedStatement[]>(["flaggedStatements", poll.id], async () => {
-      const { data } = await axios.get(
-        `/api/polls/${poll.id}/flaggedStatements`,
-      );
-      return data as FlaggedStatement[];
-    });
-
-  const statementsWithFlaggedStatements = statements?.map((statement) => ({
-    ...statement,
-    flaggedStatements: flaggedStatements?.filter(
-      (flaggedStatement) => flaggedStatement.statementId === statement.id,
-    ),
-  }));
-
-  const deleteStatementMutation = useMutation(
-    async (statementId: string) => {
-      await axios.delete(`/api/statements/${statementId}`);
-    },
-    {
-      onSuccess: () => {
-        refetchStatements();
-        refetchFlaggedStatements();
-      },
-    },
-  );
-
-  const onClickDeleteStatement = useCallback(
-    (statementId: number) => async () => {
-      await deleteStatementMutation.mutateAsync(String(statementId));
-      setIsOpen(false);
-    },
-    [deleteStatementMutation],
-  );
-
-  const deleteFlaggedStatementMutation = useMutation(
-    async (statementId: string) => {
-      await axios.delete(
-        `/api/polls/${poll.id}/flaggedStatements/${statementId}`,
-      );
-    },
-    {
-      onSuccess: () => {
-        refetchStatements();
-        refetchFlaggedStatements();
-      },
-    },
-  );
-
-  const onClickDeleteFlaggedStatement = useCallback(
-    (statementId: number) => async () => {
-      await deleteFlaggedStatementMutation.mutateAsync(String(statementId));
-      setIsOpen(false);
-    },
-    [deleteFlaggedStatementMutation],
-  );
-
   return (
-    <div className="flex flex-col w-full pb-16">
-      {(statementsWithFlaggedStatements ?? []).map((statement) => (
+    <ScrollArea className="flex flex-col w-full px-6">
+      {poll.statements.map((statement, index) => (
         <div key={statement.id} className=" mt-1 mb-2">
           <div className="mb-2">
-            {statement.flaggedStatements &&
-              statement?.flaggedStatements?.length > 1 && (
-                <span className="flex items-center text-xxs bg-accent p-1.5 rounded-sm">
-                  <FlagIcon width={10} height={10} className="mr-2" />
-                  This statement has been removed from poll because of 2
-                  reports.
-                </span>
-              )}
+            {statement._count.flaggedStatements > 1 && (
+              <span className="flex items-center text-xxs bg-accent p-1.5 rounded-sm">
+                <FlagIcon width={10} height={10} className="mr-2" />
+                This statement has been removed from poll because of 2 reports.
+              </span>
+            )}
           </div>
 
           <div className="flex justify-between items-center">
@@ -124,23 +56,22 @@ const StatementsList = ({
               {statement.text}
             </p>
             <div className="flex">
-              {statement.flaggedStatements &&
-                statement?.flaggedStatements?.length > 1 && (
-                  <span className="bg-accent p-2.5 rounded-full">
-                    <a
-                      href="#"
-                      onClick={() =>
-                        openDeleteFlaggedStatementsDialog(statement.id)
-                      }
-                    >
-                      <CornerUpLeftIcon
-                        width={12}
-                        height={12}
-                        className="w-4 h-4 text-foreground"
-                      />
-                    </a>
-                  </span>
-                )}
+              {statement._count.flaggedStatements > 1 && (
+                <span className="bg-accent p-2.5 rounded-full">
+                  <a
+                    href="#"
+                    onClick={() =>
+                      openDeleteFlaggedStatementsDialog(statement.id)
+                    }
+                  >
+                    <CornerUpLeftIcon
+                      width={12}
+                      height={12}
+                      className="w-4 h-4 text-foreground"
+                    />
+                  </a>
+                </span>
+              )}
 
               <span className="bg-accent p-2.5 ml-2 rounded-full">
                 <a
@@ -156,26 +87,28 @@ const StatementsList = ({
               </span>
             </div>
           </div>
-          <Separator className="bg-muted my-2" />
+          {index !== poll.statements.length - 1 && (
+            <Separator className="bg-muted my-2" />
+          )}
         </div>
       ))}
       {selectedStatementId && modalType === "statement" && (
         <DeleteStatementDialog
+          pollId={poll.id}
+          statementId={selectedStatementId}
           isOpen={isOpen}
           closeModal={() => setIsOpen(false)}
-          statementId={selectedStatementId}
-          onClickDeleteStatement={onClickDeleteStatement}
         />
       )}
       {selectedStatementId && modalType === "flaggedStatement" && (
         <DeleteFlaggedStatementDialog
           isOpen={isOpen}
           closeModal={() => setIsOpen(false)}
+          pollId={poll.id}
           statementId={selectedStatementId}
-          onClickDeleteFlaggedStatement={onClickDeleteFlaggedStatement}
         />
       )}
-    </div>
+    </ScrollArea>
   );
 };
 

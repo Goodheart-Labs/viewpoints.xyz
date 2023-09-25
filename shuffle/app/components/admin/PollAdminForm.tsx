@@ -1,53 +1,74 @@
 "use client";
 
-import { useState } from "react";
-import { useMutation } from "react-query";
+import { useTransition } from "react";
+import { useController, useForm, useFormState } from "react-hook-form";
 
-import type { polls_visibility_enum } from "@prisma/client";
-import { ReloadIcon } from "@radix-ui/react-icons";
-import axios from "axios";
-import { CheckCircle2, XCircle } from "lucide-react";
+import type { polls, polls_visibility_enum, Statement } from "@prisma/client";
+import { CheckCircle2, RotateCw, XCircle } from "lucide-react";
 
+import { changeVisibility } from "@/app/api/polls/changeVisibility";
 import { DisabledInputWithLabel } from "@/app/components/DisabledInputWithLabel";
 import PollPrivacySettings from "@/components/ui/PollPrivacySettings";
-import type { Poll } from "@/lib/api";
 import { Button } from "@/shadcn/button";
-import { Card, CardContent } from "@/shadcn/card";
+import { ScrollArea } from "@/shadcn/scroll-area";
 import { useToast } from "@/shadcn/use-toast";
 
 import StatementsList from "./StatementList";
 
+export type PollWithStatements = polls & {
+  statements: (Pick<Statement, "id" | "text"> & {
+    _count: {
+      flaggedStatements: number;
+    };
+  })[];
+};
+
+type Form = {
+  visibility: polls_visibility_enum;
+};
+
 type PollAdminFormProps = {
-  poll: Poll;
+  poll: PollWithStatements;
 };
 
 const PollAdminForm = ({ poll }: PollAdminFormProps) => {
-  const [pollVisibility, setPollVisibility] = useState<polls_visibility_enum>(
-    poll.visibility,
-  );
+  const [isPending, startTransition] = useTransition();
+
+  const { reset, handleSubmit, getValues, control } = useForm<Form>({
+    defaultValues: {
+      visibility: poll.visibility,
+    },
+  });
+
+  const { isDirty, isValid } = useFormState({ control });
+
+  const visibilityField = useController({
+    control,
+    name: "visibility",
+    rules: {
+      required: true,
+    },
+  });
 
   const { toast } = useToast();
 
-  const { mutateAsync, isLoading } = useMutation(
-    async (visibility: polls_visibility_enum) => {
-      const { data } = await axios.patch(`/api/polls/${poll.id}`, {
-        visibility,
-      });
-      return data as { poll: Poll };
-    },
-  );
-
-  const updatePollVisibility = async () => {
-    mutateAsync(pollVisibility).then(() =>
-      toast({
-        description: "Poll has been saved",
-      }),
-    );
+  const onCancel = () => {
+    reset();
   };
 
+  const onSubmit = handleSubmit(() => {
+    startTransition(() => {
+      changeVisibility(poll.id, getValues().visibility).then(() => {
+        toast({
+          description: "Poll has been saved",
+        });
+      });
+    });
+  });
+
   return (
-    <>
-      <div className="w-full max-w-3xl md:border md:border-accent md:px-6">
+    <div className="flex flex-col items-stretch w-full xl:max-w-3xl h-full bg-zinc-950 xl:rounded-xl">
+      <div className="p-6">
         <DisabledInputWithLabel label="Poll subject" value={poll.title} />
         <DisabledInputWithLabel
           label="Poll description"
@@ -55,44 +76,43 @@ const PollAdminForm = ({ poll }: PollAdminFormProps) => {
         />
         <p className="mb-2 text-secondary text-sm">Poll type</p>
         <PollPrivacySettings
-          poll={poll}
-          pollVisibilitySetter={setPollVisibility}
+          visibility={visibilityField.field.value}
+          pollVisibilitySetter={visibilityField.field.onChange}
         />
-
-        <h2 className="text-secondary text-sm mt-2">Poll statements</h2>
-
-        <StatementsList poll={poll} />
       </div>
-      <Card className="sticky bottom-0 w-full left-0 max-w-3xl border-t-accent border-b-0 border-x-0 md:border-accent oveflow-hidden rounded-none md:rounded-b-3xl bg-black md:bg-background py-5">
-        <CardContent className="flex justify-between items-center px-5 py-0">
-          <Button className="rounded-full bg-accent text-secondary">
-            <XCircle
-              size="16"
-              fill="hsla(0, 0%, 100%, 0.75)"
-              color="black"
-              className="mr-2 text-accent"
-            />
+
+      <div className="mx-6 my-3 border-zinc-700 border-t pt-3" />
+
+      <h2 className="text-zinc-400 text-md px-6 pb-3">Poll statements</h2>
+
+      <ScrollArea className="flex-1">
+        <StatementsList poll={poll} />
+      </ScrollArea>
+
+      <div className="p-6 sticky bottom-0 xl:static bg-zinc-900 xl:rounded-b-xl">
+        <div className="w-full flex justify-between">
+          <Button
+            className="rounded-full bg-zinc-700 text-zinc-400 hover:bg-zinc-600 [&:hover>svg]:stroke-zinc-600"
+            onClick={onCancel}
+          >
+            <XCircle className="mr-2 w-5 h-5 fill-zinc-300 stroke-zinc-700" />
             Cancel
           </Button>
           <Button
-            className="rounded-full bg-foreground "
-            onClick={() => updatePollVisibility()}
+            className="rounded-full bg-white text-black hover:bg-zinc-200 [&:hover>svg]:stroke-zinc-200"
+            onClick={onSubmit}
+            disabled={!isDirty || !isValid || isPending}
           >
-            {isLoading ? (
-              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+            {isPending ? (
+              <RotateCw className="mr-2 w-5 h-5 animate-spin" />
             ) : (
-              <CheckCircle2
-                size="16"
-                fill="black"
-                stroke="white"
-                className="mr-2"
-              />
+              <CheckCircle2 className="mr-2 w-5 h-5 fill-black stroke-white" />
             )}
-            Save poll
+            {isPending ? "Saving..." : "Save poll"}
           </Button>
-        </CardContent>
-      </Card>
-    </>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -1,62 +1,53 @@
-import { XCircle } from "lucide-react";
+import { useTransition } from "react";
 
-import { Button } from "@/shadcn/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/shadcn/dialog";
+import { deleteStatementFlags } from "@/app/api/statements/deleteStatementFlags";
+import { useToast } from "@/shadcn/use-toast";
+
+import { Dialog } from "../dialog";
 
 type DeleteFlaggedStatementDialogProps = {
+  pollId: number;
+  statementId: number;
   isOpen: boolean;
   closeModal: () => void;
-  statementId: number;
-  onClickDeleteFlaggedStatement: (statement: number) => () => Promise<void>;
 };
 
 const DeleteFlaggedStatementDialog = ({
+  pollId,
+  statementId,
   isOpen,
   closeModal,
-  statementId,
-  onClickDeleteFlaggedStatement,
-}: DeleteFlaggedStatementDialogProps) => (
-  <Dialog open={isOpen} onOpenChange={closeModal}>
-    <DialogContent className="dark rounded-xl w-10/12" asChild={false}>
-      <DialogHeader>
-        <DialogTitle className="text-left text-muted font-bold text-xs border-l-2 pl-2 mb-2">
-          Restore statement
-        </DialogTitle>
+}: DeleteFlaggedStatementDialogProps) => {
+  const [isPending, startTransition] = useTransition();
 
-        <DialogTitle className="text-left text-base">
-          Are you sure you want to restore statement for the public?
-        </DialogTitle>
-      </DialogHeader>
-      <DialogFooter>
-        <div className="w-full flex justify-between">
-          <Button
-            className="rounded-full bg-accent text-secondary"
-            onClick={() => closeModal()}
-          >
-            <XCircle
-              size="16"
-              fill="hsla(0, 0%, 100%, 0.75)"
-              color="black"
-              className="mr-2 text-accent"
-            />
-            No
-          </Button>
-          <Button
-            className="rounded-full bg-foreground"
-            onClick={onClickDeleteFlaggedStatement(statementId)}
-          >
-            Yes, restore
-          </Button>
-        </div>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
-);
+  const { toast } = useToast();
+
+  const onAccept = () => {
+    startTransition(() => {
+      deleteStatementFlags(pollId, statementId).then(() => {
+        closeModal();
+
+        toast({
+          description: "Statement reports have been deleted",
+        });
+      });
+    });
+  };
+
+  return (
+    <Dialog
+      isOpen={isOpen}
+      cancelText="No, keep them"
+      okText="Yes, delete"
+      onCancel={closeModal}
+      onAccept={onAccept}
+      title="Delete reports"
+      subtitle="Are you sure you want to remove reports?"
+      loading={isPending}
+      loadingText="Deleting..."
+      submitDisabled={isPending}
+    />
+  );
+};
 
 export default DeleteFlaggedStatementDialog;
