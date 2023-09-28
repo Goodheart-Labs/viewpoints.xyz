@@ -66,7 +66,10 @@ export const getData = async (slug: string) => {
         skipCount += 1;
       }
 
-      if (response.user_id === userId || response.session_id === sessionId) {
+      if (
+        (userId && response.user_id === userId) ||
+        response.session_id === sessionId
+      ) {
         userResponse = {
           ...response,
           statementText: statement.text,
