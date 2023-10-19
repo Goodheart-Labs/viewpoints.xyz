@@ -32,10 +32,10 @@ export const CommentItem: FC<Props> = ({ comment }) => {
   return (
     <>
       <div className="flex flex-col gap-3">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <UserAvatar
-            name={comment.author?.name ?? null}
-            avatarUrl={comment.author?.avatarUrl ?? null}
+            name={null}
+            avatarUrl={null}
             subtitle={date.toFormat("MMM dd. HH:mm")}
           />
 
@@ -44,7 +44,7 @@ export const CommentItem: FC<Props> = ({ comment }) => {
               user.id === currentPoll?.user_id) && (
               <button
                 type="button"
-                className="text-xs text-zinc-500 font-medium hover:text-zinc-300"
+                className="text-xs font-medium text-zinc-500 hover:text-zinc-300"
                 onClick={openDeleteDialog}
               >
                 Delete
