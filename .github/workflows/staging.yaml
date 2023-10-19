@@ -6,9 +6,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     name: Migrate db
-    defaults:
-      run:
-        working-directory: ./shuffle
 
     steps:
       - uses: actions/checkout@v3

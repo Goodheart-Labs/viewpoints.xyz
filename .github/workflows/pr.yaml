@@ -7,22 +7,19 @@ jobs:
   test:
     runs-on: ubuntu-latest
     name: Test
-    defaults:
-      run:
-        working-directory: ./shuffle
 
     steps:
       - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
+      - uses: oven-sh/setup-bun@v1
         with:
-          version: 8
+          bun-version: 1.0.6
 
-      - run: pnpm i --frozen-lockfile
-      - run: pnpm format:ci
-      - run: pnpm typecheck
-      - run: pnpm lint
-      - run: pnpm test
-      - run: pnpm migrate:ci
+      - run: bun install --frozen-lockfile
+      - run: bun run format:ci
+      - run: bun run typecheck
+      - run: bun run lint
+      - run: bun run test
+      - run: bun run migrate:ci
         env:
           POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL_PREVIEW }}
           POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING_PREVIEW }}
