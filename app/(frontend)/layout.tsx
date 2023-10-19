@@ -1,5 +1,3 @@
-import { Tooltip } from "react-tooltip";
-
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 
@@ -8,6 +6,8 @@ import { Toaster } from "@/shadcn/toaster";
 
 import Contexts from "../components/Contexts";
 import LogrocketWrapper from "../components/LogrocketWrapper";
+
+import { Tooltips } from "./tooltip";
 
 import "@/styles/tailwind.css";
 import "@/styles/frontend.css";
@@ -29,14 +29,14 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: { children: React.ReactNode }) => (
   <ClerkProvider>
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-black flex flex-col items-stretch h-screen">
+      <body className="flex flex-col items-stretch h-screen bg-black">
         <LogrocketWrapper>
           <Contexts>
             <Header />
             {children}
           </Contexts>
         </LogrocketWrapper>
-        <Tooltip id="tooltip" />
+        <Tooltips />
         <Toaster />
       </body>
     </html>
