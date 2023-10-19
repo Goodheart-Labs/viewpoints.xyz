@@ -1,7 +1,46 @@
-# polislike
+# Shuffle
 
-This repo contains various experiments by [Goodheart Labs](https://goodheartlabs.com/) with [Polis](https://pol.is/), a community preferences tool.
+New UI experiment for polislike
 
-## Theory: If responses were easier to give, the polls would be more useful
+Currently deployed at <https://viewpoints.xyz/>
 
-The `shuffle` directory contains a Next.js app that wraps the respondent frontend for Polis with a simpler card UI.
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/en/) (>= 18)
+- [Docker desktop](https://www.docker.com/products/docker-desktop/)
+
+### Installing
+
+```bash
+pnpm install
+```
+
+### Get Envirioment Variables
+
+Link vercel project (`vercel link`) then run the following command:
+
+```bash
+pnpm env:pull
+```
+
+### Running
+
+Start database:
+
+```bash
+docker-compose up -d
+```
+
+Deploying migrations (if needed):
+
+```bash
+npx prisma migrate dev
+```
+
+Run project:
+
+```bash
+pnpm dev
+```
