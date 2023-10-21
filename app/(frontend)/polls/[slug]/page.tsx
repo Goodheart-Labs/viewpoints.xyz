@@ -28,13 +28,13 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
     poll.visibility === "public" ? LockOpen2Icon : LockClosedIcon;
 
   return (
-    <main className="flex-1 flex flex-col items-center w-full bg-black xl:p-8 xl:flex-row xl:justify-center xl:gap-8 xl:overflow-y-hidden">
-      <div className="hidden xl:block w-1/4" />
+    <main className="flex flex-col items-center flex-1 w-full bg-black xl:p-8 xl:flex-row xl:justify-center xl:gap-8 xl:overflow-y-hidden">
+      <div className="hidden w-1/4 xl:block" />
 
-      <div className="flex flex-col items-stretch max-w-full w-full xl:w-1/2 h-full xl:bg-zinc-900 xl:rounded-xl">
-        <div className="bg-zinc-800 p-6 xl:rounded-t-xl">
-          <div className="flex justify-between items-center">
-            <p className="text-left text-zinc-400 uppercase font-bold text-xs border-l-2 border-l-zinc-400 pl-2 mb-2">
+      <div className="flex flex-col items-stretch w-full h-full max-w-full xl:w-1/2 xl:bg-zinc-900 xl:rounded-xl">
+        <div className="p-6 bg-zinc-800 xl:rounded-t-xl">
+          <div className="flex items-center justify-between">
+            <p className="pl-2 mb-2 text-xs font-bold text-left uppercase border-l-2 text-zinc-400 border-l-zinc-400">
               Topic
             </p>
 
@@ -68,7 +68,7 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
             userResponses={userResponses}
             sortBy={searchParams.sort}
           >
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <p className="text-zinc-100">End of statements</p>
               <CreateStatementButton pollId={poll.id} />
             </div>

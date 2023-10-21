@@ -18,6 +18,8 @@ type CardsProps = {
 const Cards = ({ statements }: CardsProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
+  // randomise the order
+
   const statementsToDisplay = useMemo(() => statements.slice(-3), [statements]);
 
   const [cardHeight, setCardHeight] = useState<number | undefined>(undefined);
@@ -39,7 +41,7 @@ const Cards = ({ statements }: CardsProps) => {
 
   return (
     <div
-      className="relative m-6 mb-4 flex-shrink-0"
+      className="relative flex-shrink-0 m-6 mb-4"
       ref={containerRef}
       style={{
         height: `${

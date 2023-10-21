@@ -117,5 +117,9 @@ export const getData = async (slug: string) => {
     filteredStatements.push(filteredStatementData);
   }
 
-  return { poll, filteredStatements, userResponses };
+  const sortedFilteredStatements = filteredStatements.sort(
+    () => 0.5 - Math.random(),
+  );
+
+  return { poll, filteredStatements: sortedFilteredStatements, userResponses };
 };
