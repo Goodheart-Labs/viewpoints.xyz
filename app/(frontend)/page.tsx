@@ -96,93 +96,109 @@ const Index = async () => {
 
   return (
     <>
-      <main className="flex flex-col items-center w-full p-4">
-        <Card className="mb-8">
-          <h2 className="mb-4 text-3xl font-medium leading-8">
-            What on earth are you thinking?
-          </h2>
-          <p className="mb-4 dark:text-white/90">
-            Viewpoints.xyz is a tool that lets you gauge opinions on any topic.
-            Create a poll, get a link, and find out what your community is
-            thinking.
-          </p>
-          <p className="mb-2">
-            <Link href="/polls/new">
-              <Button
-                variant="pill"
-                size="pill"
-                className="pr-5 text-sm dark:bg-white dark:text-gray-800"
-              >
-                <PlusCircle className="w-4 mr-2" />
-                Create poll
-              </Button>
-            </Link>
-          </p>
+      <main className="flex flex-col items-center w-full h-full max-w-5xl p-4 mx-auto md:mt-6">
+        <Card className="flex mb-8 md:space-x-4">
+          <div className="w-full md:w-5/12 md:p-8">
+            <h2 className="mb-4 text-3xl font-medium leading-8 md:dark:text-white/90">
+              What on earth are you thinking?
+            </h2>
+            <p className="mb-4 md:mb-6 dark:text-white/90 md:dark:text-white/80">
+              Viewpoints.xyz is a tool that lets you gauge opinions on any
+              topic. Create a poll, get a link, and find out what your community
+              is thinking.
+            </p>
+            <p className="mb-2">
+              <Link href="/polls/new">
+                <Button
+                  variant="pill"
+                  size="pill"
+                  className="pr-5 text-sm dark:bg-white dark:text-gray-800 hover:dark:bg-white/80"
+                >
+                  <PlusCircle className="w-4 mr-2" />
+                  Create poll
+                </Button>
+              </Link>
+            </p>
+          </div>
+          <div className="flex-col justify-center hidden md:flex">
+            <Image
+              className="mr-8"
+              src="/hero.png"
+              alt="an example statement"
+              width={540}
+              height={40}
+            />
+          </div>
         </Card>
 
-        <h3 className="w-full mb-2 text-xl font-medium dark:text-white/90">
+        <h3 className="w-full mb-2 text-xl font-medium dark:text-white/90 md:dark:text-white/80">
           Running public polls
         </h3>
 
-        {polls.length > 0 ? (
-          polls.map((poll) => (
-            <Card key={poll.id} className="w-full mb-4 group">
-              <h4 className="mb-2 text-lg font-medium leading-6">
-                {poll.title}
-              </h4>
-              <p className="mb-3 text-sm dark:text-white/60">
-                {poll._count.statements} statements | 0 responses
-              </p>
-
-              <p className="flex items-center text-xs dark:text-white/60">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={authors[poll.user_id]?.avatarUrl ?? anonymousAvatar}
-                  alt={authors[poll.user_id]?.name ?? "Anonymous"}
-                  className="w-6 h-6 mr-2 rounded-full grayscale group-hover:grayscale-0"
-                />
-                <span>{authors[poll.user_id]?.name ?? "Anonymous"}</span>
-              </p>
-            </Card>
-          ))
-        ) : (
-          <p className="mt-4 dark:text-white/70">
-            There are no public polls at the moment. Why not{" "}
-            <Link href="/polls/new" className="underline">
-              create one
-            </Link>
-            ?
-          </p>
-        )}
-
-        <Card className="my-4 dark:bg-white">
-          <h3 className="mb-2 text-xl font-medium leading-8 dark:text-gray-800">
-            Create your own poll!
-          </h3>
-          <p className="mb-4 dark:text-gray-800/90">
-            It only takes a few minutes to create a poll, and you can create
-            public or private polls.
-          </p>
-          <p className="mb-2">
-            <Link href="/polls/new">
-              <Button
-                variant="pill"
-                size="pill"
-                className="pr-5 text-sm dark:bg-background dark:text-white"
+        <div className="w-full md:flex md:flex-wrap md:space-x-4">
+          {polls.length > 0 ? (
+            polls.map((poll) => (
+              <Card
+                key={poll.id}
+                className="w-full mb-4 group md:w-[300px] md:h-[180px] md:flex md:flex-col md:hover:dark:opacity-90 md:cursor-pointer md:transition-opacity"
               >
-                <PlusCircle className="w-4 mr-2" />
-                Create poll
-              </Button>
-            </Link>
-          </p>
-        </Card>
+                <h4 className="mb-2 text-lg font-medium leading-6">
+                  {poll.title}
+                </h4>
+                <p className="mb-3 text-sm dark:text-white/60">
+                  {poll._count.statements} statements | 0 responses
+                </p>
+
+                <p className="flex items-center text-xs dark:text-white/60 md:mt-auto">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={authors[poll.user_id]?.avatarUrl ?? anonymousAvatar}
+                    alt={authors[poll.user_id]?.name ?? "Anonymous"}
+                    className="w-6 h-6 mr-2 rounded-full grayscale group-hover:grayscale-0"
+                  />
+                  <span>{authors[poll.user_id]?.name ?? "Anonymous"}</span>
+                </p>
+              </Card>
+            ))
+          ) : (
+            <p className="mt-4 dark:text-white/70">
+              There are no public polls at the moment. Why not{" "}
+              <Link href="/polls/new" className="underline">
+                create one
+              </Link>
+              ?
+            </p>
+          )}
+
+          <Card className="my-4 dark:bg-white md:w-[300px] md:h-[180px] md:mt-0">
+            <h3 className="mb-2 text-lg font-medium leading-6 dark:text-gray-800">
+              Create your own poll!
+            </h3>
+            <p className="mb-4 dark:text-gray-800/90 md:text-sm">
+              It only takes a few minutes to create a poll, and you can create
+              public or private polls.
+            </p>
+            <p className="mb-2">
+              <Link href="/polls/new">
+                <Button
+                  variant="pill"
+                  size="pill"
+                  className="pr-5 text-sm dark:bg-background dark:text-white hover:dark:bg-orange-500"
+                >
+                  <PlusCircle className="w-4 mr-2" />
+                  Create poll
+                </Button>
+              </Link>
+            </p>
+          </Card>
+        </div>
       </main>
 
-      <footer className="flex flex-col items-center w-full py-8 mt-4 dark:bg-white/10 dark:text-white/80">
-        <Link href="/" className="hover:opacity-50 grayscale">
+      <footer className="flex flex-col items-center w-full py-8 mt-4 md:mt-auto dark:bg-white/10 dark:text-white/80">
+        <Link href="/" className="hover:grayscale-0 grayscale">
           <div className="dark:hidden">
             <Image
-              className="max-w-[160px] sm:max-w-none"
+              className="max-w-[160px] md:max-w-none"
               src="/logo.png"
               alt="viewpoints.xyz"
               width={200}
@@ -191,7 +207,7 @@ const Index = async () => {
           </div>
           <div className="hidden dark:block">
             <Image
-              className="max-w-[160px] sm:max-w-none"
+              className="max-w-[160px] md:max-w-none"
               src="/logo-dark.png"
               alt="viewpoints.xyz"
               width={200}

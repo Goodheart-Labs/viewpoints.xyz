@@ -43,7 +43,7 @@ const Header = () => {
               className="max-w-[160px] sm:max-w-none"
               src="/logo.png"
               alt="viewpoints.xyz"
-              width={200}
+              width={160}
               height={40}
             />
           </div>
@@ -52,7 +52,7 @@ const Header = () => {
               className="max-w-[160px] sm:max-w-none"
               src="/logo-dark.png"
               alt="viewpoints.xyz"
-              width={200}
+              width={160}
               height={40}
             />
           </div>
