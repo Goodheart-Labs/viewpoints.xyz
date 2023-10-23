@@ -1,17 +1,15 @@
 "use client";
 
 import { useState } from "react";
-
 import { SignIn, UserButton, useUser } from "@clerk/nextjs";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
 import { useCurrentPoll } from "@/providers/CurrentPollProvider";
-
-import BorderedButton from "./BorderedButton";
+import { Button } from "@/app/components/shadcn/ui/button";
+import { PlusCircle } from "lucide-react";
 
 const Header = () => {
   // State
@@ -42,6 +40,7 @@ const Header = () => {
         <Link href="/" className="hover:opacity-50">
           <div className="dark:hidden">
             <Image
+              className="max-w-[160px] sm:max-w-none"
               src="/logo.png"
               alt="viewpoints.xyz"
               width={200}
@@ -50,6 +49,7 @@ const Header = () => {
           </div>
           <div className="hidden dark:block">
             <Image
+              className="max-w-[160px] sm:max-w-none"
               src="/logo-dark.png"
               alt="viewpoints.xyz"
               width={200}
@@ -61,17 +61,17 @@ const Header = () => {
 
       {isSignedIn && isCurrentPollAdmin ? (
         <div className="mx-auto">
-          <BorderedButton color="yellow" onClick={onClickPollAdmin}>
+          <Button variant="pill" size="pill" onClick={onClickPollAdmin}>
             Poll Admin
-          </BorderedButton>
+          </Button>
         </div>
       ) : null}
 
       {isSignedIn ? (
         <Link href="/polls/new">
-          <BorderedButton color="orange" className="mr-2">
-            Create New Poll
-          </BorderedButton>
+          <Button variant="pill" size="pill" className="mr-2">
+            <PlusCircle className="w-3 mr-2" /> Create Poll
+          </Button>
         </Link>
       ) : null}
 
@@ -79,9 +79,9 @@ const Header = () => {
         {isSignedIn ? (
           <UserButton afterSignOutUrl="/" />
         ) : (
-          <BorderedButton color="indigo" onClick={onClickLogin}>
+          <Button variant="pill" size="pill" onClick={onClickLogin}>
             Login
-          </BorderedButton>
+          </Button>
         )}
       </div>
 
