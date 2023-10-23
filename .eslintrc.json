@@ -18,13 +18,7 @@
     "plugin:import/recommended",
     "prettier"
   ],
-  "plugins": [
-    "@typescript-eslint",
-    "prettier",
-    "simple-import-sort",
-    "import",
-    "unused-imports"
-  ],
+  "plugins": ["@typescript-eslint", "prettier", "import", "unused-imports"],
   "rules": {
     "camelcase": "off",
     "default-case": "off",
@@ -53,20 +47,6 @@
     "react/react-in-jsx-scope": "off",
     "react/require-default-props": "off",
     "react/destructuring-assignment": "off",
-
-    "simple-import-sort/imports": [
-      "error",
-      {
-        "groups": [
-          ["^react"],
-          ["^@?\\w"],
-          ["^@\\/"],
-          ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
-          ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"]
-        ]
-      }
-    ],
-    "simple-import-sort/exports": "error",
 
     "import/extensions": [
       "error",
