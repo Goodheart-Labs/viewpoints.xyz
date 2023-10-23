@@ -6,6 +6,7 @@ import { PlusCircle } from "lucide-react";
 import { cn } from "@/utils/style-utils";
 import { GitHubLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
+import { db } from "@/db/client";
 import { Button } from "../components/shadcn/ui/button";
 import { anonymousAvatar } from "../components/user/UserAvatar";
 
@@ -57,18 +58,33 @@ async function getData() {
     >,
   );
 
-  // const responses = await prisma.$queryRaw<[{ count: string }]>(
-  //   Prisma.sql`
-  //   SELECT "Statement"."poll_id", COUNT("responses".*) FROM "responses"
-  //     JOIN "Statement" ON "responses"."statementId" = "Statement"."id"
-  //     WHERE "Statement"."poll_id" IN (${polls.map((poll) => poll.id)})
-  //     GROUP BY "Statement"."poll_id"
-  //     `,
-  // );
+  const responses = (
+    await db
+      .selectFrom("responses")
+      .innerJoin("Statement", "responses.statementId", "Statement.id")
+      .select(({ fn }) => [
+        "Statement.poll_id",
+        fn.count<number>("responses.id").as("response_count"),
+      ])
+      .where(
+        "Statement.poll_id",
+        "in",
+        polls.map((poll) => poll.id),
+      )
+      .groupBy("Statement.poll_id")
+      .execute()
+  ).reduce(
+    (acc, response) => {
+      acc[response.poll_id] = response.response_count;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 
   return {
     polls,
     authors,
+    responses,
   };
 }
 
@@ -92,7 +108,7 @@ const Card = ({
 );
 
 const Index = async () => {
-  const { polls, authors } = await getData();
+  const { polls, authors, responses } = await getData();
 
   return (
     <>
@@ -138,27 +154,27 @@ const Index = async () => {
         <div className="w-full md:flex md:flex-wrap md:space-x-4">
           {polls.length > 0 ? (
             polls.map((poll) => (
-              <Card
-                key={poll.id}
-                className="w-full mb-4 group md:w-[300px] md:h-[180px] md:flex md:flex-col md:hover:dark:opacity-90 md:cursor-pointer md:transition-opacity"
-              >
-                <h4 className="mb-2 text-lg font-medium leading-6">
-                  {poll.title}
-                </h4>
-                <p className="mb-3 text-sm dark:text-white/60">
-                  {poll._count.statements} statements | 0 responses
-                </p>
+              <Link href={`/polls/${poll.slug}`} key={poll.id}>
+                <Card className="w-full mb-4 group md:w-[300px] md:h-[180px] md:flex md:flex-col md:hover:dark:opacity-90 md:cursor-pointer md:transition-opacity">
+                  <h4 className="mb-2 text-lg font-medium leading-6">
+                    {poll.title}
+                  </h4>
+                  <p className="mb-3 text-sm dark:text-white/60">
+                    {poll._count.statements} statements |{" "}
+                    {responses[poll.id] ?? 0} responses
+                  </p>
 
-                <p className="flex items-center text-xs dark:text-white/60 md:mt-auto">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={authors[poll.user_id]?.avatarUrl ?? anonymousAvatar}
-                    alt={authors[poll.user_id]?.name ?? "Anonymous"}
-                    className="w-6 h-6 mr-2 rounded-full grayscale group-hover:grayscale-0"
-                  />
-                  <span>{authors[poll.user_id]?.name ?? "Anonymous"}</span>
-                </p>
-              </Card>
+                  <p className="flex items-center text-xs dark:text-white/60 md:mt-auto">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={authors[poll.user_id]?.avatarUrl ?? anonymousAvatar}
+                      alt={authors[poll.user_id]?.name ?? "Anonymous"}
+                      className="w-6 h-6 mr-2 rounded-full grayscale group-hover:grayscale-0"
+                    />
+                    <span>{authors[poll.user_id]?.name ?? "Anonymous"}</span>
+                  </p>
+                </Card>
+              </Link>
             ))
           ) : (
             <p className="mt-4 dark:text-white/70">
