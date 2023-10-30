@@ -9,10 +9,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - run: npx prisma migrate deploy
+      - uses: oven-sh/setup-bun@v1
+      - run: bun run migrate up
         env:
-          POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL_STAGING }}
-          POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING_STAGING }}
+          DATABASE_URL: ${{ secrets.POSTGRES_PRISMA_URL_STAGING }}

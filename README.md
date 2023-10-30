@@ -8,39 +8,51 @@ Currently deployed at <https://viewpoints.xyz/>
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/en/) (>= 18)
-- [Docker desktop](https://www.docker.com/products/docker-desktop/)
+- [bun >= 1.0.6](https://bun.sh)
+- [postgres >= 14.9](https://www.postgresql.org/)
 
 ### Installing
 
 ```bash
-pnpm install
+bun i
 ```
 
 ### Get Envirioment Variables
 
-Link vercel project (`vercel link`) then run the following command:
+Copy .env.example to .env and fill in the values.
+
+If you need live env vars, link vercel project (`vercel link`) then run the following command:
 
 ```bash
-pnpm env:pull
+bun run env:pull
 ```
 
 ### Running
 
-Start database:
+Make sure you've installed the dependencies and have the environment variables set.
+
+If you've got a new database, import db/RUN_BEFORE_MIGRATIONS.sql into it.
+
+Then deploy migrations (if needed):
 
 ```bash
-docker-compose up -d
+bun run migrate up
 ```
 
-Deploying migrations (if needed):
+Check current migrations status:
 
 ```bash
-npx prisma migrate dev
+bun run migrate version
 ```
 
 Run project:
 
 ```bash
-pnpm dev
+bun run dev
+```
+
+### Building for production
+
+```bash
+bun run build
 ```

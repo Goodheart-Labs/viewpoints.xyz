@@ -23,7 +23,7 @@ type PollIframeProps = {
 //     notFound();
 //   }
 
-//   // const statement = await prisma.statement.findMany({
+//   // const statement = await db.statement.findMany({
 //   //   where: {
 //   //     poll_id: poll.id,
 //   //   },
