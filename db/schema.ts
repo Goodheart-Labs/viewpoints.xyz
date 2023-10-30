@@ -1,9 +1,3 @@
-// This is a temporary schema, hard-coded to match the current database, which
-// is defined with Prisma. I've decided I don't like Prisma, so we're going to
-// move over to Kysely.
-//
-// TODO: Remove Prisma, auto-generate this schema from the database.
-
 import type {
   ColumnType,
   Generated,
@@ -46,6 +40,20 @@ export type Statement = Selectable<StatementTable>;
 export type NewStatement = Insertable<StatementTable>;
 export type StatementUpdate = Updateable<StatementTable>;
 
+export interface FlaggedStatementTable {
+  id: Generated<number>;
+  statementId: number;
+  user_id: string | null;
+  session_id: string;
+  reason: string | null;
+  created_at: ColumnType<Date, string | undefined, never>;
+  description: string | null;
+}
+
+export type FlaggedStatement = Selectable<FlaggedStatementTable>;
+export type NewFlaggedStatement = Insertable<FlaggedStatementTable>;
+export type FlaggedStatementUpdate = Updateable<FlaggedStatementTable>;
+
 export interface ResponsesTable {
   id: Generated<number>;
   user_id: string | null;
@@ -58,3 +66,15 @@ export interface ResponsesTable {
 export type Response = Selectable<ResponsesTable>;
 export type NewResponse = Insertable<ResponsesTable>;
 export type ResponseUpdate = Updateable<ResponsesTable>;
+
+export interface AuthorTable {
+  id: Generated<number>;
+  userId: string | null;
+  name: string | null;
+  avatarUrl: string | null;
+  createdAt: ColumnType<Date, string | undefined, never>;
+}
+
+export type Author = Selectable<AuthorTable>;
+export type NewAuthor = Insertable<AuthorTable>;
+export type AuthorUpdate = Updateable<AuthorTable>;
