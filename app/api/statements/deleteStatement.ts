@@ -15,6 +15,7 @@ export const deleteStatement = async (pollId: number, statementId: number) => {
     .selectAll()
     .where("id", "=", pollId)
     .executeTakeFirst();
+
   if (!poll) {
     notFound();
   }

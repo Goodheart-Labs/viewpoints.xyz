@@ -1,10 +1,9 @@
 "use server";
 
 import { auth } from "@clerk/nextjs";
-
-import prisma from "@/lib/prisma";
 import { requirePollAdmin } from "@/utils/authutils";
-
+import { db } from "@/db/client";
+import { notFound } from "next/navigation";
 import { refreshPoll } from "../lib/refreshPoll";
 
 export const deleteStatementFlags = async (
@@ -13,17 +12,22 @@ export const deleteStatementFlags = async (
 ) => {
   const { userId } = auth();
 
-  const poll = await prisma.polls.findUnique({
-    where: { id: pollId },
-  });
+  const poll = await db
+    .selectFrom("polls")
+    .selectAll()
+    .where("id", "=", pollId)
+    .executeTakeFirst();
+
+  if (!poll) {
+    notFound();
+  }
 
   requirePollAdmin(poll, userId);
 
-  await prisma.flaggedStatement.deleteMany({
-    where: {
-      statementId,
-    },
-  });
+  await db
+    .deleteFrom("FlaggedStatement")
+    .where("statementId", "=", statementId)
+    .execute();
 
   await refreshPoll(pollId);
 };
