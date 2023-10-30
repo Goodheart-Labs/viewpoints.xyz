@@ -1,35 +1,46 @@
 "use server";
 
 import { auth } from "@clerk/nextjs";
-import type { polls_visibility_enum } from "@prisma/client";
-
-import prisma from "@/lib/prisma";
 import { requirePollAdmin } from "@/utils/authutils";
-
+import { db } from "@/db/client";
+import type { Poll } from "@/db/schema";
+import { notFound } from "next/navigation";
 import { refreshPoll } from "../lib/refreshPoll";
 
 export const changeVisibility = async (
   pollId: number,
-  visiblity: polls_visibility_enum,
+  visiblity: Poll["visibility"],
 ) => {
   const { userId } = auth();
 
-  const poll = await prisma.polls.findUnique({
-    where: {
-      id: pollId,
-    },
-  });
+  const poll = await db
+    .selectFrom("polls")
+    .selectAll()
+    .where("id", "=", pollId)
+    .executeTakeFirst();
+
+  if (!poll) {
+    notFound();
+  }
 
   requirePollAdmin(poll, userId);
 
-  await prisma.polls.update({
-    where: {
-      id: pollId,
-    },
-    data: {
+  // await prisma.polls.update({
+  //   where: {
+  //     id: pollId,
+  //   },
+  //   data: {
+  //     visibility: visiblity,
+  //   },
+  // });
+
+  await db
+    .updateTable("polls")
+    .set({
       visibility: visiblity,
-    },
-  });
+    })
+    .where("id", "=", pollId)
+    .execute();
 
   await refreshPoll(pollId);
 };

@@ -2,8 +2,9 @@ import { auth } from "@clerk/nextjs";
 import { notFound } from "next/navigation";
 
 import PollAdminForm from "@/app/components/admin/PollAdminForm";
-import prisma from "@/lib/prisma";
 import { requirePollAdmin } from "@/utils/authutils";
+import { db } from "@/db/client";
+import type { FlaggedStatement } from "@/db/schema";
 
 type PollAdminPageProps = {
   params: {
@@ -12,44 +13,58 @@ type PollAdminPageProps = {
 };
 
 async function getData(slug: string) {
-  const poll = await prisma.polls.findUnique({
-    where: {
-      slug,
-    },
-    include: {
-      statements: {
-        select: {
-          _count: {
-            select: {
-              flaggedStatements: true,
-            },
-          },
-          id: true,
-          text: true,
-        },
-        orderBy: {
-          id: "asc",
-        },
-      },
-    },
-  });
-
+  const poll = await db
+    .selectFrom("polls")
+    .selectAll()
+    .where("slug", "=", slug)
+    .executeTakeFirst();
   if (!poll) {
     notFound();
   }
 
+  const statements = await db
+    .selectFrom("Statement")
+    .selectAll()
+    .where("poll_id", "=", poll.id)
+    .execute();
+
+  const flaggedStatements = (
+    await db
+      .selectFrom("FlaggedStatement")
+      .selectAll()
+      .where(
+        "statementId",
+        "in",
+        statements.map((s) => s.id),
+      )
+      .execute()
+  ).reduce(
+    (acc, fs) => {
+      if (!acc[fs.statementId]) {
+        acc[fs.statementId] = [];
+      }
+      acc[fs.statementId].push(fs);
+      return acc;
+    },
+    {} as Record<number, FlaggedStatement[]>,
+  );
+
   const { userId } = auth();
   requirePollAdmin(poll, userId);
 
-  return poll;
+  return { poll, statements, flaggedStatements };
 }
 
 const PollAdminPage = async ({ params }: PollAdminPageProps) => {
-  const poll = await getData(params.slug);
+  const { poll, statements, flaggedStatements } = await getData(params.slug);
 
   return (
-    <main className="flex-1 flex flex-col items-center w-full bg-black xl:p-8 xl:flex-row xl:justify-center xl:gap-8 xl:overflow-y-hidden">
-      <PollAdminForm poll={poll} />
+    <main className="flex flex-col items-center flex-1 w-full bg-black xl:p-8 xl:flex-row xl:justify-center xl:gap-8 xl:overflow-y-hidden">
+      <PollAdminForm
+        poll={poll}
+        statements={statements}
+        flaggedStatements={flaggedStatements}
+      />
     </main>
   );
 };

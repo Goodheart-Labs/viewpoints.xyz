@@ -2,8 +2,6 @@
 
 import { useTransition } from "react";
 import { useController, useForm, useFormState } from "react-hook-form";
-
-import type { polls, polls_visibility_enum, Statement } from "@prisma/client";
 import { CheckCircle2, RotateCw, XCircle } from "lucide-react";
 
 import { changeVisibility } from "@/app/api/polls/changeVisibility";
@@ -12,26 +10,25 @@ import PollPrivacySettings from "@/components/ui/PollPrivacySettings";
 import { Button } from "@/shadcn/button";
 import { ScrollArea } from "@/shadcn/scroll-area";
 import { useToast } from "@/shadcn/use-toast";
+import type { Statement, Poll, FlaggedStatement } from "@/db/schema";
 
 import StatementsList from "./StatementList";
 
-export type PollWithStatements = polls & {
-  statements: (Pick<Statement, "id" | "text"> & {
-    _count: {
-      flaggedStatements: number;
-    };
-  })[];
-};
-
 type Form = {
-  visibility: polls_visibility_enum;
+  visibility: Poll["visibility"];
 };
 
 type PollAdminFormProps = {
-  poll: PollWithStatements;
+  poll: Poll;
+  statements: Statement[];
+  flaggedStatements: Record<Statement["id"], FlaggedStatement[]>;
 };
 
-const PollAdminForm = ({ poll }: PollAdminFormProps) => {
+const PollAdminForm = ({
+  poll,
+  statements,
+  flaggedStatements,
+}: PollAdminFormProps) => {
   const [isPending, startTransition] = useTransition();
 
   const { reset, handleSubmit, getValues, control } = useForm<Form>({
@@ -67,35 +64,39 @@ const PollAdminForm = ({ poll }: PollAdminFormProps) => {
   });
 
   return (
-    <div className="flex flex-col items-stretch w-full xl:max-w-3xl h-full bg-zinc-950 xl:rounded-xl">
+    <div className="flex flex-col items-stretch w-full h-full xl:max-w-3xl bg-zinc-950 xl:rounded-xl">
       <div className="p-6">
         <DisabledInputWithLabel label="Poll subject" value={poll.title} />
         <DisabledInputWithLabel
           label="Poll description"
           value={poll.core_question}
         />
-        <p className="mb-2 text-secondary text-sm">Poll type</p>
+        <p className="mb-2 text-sm text-secondary">Poll type</p>
         <PollPrivacySettings
           visibility={visibilityField.field.value}
           pollVisibilitySetter={visibilityField.field.onChange}
         />
       </div>
 
-      <div className="mx-6 my-3 border-zinc-700 border-t pt-3" />
+      <div className="pt-3 mx-6 my-3 border-t border-zinc-700" />
 
-      <h2 className="text-zinc-400 text-md px-6 pb-3">Poll statements</h2>
+      <h2 className="px-6 pb-3 text-zinc-400 text-md">Poll statements</h2>
 
       <ScrollArea className="flex-1">
-        <StatementsList poll={poll} />
+        <StatementsList
+          poll={poll}
+          statements={statements}
+          flaggedStatements={flaggedStatements}
+        />
       </ScrollArea>
 
-      <div className="p-6 sticky bottom-0 xl:static bg-zinc-900 xl:rounded-b-xl">
-        <div className="w-full flex justify-between">
+      <div className="sticky bottom-0 p-6 xl:static bg-zinc-900 xl:rounded-b-xl">
+        <div className="flex justify-between w-full">
           <Button
             className="rounded-full bg-zinc-700 text-zinc-400 hover:bg-zinc-600 [&:hover>svg]:stroke-zinc-600"
             onClick={onCancel}
           >
-            <XCircle className="mr-2 w-5 h-5 fill-zinc-300 stroke-zinc-700" />
+            <XCircle className="w-5 h-5 mr-2 fill-zinc-300 stroke-zinc-700" />
             Cancel
           </Button>
           <Button
@@ -104,9 +105,9 @@ const PollAdminForm = ({ poll }: PollAdminFormProps) => {
             disabled={!isDirty || !isValid || isPending}
           >
             {isPending ? (
-              <RotateCw className="mr-2 w-5 h-5 animate-spin" />
+              <RotateCw className="w-5 h-5 mr-2 animate-spin" />
             ) : (
-              <CheckCircle2 className="mr-2 w-5 h-5 fill-black stroke-white" />
+              <CheckCircle2 className="w-5 h-5 mr-2 fill-black stroke-white" />
             )}
             {isPending ? "Saving..." : "Save poll"}
           </Button>

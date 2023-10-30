@@ -9,15 +9,18 @@ import { CornerUpLeftIcon, TrashIcon } from "lucide-react";
 import { ScrollArea } from "@/shadcn/scroll-area";
 import { Separator } from "@/shadcn/separator";
 
+import type { FlaggedStatement, Poll, Statement } from "@/db/schema";
+
 import DeleteFlaggedStatementDialog from "./DeleteFlaggedStatementDialog";
 import DeleteStatementDialog from "./DeleteStatementDialog";
-import type { PollWithStatements } from "./PollAdminForm";
 
 type Props = {
-  poll: PollWithStatements;
+  poll: Poll;
+  statements: Statement[];
+  flaggedStatements: Record<Statement["id"], FlaggedStatement[]>;
 };
 
-const StatementsList: FC<Props> = ({ poll }) => {
+const StatementsList: FC<Props> = ({ poll, statements, flaggedStatements }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const [selectedStatementId, setSelectedStatementId] = useState<number | null>(
@@ -40,23 +43,23 @@ const StatementsList: FC<Props> = ({ poll }) => {
 
   return (
     <ScrollArea className="flex flex-col w-full px-6">
-      {poll.statements.map((statement, index) => (
-        <div key={statement.id} className=" mt-1 mb-2">
+      {statements.map((statement, index) => (
+        <div key={statement.id} className="mt-1 mb-2 ">
           <div className="mb-2">
-            {statement._count.flaggedStatements > 1 && (
-              <span className="flex items-center text-xxs bg-accent p-1.5 rounded-sm">
+            {(flaggedStatements[statement.id] ?? []).length > 1 && (
+              <span className="flex items-center text-xxs bg-accent p-1.5 rounded-sm dark:text-foreground">
                 <FlagIcon width={10} height={10} className="mr-2" />
                 This statement has been removed from poll because of 2 reports.
               </span>
             )}
           </div>
 
-          <div className="flex justify-between items-center">
-            <p className="text-black dark:text-gray-200 mr-2">
+          <div className="flex items-center justify-between">
+            <p className="mr-2 text-black dark:text-gray-200">
               {statement.text}
             </p>
             <div className="flex">
-              {statement._count.flaggedStatements > 1 && (
+              {(flaggedStatements[statement.id] ?? []).length > 1 && (
                 <span className="bg-accent p-2.5 rounded-full">
                   <a
                     href="#"
@@ -87,8 +90,8 @@ const StatementsList: FC<Props> = ({ poll }) => {
               </span>
             </div>
           </div>
-          {index !== poll.statements.length - 1 && (
-            <Separator className="bg-muted my-2" />
+          {index !== statements.length - 1 && (
+            <Separator className="my-2 bg-muted" />
           )}
         </div>
       ))}

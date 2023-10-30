@@ -21,6 +21,7 @@ async function getData() {
       "polls.slug",
       "polls.title",
       "polls.user_id",
+      // TODO: this is the full statement count, not the public statement count
       fn.count<number>("Statement.id").as("statementCount"),
     ])
     .where("polls.visibility", "=", "public")

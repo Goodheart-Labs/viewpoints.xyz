@@ -134,8 +134,7 @@ export const getData = async (slug: string) => {
 
   for (const statement of statementsWithStuff) {
     if (
-      (flaggedStatements[statement.id] ?? []).length >
-      MAX_NUM_FLAGS_BEFORE_REMOVAL
+      (statement.flaggedStatements ?? []).length > MAX_NUM_FLAGS_BEFORE_REMOVAL
     ) {
       continue;
     }
@@ -175,7 +174,8 @@ export const getData = async (slug: string) => {
     }
 
     const didUserFlag = statement.flaggedStatements.some(
-      (flag) => flag.user_id === userId || flag.session_id === sessionId,
+      (flag) =>
+        (userId && flag.user_id === userId) || flag.session_id === sessionId,
     );
 
     if (didUserFlag) {

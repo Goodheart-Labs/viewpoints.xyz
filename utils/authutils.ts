@@ -1,6 +1,5 @@
+import type { Poll } from "@/db/schema";
 import { notFound } from "next/navigation";
-
-import type { Poll } from "@/lib/api";
 
 export const isPollAdmin = (
   poll: Poll | null | undefined,
