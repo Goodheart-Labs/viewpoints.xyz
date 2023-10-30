@@ -33,7 +33,7 @@ export interface StatementTable {
   id: Generated<number>;
   poll_id: number;
   user_id: string | null;
-  session_id: string | null;
+  session_id: string;
   text: string;
   created_at: ColumnType<Date, string | undefined, never>;
 }
@@ -60,7 +60,7 @@ export interface ResponsesTable {
   id: Generated<number>;
   user_id: string | null;
   statementId: number;
-  session_id: string | null;
+  session_id: string;
   choice: "agree" | "disagree" | "itsComplicated" | "skip";
   created_at: ColumnType<Date, string | undefined, never>;
 }
