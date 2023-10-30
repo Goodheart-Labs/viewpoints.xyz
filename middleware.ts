@@ -7,8 +7,6 @@ import { v4 as uuidv4 } from "uuid";
 
 const publicRoutes = ["/", "/polls/(.*)"];
 
-const privateRoutes = ["/polls/new"];
-
 export const SESSION_ID_COOKIE_NAME = "sessionId";
 const INFINITE_REDIRECTION_LOOP_COOKIE = "__clerk_redirection_loop";
 const CLERK_CLIENT_UAT_COOKIE = "__client_uat";
@@ -50,21 +48,5 @@ export default authMiddleware({
     return NextResponse.next();
   },
 
-  publicRoutes: (req) => {
-    const isPrivateRoute = privateRoutes.some((r) =>
-      new RegExp(r).test(req.nextUrl.pathname),
-    );
-    if (isPrivateRoute) {
-      return false;
-    }
-
-    const isPublicRoute = publicRoutes.some((r) =>
-      new RegExp(r).test(req.nextUrl.pathname),
-    );
-    if (isPublicRoute) {
-      return true;
-    }
-
-    return false;
-  },
+  publicRoutes,
 });

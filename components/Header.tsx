@@ -68,7 +68,7 @@ const Header = () => {
       ) : null}
 
       {isSignedIn ? (
-        <Link href="/polls/new">
+        <Link href="/new-poll">
           <Button variant="pill" size="pill" className="mr-2">
             <PlusCircle className="w-3 mr-2" /> Create Poll
           </Button>

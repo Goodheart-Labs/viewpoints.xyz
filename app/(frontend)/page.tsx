@@ -113,7 +113,7 @@ const Index = async () => {
               is thinking.
             </p>
             <p className="mb-2">
-              <Link href="/polls/new">
+              <Link href="/new-poll">
                 <Button
                   variant="pill"
                   size="pill"
@@ -172,7 +172,7 @@ const Index = async () => {
           ) : (
             <p className="mt-4 dark:text-white/70">
               There are no public polls at the moment. Why not{" "}
-              <Link href="/polls/new" className="underline">
+              <Link href="/new-poll" className="underline">
                 create one
               </Link>
               ?
@@ -189,7 +189,7 @@ const Index = async () => {
                 public or private polls.
               </p>
               <p className="mb-2">
-                <Link href="/polls/new">
+                <Link href="/new-poll">
                   <Button
                     variant="pill"
                     size="pill"
