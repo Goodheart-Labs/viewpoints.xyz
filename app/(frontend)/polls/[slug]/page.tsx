@@ -1,6 +1,5 @@
 import { LockClosedIcon, LockOpen2Icon } from "@radix-ui/react-icons";
 
-import { CommentsSheet } from "@/app/components/polls/comments/CommentsSheet";
 import { Statistics } from "@/app/components/polls/responses/Statistics";
 import UserResponses from "@/app/components/polls/responses/UserResponses";
 import Cards from "@/app/components/polls/statements/Cards";
@@ -29,8 +28,6 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
 
   return (
     <main className="flex flex-col items-center flex-1 w-full bg-black xl:p-8 xl:flex-row xl:justify-center xl:gap-8 xl:overflow-y-hidden">
-      <div className="hidden w-1/4 xl:block" />
-
       <div className="flex flex-col items-stretch w-full h-full max-w-full xl:w-1/2 xl:bg-zinc-900 xl:rounded-xl">
         <div className="p-6 bg-zinc-800 xl:rounded-t-xl">
           <div className="flex items-center justify-between">
@@ -75,8 +72,6 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
           </Statistics>
         )}
       </div>
-
-      <CommentsSheet comments={poll.comments} />
 
       <Tutorial />
     </main>
