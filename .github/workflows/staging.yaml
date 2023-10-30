@@ -13,4 +13,4 @@ jobs:
       - run: bun install
       - run: bun run migrate up
         env:
-          DATABASE_URL: ${{ secrets.POSTGRES_PRISMA_URL_STAGING }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL_STAGING }}
