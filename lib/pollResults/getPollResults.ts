@@ -1,44 +1,43 @@
-import prisma from "@/lib/prisma";
-
+import { db } from "@/db/client";
 import type { SortKey } from "./constants";
 import { sortOptions } from "./constants";
 import { getStatementStatistics } from "./statements";
 
 export const getPollResults = async (slug: string, sortBy?: SortKey) => {
-  const poll = await prisma.polls.findUniqueOrThrow({
-    where: {
-      slug,
-    },
-    select: {
-      _count: {
-        select: {
-          comments: true,
-        },
-      },
-      title: true,
-      core_question: true,
-      id: true,
-      slug: true,
-    },
-  });
+  const poll = await db
+    .selectFrom("polls")
+    .selectAll()
+    .where("slug", "=", slug)
+    .executeTakeFirstOrThrow();
 
-  const statements = await prisma.statement.findMany({
-    where: {
-      poll_id: poll.id,
-    },
-    include: {
-      responses: true,
-    },
-  });
+  const statements = await db
+    .selectFrom("Statement")
+    .selectAll()
+    .where("poll_id", "=", poll.id)
+    .execute();
+
+  const responses = await db
+    .selectFrom("responses")
+    .selectAll()
+    .where(
+      "responses.statementId",
+      "in",
+      statements.map((s) => s.id),
+    )
+    .execute();
+
+  const statementsWithResponses = statements.map((statement) => ({
+    ...statement,
+    responses: responses.filter(
+      (response) => response.statementId === statement.id,
+    ),
+  }));
 
   let responseCount = 0;
   const totalUserSessions = new Set<string>();
 
-  const statementsWithStats = statements.map((statement) => {
+  const statementsWithStats = statementsWithResponses.map((statement) => {
     const stats = getStatementStatistics(statement);
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { responses, ...statementData } = statement;
 
     responseCount += statement.responses.length;
 
@@ -51,7 +50,7 @@ export const getPollResults = async (slug: string, sortBy?: SortKey) => {
     });
 
     return {
-      ...statementData,
+      ...statement,
       stats,
     };
   });
@@ -64,7 +63,6 @@ export const getPollResults = async (slug: string, sortBy?: SortKey) => {
   return {
     poll,
     statements: statementsWithStats,
-    commentCount: poll._count.comments,
     responseCount,
     respondentsCount: totalUserSessions.size,
   };

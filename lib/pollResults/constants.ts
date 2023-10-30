@@ -1,11 +1,6 @@
-import type { Statement } from "@prisma/client";
-import type { Response } from "@/db/schema";
+import type { Statement, Response } from "@/db/schema";
 
 export type SortKey = "consensus" | "conflict" | "confusion";
-
-export type StatementWithResponses = Pick<Statement, "id"> & {
-  responses: Response[];
-};
 
 export type ChoicePercentages = Map<Response["choice"], number>;
 

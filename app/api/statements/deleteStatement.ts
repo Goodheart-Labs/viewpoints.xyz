@@ -1,7 +1,6 @@
 "use server";
 
 import { auth } from "@clerk/nextjs";
-import prisma from "@/lib/prisma";
 import { requirePollAdmin } from "@/utils/authutils";
 import { db } from "@/db/client";
 import { notFound } from "next/navigation";
@@ -22,9 +21,7 @@ export const deleteStatement = async (pollId: number, statementId: number) => {
 
   requirePollAdmin(poll, userId);
 
-  await prisma.statement.delete({
-    where: { id: statementId },
-  });
+  await db.deleteFrom("Statement").where("id", "=", statementId).execute();
 
   await refreshPoll(pollId);
 };

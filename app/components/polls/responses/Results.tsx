@@ -11,14 +11,12 @@ import { sortOptions } from "@/lib/pollResults/constants";
 
 export type ResultsProps = {
   statements: StatementWithStats[];
-  commentCount: number;
   responseCount: number;
   respondentsCount: number;
 };
 
 export const Results: FC<ResultsProps> = ({
   statements,
-  commentCount,
   responseCount,
   respondentsCount,
 }) => {
@@ -34,12 +32,11 @@ export const Results: FC<ResultsProps> = ({
 
   return (
     <div className="grid gap-6">
-      <div className="grid sm:flex text-sm gap-5 text-neutral-300 p-2 rounded-lg bg-neutral-800">
+      <div className="grid gap-5 p-2 text-sm rounded-lg sm:flex text-neutral-300 bg-neutral-800">
         <h5>Responses: {responseCount}</h5>
         <h5>Respondents: {respondentsCount}</h5>
-        <h5>Comments: {commentCount}</h5>
       </div>
-      <div className="grid sm:flex justify-center gap-4 mt-6">
+      <div className="grid justify-center gap-4 mt-6 sm:flex">
         {sortOptions.map((option) => (
           <button
             key={option.name}
@@ -55,11 +52,11 @@ export const Results: FC<ResultsProps> = ({
       <div className="grid gap-2">
         {sortedStatements.map(({ id, text, stats: { votePercentages } }) => (
           <div
-            className="border rounded p-3 bg-neutral-900 border-neutral-700 grid gap-2"
+            className="grid gap-2 p-3 border rounded bg-neutral-900 border-neutral-700"
             key={id}
           >
             <span>{text}</span>
-            <div className="flex gap-1 justify-start">
+            <div className="flex justify-start gap-1">
               <ChoiceBadge
                 choice="agree"
                 disabled={!votePercentages.get("agree")}

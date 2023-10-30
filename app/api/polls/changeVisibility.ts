@@ -25,15 +25,6 @@ export const changeVisibility = async (
 
   requirePollAdmin(poll, userId);
 
-  // await prisma.polls.update({
-  //   where: {
-  //     id: pollId,
-  //   },
-  //   data: {
-  //     visibility: visiblity,
-  //   },
-  // });
-
   await db
     .updateTable("polls")
     .set({

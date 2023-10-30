@@ -1,8 +1,10 @@
-import type { Response } from "@/db/schema";
-import type { StatementStats, StatementWithResponses } from "./constants";
+import type { Response, Statement } from "@/db/schema";
+import type { StatementStats } from "./constants";
 
 export function getStatementStatistics(
-  statement: StatementWithResponses,
+  statement: Statement & {
+    responses: Response[];
+  },
 ): StatementStats {
   if (statement.responses.length === 0) {
     return {

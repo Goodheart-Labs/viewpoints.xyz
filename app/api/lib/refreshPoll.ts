@@ -1,16 +1,16 @@
+import { db } from "@/db/client";
 import { revalidatePath } from "next/cache";
+import { notFound } from "next/navigation";
 
-import prisma from "@/lib/prisma";
-
-export const refreshPoll = async (id: number) => {
-  const poll = await prisma.polls.findUnique({
-    where: {
-      id,
-    },
-  });
+export const refreshPoll = async (pollId: number) => {
+  const poll = await db
+    .selectFrom("polls")
+    .selectAll()
+    .where("id", "=", pollId)
+    .executeTakeFirst();
 
   if (!poll) {
-    return;
+    notFound();
   }
 
   revalidatePath(`/polls/${poll.slug}`);
