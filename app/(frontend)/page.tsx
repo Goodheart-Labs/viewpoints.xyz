@@ -151,10 +151,10 @@ const Index = async () => {
           Running public polls
         </h3>
 
-        <div className="w-full md:flex md:flex-wrap md:space-x-4">
+        <div className="w-full md:flex md:flex-wrap md:-mx-2">
           {polls.length > 0 ? (
             polls.map((poll) => (
-              <Link href={`/polls/${poll.slug}`} key={poll.id}>
+              <Link className="pl-2" href={`/polls/${poll.slug}`} key={poll.id}>
                 <Card className="w-full mb-4 group md:w-[300px] md:h-[180px] md:flex md:flex-col md:hover:dark:opacity-90 md:cursor-pointer md:transition-opacity">
                   <h4 className="mb-2 text-lg font-medium leading-6">
                     {poll.title}
