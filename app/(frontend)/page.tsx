@@ -1,11 +1,10 @@
 import type { PropsWithChildren } from "react";
-import { polls_visibility_enum } from "@prisma/client";
 import Link from "next/link";
-import prisma from "@/lib/prisma";
 import { PlusCircle } from "lucide-react";
 import { cn } from "@/utils/style-utils";
 import { GitHubLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
+import type { Author } from "@/db/schema";
 import { db } from "@/db/client";
 import { Button } from "../components/shadcn/ui/button";
 import { anonymousAvatar } from "../components/user/UserAvatar";
@@ -14,48 +13,37 @@ import { anonymousAvatar } from "../components/user/UserAvatar";
 // -----------------------------------------------------------------------------
 
 async function getData() {
-  const polls = await prisma.polls.findMany({
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      user_id: true,
-      _count: {
-        select: {
-          statements: true,
-        },
-      },
-    },
-    orderBy: {
-      id: "asc",
-    },
-    where: {
-      visibility: polls_visibility_enum.public,
-    },
-  });
+  const polls = await db
+    .selectFrom("polls")
+    .innerJoin("Statement", "polls.id", "Statement.poll_id")
+    .select(({ fn }) => [
+      "polls.id",
+      "polls.slug",
+      "polls.title",
+      "polls.user_id",
+      fn.count<number>("Statement.id").as("statementCount"),
+    ])
+    .where("polls.visibility", "=", "public")
+    .orderBy("polls.id", "asc")
+    .groupBy("polls.id")
+    .execute();
 
   const authors = (
-    await prisma.author.findMany({
-      select: {
-        userId: true,
-        name: true,
-        avatarUrl: true,
-      },
-      where: {
-        userId: {
-          in: polls.map((poll) => poll.user_id),
-        },
-      },
-    })
+    await db
+      .selectFrom("Author")
+      .selectAll()
+      .where(
+        "userId",
+        "in",
+        polls.map((poll) => poll.user_id),
+      )
+      .execute()
   ).reduce(
     (acc, author) => {
       acc[author.userId] = author;
       return acc;
     },
-    {} as Record<
-      string,
-      { userId: string; name: string | null; avatarUrl: string | null }
-    >,
+    {} as Record<string, Author>,
   );
 
   const responses = (
@@ -164,8 +152,8 @@ const Index = async () => {
                     {poll.title}
                   </h4>
                   <p className="mb-3 text-sm dark:text-white/60">
-                    {poll._count.statements} statements |{" "}
-                    {responses[poll.id] ?? 0} responses
+                    {poll.statementCount} statements | {responses[poll.id] ?? 0}{" "}
+                    responses
                   </p>
 
                   <p className="flex items-center text-xs dark:text-white/60 md:mt-auto">

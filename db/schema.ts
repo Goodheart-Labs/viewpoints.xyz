@@ -7,8 +7,10 @@ import type {
 } from "kysely";
 
 export interface Database {
+  Author: AuthorTable;
   polls: PollsTable;
   Statement: StatementTable;
+  FlaggedStatement: FlaggedStatementTable;
   responses: ResponsesTable;
 }
 
@@ -69,7 +71,7 @@ export type ResponseUpdate = Updateable<ResponsesTable>;
 
 export interface AuthorTable {
   id: Generated<number>;
-  userId: string | null;
+  userId: string;
   name: string | null;
   avatarUrl: string | null;
   createdAt: ColumnType<Date, string | undefined, never>;
