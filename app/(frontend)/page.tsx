@@ -147,6 +147,7 @@ const Index = async () => {
                 className="w-full pl-2 md:w-1/3"
                 href={`/polls/${poll.slug}`}
                 key={poll.id}
+                prefetch={false}
               >
                 <Card className="w-full md:mb-2 group md:h-[180px] md:flex md:flex-col md:hover:dark:opacity-90 md:cursor-pointer md:transition-opacity">
                   <h4 className="mb-2 text-lg font-medium leading-6">
