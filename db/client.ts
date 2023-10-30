@@ -9,7 +9,7 @@ if (!connectionString?.endsWith("sslmode=require")) {
 
 const dialect = new PostgresDialect({
   pool: new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString,
   }),
 });
 
