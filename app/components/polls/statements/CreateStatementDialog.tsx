@@ -4,7 +4,7 @@ import type { FC } from "react";
 import { useTransition } from "react";
 import { useController, useForm } from "react-hook-form";
 
-import type { Statement } from "@prisma/client";
+import type { Statement } from "@/db/schema";
 
 import { createStatement } from "@/app/api/statements/createStatement";
 import { Dialog } from "@/app/components/dialog";
@@ -89,12 +89,12 @@ export const CreateStatementDialog: FC<CreateStatementDialogProps> = ({
       onAccept={onCreateStatement}
       submitDisabled={!formState.isValid || isPending}
     >
-      <Label htmlFor="statement" className="text-zinc-100 font-medium text-sm">
+      <Label htmlFor="statement" className="text-sm font-medium text-zinc-100">
         Statement
       </Label>
       <Textarea
         id="statement"
-        className="bg-zinc-700 w-full h-28 mt-1"
+        className="w-full mt-1 bg-zinc-700 h-28"
         {...textField.field}
         placeholder="Write your statement"
       />

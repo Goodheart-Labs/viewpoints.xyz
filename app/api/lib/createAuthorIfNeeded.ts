@@ -1,30 +1,31 @@
-import { currentUser } from "@clerk/nextjs";
+"use server";
 
-import prisma from "@/lib/prisma";
+import { db } from "@/db/client";
+import { currentUser } from "@clerk/nextjs";
 
 export const createAuthorIfNeeded = async () => {
   const user = await currentUser();
-
   if (!user) {
     return;
   }
 
-  const author = await prisma.author.findUnique({
-    where: {
-      userId: user.id,
-    },
-  });
+  const author = await db
+    .selectFrom("Author")
+    .selectAll()
+    .where("userId", "=", user.id)
+    .executeTakeFirst();
 
   if (!author) {
-    await prisma.author.create({
-      data: {
+    await db
+      .insertInto("Author")
+      .values({
         userId: user.id,
         name:
           user.firstName && user.lastName
             ? `${user.firstName} ${user.lastName}`
             : user.emailAddresses[0].emailAddress,
-        avatarUrl: user.profileImageUrl,
-      },
-    });
+        avatarUrl: user.imageUrl,
+      })
+      .execute();
   }
 };

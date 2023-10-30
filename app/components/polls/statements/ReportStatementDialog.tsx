@@ -3,13 +3,12 @@
 import { useTransition } from "react";
 import { useController, useForm, useFormState } from "react-hook-form";
 
-import type { Statement } from "@prisma/client";
-
 import { flagStatement } from "@/app/api/statements/flagStatement";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import { RadioGroup } from "@/shadcn/radio-group";
 import { Textarea } from "@/shadcn/textarea";
 import { useToast } from "@/shadcn/use-toast";
+import type { Statement } from "@/db/schema";
 
 import { Dialog } from "../../dialog";
 
