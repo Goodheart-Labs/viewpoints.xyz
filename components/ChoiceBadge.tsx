@@ -1,14 +1,12 @@
 import type { PropsWithChildren } from "react";
-
 import clsx from "clsx";
-
-import type { Choice } from "@/lib/api";
+import type { Response } from "@/db/schema";
 
 // Types
 // -----------------------------------------------------------------------------
 
 type ChoiceBadgeProps = {
-  choice: Choice;
+  choice: Response["choice"];
   className?: string;
   disabled?: boolean;
 };

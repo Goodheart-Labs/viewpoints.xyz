@@ -1,14 +1,16 @@
 "use client";
 
-import type { StatementWithAuthor } from "@/lib/api";
+// import type { Author, Statement } from "@/db/schema";
 import QueryProvider from "@/providers/QueryProvider";
 
 type PollIframeClientProps = {
-  filteredStatements: StatementWithAuthor[];
+  // filteredStatements: (Statement & {
+  //   author: Author | null;
+  // })[];
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const PollIframeClient = ({ filteredStatements }: PollIframeClientProps) => (
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty-pattern
+const PollIframeClient = ({}: PollIframeClientProps) => (
   <QueryProvider>TODO</QueryProvider>
 );
 

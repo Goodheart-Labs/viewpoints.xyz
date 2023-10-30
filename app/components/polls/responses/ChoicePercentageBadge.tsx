@@ -1,13 +1,11 @@
 import type { FC } from "react";
 import React from "react";
-
-import type { Choice } from "@/lib/api";
+import type { Response } from "@/db/schema";
 import { cn } from "@/utils/style-utils";
-
 import { getChoiceEmoji } from "../statements/CardButton";
 
 type Props = {
-  choice: Choice;
+  choice: Response["choice"];
   percentage?: number;
   highlighted?: boolean;
 };

@@ -1,9 +1,7 @@
 import { startTransition, useState } from "react";
-
 import type { PanInfo } from "framer-motion";
-
+import type { Response } from "@/db/schema";
 import { createResponse } from "@/app/api/responses/createResponse";
-import type { Choice } from "@/lib/api";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 
 const SWIPE_THRESHOLD = 150;
@@ -26,13 +24,13 @@ export const useCardHandlers = ({ statementId, pollId }: HookArgs) => {
   const [leaveX, setLeaveX] = useState(0);
   const [leaveY, setLeaveY] = useState(0);
 
-  const onSwipe = async (choice: Choice) => {
+  const onSwipe = async (choice: Response["choice"]) => {
     startTransition(() => {
       createResponse(statementId, choice);
     });
   };
 
-  const onResponse = (choice: Choice) => {
+  const onResponse = (choice: Response["choice"]) => {
     onSwipe(choice);
 
     track({

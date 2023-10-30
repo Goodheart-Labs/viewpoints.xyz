@@ -6,8 +6,6 @@ import type { AnimationProps } from "framer-motion";
 import { motion } from "framer-motion";
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from "lucide-react";
 import { useIsClient, useLocalStorage } from "usehooks-ts";
-
-import type { StatementWithAuthor } from "@/lib/api";
 import { Button } from "@/shadcn/button";
 import {
   Dialog,
@@ -16,13 +14,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shadcn/dialog";
-
+import type { Author, Statement } from "@/db/schema";
 import Card from "./statements/Card";
 import { getChoiceEmoji } from "./statements/CardButton";
 
 const TUTORIAL_KEY = "tutorial-completed";
 
-const mockStatement: StatementWithAuthor = {
+const mockStatement: Statement & {
+  author: Author | null;
+} = {
   id: 0,
   poll_id: 0,
   author: {
@@ -96,7 +96,7 @@ export const Tutorial = () => {
               <ArrowLeft size={20} className="mx-1" />
             </motion.div>
 
-            <div className="relative h-44 pointer-events-none flex-1 w-full">
+            <div className="relative flex-1 w-full pointer-events-none h-44">
               <Card
                 statement={mockStatement}
                 index={0}
@@ -128,29 +128,29 @@ export const Tutorial = () => {
         <div>
           <p className="mb-1">What do the icons mean?</p>
 
-          <div className="flex flex-wrap gap-2 justify-center">
-            <div className="bg-zinc-800 rounded-full p-2">
+          <div className="flex flex-wrap justify-center gap-2">
+            <div className="p-2 rounded-full bg-zinc-800">
               <span className="pr-1 mr-1 border-r border-zinc-700">
                 {getChoiceEmoji("itsComplicated")}
               </span>{" "}
               It&apos;s complicated
             </div>
 
-            <div className="bg-zinc-800 rounded-full p-2">
+            <div className="p-2 rounded-full bg-zinc-800">
               <span className="pr-1 mr-1 border-r border-zinc-700">
                 {getChoiceEmoji("disagree")}
               </span>{" "}
               Disagree
             </div>
 
-            <div className="bg-zinc-800 rounded-full p-2">
+            <div className="p-2 rounded-full bg-zinc-800">
               <span className="pr-1 mr-1 border-r border-zinc-700">
                 {getChoiceEmoji("agree")}
               </span>{" "}
               Agree
             </div>
 
-            <div className="bg-zinc-800 rounded-full p-2">
+            <div className="p-2 rounded-full bg-zinc-800">
               <span className="pr-1 mr-1 border-r border-zinc-700">
                 {getChoiceEmoji("skip")}
               </span>{" "}

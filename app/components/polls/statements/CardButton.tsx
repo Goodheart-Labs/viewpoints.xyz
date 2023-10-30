@@ -1,12 +1,12 @@
 import type { FC } from "react";
 import React from "react";
 
-import type { Choice } from "@/lib/api";
 import { cn } from "@/utils/style-utils";
+import type { Response } from "@/db/schema";
 
 type Props = {
-  choice: Choice;
-  onResponse: (choice: Choice) => void;
+  choice: Response["choice"];
+  onResponse: (choice: Response["choice"]) => void;
 };
 
 export const CardButton: FC<Props> = ({ choice, onResponse }) => (
@@ -22,7 +22,7 @@ export const CardButton: FC<Props> = ({ choice, onResponse }) => (
   </button>
 );
 
-export const getButtonSize = (choice: Choice) => {
+export const getButtonSize = (choice: Response["choice"]) => {
   switch (choice) {
     case "agree":
     case "disagree":
@@ -32,7 +32,7 @@ export const getButtonSize = (choice: Choice) => {
   return "w-10 max-w-[20%]";
 };
 
-export const getChoiceEmoji = (choice: Choice) => {
+export const getChoiceEmoji = (choice: Response["choice"]) => {
   switch (choice) {
     case "agree":
       return "👍";

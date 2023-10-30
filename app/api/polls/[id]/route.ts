@@ -1,8 +1,8 @@
+import { db } from "@/db/client";
+import type { Poll } from "@/db/schema";
+import { notFound } from "next/navigation";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-
-import type { Poll } from "@/lib/api";
-import prisma from "@/lib/prisma";
 
 // GET /api/polls/:id
 // -----------------------------------------------------------------------------
@@ -16,16 +16,24 @@ export async function GET(
   },
 ) {
   const id = parseInt(idOrSlug);
-  let poll: Poll | null = null;
+  let poll: Poll | undefined;
 
   if (Number.isNaN(id)) {
-    poll = await prisma.polls.findFirst({
-      where: { slug: idOrSlug },
-    });
+    poll = await db
+      .selectFrom("polls")
+      .selectAll()
+      .where("slug", "=", idOrSlug)
+      .executeTakeFirst();
   } else {
-    poll = await prisma.polls.findUnique({
-      where: { id },
-    });
+    poll = await db
+      .selectFrom("polls")
+      .selectAll()
+      .where("id", "=", idOrSlug as unknown as number)
+      .executeTakeFirst();
+  }
+
+  if (!poll) {
+    notFound();
   }
 
   return NextResponse.json(poll);

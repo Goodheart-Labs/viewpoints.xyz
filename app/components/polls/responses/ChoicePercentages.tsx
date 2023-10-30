@@ -1,14 +1,12 @@
 import type { FC } from "react";
 import React from "react";
-
-import type { Choice } from "@/lib/api";
 import type { ChoicePercentages as ChoicePercentagesMap } from "@/lib/pollResults/constants";
-
+import type { Response } from "@/db/schema";
 import { ChoicePercentageBadge } from "./ChoicePercentageBadge";
 
 type Props = {
   votePercentages: ChoicePercentagesMap;
-  userChoice?: Choice;
+  userChoice?: Response["choice"];
 };
 
 export const ChoicePercentages: FC<Props> = ({

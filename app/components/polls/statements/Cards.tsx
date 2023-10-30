@@ -1,18 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-
-import type { Response, StatementWithAuthor } from "@/lib/api";
-
+import type { Author, Statement } from "@/db/schema";
 import Card, { CARD_VERTICAL_OFFSET } from "./Card";
 
-export type MinimalResponse = Pick<
-  Response,
-  "statementId" | "choice" | "created_at" | "user_id" | "session_id"
->;
-
 type CardsProps = {
-  statements: StatementWithAuthor[];
+  statements: (Statement & {
+    author: Author | null;
+  })[];
 };
 
 const Cards = ({ statements }: CardsProps) => {

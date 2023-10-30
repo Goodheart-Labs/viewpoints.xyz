@@ -1,14 +1,11 @@
 "use client";
 
 import { forwardRef, useState } from "react";
-
 import { motion } from "framer-motion";
 import { FlagIcon } from "lucide-react";
-
 import { UserAvatar } from "@/app/components/user/UserAvatar";
-import type { StatementWithAuthor } from "@/lib/api";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
-
+import type { Author, Statement } from "@/db/schema";
 import { CardButton } from "./CardButton";
 import { ReportStatementDialog } from "./ReportStatementDialog";
 import { useCardHandlers } from "./useCardHandlers";
@@ -19,7 +16,9 @@ export const CARD_SCALE_OFFSET = 0.05;
 const CARD_BRIGHTNESS_OFFSET = 35;
 
 type CardProps = {
-  statement: StatementWithAuthor;
+  statement: Statement & {
+    author: Author | null;
+  };
   index: number;
   cardCount: number;
   height?: number;
@@ -79,7 +78,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
             },
           }}
           style={{ height }}
-          className="absolute top-0 left-0 right-0 flex flex-col gap-4 cursor-grab overflow-hidden border border-zinc-600 bg-zinc-800 rounded-2xl px-4 py-3 z-50"
+          className="absolute top-0 left-0 right-0 z-50 flex flex-col gap-4 px-4 py-3 overflow-hidden border cursor-grab border-zinc-600 bg-zinc-800 rounded-2xl"
         >
           <div className="flex items-center justify-between w-full">
             <UserAvatar
@@ -90,7 +89,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
 
             <button
               type="button"
-              className="text-zinc-400 hover:text-zinc-300 w-10 h-10 bg-zinc-700 rounded-full focus-visible:outline-none"
+              className="w-10 h-10 rounded-full text-zinc-400 hover:text-zinc-300 bg-zinc-700 focus-visible:outline-none"
               onClick={onFlag}
             >
               <FlagIcon className="w-5 h-5 mx-auto" aria-hidden="true" />
@@ -98,12 +97,12 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
           </div>
           <div className="flex-1">
             {index === cardCount - 1 && (
-              <div className="text-md text-zinc-200 font-semibold">
+              <div className="font-semibold text-md text-zinc-200">
                 {statement.text}
               </div>
             )}
           </div>
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <CardButton choice="itsComplicated" onResponse={onResponse} />
             <CardButton choice="disagree" onResponse={onResponse} />
             <CardButton choice="agree" onResponse={onResponse} />

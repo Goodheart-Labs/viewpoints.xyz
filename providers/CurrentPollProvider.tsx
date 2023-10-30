@@ -3,11 +3,9 @@
 import type { PropsWithChildren } from "react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
-
 import axios from "axios";
 import { usePathname } from "next/navigation";
-
-import type { Poll } from "@/lib/api";
+import type { Poll } from "@/db/schema";
 
 // Types
 // -----------------------------------------------------------------------------

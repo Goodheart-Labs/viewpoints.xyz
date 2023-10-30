@@ -1,6 +1,5 @@
 import type { Statement } from "@prisma/client";
-
-import type { Choice, Response } from "../api";
+import type { Response } from "@/db/schema";
 
 export type SortKey = "consensus" | "conflict" | "confusion";
 
@@ -8,11 +7,11 @@ export type StatementWithResponses = Pick<Statement, "id"> & {
   responses: Response[];
 };
 
-export type ChoicePercentages = Map<Choice, number>;
+export type ChoicePercentages = Map<Response["choice"], number>;
 
 export type StatementStats = {
   votePercentages: ChoicePercentages;
-  mostCommonChoice: Choice;
+  mostCommonChoice: Response["choice"];
   /**
    * The maximum of the agree percentage and the disagree percentage.
    */

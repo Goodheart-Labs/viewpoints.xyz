@@ -1,6 +1,6 @@
 import { type PropsWithChildren } from "react";
 
-import type { Choice } from "@/lib/api";
+import type { Response } from "@/db/schema";
 import type { SortKey, StatementWithStats } from "@/lib/pollResults/constants";
 import { getPollResults } from "@/lib/pollResults/getPollResults";
 import { ScrollArea } from "@/shadcn/scroll-area";
@@ -32,12 +32,12 @@ export const Statistics = async ({
   );
 
   return (
-    <ScrollArea className="p-6 h-full">
+    <ScrollArea className="h-full p-6">
       <div className="flex flex-col items-stretch gap-4">
         {children}
 
         {mostConsensus && mostControversial && (
-          <div className="flex flex-col md:flex-row gap-3">
+          <div className="flex flex-col gap-3 md:flex-row">
             <HighlightedStatement
               statement={mostConsensus.statement}
               userChoice={mostConsensus.choice}
@@ -51,7 +51,7 @@ export const Statistics = async ({
           </div>
         )}
 
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <div className="text-zinc-100">Results</div>
 
           <StatementSort value={sortBy} />
@@ -65,7 +65,7 @@ export const Statistics = async ({
                 index < statistics.statements.length - 1 && "border-b mb-2",
               )}
             >
-              <p className="text-zinc-300 text-sm my-2">{statement.text}</p>
+              <p className="my-2 text-sm text-zinc-300">{statement.text}</p>
 
               <div className="flex gap-2 mb-2">
                 <ChoicePercentages
@@ -84,11 +84,11 @@ export const Statistics = async ({
 type HighlightedStatements = {
   mostConsensus: {
     statement: StatementWithStats;
-    choice: Choice;
+    choice: Response["choice"];
   } | null;
   mostControversial: {
     statement: StatementWithStats;
-    choice: Choice;
+    choice: Response["choice"];
   } | null;
 };
 

@@ -1,5 +1,4 @@
-import type { Choice } from "@/lib/api";
-
+import type { Response } from "@/db/schema";
 import type { StatementStats, StatementWithResponses } from "./constants";
 
 export function getStatementStatistics(
@@ -7,7 +6,7 @@ export function getStatementStatistics(
 ): StatementStats {
   if (statement.responses.length === 0) {
     return {
-      votePercentages: new Map<Choice, number>([
+      votePercentages: new Map<Response["choice"], number>([
         ["agree", 0],
         ["disagree", 0],
         ["skip", 0],
@@ -19,7 +18,7 @@ export function getStatementStatistics(
     };
   }
 
-  const votes = new Map<Choice, number>([
+  const votes = new Map<Response["choice"], number>([
     ["agree", 0],
     ["disagree", 0],
     ["skip", 0],
@@ -30,7 +29,7 @@ export function getStatementStatistics(
     votes.set(response.choice, votes.get(response.choice)! + 1);
   }
 
-  const votePercentages = new Map<Choice, number>([
+  const votePercentages = new Map<Response["choice"], number>([
     ["agree", (votes.get("agree")! / statement.responses.length) * 100],
     ["disagree", (votes.get("disagree")! / statement.responses.length) * 100],
     ["skip", (votes.get("skip")! / statement.responses.length) * 100],

@@ -1,7 +1,5 @@
-import { notFound } from "next/navigation";
-
-import prisma from "@/lib/prisma";
-
+// import { notFound } from "next/navigation";
+// import { db } from "@/db/client";
 import PollIframeClient from "./client";
 
 // Types
@@ -14,39 +12,46 @@ type PollIframeProps = {
 // Data
 // -----------------------------------------------------------------------------
 
-async function getData({ params }: PollIframeProps) {
-  const poll = await prisma.polls.findFirst({
-    where: {
-      slug: params.slug,
-    },
-  });
+// async function getData({ params }: PollIframeProps) {
+//   const poll = await db
+//     .selectFrom("polls")
+//     .selectAll()
+//     .where("slug", "=", params.slug)
+//     .executeTakeFirst();
 
-  if (!poll) {
-    notFound();
-  }
+//   if (!poll) {
+//     notFound();
+//   }
 
-  const statement = await prisma.statement.findMany({
-    where: {
-      poll_id: poll.id,
-    },
-    orderBy: {
-      created_at: "asc",
-    },
-    include: {
-      author: true,
-    },
-  });
+//   // const statement = await prisma.statement.findMany({
+//   //   where: {
+//   //     poll_id: poll.id,
+//   //   },
+//   //   orderBy: {
+//   //     created_at: "asc",
+//   //   },
+//   //   include: {
+//   //     author: true,
+//   //   },
+//   // });
 
-  return { poll, statement };
-}
+//   const statement = await db
+//     .selectFrom("Statement")
+//     .selectAll()
+//     .where("poll_id", "=", poll.id)
+//     .execute();
+
+//   // const
+
+//   return { poll, statement };
+// }
 
 // Default export
 // -----------------------------------------------------------------------------
 
-const PollIframe = async ({ params }: PollIframeProps) => {
-  const { statement } = await getData({ params });
-
-  return <PollIframeClient filteredStatements={statement} />;
-};
-
+// eslint-disable-next-line no-empty-pattern
+const PollIframe = async ({}: PollIframeProps) => (
+  // const { statement } = await getData({ params });
+  <PollIframeClient />
+);
 export default PollIframe;

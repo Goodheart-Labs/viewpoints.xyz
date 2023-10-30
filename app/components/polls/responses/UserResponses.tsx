@@ -1,8 +1,8 @@
 import type { FC } from "react";
 
-import type { Response } from "@/lib/api";
 import { choiceToHumanReadablePastTense } from "@/utils/choiceUtils";
 import { cn } from "@/utils/style-utils";
+import type { Response } from "@/db/schema";
 
 import { getChoiceEmoji } from "../statements/CardButton";
 
@@ -31,7 +31,7 @@ const UserResponses: FC<Props> = ({ responses }) => (
           {response.percentage}% of people think the same
         </div>
 
-        <p className="text-zinc-400 text-sm my-2">{response.statementText}</p>
+        <p className="my-2 text-sm text-zinc-400">{response.statementText}</p>
       </div>
     ))}
   </div>

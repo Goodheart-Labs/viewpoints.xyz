@@ -3,7 +3,6 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 import type { UserResponseItem } from "@/app/components/polls/responses/UserResponses";
-import type { Choice, StatementWithAuthor } from "@/lib/api";
 import { SESSION_ID_COOKIE_NAME } from "@/middleware";
 import { db } from "@/db/client";
 import type {
@@ -129,7 +128,9 @@ export const getData = async (slug: string) => {
 
   // Filter out statements that have been flagged too many times or skipped too many times
 
-  const filteredStatements: StatementWithAuthor[] = [];
+  const filteredStatements: (Statement & {
+    author: Author | null;
+  })[] = [];
   const userResponses = new Map<number, UserResponseItem>();
 
   for (const statement of statementsWithStuff) {
@@ -140,7 +141,7 @@ export const getData = async (slug: string) => {
     }
 
     let skipCount = 0;
-    const responseCountMap = new Map<Choice, number>([
+    const responseCountMap = new Map<Response["choice"], number>([
       ["agree", 0],
       ["disagree", 0],
       ["skip", 0],
