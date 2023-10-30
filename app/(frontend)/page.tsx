@@ -191,7 +191,7 @@ const Index = async () => {
           )}
 
           <div className="md:w-1/3 md:pl-2">
-            <Card className="my-4 dark:bg-white md:h-[180px] md:mt-2">
+            <Card className="my-4 dark:bg-white md:h-[180px] md:mt-0">
               <h3 className="mb-2 text-lg font-medium leading-6 dark:text-gray-800">
                 Create your own poll!
               </h3>
