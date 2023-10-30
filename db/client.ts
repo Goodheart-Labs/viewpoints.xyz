@@ -3,7 +3,10 @@ import { Kysely, PostgresDialect } from "kysely";
 import type { Database } from "./schema";
 
 let connectionString = process.env.DATABASE_URL;
-if (!connectionString?.endsWith("sslmode=require")) {
+if (
+  !connectionString?.endsWith("sslmode=require") &&
+  process.env.NODE_ENV === "production"
+) {
   connectionString += "?sslmode=require";
 }
 
