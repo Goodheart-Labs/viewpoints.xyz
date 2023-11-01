@@ -17,23 +17,25 @@ type Props = {
 
 const UserResponses: FC<Props> = ({ responses }) => (
   <div className="flex flex-col h-full">
-    {Array.from(responses.values()).map((response, index) => (
-      <div
-        key={response.id}
-        className={cn(
-          "border-zinc-700 mx-6",
-          index < responses.size - 1 && "border-b mb-2",
-        )}
-      >
-        <div className="bg-zinc-800 rounded-full px-2 py-[6px] text-xs sm:text-sm text-zinc-300 w-fit">
-          <span className="mr-1">{getChoiceEmoji(response.choice)}</span> You{" "}
-          {choiceToHumanReadablePastTense(response.choice)} and{" "}
-          {response.percentage}% of people think the same
-        </div>
+    {Array.from(responses.values()).map((response, index) =>
+      response.choice ? (
+        <div
+          key={response.id}
+          className={cn(
+            "border-zinc-700 mx-6",
+            index < responses.size - 1 && "border-b mb-2",
+          )}
+        >
+          <div className="bg-zinc-800 rounded-full px-2 py-[6px] text-xs sm:text-sm text-zinc-300 w-fit">
+            <span className="mr-1">{getChoiceEmoji(response.choice)}</span> You{" "}
+            {choiceToHumanReadablePastTense(response.choice)} and{" "}
+            {response.percentage}% of people think the same
+          </div>
 
-        <p className="my-2 text-sm text-zinc-400">{response.statementText}</p>
-      </div>
-    ))}
+          <p className="my-2 text-sm text-zinc-400">{response.statementText}</p>
+        </div>
+      ) : null,
+    )}
   </div>
 );
 

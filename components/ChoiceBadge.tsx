@@ -6,7 +6,7 @@ import type { Response } from "@/db/schema";
 // -----------------------------------------------------------------------------
 
 type ChoiceBadgeProps = {
-  choice: Response["choice"];
+  choice: NonNullable<Response["choice"]>;
   className?: string;
   disabled?: boolean;
 };
