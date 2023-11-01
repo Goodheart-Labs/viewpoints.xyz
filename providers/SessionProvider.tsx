@@ -1,6 +1,6 @@
+import axios from "axios";
 import type { PropsWithChildren } from "react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-
 import { getCookie, setCookie } from "typescript-cookie";
 import { v4 as uuidv4 } from "uuid";
 
@@ -35,7 +35,7 @@ const SessionProvider = ({ children }: PropsWithChildren) => {
   const [sessionId, setSessionId] = useState("");
 
   useEffect(() => {
-    const storedSessionId = getCookie(SESSION_ID_COOKIE_NAME);
+    let storedSessionId = getCookie(SESSION_ID_COOKIE_NAME);
 
     if (storedSessionId) {
       setSessionId(storedSessionId);
@@ -43,7 +43,12 @@ const SessionProvider = ({ children }: PropsWithChildren) => {
       const newSessionId = uuidv4();
       setCookie(SESSION_ID_COOKIE_NAME, newSessionId, { expires: Infinity });
       setSessionId(newSessionId);
+      storedSessionId = newSessionId;
     }
+
+    axios.post("/api/sessions", {
+      userAgent: navigator.userAgent,
+    });
   }, []);
 
   const value = useMemo(() => ({ sessionId }), [sessionId]);

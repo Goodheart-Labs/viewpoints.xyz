@@ -12,6 +12,7 @@ export interface Database {
   Statement: StatementTable;
   FlaggedStatement: FlaggedStatementTable;
   responses: ResponsesTable;
+  sessions: SessionsTable;
 }
 
 export interface PollsTable {
@@ -80,3 +81,14 @@ export interface AuthorTable {
 export type Author = Selectable<AuthorTable>;
 export type NewAuthor = Insertable<AuthorTable>;
 export type AuthorUpdate = Updateable<AuthorTable>;
+
+export interface SessionsTable {
+  id: string;
+  user_id: string | null;
+  ip_address: string | null;
+  user_agent: string | null;
+}
+
+export type Session = Selectable<SessionsTable>;
+export type NewSession = Insertable<SessionsTable>;
+export type SessionUpdate = Updateable<SessionsTable>;
