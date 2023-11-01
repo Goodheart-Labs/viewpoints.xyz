@@ -16,7 +16,7 @@ export const flagStatement = async (
   const sessionId = cookies().get(SESSION_ID_COOKIE_NAME)!.value;
 
   const statement = await db
-    .selectFrom("Statement")
+    .selectFrom("statements")
     .selectAll()
     .where("id", "=", statementId)
     .executeTakeFirst();
@@ -26,7 +26,7 @@ export const flagStatement = async (
   }
 
   await db
-    .insertInto("FlaggedStatement")
+    .insertInto("flagged_statements")
     .values({
       statementId: statement.id,
       user_id: userId,

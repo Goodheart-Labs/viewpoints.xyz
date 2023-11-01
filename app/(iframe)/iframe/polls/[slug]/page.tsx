@@ -36,7 +36,7 @@ type PollIframeProps = {
 //   // });
 
 //   const statement = await db
-//     .selectFrom("Statement")
+//     .selectFrom("statements")
 //     .selectAll()
 //     .where("poll_id", "=", poll.id)
 //     .execute();

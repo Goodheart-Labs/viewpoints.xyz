@@ -1,4 +1,5 @@
 import { db } from "@/db/client";
+import type { StatementOption } from "@/db/schema";
 import type { SortKey } from "./constants";
 import { sortOptions } from "./constants";
 import { getStatementStatistics } from "./statements";
@@ -11,10 +12,29 @@ export const getPollResults = async (slug: string, sortBy?: SortKey) => {
     .executeTakeFirstOrThrow();
 
   const statements = await db
-    .selectFrom("Statement")
+    .selectFrom("statements")
     .selectAll()
     .where("poll_id", "=", poll.id)
     .execute();
+
+  const statementOptions = (
+    await db
+      .selectFrom("statement_options")
+      .selectAll()
+      .where(
+        "statement_options.statement_id",
+        "in",
+        statements.map((s) => s.id),
+      )
+      .execute()
+  ).reduce(
+    (acc, curr) => {
+      acc[curr.statement_id] = acc[curr.statement_id] || [];
+      acc[curr.statement_id].push(curr);
+      return acc;
+    },
+    {} as Record<number, StatementOption[]>,
+  );
 
   const responses = await db
     .selectFrom("responses")
@@ -63,6 +83,7 @@ export const getPollResults = async (slug: string, sortBy?: SortKey) => {
   return {
     poll,
     statements: statementsWithStats,
+    statementOptions,
     responseCount,
     respondentsCount: totalUserSessions.size,
   };

@@ -1,24 +1,29 @@
-import type { FC } from "react";
 import React from "react";
-
 import { cn } from "@/utils/style-utils";
 import type { Response } from "@/db/schema";
 
-type Props = {
-  choice: Response["choice"];
-  onResponse: (choice: Response["choice"]) => void;
+type CardButtonProps<C extends string | number> = {
+  choice: C;
+  choiceText?: string;
+  onResponse: (choice: C) => void;
 };
 
-export const CardButton: FC<Props> = ({ choice, onResponse }) => (
+export const CardButton = <C extends string | number>({
+  choice,
+  choiceText,
+  onResponse,
+}: CardButtonProps<C>) => (
   <button
     type="button"
     onClick={() => onResponse(choice)}
     className={cn(
       "bg-zinc-700 hover:bg-zinc-600 rounded-full aspect-square",
-      getButtonSize(choice),
+      typeof choice === "string" ? getButtonSize(choice) : false,
+      choiceText &&
+        "rounded-md px-3 py-1 text-sm aspect-auto w-full mb-3 sm:mb-0 sm:w-auto",
     )}
   >
-    {getChoiceEmoji(choice)}
+    {choiceText || getChoiceEmoji(choice as Response["choice"])}
   </button>
 );
 

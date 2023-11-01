@@ -32,6 +32,8 @@ const mockStatement: Statement & {
     userId: "",
     createdAt: new Date(),
   },
+  question_type: "default",
+  answer_type: "default",
   text: "This is a statement.",
   created_at: new Date(),
   session_id: "",
@@ -99,6 +101,7 @@ export const Tutorial = () => {
             <div className="relative flex-1 w-full pointer-events-none h-44">
               <Card
                 statement={mockStatement}
+                statementOptions={[]}
                 index={0}
                 cardCount={1}
                 height={176}

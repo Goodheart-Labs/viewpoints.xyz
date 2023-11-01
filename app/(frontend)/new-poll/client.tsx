@@ -40,6 +40,7 @@ const schema = yup
       .matches(/^[a-z0-9-]+$/),
     question: yup.string().required(),
     statements: yup.array().of(yup.string().required()).min(5).required(),
+    with_demographic_questions: yup.boolean().default(true),
   })
   .required();
 
@@ -166,6 +167,29 @@ const NewPollPageClientView = ({
         />
       </div>
 
+      <div className="flex flex-col w-full mt-0">
+        <h3 className="mb-2 text-xl font-semibold dark:text-white">
+          Demographic Questions
+        </h3>
+        <h4 className="mb-4 text-lg text-gray-700 dark:text-gray-200">
+          We can ask people some demographic questions to help you understand
+          the results better.
+        </h4>
+
+        <p>
+          <label id="with_demographic_questions">
+            <input
+              type="checkbox"
+              className="mr-2"
+              {...register("with_demographic_questions")}
+            />
+            <span className="text-lg text-gray-700 dark:text-gray-200">
+              Include demographic questions?
+            </span>
+          </label>
+        </p>
+      </div>
+
       <div className="flex items-center justify-end w-full py-4 my-10 bg-gray-50 dark:bg-gray-950">
         <div>
           <BorderedButton
@@ -194,29 +218,46 @@ const NewPollPageClient = () => {
   const form = useForm<FormData>({
     mode: "onTouched",
     resolver: yupResolver(schema),
+    defaultValues: {
+      with_demographic_questions: true,
+    },
   });
 
   // Mutations
 
   const newPollMutation = useMutation(
-    async ({ title, slug, question, statements }: FormData) => {
+    async ({
+      title,
+      slug,
+      question,
+      statements,
+      with_demographic_questions,
+    }: FormData) => {
       await axios.post(`/api/polls`, {
         title,
         slug,
         question,
         statements,
+        with_demographic_questions,
       });
     },
   );
 
   // Callbacks
 
-  const onSubmit = async ({ title, slug, question, statements }: FormData) => {
+  const onSubmit = async ({
+    title,
+    slug,
+    question,
+    statements,
+    with_demographic_questions,
+  }: FormData) => {
     await newPollMutation.mutateAsync({
       title,
       slug,
       question,
       statements: statements.filter((c) => c.trim() !== ""),
+      with_demographic_questions,
     });
 
     router.push(`/polls/${slug}`);

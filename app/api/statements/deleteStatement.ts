@@ -21,7 +21,7 @@ export const deleteStatement = async (pollId: number, statementId: number) => {
 
   requirePollAdmin(poll, userId);
 
-  await db.deleteFrom("Statement").where("id", "=", statementId).execute();
+  await db.deleteFrom("statements").where("id", "=", statementId).execute();
 
   await refreshPoll(pollId);
 };

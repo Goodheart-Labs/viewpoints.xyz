@@ -15,14 +15,14 @@ import { anonymousAvatar } from "../components/user/UserAvatar";
 async function getData() {
   const polls = await db
     .selectFrom("polls")
-    .innerJoin("Statement", "polls.id", "Statement.poll_id")
+    .innerJoin("statements", "polls.id", "statements.poll_id")
     .select(({ fn }) => [
       "polls.id",
       "polls.slug",
       "polls.title",
       "polls.user_id",
       // TODO: this is the full statement count, not the public statement count
-      fn.count<number>("Statement.id").as("statementCount"),
+      fn.count<number>("statements.id").as("statementCount"),
     ])
     .where("polls.visibility", "=", "public")
     .orderBy("polls.id", "asc")
@@ -31,7 +31,7 @@ async function getData() {
 
   const authors = (
     await db
-      .selectFrom("Author")
+      .selectFrom("authors")
       .selectAll()
       .where(
         "userId",
@@ -50,17 +50,17 @@ async function getData() {
   const responses = (
     await db
       .selectFrom("responses")
-      .innerJoin("Statement", "responses.statementId", "Statement.id")
+      .innerJoin("statements", "responses.statementId", "statements.id")
       .select(({ fn }) => [
-        "Statement.poll_id",
+        "statements.poll_id",
         fn.count<number>("responses.id").as("response_count"),
       ])
       .where(
-        "Statement.poll_id",
+        "statements.poll_id",
         "in",
         polls.map((poll) => poll.id),
       )
-      .groupBy("Statement.poll_id")
+      .groupBy("statements.poll_id")
       .execute()
   ).reduce(
     (acc, response) => {

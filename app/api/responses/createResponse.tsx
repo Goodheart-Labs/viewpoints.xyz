@@ -10,13 +10,21 @@ import { refreshPoll } from "../lib/refreshPoll";
 
 export const createResponse = async (
   statementId: number,
-  choice: Response["choice"],
+  answer:
+    | {
+        type: "choice";
+        choice: Response["choice"];
+      }
+    | {
+        type: "customOption";
+        customOptionId: number;
+      },
 ) => {
   const { userId } = auth();
   const sessionId = cookies().get(SESSION_ID_COOKIE_NAME)!.value;
 
   const statement = await db
-    .selectFrom("Statement")
+    .selectFrom("statements")
     .selectAll()
     .where("id", "=", statementId)
     .executeTakeFirst();
@@ -25,15 +33,27 @@ export const createResponse = async (
     notFound();
   }
 
-  await db
-    .insertInto("responses")
-    .values({
-      statementId,
-      session_id: sessionId,
-      user_id: userId,
-      choice,
-    })
-    .execute();
+  if (answer.type === "choice") {
+    await db
+      .insertInto("responses")
+      .values({
+        user_id: userId,
+        statementId,
+        session_id: sessionId,
+        choice: answer.choice,
+      })
+      .execute();
+  } else {
+    await db
+      .insertInto("responses")
+      .values({
+        user_id: userId,
+        statementId,
+        session_id: sessionId,
+        option_id: answer.customOptionId,
+      })
+      .execute();
+  }
 
   await refreshPoll(statement.poll_id);
 };

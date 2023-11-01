@@ -10,14 +10,14 @@ export const createAuthorIfNeeded = async () => {
   }
 
   const author = await db
-    .selectFrom("Author")
+    .selectFrom("authors")
     .selectAll()
     .where("userId", "=", user.id)
     .executeTakeFirst();
 
   if (!author) {
     await db
-      .insertInto("Author")
+      .insertInto("authors")
       .values({
         userId: user.id,
         name:

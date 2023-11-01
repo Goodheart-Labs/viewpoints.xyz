@@ -14,7 +14,7 @@ export const createStatement = async (pollId: number, text: string) => {
   await createAuthorIfNeeded();
 
   await db
-    .insertInto("Statement")
+    .insertInto("statements")
     .values({
       poll_id: pollId,
       user_id: userId,

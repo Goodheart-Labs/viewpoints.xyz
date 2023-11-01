@@ -9,6 +9,9 @@ export type TrackingEvent =
   | CardEvent<"votes.disagree">
   | CardEvent<"votes.skip">
   | CardEvent<"votes.itsComplicated">
+  | (CardEvent<"votes.customOption"> & {
+      customOptionId: number;
+    })
   | CardEvent<"statement.flag.open">
   | {
       type: "statement.flag.persist";

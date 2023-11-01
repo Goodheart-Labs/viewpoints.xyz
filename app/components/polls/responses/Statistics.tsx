@@ -68,10 +68,17 @@ export const Statistics = async ({
               <p className="my-2 text-sm text-zinc-300">{statement.text}</p>
 
               <div className="flex gap-2 mb-2">
-                <ChoicePercentages
-                  userChoice={userResponses.get(statement.id)?.choice}
-                  votePercentages={statement.stats.votePercentages}
-                />
+                {statement.question_type === "default" ? (
+                  <ChoicePercentages
+                    userChoice={userResponses.get(statement.id)?.choice}
+                    votePercentages={statement.stats.votePercentages}
+                  />
+                ) : (
+                  statistics.statementOptions[statement.id]?.find(
+                    ({ id }) =>
+                      id === userResponses.get(statement.id)?.option_id,
+                  )?.option ?? null
+                )}
               </div>
             </div>
           ))}

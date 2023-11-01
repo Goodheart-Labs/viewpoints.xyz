@@ -7,11 +7,8 @@ import {
   useMemo,
   useState,
 } from "react";
-
 import * as amplitude from "@amplitude/analytics-browser";
-
 import { useSession } from "../SessionProvider";
-
 import type { TrackingEvent } from "./types";
 
 type AmplitudeContextValue = {
@@ -30,7 +27,6 @@ export const useAmplitude = () => {
 
 const AmplitudeProvider = ({ children }: PropsWithChildren) => {
   const { sessionId } = useSession();
-
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {

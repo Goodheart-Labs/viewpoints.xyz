@@ -11,6 +11,7 @@ import type {
   FlaggedStatement,
   Poll,
   Response,
+  StatementOption,
 } from "@/db/schema";
 
 const MAX_NUM_FLAGS_BEFORE_REMOVAL = 2;
@@ -43,17 +44,36 @@ export const getData = async (slug: string) => {
   }
 
   const statements = await db
-    .selectFrom("Statement")
+    .selectFrom("statements")
     .selectAll()
     .where("poll_id", "=", poll.id)
     .execute();
 
-  const flaggedStatements = (
+  const statementOptions = (
     await db
-      .selectFrom("FlaggedStatement")
+      .selectFrom("statement_options")
       .selectAll()
       .where(
-        "FlaggedStatement.statementId",
+        "statement_options.statement_id",
+        "in",
+        statements.map((s) => s.id),
+      )
+      .execute()
+  ).reduce(
+    (acc, curr) => {
+      acc[curr.statement_id] = acc[curr.statement_id] || [];
+      acc[curr.statement_id].push(curr);
+      return acc;
+    },
+    {} as Record<number, StatementOption[]>,
+  );
+
+  const flaggedStatements = (
+    await db
+      .selectFrom("flagged_statements")
+      .selectAll()
+      .where(
+        "flagged_statements.statementId",
         "in",
         statements.map((s) => s.id),
       )
@@ -88,10 +108,10 @@ export const getData = async (slug: string) => {
 
   const authors = (
     await db
-      .selectFrom("Author")
+      .selectFrom("authors")
       .selectAll()
       .where(
-        "Author.userId",
+        "authors.userId",
         "in",
         statements.map((s) => s.user_id).filter((id) => id !== null),
       )
@@ -206,5 +226,10 @@ export const getData = async (slug: string) => {
     () => 0.5 - Math.random(),
   );
 
-  return { poll, filteredStatements: sortedFilteredStatements, userResponses };
+  return {
+    poll,
+    filteredStatements: sortedFilteredStatements,
+    statementOptions,
+    userResponses,
+  };
 };

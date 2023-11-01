@@ -16,9 +16,8 @@ type PollPageProps = {
 };
 
 const PollPage = async ({ params, searchParams }: PollPageProps) => {
-  const { poll, filteredStatements, userResponses } = await getData(
-    params.slug,
-  );
+  const { poll, filteredStatements, userResponses, statementOptions } =
+    await getData(params.slug);
 
   const visibilityText =
     poll.visibility === "public" ? "Public poll" : "Private poll";
@@ -49,7 +48,10 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
 
         {filteredStatements.length > 0 ? (
           <>
-            <Cards statements={filteredStatements} />
+            <Cards
+              statements={filteredStatements}
+              statementOptions={statementOptions}
+            />
 
             <div className="flex justify-center">
               <CreateStatementButton pollId={poll.id} />

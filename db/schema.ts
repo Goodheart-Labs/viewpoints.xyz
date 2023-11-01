@@ -7,10 +7,11 @@ import type {
 } from "kysely";
 
 export interface Database {
-  Author: AuthorTable;
+  authors: AuthorsTable;
   polls: PollsTable;
-  Statement: StatementTable;
-  FlaggedStatement: FlaggedStatementTable;
+  statements: StatementsTable;
+  statement_options: StatementOptionsTable;
+  flagged_statements: FlaggedStatementsTable;
   responses: ResponsesTable;
   sessions: SessionsTable;
 }
@@ -30,20 +31,33 @@ export type Poll = Selectable<PollsTable>;
 export type NewPoll = Insertable<PollsTable>;
 export type PollUpdate = Updateable<PollsTable>;
 
-export interface StatementTable {
+export interface StatementsTable {
   id: Generated<number>;
   poll_id: number;
+  question_type?: "default" | "demographic";
+  answer_type?: "default" | "custom_options";
   user_id: string | null;
   session_id: string;
   text: string;
   created_at: ColumnType<Date, string | undefined, never>;
 }
 
-export type Statement = Selectable<StatementTable>;
-export type NewStatement = Insertable<StatementTable>;
-export type StatementUpdate = Updateable<StatementTable>;
+export type Statement = Selectable<StatementsTable>;
+export type NewStatement = Insertable<StatementsTable>;
+export type StatementUpdate = Updateable<StatementsTable>;
 
-export interface FlaggedStatementTable {
+export interface StatementOptionsTable {
+  id: Generated<number>;
+  statement_id: number;
+  option: string;
+  icon: string | null;
+}
+
+export type StatementOption = Selectable<StatementOptionsTable>;
+export type NewStatementOption = Insertable<StatementOptionsTable>;
+export type StatementOptionUpdate = Updateable<StatementOptionsTable>;
+
+export interface FlaggedStatementsTable {
   id: Generated<number>;
   statementId: number;
   user_id: string | null;
@@ -53,24 +67,25 @@ export interface FlaggedStatementTable {
   description: string | null;
 }
 
-export type FlaggedStatement = Selectable<FlaggedStatementTable>;
-export type NewFlaggedStatement = Insertable<FlaggedStatementTable>;
-export type FlaggedStatementUpdate = Updateable<FlaggedStatementTable>;
+export type FlaggedStatement = Selectable<FlaggedStatementsTable>;
+export type NewFlaggedStatement = Insertable<FlaggedStatementsTable>;
+export type FlaggedStatementUpdate = Updateable<FlaggedStatementsTable>;
 
-export interface ResponsesTable {
+type ResponsesTable = {
   id: Generated<number>;
   user_id: string | null;
   statementId: number;
   session_id: string;
-  choice: "agree" | "disagree" | "itsComplicated" | "skip";
+  choice?: string;
+  option_id?: number;
   created_at: ColumnType<Date, string | undefined, never>;
-}
+};
 
 export type Response = Selectable<ResponsesTable>;
 export type NewResponse = Insertable<ResponsesTable>;
 export type ResponseUpdate = Updateable<ResponsesTable>;
 
-export interface AuthorTable {
+export interface AuthorsTable {
   id: Generated<number>;
   userId: string;
   name: string | null;
@@ -78,9 +93,9 @@ export interface AuthorTable {
   createdAt: ColumnType<Date, string | undefined, never>;
 }
 
-export type Author = Selectable<AuthorTable>;
-export type NewAuthor = Insertable<AuthorTable>;
-export type AuthorUpdate = Updateable<AuthorTable>;
+export type Author = Selectable<AuthorsTable>;
+export type NewAuthor = Insertable<AuthorsTable>;
+export type AuthorUpdate = Updateable<AuthorsTable>;
 
 export interface SessionsTable {
   id: string;

@@ -23,14 +23,14 @@ async function getData(slug: string) {
   }
 
   const statements = await db
-    .selectFrom("Statement")
+    .selectFrom("statements")
     .selectAll()
     .where("poll_id", "=", poll.id)
     .execute();
 
   const flaggedStatements = (
     await db
-      .selectFrom("FlaggedStatement")
+      .selectFrom("flagged_statements")
       .selectAll()
       .where(
         "statementId",

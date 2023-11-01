@@ -1,16 +1,17 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Author, Statement } from "@/db/schema";
+import type { Author, Statement, StatementOption } from "@/db/schema";
 import Card, { CARD_VERTICAL_OFFSET } from "./Card";
 
 type CardsProps = {
   statements: (Statement & {
     author: Author | null;
   })[];
+  statementOptions: Record<number, StatementOption[]>;
 };
 
-const Cards = ({ statements }: CardsProps) => {
+const Cards = ({ statements, statementOptions }: CardsProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   // randomise the order
@@ -49,6 +50,7 @@ const Cards = ({ statements }: CardsProps) => {
         <Card
           key={statement.id}
           statement={statement}
+          statementOptions={statementOptions[statement.id] ?? []}
           index={index}
           cardCount={statementsToDisplay.length}
           height={

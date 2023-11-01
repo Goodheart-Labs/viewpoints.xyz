@@ -25,7 +25,7 @@ export const deleteStatementFlags = async (
   requirePollAdmin(poll, userId);
 
   await db
-    .deleteFrom("FlaggedStatement")
+    .deleteFrom("flagged_statements")
     .where("statementId", "=", statementId)
     .execute();
 
