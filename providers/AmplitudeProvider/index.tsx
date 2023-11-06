@@ -9,10 +9,13 @@ import {
 } from "react";
 
 import * as amplitude from "@amplitude/analytics-browser";
+import { defaultEventTrackingAdvancedPlugin } from "@amplitude/plugin-default-event-tracking-advanced-browser";
 
 import { useSession } from "../SessionProvider";
 
 import type { TrackingEvent } from "./types";
+
+const defaultEventTrackingPlugin = defaultEventTrackingAdvancedPlugin();
 
 type AmplitudeContextValue = {
   track: (event: TrackingEvent) => void;
@@ -35,6 +38,8 @@ const AmplitudeProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     if (!process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY) return;
+
+    amplitude.add(defaultEventTrackingPlugin);
 
     amplitude.init(
       process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY,

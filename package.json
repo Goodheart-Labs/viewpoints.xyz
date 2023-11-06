@@ -16,7 +16,8 @@
     "env:pull": "vercel env pull .env"
   },
   "dependencies": {
-    "@amplitude/analytics-browser": "^1.10.2",
+    "@amplitude/analytics-browser": "^2.3.3",
+    "@amplitude/plugin-default-event-tracking-advanced-browser": "^0.0.1",
     "@clerk/nextjs": "^4.23.1",
     "@headlessui/react": "^1.7.14",
     "@heroicons/react": "^2.0.17",
