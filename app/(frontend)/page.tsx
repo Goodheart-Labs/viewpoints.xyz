@@ -25,7 +25,7 @@ async function getData() {
       fn.count<number>("statements.id").as("statementCount"),
     ])
     .where("polls.visibility", "=", "public")
-    .orderBy("polls.id", "asc")
+    .orderBy("polls.id", "desc")
     .groupBy("polls.id")
     .execute();
 

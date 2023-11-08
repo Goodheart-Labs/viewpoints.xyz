@@ -13,7 +13,6 @@ type EmbeddedPollProps = {
 // Default export
 // -----------------------------------------------------------------------------
 
-// eslint-disable-next-line no-empty-pattern
 const EmbeddedPoll = async ({ params: { slug } }: EmbeddedPollProps) => {
   const { filteredStatements, statementOptions } = await getData(slug);
 
