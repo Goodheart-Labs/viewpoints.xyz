@@ -9,9 +9,10 @@ type CardsProps = {
     author: Author | null;
   })[];
   statementOptions: Record<number, StatementOption[]>;
+  emptyMessage?: JSX.Element;
 };
 
-const Cards = ({ statements, statementOptions }: CardsProps) => {
+const Cards = ({ statements, statementOptions, emptyMessage }: CardsProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   // randomise the order
@@ -58,6 +59,11 @@ const Cards = ({ statements, statementOptions }: CardsProps) => {
           }
         />
       ))}
+      {statementsToDisplay.length === 0 && emptyMessage && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          {emptyMessage}
+        </div>
+      )}
     </div>
   );
 };
