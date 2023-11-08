@@ -53,7 +53,7 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
               statementOptions={statementOptions}
             />
 
-            <div className="flex justify-center">
+            <div className="flex justify-center mt-4 mb-10 sm:mb-0 sm:mt-0">
               <CreateStatementButton pollId={poll.id} />
             </div>
 

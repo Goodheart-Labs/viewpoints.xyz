@@ -17,10 +17,9 @@ export const CardButton = <C extends string | number>({
     type="button"
     onClick={() => onResponse(choice)}
     className={cn(
-      "bg-zinc-700 hover:bg-zinc-600 rounded-full aspect-square",
+      "bg-zinc-700 hover:bg-zinc-600 rounded-full aspect-square text-white",
       typeof choice === "string" ? getButtonSize(choice) : false,
-      choiceText &&
-        "rounded-md px-3 py-1 text-sm aspect-auto w-full mb-3 sm:mb-0 sm:w-auto",
+      choiceText && "rounded-md px-3 py-1 text-sm aspect-auto w-full mb-3",
     )}
   >
     {choiceText || getChoiceEmoji(choice as Response["choice"])}

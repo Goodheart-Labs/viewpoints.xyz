@@ -187,7 +187,9 @@ const CustomOptionsCardView = ({
     className="absolute top-0 left-0 right-0 z-50 flex flex-col gap-4 px-4 py-3 overflow-hidden border cursor-grab border-zinc-600 bg-zinc-800 rounded-2xl"
   >
     <div className="flex items-center justify-between w-full">
-      <span>Demographics</span>
+      <span className="text-sm font-semibold uppercase text-zinc-500">
+        Demographics
+      </span>
     </div>
     <div className="flex-1">
       {index === cardCount - 1 && (
