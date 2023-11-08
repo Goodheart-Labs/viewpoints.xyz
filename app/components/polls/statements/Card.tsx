@@ -163,6 +163,7 @@ const CustomOptionsCardView = ({
   animate: propsAnimate,
 }: CustomOptionsCardViewProps) => {
   const [animation, setAnimation] = useState({});
+  const [highlight, setHighlight] = useState<boolean>(false);
 
   const handleDragEnd = useCallback((info: PanInfo) => {
     setAnimation({
@@ -170,7 +171,9 @@ const CustomOptionsCardView = ({
       y: [0, info.offset.y > 0 ? 8 : -8, 0],
       transition: { type: "spring", stiffness: 300, damping: 10 },
     });
+    setHighlight(true);
     setTimeout(() => setAnimation({ x: 0, y: 0 }), 100);
+    setTimeout(() => setHighlight(false), 350);
   }, []);
 
   useEffect(() => {
@@ -225,6 +228,7 @@ const CustomOptionsCardView = ({
             choice={id}
             choiceText={option}
             onResponse={onResponseCustomOption}
+            highlight={highlight}
           />
         ))}
       </div>

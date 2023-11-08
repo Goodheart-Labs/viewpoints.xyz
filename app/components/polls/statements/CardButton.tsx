@@ -6,20 +6,23 @@ type CardButtonProps<C extends string | number> = {
   choice: C;
   choiceText?: string;
   onResponse: (choice: C) => void;
+  highlight?: boolean;
 };
 
 export const CardButton = <C extends string | number>({
   choice,
   choiceText,
   onResponse,
+  highlight,
 }: CardButtonProps<C>) => (
   <button
     type="button"
     onClick={() => onResponse(choice)}
     className={cn(
-      "bg-zinc-700 hover:bg-zinc-600 rounded-full aspect-square text-white",
+      "bg-zinc-700 hover:bg-zinc-600 rounded-full aspect-square text-white transition-colors duration-200",
       typeof choice === "string" ? getButtonSize(choice) : false,
       choiceText && "rounded-md px-3 py-1 text-sm aspect-auto w-full mb-3",
+      highlight && "bg-zinc-600",
     )}
   >
     {choiceText || getChoiceEmoji(choice as Response["choice"])}
