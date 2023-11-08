@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useCallback, useState } from "react";
+import { forwardRef, useCallback, useEffect, useState } from "react";
 import type { PanInfo } from "framer-motion";
 import { motion } from "framer-motion";
 import { FlagIcon } from "lucide-react";
@@ -160,56 +160,77 @@ const CustomOptionsCardView = ({
   onResponseCustomOption,
   leaveX,
   leaveY,
-  animate,
-}: CustomOptionsCardViewProps) => (
-  <motion.div
-    ref={ref}
-    animate={animate}
-    initial={false}
-    variants={{
-      default: {
-        scale: 1 - (cardCount - index - 1) * CARD_SCALE_OFFSET,
-        x: 0,
-        y: (cardCount - index - 1) * CARD_VERTICAL_OFFSET,
-        filter: `brightness(${
-          100 - (cardCount - index - 1) * CARD_BRIGHTNESS_OFFSET
-        }%)`,
-      },
-      exit: {
-        x: leaveX,
-        y: leaveY,
-        opacity: 0,
-        scale: 0.5,
-        transition: { duration: ANIMATION_DURATION },
-      },
-    }}
-    style={{ height }}
-    className="absolute top-0 left-0 right-0 z-50 flex flex-col gap-4 px-4 py-3 overflow-hidden border cursor-grab border-zinc-600 bg-zinc-800 rounded-2xl"
-  >
-    <div className="flex items-center justify-between w-full">
-      <span className="text-sm font-semibold uppercase text-zinc-500">
-        Demographics
-      </span>
-    </div>
-    <div className="flex-1">
-      {index === cardCount - 1 && (
-        <div className="font-semibold text-md text-zinc-200">
-          {statement.text}
-        </div>
-      )}
-    </div>
-    <div className="flex flex-wrap items-center justify-between">
-      {statementOptions.map(({ id, option }) => (
-        <CardButton<number>
-          key={id}
-          choice={id}
-          choiceText={option}
-          onResponse={onResponseCustomOption}
-        />
-      ))}
-    </div>
-  </motion.div>
-);
+  animate: propsAnimate,
+}: CustomOptionsCardViewProps) => {
+  const [animation, setAnimation] = useState({});
+
+  const handleDragEnd = useCallback((info: PanInfo) => {
+    setAnimation({
+      x: [0, info.offset.x > 0 ? 8 : -8, 0],
+      y: [0, info.offset.y > 0 ? 8 : -8, 0],
+      transition: { type: "spring", stiffness: 300, damping: 10 },
+    });
+    setTimeout(() => setAnimation({ x: 0, y: 0 }), 100);
+  }, []);
+
+  useEffect(() => {
+    setAnimation(propsAnimate);
+  }, [propsAnimate]);
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={false}
+      variants={{
+        default: {
+          scale: 1 - (cardCount - index - 1) * CARD_SCALE_OFFSET,
+          x: 0,
+          y: (cardCount - index - 1) * CARD_VERTICAL_OFFSET,
+          filter: `brightness(${
+            100 - (cardCount - index - 1) * CARD_BRIGHTNESS_OFFSET
+          }%)`,
+        },
+        exit: {
+          x: leaveX,
+          y: leaveY,
+          opacity: 0,
+          scale: 0.5,
+          transition: { duration: ANIMATION_DURATION },
+        },
+      }}
+      drag
+      dragElastic={0}
+      dragConstraints={{ left: -50, right: 50, top: -50, bottom: 50 }}
+      animate={animation}
+      onDragEnd={(_, info) => handleDragEnd(info)}
+      style={{ height }}
+      className="absolute top-0 left-0 right-0 z-50 flex flex-col gap-4 px-4 py-3 overflow-hidden border cursor-grab border-zinc-600 bg-zinc-800 rounded-2xl"
+    >
+      <div className="flex items-center justify-between w-full">
+        <span className="text-sm font-semibold uppercase text-zinc-500">
+          Demographics
+        </span>
+      </div>
+      <div className="flex-1">
+        {index === cardCount - 1 && (
+          <div className="font-semibold text-md text-zinc-200">
+            {statement.text}
+          </div>
+        )}
+      </div>
+      <div className="flex flex-wrap items-center justify-between">
+        {statementOptions.map(({ id, option }) => (
+          <CardButton<number>
+            key={id}
+            choice={id}
+            choiceText={option}
+            onResponse={onResponseCustomOption}
+          />
+        ))}
+      </div>
+    </motion.div>
+  );
+};
 
 // Controller
 // -----------------------------------------------------------------------------
