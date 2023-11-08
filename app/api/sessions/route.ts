@@ -22,15 +22,28 @@ export async function POST(request: NextRequest) {
     const user = await currentUser();
     const ipAddress = getClientIp(request);
 
-    await db
-      .insertInto("sessions")
-      .values({
-        id: sessionId,
-        user_id: user?.id ?? null,
-        ip_address: ipAddress ?? null,
-        user_agent: data?.userAgent ?? null,
-      })
-      .execute();
+    try {
+      await db
+        .insertInto("sessions")
+        .values({
+          id: sessionId,
+          user_id: user?.id ?? null,
+          ip_address: ipAddress ?? null,
+          user_agent: data?.userAgent ?? null,
+        })
+        .execute();
+    } catch (error) {
+      if (
+        error &&
+        typeof error === "object" &&
+        "code" in error &&
+        error.code === "23505"
+      ) {
+        // Do nothing
+      } else {
+        throw error;
+      }
+    }
   }
 
   return NextResponse.json({ success: true });
