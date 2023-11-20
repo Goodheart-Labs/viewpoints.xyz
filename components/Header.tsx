@@ -20,7 +20,9 @@ const Header = () => {
 
   const { currentPoll } = useCurrentPoll();
 
-  const isCurrentPollAdmin = currentPoll && currentPoll.user_id === user?.id;
+  const isCurrentPollAdmin =
+    currentPoll &&
+    (currentPoll.user_id === user?.id || user?.publicMetadata.isSuperAdmin);
 
   // Callbacks
 

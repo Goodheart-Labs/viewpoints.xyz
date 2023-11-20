@@ -1,6 +1,5 @@
 "use server";
 
-import { auth } from "@clerk/nextjs";
 import { requirePollAdmin } from "@/utils/authutils";
 import { db } from "@/db/client";
 import type { Poll } from "@/db/schema";
@@ -11,8 +10,6 @@ export const changeVisibility = async (
   pollId: number,
   visiblity: Poll["visibility"],
 ) => {
-  const { userId } = auth();
-
   const poll = await db
     .selectFrom("polls")
     .selectAll()
@@ -23,7 +20,7 @@ export const changeVisibility = async (
     notFound();
   }
 
-  requirePollAdmin(poll, userId);
+  await requirePollAdmin(poll);
 
   await db
     .updateTable("polls")
