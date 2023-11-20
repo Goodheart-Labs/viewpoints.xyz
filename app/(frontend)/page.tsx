@@ -8,6 +8,7 @@ import type { Author } from "@/db/schema";
 import { db } from "@/db/client";
 import { Button } from "../components/shadcn/ui/button";
 import { anonymousAvatar } from "../components/user/UserAvatar";
+import { WhatsappLink } from "../components/WhatsappLink";
 
 // Data
 // -----------------------------------------------------------------------------
@@ -229,6 +230,8 @@ const Index = async () => {
         </Link>
 
         <div className="flex justify-center mt-4 space-x-5 text-xs font-medium">
+          <WhatsappLink />
+
           <Link
             href="https://github.com/Goodheart-Labs/viewpoints.xyz"
             target="_blank"
