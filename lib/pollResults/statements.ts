@@ -8,6 +8,7 @@ export function getStatementStatistics(
 ): StatementStats {
   if (statement.responses.length === 0) {
     return {
+      responseCount: statement.responses.length,
       votePercentages: new Map<Response["choice"], number>([
         ["agree", 0],
         ["disagree", 0],
@@ -62,6 +63,7 @@ export function getStatementStatistics(
         );
 
   return {
+    responseCount: statement.responses.length,
     votePercentages,
     mostCommonChoice,
     consensus,

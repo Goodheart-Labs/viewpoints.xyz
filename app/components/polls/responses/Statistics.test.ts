@@ -19,6 +19,13 @@ describe("getHighlightedStatements", () => {
     created_at: new Date(),
   };
 
+  const defaultResponseAttributes = {
+    user_id: "1",
+    session_id: "abc123",
+    option_id: undefined,
+    created_at: new Date(),
+  };
+
   it("returns null when all responses are 'skip' or 'itsComplicated'", () => {
     const statements: StatementWithStats[] = [
       {
@@ -28,6 +35,7 @@ describe("getHighlightedStatements", () => {
         user_id: "1",
         session_id: "abc123",
         stats: {
+          responseCount: 1,
           votePercentages: new Map([["skip", 1]]),
           mostCommonChoice: "skip",
           consensus: 0,
@@ -41,6 +49,7 @@ describe("getHighlightedStatements", () => {
         user_id: "1",
         session_id: "abc123",
         stats: {
+          responseCount: 1,
           votePercentages: new Map([["itsComplicated", 1]]),
           mostCommonChoice: "itsComplicated",
           consensus: 0,
@@ -50,27 +59,21 @@ describe("getHighlightedStatements", () => {
     ];
 
     const responseOne: UserResponseItem = {
+      ...defaultResponseAttributes,
       id: 1,
       statementId: 1,
-      user_id: "1",
-      session_id: "abc123",
-      option_id: undefined,
       choice: "skip",
       statementText: "Statement 1",
       percentage: 0,
-      created_at: new Date(),
     };
 
     const responseTwo: UserResponseItem = {
+      ...defaultResponseAttributes,
       id: 2,
       statementId: 2,
-      user_id: "1",
-      session_id: "abc123",
-      option_id: undefined,
       choice: "itsComplicated",
       statementText: "Statement 2",
       percentage: 0,
-      created_at: new Date(),
     };
 
     const userResponses = new Map([
@@ -78,7 +81,9 @@ describe("getHighlightedStatements", () => {
       [2, responseTwo],
     ]);
 
-    const result = getHighlightedStatements(statements, userResponses);
+    const result = getHighlightedStatements(statements, userResponses, {
+      minimumResponseCount: 0,
+    });
 
     expect(result.mostConsensus).toBeNull();
     expect(result.mostControversial).toBeNull();
@@ -93,6 +98,7 @@ describe("getHighlightedStatements", () => {
         user_id: "1",
         session_id: "abc123",
         stats: {
+          responseCount: 2,
           votePercentages: new Map([["agree", 0.9]]),
           mostCommonChoice: "agree",
           consensus: 90,
@@ -106,6 +112,7 @@ describe("getHighlightedStatements", () => {
         user_id: "2",
         session_id: "def456",
         stats: {
+          responseCount: 2,
           votePercentages: new Map([["disagree", 0.3]]),
           mostCommonChoice: "disagree",
           consensus: 30,
@@ -115,51 +122,39 @@ describe("getHighlightedStatements", () => {
     ];
 
     const responseOne: UserResponseItem = {
+      ...defaultResponseAttributes,
       id: 1,
       statementId: 1,
-      user_id: "1",
-      session_id: "abc123",
-      option_id: undefined,
       choice: "agree",
       statementText: "Statement 1",
       percentage: 100,
-      created_at: new Date(),
     };
 
     const responseTwo: UserResponseItem = {
+      ...defaultResponseAttributes,
       id: 2,
       statementId: 1,
-      user_id: "2",
-      session_id: "def456",
-      option_id: undefined,
       choice: "agree",
       statementText: "Statement 1",
       percentage: 100,
-      created_at: new Date(),
     };
 
     const responseThree: UserResponseItem = {
+      ...defaultResponseAttributes,
       id: 3,
       statementId: 2,
-      user_id: "3",
-      session_id: "ghi789",
-      option_id: undefined,
       choice: "agree",
       statementText: "Statement 2",
       percentage: 50,
-      created_at: new Date(),
     };
 
     const responseFour: UserResponseItem = {
+      ...defaultResponseAttributes,
       id: 4,
       statementId: 2,
-      user_id: "4",
-      session_id: "jkl012",
-      option_id: undefined,
       choice: "disagree",
       statementText: "Statement 2",
       percentage: 50,
-      created_at: new Date(),
     };
 
     const userResponses = new Map([
@@ -169,7 +164,9 @@ describe("getHighlightedStatements", () => {
       [2, responseFour],
     ]);
 
-    const result = getHighlightedStatements(statements, userResponses);
+    const result = getHighlightedStatements(statements, userResponses, {
+      minimumResponseCount: 0,
+    });
 
     expect(result.mostConsensus).toEqual({
       statement: statements[0],
@@ -190,6 +187,7 @@ describe("getHighlightedStatements", () => {
         user_id: "1",
         session_id: "xyz123",
         stats: {
+          responseCount: 1,
           votePercentages: new Map([["agree", 1]]),
           mostCommonChoice: "agree",
           consensus: 100,
@@ -199,20 +197,19 @@ describe("getHighlightedStatements", () => {
     ];
 
     const singleResponse: UserResponseItem = {
+      ...defaultResponseAttributes,
       id: 1,
       statementId: 1,
-      user_id: "1",
-      session_id: "xyz123",
-      option_id: undefined,
       choice: "agree",
       statementText: "Single Statement",
       percentage: 100,
-      created_at: new Date(),
     };
 
     const userResponses = new Map([[1, singleResponse]]);
 
-    const result = getHighlightedStatements(statements, userResponses);
+    const result = getHighlightedStatements(statements, userResponses, {
+      minimumResponseCount: 0,
+    });
 
     expect(result.mostConsensus).toEqual({
       statement: statements[0],
@@ -221,6 +218,113 @@ describe("getHighlightedStatements", () => {
     expect(result.mostControversial).toEqual({
       statement: statements[0],
       choice: singleResponse.choice, // "agree"
+    });
+  });
+
+  it("only considers statements with response count above the minimum threshold", () => {
+    const minimumResponseCount = 2;
+
+    const statements: StatementWithStats[] = [
+      {
+        ...defaultStatementAttributes,
+        id: 1,
+        text: "Statement 1",
+        user_id: "1",
+        session_id: "abc123",
+        stats: {
+          responseCount: 1,
+          votePercentages: new Map([["agree", 0.8]]),
+          mostCommonChoice: "agree",
+          consensus: 80,
+          conflict: 20,
+        },
+      },
+      {
+        ...defaultStatementAttributes,
+        id: 2,
+        text: "Statement 2",
+        user_id: "2",
+        session_id: "def456",
+        stats: {
+          responseCount: 1,
+          votePercentages: new Map([["disagree", 0.5]]),
+          mostCommonChoice: "disagree",
+          consensus: 50,
+          conflict: 50,
+        },
+      },
+    ];
+
+    const responseOne: UserResponseItem = {
+      ...defaultResponseAttributes,
+      id: 1,
+      statementId: 1,
+      choice: "agree",
+      statementText: "Statement 1",
+      percentage: 50,
+    };
+
+    const responseTwo: UserResponseItem = {
+      ...defaultResponseAttributes,
+      id: 2,
+      statementId: 2,
+      choice: "disagree",
+      statementText: "Statement 2",
+      percentage: 100,
+    };
+
+    const userResponses = new Map([
+      [1, responseOne], // Only one response for Statement 1
+      [2, responseTwo], // Only one response for Statement 2
+    ]);
+
+    const result = getHighlightedStatements(statements, userResponses, {
+      minimumResponseCount,
+    });
+
+    // Since neither statement meets the minimumResponseCount, both should be null
+    expect(result.mostConsensus).toBeNull();
+    expect(result.mostControversial).toBeNull();
+
+    // Now reduce the minimumResponseCount to 1
+
+    const resultWithLowerMinimumResponse = getHighlightedStatements(
+      statements,
+      userResponses,
+      {
+        minimumResponseCount: 1,
+      },
+    );
+
+    expect(resultWithLowerMinimumResponse.mostConsensus).toEqual({
+      statement: statements[1],
+      choice: responseTwo.choice, // agree
+    });
+    expect(resultWithLowerMinimumResponse.mostControversial).toEqual({
+      statement: statements[0],
+      choice: responseOne.choice, // agree
+    });
+
+    // Also check that the minimumResponseCount actually works by upping the count to 2
+
+    statements[0].stats.responseCount = 2;
+    statements[1].stats.responseCount = 2;
+
+    const resultWithMinimumResponses = getHighlightedStatements(
+      statements,
+      userResponses,
+      {
+        minimumResponseCount: 2,
+      },
+    );
+
+    expect(resultWithMinimumResponses.mostConsensus).toEqual({
+      statement: statements[1],
+      choice: responseTwo.choice, // agree
+    });
+    expect(resultWithMinimumResponses.mostControversial).toEqual({
+      statement: statements[0],
+      choice: responseOne.choice, // agree
     });
   });
 });

@@ -99,9 +99,16 @@ type HighlightedStatements = {
   } | null;
 };
 
+const DEFAULT_MINIMUM_RESPONSE_COUNT_THRESHOLD = 5;
+
 export const getHighlightedStatements = (
   statements: StatementWithStats[],
   userResponses: Map<number, UserResponseItem>,
+  {
+    minimumResponseCount = DEFAULT_MINIMUM_RESPONSE_COUNT_THRESHOLD,
+  }: { minimumResponseCount?: number } = {
+    minimumResponseCount: DEFAULT_MINIMUM_RESPONSE_COUNT_THRESHOLD,
+  },
 ): HighlightedStatements => {
   let userMostConsensusResponse: UserResponseItem | null = null;
   let userMostConsensusStatement: StatementWithStats | null = null;
@@ -119,14 +126,21 @@ export const getHighlightedStatements = (
       continue;
     }
 
-    if (response.percentage > (userMostConsensusResponse?.percentage ?? 0)) {
+    const isPastMinimumResponseCountThreshold =
+      statement.stats.responseCount >= minimumResponseCount;
+
+    if (
+      response.percentage > (userMostConsensusResponse?.percentage ?? 0) &&
+      isPastMinimumResponseCountThreshold
+    ) {
       userMostConsensusResponse = response;
       userMostConsensusStatement = statement;
     }
 
     if (
       response.percentage <
-      (userMostControversialResponse?.percentage ?? Infinity)
+        (userMostControversialResponse?.percentage ?? Infinity) &&
+      isPastMinimumResponseCountThreshold
     ) {
       userMostControversialResponse = response;
       userMostControversialStatement = statement;

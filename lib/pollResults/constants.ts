@@ -5,6 +5,7 @@ export type SortKey = "consensus" | "conflict" | "confusion";
 export type ChoicePercentages = Map<Response["choice"], number>;
 
 export type StatementStats = {
+  responseCount: number;
   votePercentages: ChoicePercentages;
   mostCommonChoice: Response["choice"];
   /**
