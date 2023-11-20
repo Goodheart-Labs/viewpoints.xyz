@@ -1,5 +1,5 @@
-import { Label } from "@/shadcn/label";
-import { RadioGroupItem } from "@/shadcn/radio-group";
+import { Label } from "@/app/components/shadcn/ui/label";
+import { RadioGroupItem } from "@/app/components/shadcn/ui/radio-group";
 
 type ReportRadioItemProps = {
   reason: string | undefined;

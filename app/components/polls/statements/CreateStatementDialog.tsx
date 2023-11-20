@@ -9,9 +9,9 @@ import type { Statement } from "@/db/schema";
 import { createStatement } from "@/app/api/statements/createStatement";
 import { Dialog } from "@/app/components/dialog";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
-import { Label } from "@/shadcn/label";
-import { Textarea } from "@/shadcn/textarea";
-import { useToast } from "@/shadcn/use-toast";
+import { Label } from "@/app/components/shadcn/ui/label";
+import { Textarea } from "@/app/components/shadcn/ui/textarea";
+import { useToast } from "@/app/components/shadcn/ui/use-toast";
 
 export type CreateStatementForm = Pick<Statement, "text">;
 

@@ -7,9 +7,9 @@ import { CheckCircle2, RotateCw, XCircle } from "lucide-react";
 import { changeVisibility } from "@/app/api/polls/changeVisibility";
 import { DisabledInputWithLabel } from "@/app/components/DisabledInputWithLabel";
 import PollPrivacySettings from "@/components/ui/PollPrivacySettings";
-import { Button } from "@/shadcn/button";
-import { ScrollArea } from "@/shadcn/scroll-area";
-import { useToast } from "@/shadcn/use-toast";
+import { Button } from "@/app/components/shadcn/ui/button";
+import { ScrollArea } from "@/app/components/shadcn/ui/scroll-area";
+import { useToast } from "@/app/components/shadcn/ui/use-toast";
 import type { Statement, Poll, FlaggedStatement } from "@/db/schema";
 
 import StatementsList from "./StatementList";

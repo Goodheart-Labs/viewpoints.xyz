@@ -3,14 +3,14 @@ import React from "react";
 
 import { CheckCircle2, RotateCw, XCircle } from "lucide-react";
 
-import { Button } from "@/shadcn/button";
+import { Button } from "@/app/components/shadcn/ui/button";
 import {
   Dialog as RawDialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/shadcn/dialog";
+} from "@/app/components/shadcn/ui/dialog";
 
 type Props = PropsWithChildren<{
   isOpen: boolean;

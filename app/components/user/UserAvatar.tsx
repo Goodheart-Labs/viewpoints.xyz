@@ -1,7 +1,11 @@
 import type { FC } from "react";
 import React from "react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/app/components/shadcn/ui/avatar";
 import { cn } from "@/utils/style-utils";
 
 type Props = {

@@ -1,5 +1,5 @@
-import { Input } from "@/shadcn/input";
-import { Label } from "@/shadcn/label";
+import { Input } from "@/app/components/shadcn/ui/input";
+import { Label } from "@/app/components/shadcn/ui/label";
 
 type Props = {
   label: string;

@@ -2,7 +2,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 
 import Header from "@/components/Header";
-import { Toaster } from "@/shadcn/toaster";
+import { Toaster } from "@/app/components/shadcn/ui/toaster";
 
 import Contexts from "../components/Contexts";
 import LogrocketWrapper from "../components/LogrocketWrapper";

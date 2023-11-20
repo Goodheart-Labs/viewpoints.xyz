@@ -6,7 +6,7 @@ import Cards from "@/app/components/polls/statements/Cards";
 import { CreateStatementButton } from "@/app/components/polls/statements/CreateStatementButton";
 import { Tutorial } from "@/app/components/polls/Tutorial";
 import type { SORT_PARAM, SortKey } from "@/lib/pollResults/constants";
-import { ScrollArea } from "@/shadcn/scroll-area";
+import { ScrollArea } from "@/app/components/shadcn/ui/scroll-area";
 
 import { getData } from "./getData";
 

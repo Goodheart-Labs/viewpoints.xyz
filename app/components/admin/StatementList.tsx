@@ -6,8 +6,8 @@ import { useState } from "react";
 import { FlagIcon } from "@heroicons/react/20/solid";
 import { CornerUpLeftIcon, TrashIcon } from "lucide-react";
 
-import { ScrollArea } from "@/shadcn/scroll-area";
-import { Separator } from "@/shadcn/separator";
+import { ScrollArea } from "@/app/components/shadcn/ui/scroll-area";
+import { Separator } from "@/app/components/shadcn/ui/separator";
 
 import type { FlaggedStatement, Poll, Statement } from "@/db/schema";
 

@@ -5,9 +5,9 @@ import { useController, useForm, useFormState } from "react-hook-form";
 
 import { flagStatement } from "@/app/api/statements/flagStatement";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
-import { RadioGroup } from "@/shadcn/radio-group";
-import { Textarea } from "@/shadcn/textarea";
-import { useToast } from "@/shadcn/use-toast";
+import { RadioGroup } from "@/app/components/shadcn/ui/radio-group";
+import { Textarea } from "@/app/components/shadcn/ui/textarea";
+import { useToast } from "@/app/components/shadcn/ui/use-toast";
 import type { Statement } from "@/db/schema";
 
 import { Dialog } from "../../dialog";

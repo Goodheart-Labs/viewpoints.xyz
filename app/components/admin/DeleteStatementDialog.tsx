@@ -1,7 +1,7 @@
 import { useTransition } from "react";
 
 import { deleteStatement } from "@/app/api/statements/deleteStatement";
-import { useToast } from "@/shadcn/use-toast";
+import { useToast } from "@/app/components/shadcn/ui/use-toast";
 
 import { Dialog } from "../dialog";
 

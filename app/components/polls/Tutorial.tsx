@@ -6,14 +6,14 @@ import type { AnimationProps } from "framer-motion";
 import { motion } from "framer-motion";
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from "lucide-react";
 import { useIsClient, useLocalStorage } from "usehooks-ts";
-import { Button } from "@/shadcn/button";
+import { Button } from "@/app/components/shadcn/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/shadcn/dialog";
+} from "@/app/components/shadcn/ui/dialog";
 import type { Author, Statement } from "@/db/schema";
 import Card from "./statements/Card";
 import { getChoiceEmoji } from "./statements/CardButton";

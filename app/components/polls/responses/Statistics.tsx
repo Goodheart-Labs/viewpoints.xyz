@@ -3,7 +3,7 @@ import { type PropsWithChildren } from "react";
 import type { Response } from "@/db/schema";
 import type { SortKey, StatementWithStats } from "@/lib/pollResults/constants";
 import { getPollResults } from "@/lib/pollResults/getPollResults";
-import { ScrollArea } from "@/shadcn/scroll-area";
+import { ScrollArea } from "@/app/components/shadcn/ui/scroll-area";
 import { cn } from "@/utils/style-utils";
 
 import { ChoicePercentages } from "./ChoicePercentages";

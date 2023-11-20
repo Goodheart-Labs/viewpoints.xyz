@@ -2,8 +2,11 @@
 
 import { LockClosedIcon, LockOpen2Icon } from "@radix-ui/react-icons";
 import type { Poll } from "@/db/schema";
-import { Label } from "@/shadcn/label";
-import { RadioGroup, RadioGroupItem } from "@/shadcn/radio-group";
+import { Label } from "@/app/components/shadcn/ui/label";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@/app/components/shadcn/ui/radio-group";
 
 type PollPrivacySettingsProps = {
   visibility: Poll["visibility"];

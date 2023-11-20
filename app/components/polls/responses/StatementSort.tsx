@@ -13,7 +13,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/shadcn/select";
+} from "@/app/components/shadcn/ui/select";
 
 type Props = {
   value?: SortKey;
