@@ -5,7 +5,13 @@ import { v4 as uuidv4 } from "uuid";
 // Config
 // -----------------------------------------------------------------------------
 
-const publicRoutes = ["/", "/polls/(.*)", "/embed/polls/(.*)"];
+const publicRoutes = [
+  "/",
+  "/polls/(.*)",
+  "/embed/polls/(.*)",
+  "/api/sessions",
+  "/api/polls/(.*)",
+];
 
 export const SESSION_ID_COOKIE_NAME = "sessionId";
 const INFINITE_REDIRECTION_LOOP_COOKIE = "__clerk_redirection_loop";
