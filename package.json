@@ -55,6 +55,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.44.2",
+    "react-qr-code": "^2.0.12",
     "react-query": "^3.39.3",
     "react-share": "^4.4.1",
     "react-tooltip": "^5.13.1",

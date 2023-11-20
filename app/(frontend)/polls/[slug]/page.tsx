@@ -10,6 +10,7 @@ import { CreateStatementButton } from "@/app/components/polls/statements/CreateS
 import { Tutorial } from "@/app/components/polls/Tutorial";
 import type { SORT_PARAM, SortKey } from "@/lib/pollResults/constants";
 import { ScrollArea } from "@/app/components/shadcn/ui/scroll-area";
+import { QrCodeGenerator } from "@/app/components/polls/QrCodeGenerator";
 import Link from "next/link";
 import { getData } from "./getData";
 
@@ -37,20 +38,23 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
               Topic
             </p>
 
-            <Link
-              href={`/polls/${poll.slug}/results`}
-              className="ml-auto mr-2 group"
-            >
-              <div className="mr-2 rounded-full bg-zinc-600 text-white text-xs px-2 py-[6px] group-hover:bg-zinc-500">
-                <BarChartIcon className="inline w-3 h-3 mr-2" />
-                Results
+            <div className="flex ml-auto">
+              <div className="mr-2">
+                <QrCodeGenerator />
               </div>
-            </Link>
 
-            <div className="rounded-full bg-zinc-600 text-white text-xs px-2 py-[6px]">
-              <VisibilityIcon className="inline w-3 h-3 mr-2" />
+              <Link href={`/polls/${poll.slug}/results`} className="mr-2 group">
+                <div className="rounded-full bg-zinc-600 text-white text-xs px-2 py-[6px] group-hover:bg-zinc-500">
+                  <BarChartIcon className="inline w-3 h-3 mr-2" />
+                  Results
+                </div>
+              </Link>
 
-              {visibilityText}
+              <div className="rounded-full bg-zinc-600 text-white text-xs px-2 py-[6px]">
+                <VisibilityIcon className="inline w-3 h-3 mr-2" />
+
+                {visibilityText}
+              </div>
             </div>
           </div>
           <h1 className="font-semibold text-white">{poll.title}</h1>
