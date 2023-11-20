@@ -48,3 +48,5 @@ export const sortOptions: {
       (a.stats.votePercentages.get("itsComplicated") ?? 0),
   },
 ];
+
+export const DEFAULT_MINIMUM_RESPONSE_COUNT_THRESHOLD = 5;

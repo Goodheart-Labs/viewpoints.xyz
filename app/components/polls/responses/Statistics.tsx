@@ -1,7 +1,11 @@
 import { type PropsWithChildren } from "react";
 
 import type { Response } from "@/db/schema";
-import type { SortKey, StatementWithStats } from "@/lib/pollResults/constants";
+import {
+  DEFAULT_MINIMUM_RESPONSE_COUNT_THRESHOLD,
+  type SortKey,
+  type StatementWithStats,
+} from "@/lib/pollResults/constants";
 import { getPollResults } from "@/lib/pollResults/getPollResults";
 import { ScrollArea } from "@/app/components/shadcn/ui/scroll-area";
 import { cn } from "@/utils/style-utils";
@@ -98,8 +102,6 @@ type HighlightedStatements = {
     choice: Response["choice"];
   } | null;
 };
-
-const DEFAULT_MINIMUM_RESPONSE_COUNT_THRESHOLD = 5;
 
 export const getHighlightedStatements = (
   statements: StatementWithStats[],

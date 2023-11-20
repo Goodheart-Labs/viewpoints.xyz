@@ -5,7 +5,10 @@ import { useMemo, useState } from "react";
 
 import ChoiceBadge from "@/components/ChoiceBadge";
 import type { SortKey, StatementWithStats } from "@/lib/pollResults/constants";
-import { sortOptions } from "@/lib/pollResults/constants";
+import {
+  DEFAULT_MINIMUM_RESPONSE_COUNT_THRESHOLD,
+  sortOptions,
+} from "@/lib/pollResults/constants";
 
 // TODO: Should be replaced with Statistics component, most logic is duplicated
 
@@ -50,40 +53,46 @@ export const Results: FC<ResultsProps> = ({
         ))}
       </div>
       <div className="grid gap-2">
-        {sortedStatements.map(({ id, text, stats: { votePercentages } }) => (
-          <div
-            className="grid gap-2 p-3 border rounded bg-neutral-900 border-neutral-700"
-            key={id}
-          >
-            <span>{text}</span>
-            <div className="flex justify-start gap-1">
-              <ChoiceBadge
-                choice="agree"
-                disabled={!votePercentages.get("agree")}
-              >
-                {Math.round(votePercentages.get("agree") ?? 0)}%
-              </ChoiceBadge>
-              <ChoiceBadge
-                choice="disagree"
-                disabled={!votePercentages.get("disagree")}
-              >
-                {Math.round(votePercentages.get("disagree") ?? 0)}%
-              </ChoiceBadge>
-              <ChoiceBadge
-                choice="itsComplicated"
-                disabled={!votePercentages.get("itsComplicated")}
-              >
-                {Math.round(votePercentages.get("itsComplicated") ?? 0)}%
-              </ChoiceBadge>
-              <ChoiceBadge
-                choice="skip"
-                disabled={!votePercentages.get("skip")}
-              >
-                {Math.round(votePercentages.get("skip") ?? 0)}%
-              </ChoiceBadge>
+        {sortedStatements
+          .filter(
+            ({ stats: { responseCount: statementResponseCount } }) =>
+              statementResponseCount >=
+              DEFAULT_MINIMUM_RESPONSE_COUNT_THRESHOLD,
+          )
+          .map(({ id, text, stats: { votePercentages } }) => (
+            <div
+              className="grid gap-2 p-3 border rounded bg-neutral-900 border-neutral-700"
+              key={id}
+            >
+              <span>{text}</span>
+              <div className="flex justify-start gap-1">
+                <ChoiceBadge
+                  choice="agree"
+                  disabled={!votePercentages.get("agree")}
+                >
+                  {Math.round(votePercentages.get("agree") ?? 0)}%
+                </ChoiceBadge>
+                <ChoiceBadge
+                  choice="disagree"
+                  disabled={!votePercentages.get("disagree")}
+                >
+                  {Math.round(votePercentages.get("disagree") ?? 0)}%
+                </ChoiceBadge>
+                <ChoiceBadge
+                  choice="itsComplicated"
+                  disabled={!votePercentages.get("itsComplicated")}
+                >
+                  {Math.round(votePercentages.get("itsComplicated") ?? 0)}%
+                </ChoiceBadge>
+                <ChoiceBadge
+                  choice="skip"
+                  disabled={!votePercentages.get("skip")}
+                >
+                  {Math.round(votePercentages.get("skip") ?? 0)}%
+                </ChoiceBadge>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );
