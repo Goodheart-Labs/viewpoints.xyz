@@ -136,7 +136,9 @@ const StatementsListView = ({
               className="w-full text-lg dark:text-white"
               value={statement}
               onChange={(val) => onChangeStatement(key, val)}
-              onBlur={(val) => onBlurStatement(key, val.target.value)}
+              onBlur={(val) =>
+                onBlurStatement(key, (val.target as HTMLInputElement).value)
+              }
             />
           </div>
 
