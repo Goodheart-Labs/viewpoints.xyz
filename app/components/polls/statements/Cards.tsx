@@ -15,9 +15,34 @@ type CardsProps = {
 const Cards = ({ statements, statementOptions, emptyMessage }: CardsProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // randomise the order
+  // When the data changes, the backend called `revalidatePath` which invalidates the cache,
+  // next does some magic, and the cards get updated. But this round trip takes some time,
+  // so we want to hide the cards that are about to be removed.
+  const [statementsToHide, setStatementsToHide] = useState<number[]>([]);
 
-  const statementsToDisplay = useMemo(() => statements.slice(-3), [statements]);
+  // We also want to randomize the order of the cards, but we don't want to do it on every
+  // render, because that would cause the cards to jump around. So we keep track of the
+  // randomized order in state.
+  const [statementSorting, setStatementSorting] = useState<number[]>([]);
+  useEffect(() => {
+    setStatementSorting(
+      statements
+        .map((statement) => statement.id)
+        .sort(() => 0.5 - Math.random()),
+    );
+  }, [statements]);
+
+  const statementsToDisplay = useMemo(
+    () =>
+      statements
+        .sort(
+          (a, b) =>
+            statementSorting.indexOf(a.id) - statementSorting.indexOf(b.id),
+        )
+        .filter((statement) => !statementsToHide.includes(statement.id))
+        .slice(-3),
+    [statementSorting, statements, statementsToHide],
+  );
 
   const [cardHeight, setCardHeight] = useState<number | undefined>(undefined);
 
@@ -54,6 +79,12 @@ const Cards = ({ statements, statementOptions, emptyMessage }: CardsProps) => {
           statementOptions={statementOptions[statement.id] ?? []}
           index={index}
           cardCount={statementsToDisplay.length}
+          onStatementHide={() =>
+            setStatementsToHide((hiddenStatements) => [
+              ...hiddenStatements,
+              statement.id,
+            ])
+          }
           height={
             index === statementsToDisplay.length - 1 ? undefined : cardHeight
           }

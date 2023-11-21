@@ -31,6 +31,7 @@ type CardControllerProps = {
   statementOptions: StatementOption[];
   index: number;
   cardCount: number;
+  onStatementHide: () => void;
   height?: number;
 };
 
@@ -240,7 +241,10 @@ const CustomOptionsCardView = ({
 // -----------------------------------------------------------------------------
 
 const CardController = forwardRef<HTMLDivElement, CardControllerProps>(
-  ({ statement, statementOptions, index, cardCount, height }, ref) => {
+  (
+    { statement, statementOptions, index, cardCount, onStatementHide, height },
+    ref,
+  ) => {
     const [isFlagging, setIsFlagging] = useState(false);
 
     const { track } = useAmplitude();
@@ -254,6 +258,7 @@ const CardController = forwardRef<HTMLDivElement, CardControllerProps>(
     } = useCardHandlers({
       statementId: statement.id,
       pollId: statement.poll_id,
+      onStatementHide,
     });
 
     const animate = leaveX !== 0 || leaveY !== 0 ? "exit" : "default";

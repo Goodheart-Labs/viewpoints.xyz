@@ -16,9 +16,14 @@ const choiceEvents = {
 type HookArgs = {
   statementId: number;
   pollId: number;
+  onStatementHide: () => void;
 };
 
-export const useCardHandlers = ({ statementId, pollId }: HookArgs) => {
+export const useCardHandlers = ({
+  statementId,
+  pollId,
+  onStatementHide,
+}: HookArgs) => {
   const { track } = useAmplitude();
 
   const [leaveX, setLeaveX] = useState(0);
@@ -53,8 +58,10 @@ export const useCardHandlers = ({ statementId, pollId }: HookArgs) => {
           setLeaveY(1000);
           break;
       }
+
+      onStatementHide();
     },
-    [pollId, statementId, track],
+    [onStatementHide, pollId, statementId, track],
   );
 
   const onResponseCustomOption = useCallback(
@@ -76,8 +83,10 @@ export const useCardHandlers = ({ statementId, pollId }: HookArgs) => {
       // Exit, stage right
       // TODO: different exit animations for custom options?
       setLeaveX(1000);
+
+      onStatementHide();
     },
-    [pollId, statementId, track],
+    [onStatementHide, pollId, statementId, track],
   );
 
   const onDragEnd = useCallback(

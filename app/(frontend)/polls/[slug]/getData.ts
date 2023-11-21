@@ -222,13 +222,9 @@ export const getData = async (slug: string) => {
     filteredStatements.push(statement);
   }
 
-  const sortedFilteredStatements = filteredStatements.sort(
-    () => 0.5 - Math.random(),
-  );
-
   return {
     poll,
-    filteredStatements: sortedFilteredStatements,
+    filteredStatements,
     statementOptions,
     userResponses,
   };

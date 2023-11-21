@@ -102,6 +102,8 @@ export const Tutorial = () => {
               <Card
                 statement={mockStatement}
                 statementOptions={[]}
+                // eslint-disable-next-line no-empty-function
+                onStatementHide={() => {}}
                 index={0}
                 cardCount={1}
                 height={176}
