@@ -184,14 +184,16 @@ export const Results: FC<ResultsProps> = ({
           </button>
         ))}
 
-        <div className="ml-auto">
-          <DemographicFilter
-            demographicStatements={demographicStatements}
-            statementOptions={statementOptions}
-            enabledDemographicFilters={enabledDemographicFilters}
-            onChange={setEnabledDemographicFilters}
-          />
-        </div>
+        {demographicStatements.length > 0 && (
+          <div className="ml-auto">
+            <DemographicFilter
+              demographicStatements={demographicStatements}
+              statementOptions={statementOptions}
+              enabledDemographicFilters={enabledDemographicFilters}
+              onChange={setEnabledDemographicFilters}
+            />
+          </div>
+        )}
       </div>
       <div className="grid gap-2">
         {sortedStatements.map(({ id, text, stats: { votePercentages } }) => (
