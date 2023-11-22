@@ -47,6 +47,7 @@ export const getData = async (slug: string) => {
     .selectFrom("statements")
     .selectAll()
     .where("poll_id", "=", poll.id)
+    .orderBy("id asc")
     .execute();
 
   const statementOptions = (

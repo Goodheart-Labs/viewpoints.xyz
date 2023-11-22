@@ -8,17 +8,31 @@ type CardsProps = {
   statements: (Statement & {
     author: Author | null;
   })[];
+  statementsToHideIds: number[];
   statementOptions: Record<number, StatementOption[]>;
   emptyMessage?: JSX.Element;
 };
 
-const Cards = ({ statements, statementOptions, emptyMessage }: CardsProps) => {
+const Cards = ({
+  statements,
+  statementsToHideIds,
+  statementOptions,
+  emptyMessage,
+}: CardsProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   // When the data changes, the backend called `revalidatePath` which invalidates the cache,
   // next does some magic, and the cards get updated. But this round trip takes some time,
   // so we want to hide the cards that are about to be removed.
   const [statementsToHide, setStatementsToHide] = useState<number[]>([]);
+
+  // If the statementsToHideIds change, that means the cache is invalid and the props have updated
+  // and therefore we want to add them to the list of statements to hide.
+  useEffect(() => {
+    setStatementsToHide((sh) =>
+      [...sh, ...statementsToHideIds].filter((v, i, a) => a.indexOf(v) === i),
+    );
+  }, [statementsToHideIds]);
 
   // We also want to randomize the order of the cards, but we don't want to do it on every
   // render, because that would cause the cards to jump around. So we keep track of the
@@ -30,11 +44,12 @@ const Cards = ({ statements, statementOptions, emptyMessage }: CardsProps) => {
         .map((statement) => statement.id)
         .sort(() => 0.5 - Math.random()),
     );
-  }, [statements]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const statementsToDisplay = useMemo(
     () =>
-      statements
+      [...statements]
         .sort(
           (a, b) =>
             statementSorting.indexOf(a.id) - statementSorting.indexOf(b.id),

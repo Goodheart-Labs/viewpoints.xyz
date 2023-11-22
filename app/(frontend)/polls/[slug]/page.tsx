@@ -34,6 +34,23 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
   const VisibilityIcon =
     poll.visibility === "public" ? LockOpen2Icon : LockClosedIcon;
 
+  const statementsWithoutResponsesAndFlags = statements.map((statement) => ({
+    ...statement,
+    responses: [],
+    flaggedStatements: [],
+  }));
+
+  const filteredStatementIds = filteredStatements.map(
+    (statement) => statement.id,
+  );
+
+  const statementsToHideIds =
+    filteredStatementIds.length > 0
+      ? statements
+          .filter((statement) => !filteredStatementIds.includes(statement.id))
+          .map((statement) => statement.id)
+      : [];
+
   return (
     <main className="flex flex-col items-center flex-1 w-full bg-black xl:p-8 xl:flex-row xl:justify-center xl:gap-8 xl:overflow-y-hidden">
       <div className="flex flex-col items-stretch w-full h-full max-w-full xl:w-1/2 xl:bg-zinc-900 xl:rounded-xl">
@@ -71,7 +88,8 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
         {filteredStatements.length > 0 ? (
           <>
             <Cards
-              statements={statements}
+              statements={statementsWithoutResponsesAndFlags}
+              statementsToHideIds={statementsToHideIds}
               statementOptions={statementOptions}
             />
 
