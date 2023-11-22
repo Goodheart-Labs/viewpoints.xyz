@@ -20,8 +20,13 @@ type PollPageProps = {
 };
 
 const PollPage = async ({ params, searchParams }: PollPageProps) => {
-  const { poll, filteredStatements, userResponses, statementOptions } =
-    await getData(params.slug);
+  const {
+    poll,
+    statements,
+    filteredStatements,
+    userResponses,
+    statementOptions,
+  } = await getData(params.slug);
 
   const visibilityText =
     poll.visibility === "public" ? "Public poll" : "Private poll";
@@ -66,7 +71,7 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
         {filteredStatements.length > 0 ? (
           <>
             <Cards
-              statements={filteredStatements}
+              statements={statements}
               statementOptions={statementOptions}
             />
 

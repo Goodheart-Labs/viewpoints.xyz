@@ -146,14 +146,34 @@ export const getData = async (slug: string) => {
     });
   }
 
-  // Filter out statements that have been flagged too many times or skipped too many times
+  const [filteredStatements, userResponses] = filterStatements(
+    statementsWithStuff,
+    userId,
+    sessionId,
+  );
 
-  const filteredStatements: (Statement & {
-    author: Author | null;
-  })[] = [];
+  return {
+    poll,
+    statements: statementsWithStuff,
+    filteredStatements,
+    statementOptions,
+    userResponses,
+  };
+};
+
+type FilteredStatement = Statement & {
+  author: Author | null;
+};
+
+export const filterStatements = (
+  statements: PollWithStatements["statements"],
+  userId: string | null,
+  sessionId: string,
+): [FilteredStatement[], Map<number, UserResponseItem>] => {
+  const filteredStatements: FilteredStatement[] = [];
   const userResponses = new Map<number, UserResponseItem>();
 
-  for (const statement of statementsWithStuff) {
+  for (const statement of statements) {
     if (
       (statement.flaggedStatements ?? []).length > MAX_NUM_FLAGS_BEFORE_REMOVAL
     ) {
@@ -222,10 +242,5 @@ export const getData = async (slug: string) => {
     filteredStatements.push(statement);
   }
 
-  return {
-    poll,
-    filteredStatements,
-    statementOptions,
-    userResponses,
-  };
+  return [filteredStatements, userResponses];
 };
