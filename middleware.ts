@@ -14,8 +14,8 @@ const publicRoutes = [
 ];
 
 export const SESSION_ID_COOKIE_NAME = "sessionId";
-const INFINITE_REDIRECTION_LOOP_COOKIE = "__clerk_redirection_loop";
-const CLERK_CLIENT_UAT_COOKIE = "__client_uat";
+// const INFINITE_REDIRECTION_LOOP_COOKIE = "__clerk_redirection_loop";
+// const CLERK_CLIENT_UAT_COOKIE = "__client_uat";
 
 export const config = {
   matcher: ["/((?!.*\\..*|_next|iframe).*)", "/'"],
@@ -26,15 +26,15 @@ export const config = {
 
 export default authMiddleware({
   beforeAuth: (req) => {
-    const redirectCount = req.cookies.get(INFINITE_REDIRECTION_LOOP_COOKIE)
-      ?.value;
+    // const redirectCount = req.cookies.get(INFINITE_REDIRECTION_LOOP_COOKIE)
+    //   ?.value;
 
-    if (redirectCount) {
-      req.cookies.delete(CLERK_CLIENT_UAT_COOKIE);
-      req.cookies.delete(INFINITE_REDIRECTION_LOOP_COOKIE);
+    // if (redirectCount) {
+    //   req.cookies.delete(CLERK_CLIENT_UAT_COOKIE);
+    //   req.cookies.delete(INFINITE_REDIRECTION_LOOP_COOKIE);
 
-      return NextResponse.redirect(new URL("/", req.url));
-    }
+    //   return NextResponse.redirect(new URL("/", req.url));
+    // }
 
     if (!req.cookies.has(SESSION_ID_COOKIE_NAME)) {
       const newSessionId = uuidv4();
