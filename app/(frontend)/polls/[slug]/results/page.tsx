@@ -26,7 +26,7 @@ const AnalyticsPage = async ({ params }: { params: { slug: string } }) => {
         <meta property="twitter:site" content="viewpoints.xyz" />
       </Head>
 
-      <div className="mt-10 sm:mt-20 text-center">
+      <div className="mt-10 text-center sm:mt-20">
         <h1 className="mb-4 text-4xl font-bold text-black dark:text-gray-200">
           {poll.title}
         </h1>
