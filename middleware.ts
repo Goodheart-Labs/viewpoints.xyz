@@ -10,7 +10,7 @@ const publicRoutes = ["/(.*)"];
 export const SESSION_ID_COOKIE_NAME = "sessionId";
 
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)"],
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };
 
 // Auth middleware
