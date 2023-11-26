@@ -1,5 +1,5 @@
 import { ClerkProvider } from "@clerk/nextjs";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import { Header } from "@/components/Header";
 import { Toaster } from "@/app/components/shadcn/ui/toaster";
@@ -19,8 +19,13 @@ import "react-tooltip/dist/react-tooltip.css";
 export const metadata: Metadata = {
   title: "viewpoints.xyz",
   description: "what in the world are you thinking?",
-  viewport:
-    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 // Default export
