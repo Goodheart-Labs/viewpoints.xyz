@@ -44,10 +44,5 @@ export default authMiddleware({
     return NextResponse.next();
   },
 
-  afterAuth: () => {
-    console.log("CLERK_SECRET_KEY", process.env.CLERK_SECRET_KEY);
-    return NextResponse.next();
-  },
-
   publicRoutes,
 });
