@@ -1,5 +1,5 @@
 import type { Poll } from "@/db/schema";
-import { currentUser } from "@clerk/nextjs";
+import { currentUser, auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 
 export const isPollAdmin = (
@@ -10,6 +10,7 @@ export const isPollAdmin = (
 export const requirePollAdmin = async (poll: Poll | null): Promise<boolean> => {
   console.log("requirePollAdmin");
 
+  console.log("requirePollAdmin:auth", await auth());
   const user = await currentUser();
   console.log("requirePollAdmin:currentUser", { user });
 
