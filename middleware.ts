@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const publicRoutes = [
   "/",
-  "/polls/([^/]+)$",
+  "/polls/(.*)",
   "/embed/polls/(.*)",
   "/api/sessions",
   "/api/polls/(.*)",
