@@ -1,7 +1,7 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 
-import Header from "@/components/Header";
+import { Header } from "@/components/Header";
 import { Toaster } from "@/app/components/shadcn/ui/toaster";
 
 import Contexts from "../components/Contexts";
