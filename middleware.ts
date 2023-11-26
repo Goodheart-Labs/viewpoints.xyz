@@ -1,6 +1,6 @@
 import { authMiddleware } from "@clerk/nextjs";
-// import { NextResponse } from "next/server";
-// import { v4 as uuidv4 } from "uuid";
+import { NextResponse } from "next/server";
+import { v4 as uuidv4 } from "uuid";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -25,24 +25,29 @@ export const config = {
 export default authMiddleware({
   debug: true,
 
-  // beforeAuth: (req) => {
-  //   if (!req.cookies.has(SESSION_ID_COOKIE_NAME)) {
-  //     const newSessionId = uuidv4();
-  //     const cookie = {
-  //       name: SESSION_ID_COOKIE_NAME,
-  //       value: newSessionId,
-  //     };
+  beforeAuth: (req) => {
+    if (!req.cookies.has(SESSION_ID_COOKIE_NAME)) {
+      const newSessionId = uuidv4();
+      const cookie = {
+        name: SESSION_ID_COOKIE_NAME,
+        value: newSessionId,
+      };
 
-  //     req.cookies.set(cookie);
+      req.cookies.set(cookie);
 
-  //     const response = NextResponse.next();
-  //     response.cookies.set({ ...cookie, expires: Infinity });
+      const response = NextResponse.next();
+      response.cookies.set({ ...cookie, expires: Infinity });
 
-  //     return response;
-  //   }
+      return response;
+    }
 
-  //   return NextResponse.next();
-  // },
+    return NextResponse.next();
+  },
+
+  afterAuth: () => {
+    console.log("CLERK_SECRET_KEY", process.env.CLERK_SECRET_KEY);
+    return NextResponse.next();
+  },
 
   publicRoutes,
 });
