@@ -1,7 +1,7 @@
 import Head from "next/head";
 
 import { Results } from "@/app/components/polls/responses/Results";
-
+import Link from "next/link";
 import { getPollResults } from "../../../../../lib/pollResults/getPollResults";
 
 const AnalyticsPage = async ({ params }: { params: { slug: string } }) => {
@@ -26,13 +26,20 @@ const AnalyticsPage = async ({ params }: { params: { slug: string } }) => {
         <meta property="twitter:site" content="viewpoints.xyz" />
       </Head>
 
-      <div className="mt-10 text-center sm:mt-20">
+      <div className="mt-4 text-center sm:mt-20">
+        <p className="mb-8">
+          <Link
+            href={`/polls/${poll.slug}`}
+            className="text-black dark:text-gray-200"
+          >
+            &larr; Back to poll
+          </Link>
+        </p>
+
         <h1 className="mb-4 text-4xl font-bold text-black dark:text-gray-200">
           {poll.title}
         </h1>
-        <h2 className="text-gray-800 sm:text-xl dark:text-gray-500">
-          Analytics
-        </h2>
+        <h2 className="text-gray-800 sm:text-xl dark:text-gray-500">Results</h2>
       </div>
 
       <div className="mt-12">
