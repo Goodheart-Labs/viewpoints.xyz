@@ -13,6 +13,7 @@ import * as yup from "yup";
 
 import StatementList from "@/app/components/polls/new/StatementList";
 import BorderedButton from "@/components/BorderedButton";
+import { useAmplitude } from "@/providers/AmplitudeProvider";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -245,6 +246,8 @@ const NewPollPageClient = () => {
 
   // Callbacks
 
+  const { track } = useAmplitude();
+
   const onSubmit = async ({
     title,
     slug,
@@ -258,6 +261,11 @@ const NewPollPageClient = () => {
       question,
       statements: statements.filter((c) => c.trim() !== ""),
       with_demographic_questions,
+    });
+
+    track({
+      type: "polls.create",
+      slug,
     });
 
     router.push(`/polls/${slug}`);

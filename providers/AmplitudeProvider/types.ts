@@ -33,7 +33,8 @@ export type TrackingEvent =
       pollId: number;
     }
   | {
-      type: "polls.new.open";
+      type: "polls.create";
+      slug: string;
     }
   | {
       type: "drag";
