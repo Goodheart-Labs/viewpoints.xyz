@@ -12,6 +12,9 @@ import type { SORT_PARAM, SortKey } from "@/lib/pollResults/constants";
 import { ScrollArea } from "@/app/components/shadcn/ui/scroll-area";
 import { QrCodeGenerator } from "@/app/components/polls/QrCodeGenerator";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import { isPollAdmin, isPollAdminOrSuperadmin } from "@/utils/authutils";
+import { auth } from "@clerk/nextjs";
 import { getData } from "./getData";
 
 type PollPageProps = {
@@ -27,6 +30,16 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
     userResponses,
     statementOptions,
   } = await getData(params.slug);
+
+  const { userId } = auth();
+
+  const canSeePoll =
+    poll.visibility !== "private" ||
+    (await isPollAdminOrSuperadmin(poll, userId));
+
+  if (!canSeePoll) {
+    notFound();
+  }
 
   const visibilityText =
     poll.visibility === "public" ? "Public poll" : "Private poll";

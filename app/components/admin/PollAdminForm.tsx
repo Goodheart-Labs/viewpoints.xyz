@@ -3,7 +3,6 @@
 import { useTransition } from "react";
 import { useController, useForm, useFormState } from "react-hook-form";
 import { CheckCircle2, RotateCw, XCircle } from "lucide-react";
-
 import { changeVisibility } from "@/app/api/polls/changeVisibility";
 import { DisabledInputWithLabel } from "@/app/components/DisabledInputWithLabel";
 import PollPrivacySettings from "@/components/ui/PollPrivacySettings";
