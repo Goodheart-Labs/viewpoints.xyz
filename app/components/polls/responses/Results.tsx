@@ -8,6 +8,7 @@ import { sortOptions } from "@/lib/pollResults/constants";
 import { CaretDownIcon } from "@radix-ui/react-icons";
 import type { Response, StatementOption } from "@/db/schema";
 import { getStatementsWithStats } from "@/lib/pollResults/getStatementsWithStats";
+import { useIsSuperuser } from "@/utils/frontendauthutils";
 import {
   Popover,
   PopoverTrigger,
@@ -86,6 +87,8 @@ export const Results: FC<ResultsProps> = ({
   responseCount,
   respondentsCount,
 }) => {
+  const canFilterByDemographics = useIsSuperuser();
+
   const [enabledDemographicFilters, setEnabledDemographicFilters] = useState<
     Record<number, number[]>
   >({});
@@ -184,7 +187,7 @@ export const Results: FC<ResultsProps> = ({
           </button>
         ))}
 
-        {demographicStatements.length > 0 && (
+        {demographicStatements.length > 0 && canFilterByDemographics && (
           <div className="ml-auto">
             <DemographicFilter
               demographicStatements={demographicStatements}
