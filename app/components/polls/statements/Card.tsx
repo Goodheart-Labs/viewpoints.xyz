@@ -130,19 +130,27 @@ const DefaultCardView = ({
     <div className="flex items-center justify-between">
       <CardButton<NonNullable<Response["choice"]>>
         choice="itsComplicated"
+        choiceText="It's complicated"
         onResponse={onResponseChoice}
+        withTooltip
       />
       <CardButton<NonNullable<Response["choice"]>>
         choice="disagree"
+        choiceText="Disagree"
         onResponse={onResponseChoice}
+        withTooltip
       />
       <CardButton<NonNullable<Response["choice"]>>
         choice="agree"
+        choiceText="Agree"
         onResponse={onResponseChoice}
+        withTooltip
       />
       <CardButton<NonNullable<Response["choice"]>>
         choice="skip"
+        choiceText="Skip"
         onResponse={onResponseChoice}
+        withTooltip
       />
     </div>
   </motion.div>

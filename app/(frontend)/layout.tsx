@@ -7,11 +7,8 @@ import { Toaster } from "@/app/components/shadcn/ui/toaster";
 import Contexts from "../components/Contexts";
 import LogrocketWrapper from "../components/LogrocketWrapper";
 
-import { Tooltips } from "./tooltip";
-
 import "@/styles/tailwind.css";
 import "@/styles/frontend.css";
-import "react-tooltip/dist/react-tooltip.css";
 
 // Metadata
 // -----------------------------------------------------------------------------
@@ -41,7 +38,6 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
             {children}
           </Contexts>
         </LogrocketWrapper>
-        <Tooltips />
         <Toaster />
       </body>
     </html>
