@@ -1,9 +1,6 @@
 import { auth } from "@clerk/nextjs";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-
 import type { UserResponseItem } from "@/app/components/polls/responses/UserResponses";
-import { SESSION_ID_COOKIE_NAME } from "@/middleware";
 import { db } from "@/db/client";
 import type {
   Author,
@@ -13,6 +10,7 @@ import type {
   Response,
   StatementOption,
 } from "@/db/schema";
+import { getSessionId } from "@/utils/sessionutils";
 
 const MAX_NUM_FLAGS_BEFORE_REMOVAL = 2;
 const MAX_NUM_SKIPS_BEFORE_REMOVAL = 5;
@@ -29,7 +27,7 @@ export type PollWithStatements = Poll & {
 
 export const getData = async (slug: string) => {
   const { userId } = auth();
-  const sessionId = cookies().get(SESSION_ID_COOKIE_NAME)!.value;
+  const sessionId = getSessionId();
 
   // Pull the poll and associated data from the database
 

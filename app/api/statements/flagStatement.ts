@@ -2,10 +2,9 @@
 
 import { auth } from "@clerk/nextjs";
 import type { FlaggedStatement } from "@/db/schema";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { db } from "@/db/client";
-import { SESSION_ID_COOKIE_NAME } from "@/middleware";
+import { getSessionId } from "@/utils/sessionutils";
 import { refreshPoll } from "../lib/refreshPoll";
 
 export const flagStatement = async (
@@ -13,7 +12,7 @@ export const flagStatement = async (
   data: Pick<FlaggedStatement, "reason" | "description">,
 ) => {
   const { userId } = auth();
-  const sessionId = cookies().get(SESSION_ID_COOKIE_NAME)!.value;
+  const sessionId = getSessionId();
 
   const statement = await db
     .selectFrom("statements")

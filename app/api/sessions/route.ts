@@ -1,7 +1,6 @@
 import { db } from "@/db/client";
-import { SESSION_ID_COOKIE_NAME } from "@/middleware";
+import { getSessionId } from "@/utils/sessionutils";
 import { currentUser } from "@clerk/nextjs";
-import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -9,7 +8,7 @@ import { NextResponse } from "next/server";
 // -----------------------------------------------------------------------------
 
 export async function POST(request: NextRequest) {
-  const sessionId = cookies().get(SESSION_ID_COOKIE_NAME)!.value;
+  const sessionId = getSessionId();
 
   const exists = await db
     .selectFrom("sessions")

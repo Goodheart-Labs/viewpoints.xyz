@@ -1,16 +1,16 @@
 "use client";
 
 import { AFTER_DEPLOY_COOKIE_NAME } from "@/middleware";
+import { useSessionId } from "@/utils/frontendsessionutils";
 import axios from "axios";
 import type { PropsWithChildren } from "react";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo } from "react";
 import {
   getCookie,
   setCookie,
   getCookies,
   removeCookie,
 } from "typescript-cookie";
-import { v4 as uuidv4 } from "uuid";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -40,7 +40,14 @@ export const useSession = () => useContext(SessionContext);
 // -----------------------------------------------------------------------------
 
 const SessionProvider = ({ children }: PropsWithChildren) => {
-  const [sessionId, setSessionId] = useState("");
+  const sessionId = useSessionId();
+  useEffect(() => {
+    if (sessionId) {
+      axios.post("/api/sessions", {
+        userAgent: navigator.userAgent,
+      });
+    }
+  }, [sessionId]);
 
   useEffect(() => {
     // We've had some problems with nextjs and clerk sessions, so we're going to
@@ -49,6 +56,7 @@ const SessionProvider = ({ children }: PropsWithChildren) => {
     // Why aren't we doing this in the middleware? https://github.com/clerk/javascript/issues/1897
 
     if (!getCookie(AFTER_DEPLOY_COOKIE_NAME)) {
+      // eslint-disable-next-line no-console
       console.log("Wiping cookies and localstorage after deploy");
 
       const allCookies = getCookies();
@@ -76,23 +84,6 @@ const SessionProvider = ({ children }: PropsWithChildren) => {
 
       window.location.reload();
     }
-
-    // If the user doesn't already have one, set a session ID cookie.
-
-    let storedSessionId = getCookie(SESSION_ID_COOKIE_NAME);
-
-    if (storedSessionId) {
-      setSessionId(storedSessionId);
-    } else {
-      const newSessionId = uuidv4();
-      setCookie(SESSION_ID_COOKIE_NAME, newSessionId, { expires: Infinity });
-      setSessionId(newSessionId);
-      storedSessionId = newSessionId;
-    }
-
-    axios.post("/api/sessions", {
-      userAgent: navigator.userAgent,
-    });
   }, []);
 
   const value = useMemo(() => ({ sessionId }), [sessionId]);
