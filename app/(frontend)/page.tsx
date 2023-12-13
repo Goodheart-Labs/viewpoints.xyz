@@ -6,6 +6,7 @@ import { GitHubLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import type { Author } from "@/db/schema";
 import { db } from "@/db/client";
+import { isEmail } from "@/utils/stringutils";
 import { Button } from "../components/shadcn/ui/button";
 import { anonymousAvatar } from "../components/user/UserAvatar";
 import { WhatsappLink } from "../components/WhatsappLink";
@@ -163,10 +164,18 @@ const Index = async () => {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={authors[poll.user_id]?.avatarUrl ?? anonymousAvatar}
-                      alt={authors[poll.user_id]?.name ?? "Anonymous"}
+                      alt={
+                        !isEmail(authors[poll.user_id]?.name)
+                          ? authors[poll.user_id].name ?? "Anonymous"
+                          : "Anonymous"
+                      }
                       className="w-6 h-6 mr-2 rounded-full grayscale group-hover:grayscale-0"
                     />
-                    <span>{authors[poll.user_id]?.name ?? "Anonymous"}</span>
+                    <span>
+                      {!isEmail(authors[poll.user_id]?.name)
+                        ? authors[poll.user_id].name ?? "Anonymous"
+                        : "Anonymous"}
+                    </span>
                   </p>
                 </Card>
               </Link>

@@ -23,7 +23,7 @@ export const createAuthorIfNeeded = async () => {
         name:
           user.firstName && user.lastName
             ? `${user.firstName} ${user.lastName}`
-            : user.emailAddresses[0].emailAddress,
+            : "Anonymous",
         avatarUrl: user.imageUrl,
       })
       .execute();
