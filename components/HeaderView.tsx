@@ -72,7 +72,7 @@ export const HeaderView = ({ userId = null }: { userId: string | null }) => {
       ) : null}
 
       {isSignedIn ? (
-        <Link href="/new-poll">
+        <Link href="/new-poll" prefetch={false}>
           <Button variant="pill" size="pill" className="mr-2">
             <PlusCircle className="w-3 mr-2" /> Create Poll
           </Button>
