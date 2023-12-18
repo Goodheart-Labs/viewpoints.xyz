@@ -4,6 +4,7 @@ import { authMiddleware } from "@clerk/nextjs/server";
 // -----------------------------------------------------------------------------
 
 const publicRoutes = [
+  "/",
   "/embed/polls/(.*)",
   "/polls/(.*)",
   "/polls/(.*)/results",
