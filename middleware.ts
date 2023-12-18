@@ -3,7 +3,13 @@ import { authMiddleware } from "@clerk/nextjs/server";
 // Config
 // -----------------------------------------------------------------------------
 
-const publicRoutes = ["/(.*)"];
+const publicRoutes = [
+  "/embed/polls/(.*)",
+  "/polls/(.*)",
+  "/polls/(.*)/results",
+  "/api/sessions",
+  "/api/polls/(.*)",
+];
 
 export const SESSION_ID_COOKIE_NAME = "sessionId";
 export const CLEAR_LOCALSTORAGE_HEADER_NAME = "X-Clear-LocalStorage";

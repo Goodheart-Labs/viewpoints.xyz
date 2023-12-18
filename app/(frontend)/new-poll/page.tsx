@@ -1,14 +1,11 @@
 import { auth } from "@clerk/nextjs";
 import { notFound } from "next/navigation";
-import { headers } from "next/headers";
 import NewPollPageClient from "./client";
 
 // View
 // -----------------------------------------------------------------------------
 
 const NewPollPageView = () => {
-  console.log("HEADERS", headers());
-
   const { userId } = auth();
   if (!userId) notFound();
 
