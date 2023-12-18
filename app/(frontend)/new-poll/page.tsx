@@ -1,5 +1,5 @@
-// import { auth } from "@clerk/nextjs";
-// import { notFound } from "next/navigation";
+import { auth } from "@clerk/nextjs";
+import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import NewPollPageClient from "./client";
 
@@ -7,10 +7,10 @@ import NewPollPageClient from "./client";
 // -----------------------------------------------------------------------------
 
 const NewPollPageView = () => {
-  // const { userId } = auth();
-  // if (!userId) notFound();
-
   console.log("HEADERS", headers());
+
+  const { userId } = auth();
+  if (!userId) notFound();
 
   return (
     <main className="flex flex-col items-center w-full max-w-5xl min-h-screen px-4 mx-auto bg-black sm:px-0">
