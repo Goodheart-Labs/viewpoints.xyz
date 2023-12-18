@@ -3,13 +3,15 @@ import { authMiddleware } from "@clerk/nextjs/server";
 // Config
 // -----------------------------------------------------------------------------
 
+const pollSlug = "([a-z0-9-]+)";
+
 const publicRoutes = [
-  "/",
-  "/embed/polls/(.*)",
-  "/polls/(.*)",
-  "/polls/(.*)/results",
-  "/api/sessions",
-  "/api/polls/(.*)",
+  `/`,
+  `/embed/polls/${pollSlug}`,
+  `/polls/${pollSlug}`,
+  `/polls/${pollSlug}/results`,
+  `/api/sessions`,
+  `/api/polls/${pollSlug}`,
 ];
 
 export const SESSION_ID_COOKIE_NAME = "sessionId";
