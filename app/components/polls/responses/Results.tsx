@@ -16,10 +16,12 @@ import {
 } from "../../shadcn/ui/popover";
 import { ToggleGroup, ToggleGroupItem } from "../../shadcn/ui/toggle-group";
 
+type StatementWithStatsAndResponses = StatementWithStats & {
+  responses: Response[];
+};
+
 export type ResultsProps = {
-  statements: (StatementWithStats & {
-    responses: Response[];
-  })[];
+  statements: StatementWithStatsAndResponses[];
   statementOptions: Record<number, StatementOption[]>;
   responseCount: number;
   respondentsCount: number;
@@ -29,11 +31,13 @@ const DemographicFilter = ({
   demographicStatements,
   statementOptions,
   enabledDemographicFilters,
+  totalSessionCountsByDemographicOptionId,
   onChange,
 }: {
   demographicStatements: StatementWithStats[];
   statementOptions: Record<number, StatementOption[]>;
   enabledDemographicFilters: Record<number, number[]>;
+  totalSessionCountsByDemographicOptionId: Record<string, number>;
   onChange: (enabledDemographicFilters: Record<number, number[]>) => void;
 }) => {
   const onValueChange = useCallback(
@@ -66,9 +70,18 @@ const DemographicFilter = ({
                     <ToggleGroupItem
                       key={option.id}
                       value={String(option.id)}
-                      className="w-full"
+                      className="flex items-center justify-between w-full"
+                      disabled={
+                        (totalSessionCountsByDemographicOptionId[option.id] ??
+                          0) === 0
+                      }
                     >
-                      {option.option}
+                      <span>{option.option}</span>
+
+                      <span>
+                        {totalSessionCountsByDemographicOptionId[option.id] ??
+                          0}
+                      </span>
                     </ToggleGroupItem>
                   ))}
                 </ToggleGroup>
@@ -89,9 +102,8 @@ export const Results: FC<ResultsProps> = ({
 }) => {
   const canFilterByDemographics = useIsSuperuser();
 
-  const [enabledDemographicFilters, setEnabledDemographicFilters] = useState<
-    Record<number, number[]>
-  >({});
+  const [enabledDemographicFilters, setEnabledDemographicFilters] =
+    useState<EnabledDemographicFilters>({});
 
   const enabledDemographicFilterOptionIds = useMemo(
     () => Object.values(enabledDemographicFilters).flat(),
@@ -100,10 +112,14 @@ export const Results: FC<ResultsProps> = ({
 
   const [sort, setSort] = useState<SortKey>("consensus");
 
-  const demographicStatements = useMemo(
-    () =>
-      statements.filter(({ question_type }) => question_type === "demographic"),
-    [statements],
+  const {
+    demographicStatements,
+    sessionIdsByDemographicOptionId,
+    totalSessionCountsByDemographicOptionId,
+  } = useDemographicResponses(
+    statements,
+    statementOptions,
+    enabledDemographicFilters,
   );
 
   const [
@@ -119,32 +135,22 @@ export const Results: FC<ResultsProps> = ({
       return [fs, responseCount, respondentsCount];
     }
 
-    const sessionIdsWithinEnabledDemographicFilters = statements.flatMap(
-      (statement) =>
-        statement.responses
-          .map((response) => response.session_id)
-          .filter((sessionId) => {
-            const isInDemographicResponses = demographicStatements.some(
-              (demographicStatement) =>
-                demographicStatement.responses.some(
-                  (demographicResponse) =>
-                    demographicResponse.option_id &&
-                    demographicResponse.session_id === sessionId &&
-                    enabledDemographicFilterOptionIds.includes(
-                      demographicResponse.option_id,
-                    ),
-                ),
-            );
+    const sessionIdsForEnabledDemographicFilters = Object.values(
+      sessionIdsByDemographicOptionId,
+    ).flat();
 
-            return isInDemographicResponses;
-          }),
-    );
+    const sessionIdsForAllEnabledDemographicFilters =
+      sessionIdsForEnabledDemographicFilters.filter((sessionId) =>
+        enabledDemographicFilterOptionIds.every((optionId) =>
+          sessionIdsByDemographicOptionId[optionId].includes(sessionId),
+        ),
+      );
 
     const statementsGivenFilters = fs
       .map((statement) => ({
         ...statement,
         responses: statement.responses.filter((response) =>
-          sessionIdsWithinEnabledDemographicFilters.includes(
+          sessionIdsForAllEnabledDemographicFilters.includes(
             response.session_id,
           ),
         ),
@@ -153,10 +159,10 @@ export const Results: FC<ResultsProps> = ({
 
     return getStatementsWithStats(statementsGivenFilters);
   }, [
-    demographicStatements,
     enabledDemographicFilterOptionIds,
     respondentsCount,
     responseCount,
+    sessionIdsByDemographicOptionId,
     statements,
   ]);
 
@@ -193,6 +199,9 @@ export const Results: FC<ResultsProps> = ({
               demographicStatements={demographicStatements}
               statementOptions={statementOptions}
               enabledDemographicFilters={enabledDemographicFilters}
+              totalSessionCountsByDemographicOptionId={
+                totalSessionCountsByDemographicOptionId
+              }
               onChange={setEnabledDemographicFilters}
             />
           </div>
@@ -236,4 +245,129 @@ export const Results: FC<ResultsProps> = ({
       </div>
     </div>
   );
+};
+
+type EnabledDemographicFilters = Record<number, number[]>;
+
+export const useDemographicResponses = (
+  statements: StatementWithStatsAndResponses[],
+  statementOptions: Record<number, StatementOption[]>,
+  enabledDemographicFilters: Record<number, number[]>,
+) => {
+  // Pull out all demographic statements and responses
+
+  const demographicStatements = useMemo(
+    () =>
+      statements.filter(({ question_type }) => question_type === "demographic"),
+    [statements],
+  );
+
+  const allDemographicResponses = useMemo(
+    () => demographicStatements.flatMap((statement) => statement.responses),
+    [demographicStatements],
+  );
+
+  // Group responses of demographic questions by session_id
+
+  const demographicResponsesBySessionId = useMemo(
+    () =>
+      allDemographicResponses.reduce(
+        (acc, response) => {
+          if (!acc[response.session_id]) {
+            acc[response.session_id] = [];
+          }
+          acc[response.session_id].push(response);
+          return acc;
+        },
+        {} as Record<string, Response[]>,
+      ),
+    [allDemographicResponses],
+  );
+
+  // Let's get a list of sessionIds for each demographic option
+
+  const sessionIdsByDemographicOptionId = useMemo(
+    () =>
+      demographicStatements.reduce(
+        (acc, statement) =>
+          statementOptions[statement.id].reduce((optionCounts, option) => {
+            const sessionIds = allDemographicResponses
+              .filter((response) => response.option_id === option.id)
+              .map((response) => response.session_id);
+
+            return {
+              ...optionCounts,
+              [option.id]: sessionIds,
+            };
+          }, acc),
+        {} as Record<number, string[]>,
+      ),
+    [allDemographicResponses, demographicStatements, statementOptions],
+  );
+
+  // Get a count of how many sessions there are in each demographic group.
+  //
+  // For instance:
+  // If the user selects Age = <18, then we should update the counts such that the
+  // counts for other demographics are only for sessions that have Age = <18 (and
+  // set the count for Age = >=18 to 0).
+  //
+  // If no filters are set, then we should return the total number of sessions for
+  // each demographic group.
+  //
+  // Map this to a record of demographic option id -> count
+
+  const totalSessionCountsByDemographicOptionId = useMemo(
+    () =>
+      demographicStatements.reduce(
+        (acc, statement) =>
+          statementOptions[statement.id].reduce((countsAcc, option) => {
+            const sessionIds = sessionIdsByDemographicOptionId[option.id] ?? 0;
+
+            return {
+              ...countsAcc,
+              [option.id]:
+                Object.keys(enabledDemographicFilters).length > 0
+                  ? sessionIds.filter((sessionId) =>
+                      demographicResponsesBySessionId[sessionId].every(
+                        (response) =>
+                          response.option_id &&
+                          (enabledDemographicFilters[response.statementId]
+                            ?.length ?? 0) > 0
+                            ? enabledDemographicFilters[
+                                response.statementId
+                              ]?.includes(response.option_id)
+                            : true,
+                      ),
+                    ).length
+                  : sessionIds.length,
+            };
+          }, acc),
+        {} as Record<number, number>,
+      ),
+    [
+      demographicResponsesBySessionId,
+      demographicStatements,
+      enabledDemographicFilters,
+      sessionIdsByDemographicOptionId,
+      statementOptions,
+    ],
+  );
+
+  const response = useMemo(
+    () => ({
+      demographicStatements,
+      demographicResponsesBySessionId,
+      sessionIdsByDemographicOptionId,
+      totalSessionCountsByDemographicOptionId,
+    }),
+    [
+      demographicStatements,
+      demographicResponsesBySessionId,
+      sessionIdsByDemographicOptionId,
+      totalSessionCountsByDemographicOptionId,
+    ],
+  );
+
+  return response;
 };
