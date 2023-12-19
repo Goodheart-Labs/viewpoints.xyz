@@ -61,6 +61,7 @@ type CustomOptionsCardViewProps = {
   leaveX: number;
   leaveY: number;
   animate: string;
+  isActive: boolean;
 };
 
 // Default Card View
@@ -175,6 +176,7 @@ const CustomOptionsCardView = ({
   leaveX,
   leaveY,
   animate: propsAnimate,
+  isActive,
 }: CustomOptionsCardViewProps) => {
   const [animation, setAnimation] = useState({});
   const [highlight, setHighlight] = useState<boolean>(false);
@@ -235,17 +237,19 @@ const CustomOptionsCardView = ({
           </div>
         )}
       </div>
-      <div className="flex flex-wrap items-center justify-between">
-        {statementOptions.map(({ id, option }) => (
-          <CardButton<number>
-            key={id}
-            choice={id}
-            choiceText={option}
-            onResponse={onResponseCustomOption}
-            highlight={highlight}
-          />
-        ))}
-      </div>
+      {isActive ? (
+        <div className="flex flex-wrap items-center justify-between">
+          {statementOptions.map(({ id, option }) => (
+            <CardButton<number>
+              key={id}
+              choice={id}
+              choiceText={option}
+              onResponse={onResponseCustomOption}
+              highlight={highlight}
+            />
+          ))}
+        </div>
+      ) : null}
     </motion.div>
   );
 };
@@ -305,6 +309,7 @@ const CardController = forwardRef<HTMLDivElement, CardControllerProps>(
           leaveX={leaveX}
           leaveY={leaveY}
           animate={animate}
+          isActive={index === cardCount - 1}
         />
       );
     } else {
