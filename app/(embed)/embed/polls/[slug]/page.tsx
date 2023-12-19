@@ -13,8 +13,10 @@ type EmbeddedPollProps = {
 // -----------------------------------------------------------------------------
 
 const EmbeddedPoll = async ({ params: { slug } }: EmbeddedPollProps) => {
-  const { statements, filteredStatements, statementOptions } =
-    await getData(slug);
+  const { statements, filteredStatements, statementOptions } = await getData(
+    slug,
+    { ignoreAuth: true },
+  );
 
   const statementsWithoutResponsesAndFlags = statements.map((statement) => ({
     ...statement,

@@ -25,8 +25,16 @@ export type PollWithStatements = Poll & {
   })[];
 };
 
-export const getData = async (slug: string) => {
-  const { userId } = auth();
+export const getData = async (
+  slug: string,
+  { ignoreAuth = false }: { ignoreAuth?: boolean } = { ignoreAuth: false },
+) => {
+  let userId: ReturnType<typeof auth>["userId"] | null = null;
+  if (!ignoreAuth) {
+    const authInfo = auth();
+    userId = authInfo?.userId ?? null;
+  }
+
   const sessionId = getSessionId();
 
   // Pull the poll and associated data from the database
