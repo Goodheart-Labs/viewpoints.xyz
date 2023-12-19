@@ -1,5 +1,6 @@
 import { db } from "@/db/client";
 import type { StatementOption } from "@/db/schema";
+import { notFound } from "next/navigation";
 import type { SortKey } from "./constants";
 import { sortOptions } from "./constants";
 import { getStatementsWithStats } from "./getStatementsWithStats";
@@ -9,7 +10,11 @@ export const getPollResults = async (slug: string, sortBy?: SortKey) => {
     .selectFrom("polls")
     .selectAll()
     .where("slug", "=", slug)
-    .executeTakeFirstOrThrow();
+    .executeTakeFirst();
+
+  if (!poll) {
+    notFound();
+  }
 
   const statements = await db
     .selectFrom("statements")
