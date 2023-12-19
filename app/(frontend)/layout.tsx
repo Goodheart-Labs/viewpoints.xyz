@@ -1,12 +1,10 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
-
 import { Header } from "@/components/Header";
 import { Toaster } from "@/app/components/shadcn/ui/toaster";
-
+import SessionProvider from "@/providers/SessionProvider";
 import Contexts from "../components/Contexts";
 import LogrocketWrapper from "../components/LogrocketWrapper";
-
 import "@/styles/tailwind.css";
 import "@/styles/frontend.css";
 
@@ -33,10 +31,12 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
     <html lang="en" suppressHydrationWarning>
       <body className="flex flex-col items-stretch min-h-screen bg-black">
         <LogrocketWrapper>
-          <Contexts>
-            <Header />
-            {children}
-          </Contexts>
+          <SessionProvider>
+            <Contexts>
+              <Header />
+              {children}
+            </Contexts>
+          </SessionProvider>
         </LogrocketWrapper>
         <Toaster />
       </body>
