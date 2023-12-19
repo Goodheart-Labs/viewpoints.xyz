@@ -1,10 +1,10 @@
 "use server";
 
-import { auth } from "@clerk/nextjs";
 import { notFound } from "next/navigation";
 import type { Response } from "@/db/schema";
 import { db } from "@/db/client";
 import { getSessionId } from "@/utils/sessionutils";
+import { safeUserId } from "@/utils/clerkutils";
 import { refreshPoll } from "../lib/refreshPoll";
 
 export const createResponse = async (
@@ -19,7 +19,7 @@ export const createResponse = async (
         customOptionId: number;
       },
 ) => {
-  const { userId } = auth();
+  const userId = await safeUserId();
   const sessionId = getSessionId();
 
   const statement = await db

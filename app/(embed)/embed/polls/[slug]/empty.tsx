@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/app/components/shadcn/ui/button";
-import { Link } from "lucide-react";
+import Link from "next/link";
 import { useMemo } from "react";
 
 export const EmptyMessage = ({ slug }: { slug: string }) => {
@@ -15,7 +15,7 @@ export const EmptyMessage = ({ slug }: { slug: string }) => {
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full">
-      <p className="mt-48">
+      <p className="mt-20">
         <Link href={href} target="_blank">
           <Button
             variant="pill"

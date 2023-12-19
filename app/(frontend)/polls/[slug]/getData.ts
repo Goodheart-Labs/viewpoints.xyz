@@ -1,4 +1,3 @@
-import { auth } from "@clerk/nextjs";
 import { notFound } from "next/navigation";
 import type { UserResponseItem } from "@/app/components/polls/responses/UserResponses";
 import { db } from "@/db/client";
@@ -11,6 +10,7 @@ import type {
   StatementOption,
 } from "@/db/schema";
 import { getSessionId } from "@/utils/sessionutils";
+import { safeUserId } from "@/utils/clerkutils";
 
 const MAX_NUM_FLAGS_BEFORE_REMOVAL = 2;
 const MAX_NUM_SKIPS_BEFORE_REMOVAL = 5;
@@ -25,16 +25,8 @@ export type PollWithStatements = Poll & {
   })[];
 };
 
-export const getData = async (
-  slug: string,
-  { ignoreAuth = false }: { ignoreAuth?: boolean } = { ignoreAuth: false },
-) => {
-  let userId: ReturnType<typeof auth>["userId"] | null = null;
-  if (!ignoreAuth) {
-    const authInfo = auth();
-    userId = authInfo?.userId ?? null;
-  }
-
+export const getData = async (slug: string) => {
+  const userId = await safeUserId();
   const sessionId = getSessionId();
 
   // Pull the poll and associated data from the database

@@ -1,6 +1,5 @@
 import { getData } from "@/app/(frontend)/polls/[slug]/getData";
-import Cards from "@/app/components/polls/statements/Cards";
-import { EmptyMessage } from "./empty";
+import { EmbedCardsView } from "./view";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -13,10 +12,8 @@ type EmbeddedPollProps = {
 // -----------------------------------------------------------------------------
 
 const EmbeddedPoll = async ({ params: { slug } }: EmbeddedPollProps) => {
-  const { statements, filteredStatements, statementOptions } = await getData(
-    slug,
-    { ignoreAuth: true },
-  );
+  const { statements, filteredStatements, statementOptions } =
+    await getData(slug);
 
   const statementsWithoutResponsesAndFlags = statements.map((statement) => ({
     ...statement,
@@ -36,12 +33,11 @@ const EmbeddedPoll = async ({ params: { slug } }: EmbeddedPollProps) => {
       : [];
 
   return (
-    <Cards
-      statements={statementsWithoutResponsesAndFlags}
+    <EmbedCardsView
+      slug={slug}
+      statementsWithoutResponsesAndFlags={statementsWithoutResponsesAndFlags}
       statementsToHideIds={statementsToHideIds}
       statementOptions={statementOptions}
-      emptyMessage={<EmptyMessage slug={slug} />}
-      ignoreCacheChanges
     />
   );
 };

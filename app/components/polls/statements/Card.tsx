@@ -288,7 +288,8 @@ const CardController = forwardRef<HTMLDivElement, CardControllerProps>(
 
     const onClose = useCallback(() => {
       setIsFlagging(false);
-    }, []);
+      onStatementHide();
+    }, [onStatementHide]);
 
     let CardComponent: JSX.Element;
     if (statement.answer_type === "custom_options") {
