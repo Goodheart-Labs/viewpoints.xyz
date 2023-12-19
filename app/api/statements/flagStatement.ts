@@ -10,9 +10,9 @@ import { refreshPoll } from "../lib/refreshPoll";
 export const flagStatement = async (
   statementId: number,
   data: Pick<FlaggedStatement, "reason" | "description">,
+  sessionId: string = getSessionId(),
 ) => {
   const userId = await safeUserId();
-  const sessionId = getSessionId();
 
   const statement = await db
     .selectFrom("statements")
