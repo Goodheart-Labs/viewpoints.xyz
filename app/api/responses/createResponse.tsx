@@ -18,9 +18,9 @@ export const createResponse = async (
         type: "customOption";
         customOptionId: number;
       },
+  sessionId: string = getSessionId(),
 ) => {
   const userId = await safeUserId();
-  const sessionId = getSessionId();
 
   const statement = await db
     .selectFrom("statements")

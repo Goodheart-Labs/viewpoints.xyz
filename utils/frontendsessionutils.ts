@@ -15,12 +15,17 @@ export const useSessionId = () => {
   useEffect(() => {
     if (!document) return;
 
-    const sessionCookie = getCookie(SESSION_ID_COOKIE_NAME);
+    const sessionCookie =
+      getCookie(SESSION_ID_COOKIE_NAME) ??
+      window.localStorage.getItem(SESSION_ID_COOKIE_NAME);
+
     if (!sessionCookie) {
       const newSessionId = uuidv4();
       setCookie(SESSION_ID_COOKIE_NAME, newSessionId, { expires: Infinity });
+      window.localStorage.setItem(SESSION_ID_COOKIE_NAME, newSessionId);
       setSessionId(newSessionId);
     } else {
+      window.localStorage.setItem(SESSION_ID_COOKIE_NAME, sessionCookie);
       setSessionId(sessionCookie);
     }
   }, []);
