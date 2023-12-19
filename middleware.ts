@@ -7,12 +7,13 @@ const pollSlug = "([a-z0-9-]+)";
 
 const publicRoutes = [
   `/`,
-  `/embed/polls/${pollSlug}`,
   `/polls/${pollSlug}`,
   `/polls/${pollSlug}/results`,
   `/api/sessions`,
   `/api/polls/${pollSlug}`,
 ];
+
+const ignoredRoutes = [`/embed/polls/${pollSlug}`];
 
 export const SESSION_ID_COOKIE_NAME = "sessionId";
 export const CLEAR_LOCALSTORAGE_HEADER_NAME = "X-Clear-LocalStorage";
@@ -27,6 +28,6 @@ export const config = {
 
 export default authMiddleware({
   debug: true,
-
   publicRoutes,
+  ignoredRoutes,
 });
