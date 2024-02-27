@@ -1,5 +1,8 @@
-import { LockClosedIcon, LockOpen2Icon } from "@radix-ui/react-icons";
-
+import {
+  BarChartIcon,
+  LockClosedIcon,
+  LockOpen2Icon,
+} from "@radix-ui/react-icons";
 import { Statistics } from "@/app/components/polls/responses/Statistics";
 import UserResponses from "@/app/components/polls/responses/UserResponses";
 import Cards from "@/app/components/polls/statements/Cards";
@@ -7,7 +10,11 @@ import { CreateStatementButton } from "@/app/components/polls/statements/CreateS
 import { Tutorial } from "@/app/components/polls/Tutorial";
 import type { SORT_PARAM, SortKey } from "@/lib/pollResults/constants";
 import { ScrollArea } from "@/app/components/shadcn/ui/scroll-area";
-
+import { QrCodeGenerator } from "@/app/components/polls/QrCodeGenerator";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { isPollAdminOrSuperadmin } from "@/utils/authutils";
+import { auth } from "@clerk/nextjs";
 import { getData } from "./getData";
 
 type PollPageProps = {
@@ -16,14 +23,46 @@ type PollPageProps = {
 };
 
 const PollPage = async ({ params, searchParams }: PollPageProps) => {
-  const { poll, filteredStatements, userResponses, statementOptions } =
-    await getData(params.slug);
+  const {
+    poll,
+    statements,
+    filteredStatements,
+    userResponses,
+    statementOptions,
+  } = await getData(params.slug);
+
+  const { userId } = auth();
+
+  const canSeePoll =
+    poll.visibility !== "private" ||
+    (await isPollAdminOrSuperadmin(poll, userId));
+
+  if (!canSeePoll) {
+    notFound();
+  }
 
   const visibilityText =
     poll.visibility === "public" ? "Public poll" : "Private poll";
 
   const VisibilityIcon =
     poll.visibility === "public" ? LockOpen2Icon : LockClosedIcon;
+
+  const statementsWithoutResponsesAndFlags = statements.map((statement) => ({
+    ...statement,
+    responses: [],
+    flaggedStatements: [],
+  }));
+
+  const filteredStatementIds = filteredStatements.map(
+    (statement) => statement.id,
+  );
+
+  const statementsToHideIds =
+    filteredStatementIds.length > 0
+      ? statements
+          .filter((statement) => !filteredStatementIds.includes(statement.id))
+          .map((statement) => statement.id)
+      : [];
 
   return (
     <main className="flex flex-col items-center flex-1 w-full bg-black xl:p-8 xl:flex-row xl:justify-center xl:gap-8 xl:overflow-y-hidden">
@@ -34,26 +73,41 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
               Topic
             </p>
 
-            <div className="rounded-full bg-zinc-600 text-white text-xs px-2 py-[6px]">
-              <VisibilityIcon className="inline w-3 h-3 mr-2" />
+            <div className="flex ml-auto">
+              <div className="mr-2">
+                <QrCodeGenerator />
+              </div>
 
-              {visibilityText}
+              <Link href={`/polls/${poll.slug}/results`} className="mr-2 group">
+                <div className="rounded-full bg-zinc-600 text-white text-xs px-2 py-[6px] group-hover:bg-zinc-500">
+                  <BarChartIcon className="inline w-3 h-3 mr-2" />
+                  Results
+                </div>
+              </Link>
+
+              <div className="rounded-full bg-zinc-600 text-white text-xs px-2 py-[6px]">
+                <VisibilityIcon className="inline w-3 h-3 mr-2" />
+
+                {visibilityText}
+              </div>
             </div>
           </div>
           <h1 className="font-semibold text-white">{poll.title}</h1>
           <h2 className="text-sm text-zinc-500">
-            What do you think of the following statements?
+            {poll.core_question ||
+              "What do you think of the following statements?"}
           </h2>
         </div>
 
         {filteredStatements.length > 0 ? (
           <>
             <Cards
-              statements={filteredStatements}
+              statements={statementsWithoutResponsesAndFlags}
+              statementsToHideIds={statementsToHideIds}
               statementOptions={statementOptions}
             />
 
-            <div className="flex justify-center mt-4 mb-10 sm:mb-0 sm:mt-0">
+            <div className="flex justify-center mt-8 mb-10 sm:mb-0 sm:mt-0">
               <CreateStatementButton pollId={poll.id} />
             </div>
 

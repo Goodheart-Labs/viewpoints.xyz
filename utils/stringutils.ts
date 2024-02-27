@@ -22,3 +22,6 @@ export const ensureItLooksLikeAQuestion = (question: string): string => {
 
   return `${trimmed}?`;
 };
+
+export const isEmail = (email?: string | null): boolean =>
+  typeof email === "string" && email.match(/^\S+@\S+\.\S+$/) !== null;

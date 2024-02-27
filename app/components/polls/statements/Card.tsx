@@ -7,6 +7,7 @@ import { FlagIcon } from "lucide-react";
 import { UserAvatar } from "@/app/components/user/UserAvatar";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import type { Author, Statement, Response, StatementOption } from "@/db/schema";
+import { isEmail } from "@/utils/stringutils";
 import { CardButton } from "./CardButton";
 import { ReportStatementDialog } from "./ReportStatementDialog";
 import { useCardHandlers } from "./useCardHandlers";
@@ -31,6 +32,7 @@ type CardControllerProps = {
   statementOptions: StatementOption[];
   index: number;
   cardCount: number;
+  onStatementHide: () => void;
   height?: number;
 };
 
@@ -59,6 +61,7 @@ type CustomOptionsCardViewProps = {
   leaveX: number;
   leaveY: number;
   animate: string;
+  isActive: boolean;
 };
 
 // Default Card View
@@ -106,7 +109,11 @@ const DefaultCardView = ({
   >
     <div className="flex items-center justify-between w-full">
       <UserAvatar
-        name={statement.author?.name ?? null}
+        name={
+          isEmail(statement.author?.name)
+            ? "Anonymous"
+            : statement.author?.name ?? null
+        }
         avatarUrl={statement.author?.avatarUrl ?? null}
         subtitle={new Date(statement.created_at).toLocaleDateString()}
       />
@@ -129,19 +136,27 @@ const DefaultCardView = ({
     <div className="flex items-center justify-between">
       <CardButton<NonNullable<Response["choice"]>>
         choice="itsComplicated"
+        choiceText="It's complicated"
         onResponse={onResponseChoice}
+        withTooltip
       />
       <CardButton<NonNullable<Response["choice"]>>
         choice="disagree"
+        choiceText="Disagree"
         onResponse={onResponseChoice}
+        withTooltip
       />
       <CardButton<NonNullable<Response["choice"]>>
         choice="agree"
+        choiceText="Agree"
         onResponse={onResponseChoice}
+        withTooltip
       />
       <CardButton<NonNullable<Response["choice"]>>
         choice="skip"
+        choiceText="Skip"
         onResponse={onResponseChoice}
+        withTooltip
       />
     </div>
   </motion.div>
@@ -161,6 +176,7 @@ const CustomOptionsCardView = ({
   leaveX,
   leaveY,
   animate: propsAnimate,
+  isActive,
 }: CustomOptionsCardViewProps) => {
   const [animation, setAnimation] = useState({});
   const [highlight, setHighlight] = useState<boolean>(false);
@@ -221,17 +237,19 @@ const CustomOptionsCardView = ({
           </div>
         )}
       </div>
-      <div className="flex flex-wrap items-center justify-between">
-        {statementOptions.map(({ id, option }) => (
-          <CardButton<number>
-            key={id}
-            choice={id}
-            choiceText={option}
-            onResponse={onResponseCustomOption}
-            highlight={highlight}
-          />
-        ))}
-      </div>
+      {isActive ? (
+        <div className="flex flex-wrap items-center justify-between">
+          {statementOptions.map(({ id, option }) => (
+            <CardButton<number>
+              key={id}
+              choice={id}
+              choiceText={option}
+              onResponse={onResponseCustomOption}
+              highlight={highlight}
+            />
+          ))}
+        </div>
+      ) : null}
     </motion.div>
   );
 };
@@ -240,7 +258,10 @@ const CustomOptionsCardView = ({
 // -----------------------------------------------------------------------------
 
 const CardController = forwardRef<HTMLDivElement, CardControllerProps>(
-  ({ statement, statementOptions, index, cardCount, height }, ref) => {
+  (
+    { statement, statementOptions, index, cardCount, onStatementHide, height },
+    ref,
+  ) => {
     const [isFlagging, setIsFlagging] = useState(false);
 
     const { track } = useAmplitude();
@@ -254,6 +275,7 @@ const CardController = forwardRef<HTMLDivElement, CardControllerProps>(
     } = useCardHandlers({
       statementId: statement.id,
       pollId: statement.poll_id,
+      onStatementHide,
     });
 
     const animate = leaveX !== 0 || leaveY !== 0 ? "exit" : "default";
@@ -270,7 +292,8 @@ const CardController = forwardRef<HTMLDivElement, CardControllerProps>(
 
     const onClose = useCallback(() => {
       setIsFlagging(false);
-    }, []);
+      onStatementHide();
+    }, [onStatementHide]);
 
     let CardComponent: JSX.Element;
     if (statement.answer_type === "custom_options") {
@@ -286,6 +309,7 @@ const CardController = forwardRef<HTMLDivElement, CardControllerProps>(
           leaveX={leaveX}
           leaveY={leaveY}
           animate={animate}
+          isActive={index === cardCount - 1}
         />
       );
     } else {

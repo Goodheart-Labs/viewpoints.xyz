@@ -1,20 +1,26 @@
 import { db } from "@/db/client";
 import type { StatementOption } from "@/db/schema";
+import { notFound } from "next/navigation";
 import type { SortKey } from "./constants";
 import { sortOptions } from "./constants";
-import { getStatementStatistics } from "./statements";
+import { getStatementsWithStats } from "./getStatementsWithStats";
 
 export const getPollResults = async (slug: string, sortBy?: SortKey) => {
   const poll = await db
     .selectFrom("polls")
     .selectAll()
     .where("slug", "=", slug)
-    .executeTakeFirstOrThrow();
+    .executeTakeFirst();
+
+  if (!poll) {
+    notFound();
+  }
 
   const statements = await db
     .selectFrom("statements")
     .selectAll()
     .where("poll_id", "=", poll.id)
+    .orderBy("id asc")
     .execute();
 
   const statementOptions = (
@@ -53,27 +59,8 @@ export const getPollResults = async (slug: string, sortBy?: SortKey) => {
     ),
   }));
 
-  let responseCount = 0;
-  const totalUserSessions = new Set<string>();
-
-  const statementsWithStats = statementsWithResponses.map((statement) => {
-    const stats = getStatementStatistics(statement);
-
-    responseCount += statement.responses.length;
-
-    statement.responses.forEach((response) => {
-      if (response.user_id) {
-        totalUserSessions.add(response.user_id);
-      } else {
-        totalUserSessions.add(response.session_id);
-      }
-    });
-
-    return {
-      ...statement,
-      stats,
-    };
-  });
+  const [statementsWithStats, responseCount, respondentsCount] =
+    getStatementsWithStats(statementsWithResponses);
 
   const sortOption =
     sortOptions.find((o) => o.key === sortBy) ?? sortOptions[0];
@@ -85,6 +72,6 @@ export const getPollResults = async (slug: string, sortBy?: SortKey) => {
     statements: statementsWithStats,
     statementOptions,
     responseCount,
-    respondentsCount: totalUserSessions.size,
+    respondentsCount,
   };
 };

@@ -1,6 +1,5 @@
 "use server";
 
-import { auth } from "@clerk/nextjs";
 import { requirePollAdmin } from "@/utils/authutils";
 import { db } from "@/db/client";
 import { notFound } from "next/navigation";
@@ -10,8 +9,6 @@ export const deleteStatementFlags = async (
   pollId: number,
   statementId: number,
 ) => {
-  const { userId } = auth();
-
   const poll = await db
     .selectFrom("polls")
     .selectAll()
@@ -22,7 +19,7 @@ export const deleteStatementFlags = async (
     notFound();
   }
 
-  requirePollAdmin(poll, userId);
+  await requirePollAdmin(poll);
 
   await db
     .deleteFrom("flagged_statements")

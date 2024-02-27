@@ -1,8 +1,16 @@
+"use client";
+
+import { AFTER_DEPLOY_COOKIE_NAME } from "@/middleware";
+import { useSessionId } from "@/utils/frontendsessionutils";
 import axios from "axios";
 import type { PropsWithChildren } from "react";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { getCookie, setCookie } from "typescript-cookie";
-import { v4 as uuidv4 } from "uuid";
+import { createContext, useContext, useEffect, useMemo } from "react";
+import {
+  getCookie,
+  setCookie,
+  getCookies,
+  removeCookie,
+} from "typescript-cookie";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -32,23 +40,50 @@ export const useSession = () => useContext(SessionContext);
 // -----------------------------------------------------------------------------
 
 const SessionProvider = ({ children }: PropsWithChildren) => {
-  const [sessionId, setSessionId] = useState("");
+  const sessionId = useSessionId();
+  useEffect(() => {
+    if (sessionId) {
+      axios.post("/api/sessions", {
+        userAgent: navigator.userAgent,
+      });
+    }
+  }, [sessionId]);
 
   useEffect(() => {
-    let storedSessionId = getCookie(SESSION_ID_COOKIE_NAME);
+    // We've had some problems with nextjs and clerk sessions, so we're going to
+    // wipe all cookies after this deploy and start fresh.
+    //
+    // Why aren't we doing this in the middleware? https://github.com/clerk/javascript/issues/1897
 
-    if (storedSessionId) {
-      setSessionId(storedSessionId);
-    } else {
-      const newSessionId = uuidv4();
-      setCookie(SESSION_ID_COOKIE_NAME, newSessionId, { expires: Infinity });
-      setSessionId(newSessionId);
-      storedSessionId = newSessionId;
+    if (!getCookie(AFTER_DEPLOY_COOKIE_NAME)) {
+      // eslint-disable-next-line no-console
+      console.log("Wiping cookies and localstorage after deploy");
+
+      const allCookies = getCookies();
+
+      // Expire all cookies except sessionId
+
+      Object.keys(allCookies).forEach((cookieName) => {
+        if (
+          cookieName !== "sessionId" &&
+          cookieName !== SESSION_ID_COOKIE_NAME
+        ) {
+          removeCookie(cookieName);
+        }
+      });
+
+      // Clear localstorage
+
+      localStorage.clear();
+
+      // Set a flag so we don't do this again
+
+      setCookie(AFTER_DEPLOY_COOKIE_NAME, "true", { expires: Infinity });
+
+      // Reload the page
+
+      window.location.reload();
     }
-
-    axios.post("/api/sessions", {
-      userAgent: navigator.userAgent,
-    });
   }, []);
 
   const value = useMemo(() => ({ sessionId }), [sessionId]);

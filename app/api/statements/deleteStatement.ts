@@ -1,14 +1,11 @@
 "use server";
 
-import { auth } from "@clerk/nextjs";
 import { requirePollAdmin } from "@/utils/authutils";
 import { db } from "@/db/client";
 import { notFound } from "next/navigation";
 import { refreshPoll } from "../lib/refreshPoll";
 
 export const deleteStatement = async (pollId: number, statementId: number) => {
-  const { userId } = auth();
-
   const poll = await db
     .selectFrom("polls")
     .selectAll()
@@ -19,7 +16,7 @@ export const deleteStatement = async (pollId: number, statementId: number) => {
     notFound();
   }
 
-  requirePollAdmin(poll, userId);
+  await requirePollAdmin(poll);
 
   await db.deleteFrom("statements").where("id", "=", statementId).execute();
 

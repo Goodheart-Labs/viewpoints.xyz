@@ -1,7 +1,14 @@
 services:
   postgres:
     image: "postgres:latest"
+    container_name: viewpoints-xyz
     ports:
       - "5432:5432"
+    environment:
+      POSTGRES_USER: viewpoints
+      POSTGRES_PASSWORD: viewpoints
+      POSTGRES_DB: viewpoints_development
+    volumes:
+      - ./db/RUN_BEFORE_MIGRATIONS.sql:/docker-entrypoint-initdb.d/RUN_BEFORE_MIGRATIONS.sql
     env_file:
       - .env

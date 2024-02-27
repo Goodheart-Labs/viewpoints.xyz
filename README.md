@@ -29,9 +29,11 @@ bun run env:pull
 
 ### Running
 
+Start local database - `docker compose up -d`
+
 Make sure you've installed the dependencies and have the environment variables set.
 
-If you've got a new database, import db/RUN_BEFORE_MIGRATIONS.sql into it.
+If you've got a new database (and you are not using `docker-compose.yml`), import db/RUN_BEFORE_MIGRATIONS.sql into it.
 
 Then deploy migrations (if needed):
 

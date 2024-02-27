@@ -1,17 +1,12 @@
 import { ClerkProvider } from "@clerk/nextjs";
-import type { Metadata } from "next";
-
-import Header from "@/components/Header";
+import type { Metadata, Viewport } from "next";
+import { Header } from "@/components/Header";
 import { Toaster } from "@/app/components/shadcn/ui/toaster";
-
+import SessionProvider from "@/providers/SessionProvider";
 import Contexts from "../components/Contexts";
 import LogrocketWrapper from "../components/LogrocketWrapper";
-
-import { Tooltips } from "./tooltip";
-
 import "@/styles/tailwind.css";
 import "@/styles/frontend.css";
-import "react-tooltip/dist/react-tooltip.css";
 
 // Metadata
 // -----------------------------------------------------------------------------
@@ -19,8 +14,13 @@ import "react-tooltip/dist/react-tooltip.css";
 export const metadata: Metadata = {
   title: "viewpoints.xyz",
   description: "what in the world are you thinking?",
-  viewport:
-    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 // Default export
@@ -31,12 +31,13 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
     <html lang="en" suppressHydrationWarning>
       <body className="flex flex-col items-stretch min-h-screen bg-black">
         <LogrocketWrapper>
-          <Contexts>
-            <Header />
-            {children}
-          </Contexts>
+          <SessionProvider>
+            <Contexts>
+              <Header />
+              {children}
+            </Contexts>
+          </SessionProvider>
         </LogrocketWrapper>
-        <Tooltips />
         <Toaster />
       </body>
     </html>

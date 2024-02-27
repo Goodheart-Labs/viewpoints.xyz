@@ -3,6 +3,7 @@ import type { PanInfo } from "framer-motion";
 import type { Response } from "@/db/schema";
 import { createResponse } from "@/app/api/responses/createResponse";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
+import { useSessionId } from "@/utils/frontendsessionutils";
 
 const SWIPE_THRESHOLD = 150;
 
@@ -16,10 +17,16 @@ const choiceEvents = {
 type HookArgs = {
   statementId: number;
   pollId: number;
+  onStatementHide: () => void;
 };
 
-export const useCardHandlers = ({ statementId, pollId }: HookArgs) => {
+export const useCardHandlers = ({
+  statementId,
+  pollId,
+  onStatementHide,
+}: HookArgs) => {
   const { track } = useAmplitude();
+  const sessionId = useSessionId();
 
   const [leaveX, setLeaveX] = useState(0);
   const [leaveY, setLeaveY] = useState(0);
@@ -27,10 +34,14 @@ export const useCardHandlers = ({ statementId, pollId }: HookArgs) => {
   const onResponseChoice = useCallback(
     (choice: NonNullable<Response["choice"]>) => {
       startTransition(() => {
-        createResponse(statementId, {
-          type: "choice",
-          choice,
-        });
+        createResponse(
+          statementId,
+          {
+            type: "choice",
+            choice,
+          },
+          sessionId,
+        );
       });
 
       track({
@@ -53,17 +64,23 @@ export const useCardHandlers = ({ statementId, pollId }: HookArgs) => {
           setLeaveY(1000);
           break;
       }
+
+      onStatementHide();
     },
-    [pollId, statementId, track],
+    [onStatementHide, pollId, sessionId, statementId, track],
   );
 
   const onResponseCustomOption = useCallback(
     (customOptionId: number) => {
       startTransition(() => {
-        createResponse(statementId, {
-          type: "customOption",
-          customOptionId,
-        });
+        createResponse(
+          statementId,
+          {
+            type: "customOption",
+            customOptionId,
+          },
+          sessionId,
+        );
       });
 
       track({
@@ -76,8 +93,10 @@ export const useCardHandlers = ({ statementId, pollId }: HookArgs) => {
       // Exit, stage right
       // TODO: different exit animations for custom options?
       setLeaveX(1000);
+
+      onStatementHide();
     },
-    [pollId, statementId, track],
+    [onStatementHide, pollId, sessionId, statementId, track],
   );
 
   const onDragEnd = useCallback(

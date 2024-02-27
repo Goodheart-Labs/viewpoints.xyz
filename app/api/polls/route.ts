@@ -5,8 +5,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { db } from "@/db/client";
 import { notFound } from "next/navigation";
-import { cookies } from "next/headers";
-import { SESSION_ID_COOKIE_NAME } from "@/middleware";
+import { getSessionId } from "@/utils/sessionutils";
 import { createAuthorIfNeeded } from "../lib/createAuthorIfNeeded";
 import { createDemographicQuestions } from "../lib/createDemographicQuestions";
 
@@ -14,7 +13,7 @@ import { createDemographicQuestions } from "../lib/createDemographicQuestions";
 // -----------------------------------------------------------------------------
 
 export async function POST(request: NextRequest) {
-  const sessionId = cookies().get(SESSION_ID_COOKIE_NAME)!.value;
+  const sessionId = getSessionId();
   const user = await currentUser();
   if (!user) {
     return notFound();

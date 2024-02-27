@@ -1,6 +1,4 @@
-import { auth } from "@clerk/nextjs";
 import { notFound } from "next/navigation";
-
 import PollAdminForm from "@/app/components/admin/PollAdminForm";
 import { requirePollAdmin } from "@/utils/authutils";
 import { db } from "@/db/client";
@@ -49,8 +47,7 @@ async function getData(slug: string) {
     {} as Record<number, FlaggedStatement[]>,
   );
 
-  const { userId } = auth();
-  requirePollAdmin(poll, userId);
+  await requirePollAdmin(poll);
 
   return { poll, statements, flaggedStatements };
 }

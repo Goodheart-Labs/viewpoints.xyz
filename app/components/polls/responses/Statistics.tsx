@@ -71,7 +71,7 @@ export const Statistics = async ({
             >
               <p className="my-2 text-sm text-zinc-300">{statement.text}</p>
 
-              <div className="flex gap-2 mb-2">
+              <div className="flex gap-2 mb-2 text-white">
                 {statement.question_type === "default" ? (
                   <ChoicePercentages
                     userChoice={userResponses.get(statement.id)?.choice}

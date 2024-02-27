@@ -13,6 +13,7 @@ import * as yup from "yup";
 
 import StatementList from "@/app/components/polls/new/StatementList";
 import BorderedButton from "@/components/BorderedButton";
+import { useAmplitude } from "@/providers/AmplitudeProvider";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -38,7 +39,7 @@ const schema = yup
       .string()
       .required()
       .matches(/^[a-z0-9-]+$/),
-    question: yup.string().required(),
+    question: yup.string().default(""),
     statements: yup.array().of(yup.string().required()).min(5).required(),
     with_demographic_questions: yup.boolean().default(true),
   })
@@ -124,6 +125,7 @@ const NewPollPageClientView = ({
         <div className="flex flex-col">
           <input
             type="text"
+            placeholder="What do you think of the following statements?"
             className={clsx(
               "w-full text-lg dark:text-white",
               errors?.question ? "border-red-500" : "",
@@ -245,6 +247,8 @@ const NewPollPageClient = () => {
 
   // Callbacks
 
+  const { track } = useAmplitude();
+
   const onSubmit = async ({
     title,
     slug,
@@ -258,6 +262,11 @@ const NewPollPageClient = () => {
       question,
       statements: statements.filter((c) => c.trim() !== ""),
       with_demographic_questions,
+    });
+
+    track({
+      type: "polls.create",
+      slug,
     });
 
     router.push(`/polls/${slug}`);

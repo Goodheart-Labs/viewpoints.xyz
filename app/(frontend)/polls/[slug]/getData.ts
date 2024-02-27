@@ -1,9 +1,5 @@
-import { auth } from "@clerk/nextjs";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-
 import type { UserResponseItem } from "@/app/components/polls/responses/UserResponses";
-import { SESSION_ID_COOKIE_NAME } from "@/middleware";
 import { db } from "@/db/client";
 import type {
   Author,
@@ -13,6 +9,8 @@ import type {
   Response,
   StatementOption,
 } from "@/db/schema";
+import { getSessionId } from "@/utils/sessionutils";
+import { safeUserId } from "@/utils/clerkutils";
 
 const MAX_NUM_FLAGS_BEFORE_REMOVAL = 2;
 const MAX_NUM_SKIPS_BEFORE_REMOVAL = 5;
@@ -28,8 +26,8 @@ export type PollWithStatements = Poll & {
 };
 
 export const getData = async (slug: string) => {
-  const { userId } = auth();
-  const sessionId = cookies().get(SESSION_ID_COOKIE_NAME)!.value;
+  const userId = await safeUserId();
+  const sessionId = getSessionId();
 
   // Pull the poll and associated data from the database
 
@@ -47,6 +45,7 @@ export const getData = async (slug: string) => {
     .selectFrom("statements")
     .selectAll()
     .where("poll_id", "=", poll.id)
+    .orderBy("id asc")
     .execute();
 
   const statementOptions = (
@@ -146,14 +145,34 @@ export const getData = async (slug: string) => {
     });
   }
 
-  // Filter out statements that have been flagged too many times or skipped too many times
+  const [filteredStatements, userResponses] = filterStatements(
+    statementsWithStuff,
+    userId,
+    sessionId,
+  );
 
-  const filteredStatements: (Statement & {
-    author: Author | null;
-  })[] = [];
+  return {
+    poll,
+    statements: statementsWithStuff,
+    filteredStatements,
+    statementOptions,
+    userResponses,
+  };
+};
+
+type FilteredStatement = Statement & {
+  author: Author | null;
+};
+
+export const filterStatements = (
+  statements: PollWithStatements["statements"],
+  userId: string | null,
+  sessionId: string,
+): [FilteredStatement[], Map<number, UserResponseItem>] => {
+  const filteredStatements: FilteredStatement[] = [];
   const userResponses = new Map<number, UserResponseItem>();
 
-  for (const statement of statementsWithStuff) {
+  for (const statement of statements) {
     if (
       (statement.flaggedStatements ?? []).length > MAX_NUM_FLAGS_BEFORE_REMOVAL
     ) {
@@ -222,14 +241,5 @@ export const getData = async (slug: string) => {
     filteredStatements.push(statement);
   }
 
-  const sortedFilteredStatements = filteredStatements.sort(
-    () => 0.5 - Math.random(),
-  );
-
-  return {
-    poll,
-    filteredStatements: sortedFilteredStatements,
-    statementOptions,
-    userResponses,
-  };
+  return [filteredStatements, userResponses];
 };

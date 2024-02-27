@@ -1,11 +1,10 @@
 "use server";
 
-import { auth } from "@clerk/nextjs";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import { SESSION_ID_COOKIE_NAME } from "@/middleware";
 import type { Response } from "@/db/schema";
 import { db } from "@/db/client";
+import { getSessionId } from "@/utils/sessionutils";
+import { safeUserId } from "@/utils/clerkutils";
 import { refreshPoll } from "../lib/refreshPoll";
 
 export const createResponse = async (
@@ -19,9 +18,9 @@ export const createResponse = async (
         type: "customOption";
         customOptionId: number;
       },
+  sessionId: string = getSessionId(),
 ) => {
-  const { userId } = auth();
-  const sessionId = cookies().get(SESSION_ID_COOKIE_NAME)!.value;
+  const userId = await safeUserId();
 
   const statement = await db
     .selectFrom("statements")
