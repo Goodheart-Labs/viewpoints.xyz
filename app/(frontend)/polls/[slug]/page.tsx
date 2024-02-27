@@ -13,7 +13,7 @@ import { ScrollArea } from "@/app/components/shadcn/ui/scroll-area";
 import { QrCodeGenerator } from "@/app/components/polls/QrCodeGenerator";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { isPollAdmin, isPollAdminOrSuperadmin } from "@/utils/authutils";
+import { isPollAdminOrSuperadmin } from "@/utils/authutils";
 import { auth } from "@clerk/nextjs";
 import { getData } from "./getData";
 
@@ -94,7 +94,8 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
           </div>
           <h1 className="font-semibold text-white">{poll.title}</h1>
           <h2 className="text-sm text-zinc-500">
-            What do you think of the following statements?
+            {poll.core_question ||
+              "What do you think of the following statements?"}
           </h2>
         </div>
 
