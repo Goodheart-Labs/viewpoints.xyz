@@ -39,7 +39,7 @@ const schema = yup
       .string()
       .required()
       .matches(/^[a-z0-9-]+$/),
-    question: yup.string().required(),
+    question: yup.string().default(""),
     statements: yup.array().of(yup.string().required()).min(5).required(),
     with_demographic_questions: yup.boolean().default(true),
   })
@@ -125,6 +125,7 @@ const NewPollPageClientView = ({
         <div className="flex flex-col">
           <input
             type="text"
+            placeholder="What do you think of the following statements?"
             className={clsx(
               "w-full text-lg dark:text-white",
               errors?.question ? "border-red-500" : "",
