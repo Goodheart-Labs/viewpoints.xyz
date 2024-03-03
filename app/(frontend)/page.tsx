@@ -7,6 +7,7 @@ import Image from "next/image";
 import type { Author } from "@/db/schema";
 import { db } from "@/db/client";
 import { isEmail } from "@/utils/stringutils";
+import { Logo } from "@/components/Logo";
 import { Button } from "../components/shadcn/ui/button";
 import { anonymousAvatar } from "../components/user/UserAvatar";
 import { WhatsappLink } from "../components/WhatsappLink";
@@ -218,24 +219,7 @@ const Index = async () => {
 
       <footer className="flex flex-col items-center w-full py-8 mt-4 md:mt-auto dark:bg-white/10 dark:text-white/80">
         <Link href="/" className="hover:grayscale-0 grayscale">
-          <div className="dark:hidden">
-            <Image
-              className="max-w-[160px] md:max-w-none"
-              src="/logo.png"
-              alt="viewpoints.xyz"
-              width={200}
-              height={40}
-            />
-          </div>
-          <div className="hidden dark:block">
-            <Image
-              className="max-w-[160px] md:max-w-none"
-              src="/logo-dark.png"
-              alt="viewpoints.xyz"
-              width={200}
-              height={40}
-            />
-          </div>
+          <Logo width={200} height={40} />
         </Link>
 
         <div className="flex justify-center mt-4 space-x-5 text-xs font-medium">

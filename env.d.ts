@@ -6,5 +6,6 @@ namespace NodeJS {
     NEXT_PUBLIC_AMPLITUDE_API_KEY?: string;
     CLERK_SECRET_KEY: string;
     OPENAI_API_KEY: string;
+    NEXT_PUBLIC_VIEWPOINTS_LOGO: string;
   }
 }

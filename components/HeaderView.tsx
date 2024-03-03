@@ -4,12 +4,12 @@ import { useState } from "react";
 import { SignIn, UserButton, useUser } from "@clerk/nextjs";
 import clsx from "clsx";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCurrentPoll } from "@/providers/CurrentPollProvider";
 import { Button } from "@/app/components/shadcn/ui/button";
 import { PlusCircle } from "lucide-react";
+import { Logo } from "./Logo";
 
 export const HeaderView = ({ userId = null }: { userId: string | null }) => {
   // State
@@ -42,24 +42,7 @@ export const HeaderView = ({ userId = null }: { userId: string | null }) => {
     <div className="self-start flex items-center justify-end w-full p-4 sticky top-0 bg-zinc-900 z-[60]">
       <div className={clsx(!(isSignedIn && isCurrentPollAdmin) && "mr-auto")}>
         <Link href="/" className="hover:opacity-50">
-          <div className="dark:hidden">
-            <Image
-              className="max-w-[160px] sm:max-w-none"
-              src="/logo.png"
-              alt="viewpoints.xyz"
-              width={160}
-              height={40}
-            />
-          </div>
-          <div className="hidden dark:block">
-            <Image
-              className="max-w-[160px] sm:max-w-none"
-              src="/logo-dark.png"
-              alt="viewpoints.xyz"
-              width={160}
-              height={40}
-            />
-          </div>
+          <Logo width={160} height={40} />
         </Link>
       </div>
 
