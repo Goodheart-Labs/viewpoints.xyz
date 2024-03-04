@@ -43,6 +43,7 @@
     "axios": "^1.3.6",
     "class-variance-authority": "^0.7.0",
     "clsx": "^1.2.1",
+    "csv-stringify": "^6.4.6",
     "dayjs": "^1.11.7",
     "framer-motion": "^10.12.4",
     "js-tiktoken": "^1.0.7",
