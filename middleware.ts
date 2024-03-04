@@ -28,4 +28,5 @@ export const config = {
 export default authMiddleware({
   publicRoutes,
   ignoredRoutes,
+  debug: true,
 });
