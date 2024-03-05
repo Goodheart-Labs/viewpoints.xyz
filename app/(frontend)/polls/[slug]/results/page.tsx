@@ -3,6 +3,7 @@ import Head from "next/head";
 import { Results } from "@/app/components/polls/responses/Results";
 import Link from "next/link";
 import { getPollResults } from "../../../../../lib/pollResults/getPollResults";
+import { DownloadButton } from "./DownloadButton";
 
 const AnalyticsPage = async ({ params }: { params: { slug: string } }) => {
   const { poll, ...statistics } = await getPollResults(params.slug);
@@ -39,7 +40,12 @@ const AnalyticsPage = async ({ params }: { params: { slug: string } }) => {
         <h1 className="mb-4 text-4xl font-bold text-black dark:text-gray-200">
           {poll.title}
         </h1>
-        <h2 className="text-gray-800 sm:text-xl dark:text-gray-500">Results</h2>
+        <div className="flex items-center gap-4 justify-center">
+          <h2 className="text-gray-800 sm:text-xl dark:text-gray-500">
+            Results
+          </h2>
+          <DownloadButton poll={poll} {...statistics} />
+        </div>
       </div>
 
       <div className="mt-12">

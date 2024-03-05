@@ -58,3 +58,8 @@ bun run dev
 ```bash
 bun run build
 ```
+
+
+### Deploying Without Viewpoints Logo
+
+You can deploy this without the logo by setting the `NEXT_PUBLIC_VIEWPOINTS_LOGO` environment variable to `false`.
