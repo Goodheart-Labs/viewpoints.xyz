@@ -13,7 +13,7 @@
     "test": "vitest",
     "migrate": "bun run db/migrate.ts",
     "env:pull": "vercel env pull .env",
-    "postinstall": "bun run kysely-codegen"
+    "postinstall": "kysely-codegen"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.3.3",
