@@ -1,6 +1,7 @@
 import React from "react";
 import { cn } from "@/utils/style-utils";
 import type { Response } from "@/db/schema";
+import type { ChoiceEnum } from "kysely-codegen";
 import {
   Tooltip,
   TooltipContent,
@@ -8,7 +9,7 @@ import {
   TooltipTrigger,
 } from "../../shadcn/ui/tooltip";
 
-type CardButtonProps<C extends string | number> = {
+type CardButtonProps<C extends ChoiceEnum | number> = {
   choice: C;
   choiceText?: string;
   onResponse: (choice: C) => void;
@@ -16,7 +17,7 @@ type CardButtonProps<C extends string | number> = {
   withTooltip?: boolean;
 };
 
-export const CardButton = <C extends string | number>({
+export const CardButton = <C extends ChoiceEnum | number>({
   choice,
   choiceText,
   onResponse,

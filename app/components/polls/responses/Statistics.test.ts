@@ -22,7 +22,7 @@ describe("getHighlightedStatements", () => {
   const defaultResponseAttributes = {
     user_id: "1",
     session_id: "abc123",
-    option_id: undefined,
+    option_id: 0,
     created_at: new Date(),
   };
 

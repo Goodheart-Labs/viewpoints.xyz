@@ -8,6 +8,7 @@ import { UserAvatar } from "@/app/components/user/UserAvatar";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import type { Author, Statement, Response, StatementOption } from "@/db/schema";
 import { isEmail } from "@/utils/stringutils";
+import type { DB } from "kysely-codegen";
 import { CardButton } from "./CardButton";
 import { ReportStatementDialog } from "./ReportStatementDialog";
 import { useCardHandlers } from "./useCardHandlers";
@@ -43,7 +44,7 @@ type DefaultCardViewProps = {
   cardCount: number;
   height?: number;
   onFlag: () => void;
-  onResponseChoice: (choice: string) => void;
+  onResponseChoice: (choice: NonNullable<DB["responses"]["choice"]>) => void;
   onDragEnd: (_e: unknown, info: PanInfo) => void;
   leaveX: number;
   leaveY: number;
