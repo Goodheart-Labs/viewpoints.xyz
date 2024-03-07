@@ -53,6 +53,12 @@ Run project:
 bun run dev
 ```
 
+### Creating a new migration
+  
+```bash
+bun run migrate make <migration_name>
+```
+
 ### Building for production
 
 ```bash

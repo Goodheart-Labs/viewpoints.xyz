@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "migrate": "bun run db/migrate.ts",
-    "env:pull": "vercel env pull .env"
+    "env:pull": "vercel env pull .env",
+    "postinstall": "kysely-codegen"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.3.3",
@@ -48,6 +49,7 @@
     "framer-motion": "^10.12.4",
     "js-tiktoken": "^1.0.7",
     "kysely": "^0.26.3",
+    "kysely-codegen": "^0.13.0",
     "lodash": "^4.17.21",
     "logrocket": "^5.0.0",
     "lucide-react": "^0.268.0",
