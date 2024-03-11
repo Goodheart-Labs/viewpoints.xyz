@@ -184,7 +184,6 @@ export const filterStatements = (
       ["agree", 0],
       ["disagree", 0],
       ["skip", 0],
-      ["itsComplicated", 0],
     ]);
     let userResponse: Omit<UserResponseItem, "percentage"> | null = null;
 

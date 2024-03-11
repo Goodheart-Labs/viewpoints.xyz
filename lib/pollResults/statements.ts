@@ -13,7 +13,6 @@ export function getStatementStatistics(
         ["agree", 0],
         ["disagree", 0],
         ["skip", 0],
-        ["itsComplicated", 0],
       ]),
       mostCommonChoice: "agree",
       consensus: 0,
@@ -25,7 +24,6 @@ export function getStatementStatistics(
     ["agree", 0],
     ["disagree", 0],
     ["skip", 0],
-    ["itsComplicated", 0],
   ]);
 
   for (const response of statement.responses) {
@@ -36,10 +34,6 @@ export function getStatementStatistics(
     ["agree", (votes.get("agree")! / statement.responses.length) * 100],
     ["disagree", (votes.get("disagree")! / statement.responses.length) * 100],
     ["skip", (votes.get("skip")! / statement.responses.length) * 100],
-    [
-      "itsComplicated",
-      (votes.get("itsComplicated")! / statement.responses.length) * 100,
-    ],
   ]);
 
   const mostCommonChoice = Array.from(votes.entries()).reduce((a, b) =>

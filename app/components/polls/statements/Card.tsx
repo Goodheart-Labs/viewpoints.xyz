@@ -134,13 +134,7 @@ const DefaultCardView = ({
         </div>
       )}
     </div>
-    <div className="flex items-center justify-between">
-      <CardButton<NonNullable<Response["choice"]>>
-        choice="itsComplicated"
-        choiceText="It's complicated"
-        onResponse={onResponseChoice}
-        withTooltip
-      />
+    <div className="grid gap-2 grid-cols-3">
       <CardButton<NonNullable<Response["choice"]>>
         choice="disagree"
         choiceText="Disagree"
@@ -148,14 +142,14 @@ const DefaultCardView = ({
         withTooltip
       />
       <CardButton<NonNullable<Response["choice"]>>
-        choice="agree"
-        choiceText="Agree"
+        choice="skip"
+        choiceText="Skip"
         onResponse={onResponseChoice}
         withTooltip
       />
       <CardButton<NonNullable<Response["choice"]>>
-        choice="skip"
-        choiceText="Skip"
+        choice="agree"
+        choiceText="Agree"
         onResponse={onResponseChoice}
         withTooltip
       />

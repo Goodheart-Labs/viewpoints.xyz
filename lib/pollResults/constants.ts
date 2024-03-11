@@ -44,8 +44,8 @@ export const sortOptions: {
     name: "Most confusion",
     key: "confusion",
     sortFn: (a, b) =>
-      (b.stats.votePercentages.get("itsComplicated") ?? 0) -
-      (a.stats.votePercentages.get("itsComplicated") ?? 0),
+      (b.stats.votePercentages.get("skip") ?? 0) -
+      (a.stats.votePercentages.get("skip") ?? 0),
   },
 ];
 

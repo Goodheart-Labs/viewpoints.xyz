@@ -50,8 +50,8 @@ describe("getHighlightedStatements", () => {
         session_id: "abc123",
         stats: {
           responseCount: 1,
-          votePercentages: new Map([["itsComplicated", 1]]),
-          mostCommonChoice: "itsComplicated",
+          votePercentages: new Map([["skip", 1]]),
+          mostCommonChoice: "skip",
           consensus: 0,
           conflict: 0,
         },
@@ -71,7 +71,7 @@ describe("getHighlightedStatements", () => {
       ...defaultResponseAttributes,
       id: 2,
       statementId: 2,
-      choice: "itsComplicated",
+      choice: "skip",
       statementText: "Statement 2",
       percentage: 0,
     };
