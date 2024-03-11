@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 import { Kysely, PostgresDialect } from "kysely";
-import type { Database } from "./schema";
+import type { DB } from "kysely-codegen";
 
 let connectionString = process.env.DATABASE_URL;
 if (
@@ -16,6 +16,6 @@ const dialect = new PostgresDialect({
   }),
 });
 
-export const db = new Kysely<Database>({
+export const db = new Kysely<DB>({
   dialect,
 });

@@ -25,11 +25,6 @@ export const ChoicePercentages: FC<Props> = ({
       highlighted={userChoice === "disagree"}
     />
     <ChoicePercentageBadge
-      choice="itsComplicated"
-      percentage={votePercentages.get("itsComplicated")}
-      highlighted={userChoice === "itsComplicated"}
-    />
-    <ChoicePercentageBadge
       choice="skip"
       percentage={votePercentages.get("skip")}
       highlighted={userChoice === "skip"}

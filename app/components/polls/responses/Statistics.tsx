@@ -120,11 +120,7 @@ export const getHighlightedStatements = (
   for (const statement of statements) {
     const response = userResponses.get(statement.id);
 
-    if (
-      !response ||
-      response.choice === "skip" ||
-      response.choice === "itsComplicated"
-    ) {
+    if (!response || response.choice === "skip") {
       continue;
     }
 

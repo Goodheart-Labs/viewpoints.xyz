@@ -160,6 +160,6 @@ switch (cmd) {
 
   default:
     console.error(`Usage: bun run migrate <command>`);
-    console.error(`Available commands: up, down, version`);
+    console.error(`Available commands: up, down, version, make`);
     break;
 }

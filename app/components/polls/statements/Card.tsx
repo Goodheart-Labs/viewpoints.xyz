@@ -8,6 +8,7 @@ import { UserAvatar } from "@/app/components/user/UserAvatar";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import type { Author, Statement, Response, StatementOption } from "@/db/schema";
 import { isEmail } from "@/utils/stringutils";
+import type { DB } from "kysely-codegen";
 import { CardButton } from "./CardButton";
 import { ReportStatementDialog } from "./ReportStatementDialog";
 import { useCardHandlers } from "./useCardHandlers";
@@ -43,7 +44,7 @@ type DefaultCardViewProps = {
   cardCount: number;
   height?: number;
   onFlag: () => void;
-  onResponseChoice: (choice: string) => void;
+  onResponseChoice: (choice: NonNullable<DB["responses"]["choice"]>) => void;
   onDragEnd: (_e: unknown, info: PanInfo) => void;
   leaveX: number;
   leaveY: number;
@@ -133,13 +134,7 @@ const DefaultCardView = ({
         </div>
       )}
     </div>
-    <div className="flex items-center justify-between">
-      <CardButton<NonNullable<Response["choice"]>>
-        choice="itsComplicated"
-        choiceText="It's complicated"
-        onResponse={onResponseChoice}
-        withTooltip
-      />
+    <div className="grid gap-2 grid-cols-3">
       <CardButton<NonNullable<Response["choice"]>>
         choice="disagree"
         choiceText="Disagree"
@@ -147,14 +142,14 @@ const DefaultCardView = ({
         withTooltip
       />
       <CardButton<NonNullable<Response["choice"]>>
-        choice="agree"
-        choiceText="Agree"
+        choice="skip"
+        choiceText="Skip"
         onResponse={onResponseChoice}
         withTooltip
       />
       <CardButton<NonNullable<Response["choice"]>>
-        choice="skip"
-        choiceText="Skip"
+        choice="agree"
+        choiceText="Agree"
         onResponse={onResponseChoice}
         withTooltip
       />

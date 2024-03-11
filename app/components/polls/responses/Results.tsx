@@ -228,12 +228,6 @@ export const Results: FC<ResultsProps> = ({
                 {Math.round(votePercentages.get("disagree") ?? 0)}%
               </ChoiceBadge>
               <ChoiceBadge
-                choice="itsComplicated"
-                disabled={!votePercentages.get("itsComplicated")}
-              >
-                {Math.round(votePercentages.get("itsComplicated") ?? 0)}%
-              </ChoiceBadge>
-              <ChoiceBadge
                 choice="skip"
                 disabled={!votePercentages.get("skip")}
               >

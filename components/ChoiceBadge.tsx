@@ -30,14 +30,12 @@ const ChoiceBadge = ({
           choice === "disagree",
         "text-yellow-800 bg-yellow-50 ring-yellow-600/20 dark:text-yellow-300 dark:bg-yellow-900 dark:ring-yellow-300/20":
           choice === "skip",
-        "text-orange-600 bg-orange-50 ring-orange-600/10 dark:text-orange-300 dark:bg-orange-900 dark:ring-orange-300/10":
-          choice === "itsComplicated",
         "opacity-40": disabled,
       },
       className,
     )}
   >
-    {choice === "itsComplicated" ? "?" : choice.slice(0, 1).toUpperCase()}
+    {choice.slice(0, 1).toUpperCase()}
     {children ? <>: {children}</> : null}
   </span>
 );
