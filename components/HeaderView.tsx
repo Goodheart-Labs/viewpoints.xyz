@@ -36,8 +36,6 @@ export const HeaderView = ({ userId = null }: { userId: string | null }) => {
     router.push(`/polls/${currentPoll?.slug}/admin`);
   };
 
-  // Render
-
   return (
     <div className="self-start flex items-center justify-end w-full p-4 sticky top-0 bg-zinc-900 z-[60]">
       <div className={clsx(!(isSignedIn && isCurrentPollAdmin) && "mr-auto")}>
