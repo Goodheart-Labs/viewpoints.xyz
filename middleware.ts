@@ -1,5 +1,7 @@
 import { authMiddleware } from "@clerk/nextjs/server";
 
+import { NextResponse } from "next/server";
+
 // Config
 // -----------------------------------------------------------------------------
 
@@ -28,4 +30,14 @@ export const config = {
 export default authMiddleware({
   publicRoutes,
   ignoredRoutes,
+  beforeAuth(request) {
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-pathname", request.nextUrl.pathname);
+
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
+  },
 });
