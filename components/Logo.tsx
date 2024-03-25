@@ -1,6 +1,19 @@
-import Image from "next/image";
+"use client";
 
-export const Logo = ({ width, height }: { width: number; height: number }) => {
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+
+type LogoProps = {
+  width: number;
+  height: number;
+};
+
+export const Logo = ({ width, height }: LogoProps) => {
+  const pathname = usePathname();
+  if (isCouncilPoll(pathname)) {
+    return <span />;
+  }
+
   if (process.env.NEXT_PUBLIC_VIEWPOINTS_LOGO === "false") {
     return <span />;
   }
@@ -27,3 +40,10 @@ export const Logo = ({ width, height }: { width: number; height: number }) => {
     </>
   );
 };
+
+/**
+ * Matches any poll with "council" substring
+ */
+function isCouncilPoll(pathname: string): boolean {
+  return pathname.includes("council");
+}

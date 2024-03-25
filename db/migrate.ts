@@ -143,19 +143,19 @@ const [cmd] = process.argv.slice(2);
 
 switch (cmd) {
   case "up":
-    migrateUp();
+    await migrateUp();
     break;
 
   case "down":
-    migrateDown();
+    await migrateDown();
     break;
 
   case "version":
-    migrateVersion();
+    await migrateVersion();
     break;
 
   case "make":
-    migrateMake();
+    await migrateMake();
     break;
 
   default:
