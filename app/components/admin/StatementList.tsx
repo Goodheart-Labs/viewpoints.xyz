@@ -1,7 +1,7 @@
 "use client";
 
 import type { FC } from "react";
-import { startTransition, useCallback, useState } from "react";
+import { useTransition, useCallback, useOptimistic, useState } from "react";
 
 import { FlagIcon } from "@heroicons/react/20/solid";
 import { CornerUpLeftIcon, TrashIcon, EyeOffIcon, EyeIcon } from "lucide-react";
@@ -38,6 +38,7 @@ const StatementsList: FC<Props> = ({ poll, statements, flaggedStatements }) => {
     setSelectedStatementId(selectedStatement);
     setIsOpen(true);
   };
+
   const openDeleteFlaggedStatementsDialog = (selectedStatement: number) => {
     setModalType("flaggedStatement");
     setSelectedStatementId(selectedStatement);
@@ -45,20 +46,12 @@ const StatementsList: FC<Props> = ({ poll, statements, flaggedStatements }) => {
   };
 
   const hide = useCallback(
-    (statementId: number) => {
-      startTransition(() => {
-        hideStatement(statementId, poll.id);
-      });
-    },
+    (statementId: number) => hideStatement(statementId, poll.id),
     [poll.id],
   );
 
   const show = useCallback(
-    (statementId: number) => {
-      startTransition(() => {
-        showStatement(statementId, poll.id);
-      });
-    },
+    (statementId: number) => showStatement(statementId, poll.id),
     [poll.id],
   );
 
@@ -114,70 +107,93 @@ const StatementListRow = ({
 }: {
   statement: Statement;
   isFlagged: boolean;
-  hide: (statementId: number) => void;
-  show: (statementId: number) => void;
+  hide: (statementId: number) => Promise<void>;
+  show: (statementId: number) => Promise<void>;
   openDeleteStatementDialog: (statementId: number) => void;
   openDeleteFlaggedStatementsDialog: (statementId: number) => void;
-}) => (
-  <div
-    key={statement.id}
-    className="py-1 border-b last-of-type:border-b-0 border-zinc-800"
-  >
-    {isFlagged ? (
-      <div className="mb-2">
-        <span className="flex items-center text-xs bg-accent p-1.5 rounded-sm dark:text-zinc-400">
-          <FlagIcon width={10} height={10} className="mr-2" />
-          This statement has been removed from poll because of 2 reports.
-        </span>
-      </div>
-    ) : null}
+}) => {
+  const [optimisticVisible, toggleVisibleOptimistic] = useOptimistic(
+    statement.visible,
+    (_, newState: boolean) => newState,
+  );
 
-    <div className="flex items-center justify-between">
-      <p
-        className={cn("mr-2 text-black dark:text-gray-200", {
-          "opacity-25": !statement.visible || isFlagged,
-        })}
-      >
-        {statement.text}
-      </p>
+  const [isPending, startTransition] = useTransition();
 
-      <div className="flex gap-2">
-        {isFlagged ? (
-          <StatementListButton
-            onClick={() => openDeleteFlaggedStatementsDialog(statement.id)}
-            tooltip="Remove reports and restore statement"
-          >
-            <CornerUpLeftIcon
-              width={12}
-              height={12}
-              className="w-4 h-4 text-foreground"
-            />
-          </StatementListButton>
-        ) : null}
+  return (
+    <div
+      key={statement.id}
+      className="py-1 border-b last-of-type:border-b-0 border-zinc-800"
+    >
+      {isFlagged ? (
+        <div className="mb-2">
+          <span className="flex items-center text-xs bg-accent p-1.5 rounded-sm dark:text-zinc-400">
+            <FlagIcon width={10} height={10} className="mr-2" />
+            This statement has been removed from poll because of 2 reports.
+          </span>
+        </div>
+      ) : null}
 
-        {statement.visible ? (
-          <StatementListButton
-            onClick={() => hide(statement.id)}
-            tooltip="Hide statement"
-          >
-            <EyeOffIcon className="w-4 h-4 text-foreground" />
-          </StatementListButton>
-        ) : (
-          <StatementListButton
-            onClick={() => show(statement.id)}
-            tooltip="Show statement"
-          >
-            <EyeIcon className="w-4 h-4 text-foreground" />
-          </StatementListButton>
-        )}
-
-        <StatementListButton
-          onClick={() => openDeleteStatementDialog(statement.id)}
-          tooltip="Delete statement"
+      <div className="flex items-center justify-between">
+        <p
+          className={cn("mr-2 text-black dark:text-gray-200", {
+            "opacity-25": !optimisticVisible || isFlagged,
+          })}
         >
-          <TrashIcon className="w-4 h-4 text-foreground" />
-        </StatementListButton>
+          {statement.text}
+        </p>
+
+        <div className="flex gap-2">
+          {isFlagged ? (
+            <StatementListButton
+              onClick={() => openDeleteFlaggedStatementsDialog(statement.id)}
+              tooltip="Remove reports and restore statement"
+            >
+              <CornerUpLeftIcon
+                width={12}
+                height={12}
+                className="w-4 h-4 text-foreground"
+              />
+            </StatementListButton>
+          ) : null}
+
+          {optimisticVisible ? (
+            <StatementListButton
+              disabled={isPending}
+              isLoading={isPending}
+              onClick={() => {
+                startTransition(() => {
+                  toggleVisibleOptimistic(true);
+                  hide(statement.id);
+                });
+              }}
+              tooltip="Hide statement"
+            >
+              <EyeOffIcon className="w-4 h-4 text-foreground" />
+            </StatementListButton>
+          ) : (
+            <StatementListButton
+              disabled={isPending}
+              isLoading={isPending}
+              onClick={() => {
+                startTransition(() => {
+                  toggleVisibleOptimistic(false);
+                  show(statement.id);
+                });
+              }}
+              tooltip="Show statement"
+            >
+              <EyeIcon className="w-4 h-4 text-foreground" />
+            </StatementListButton>
+          )}
+
+          <StatementListButton
+            onClick={() => openDeleteStatementDialog(statement.id)}
+            tooltip="Delete statement"
+          >
+            <TrashIcon className="w-4 h-4 text-foreground" />
+          </StatementListButton>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
