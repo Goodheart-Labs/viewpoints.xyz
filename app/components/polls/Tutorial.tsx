@@ -32,6 +32,7 @@ const mockStatement: Statement & {
     userId: "",
     createdAt: new Date(),
   },
+  visible: true,
   question_type: "default",
   answer_type: "default",
   text: "This is a statement.",

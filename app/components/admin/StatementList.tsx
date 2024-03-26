@@ -13,6 +13,7 @@ import type { FlaggedStatement, Poll, Statement } from "@/db/schema";
 
 import DeleteFlaggedStatementDialog from "./DeleteFlaggedStatementDialog";
 import DeleteStatementDialog from "./DeleteStatementDialog";
+import { StatementListButton } from "./StatementListButton";
 
 type Props = {
   poll: Poll;
@@ -47,7 +48,7 @@ const StatementsList: FC<Props> = ({ poll, statements, flaggedStatements }) => {
         <div key={statement.id} className="mt-1 mb-2 ">
           <div className="mb-2">
             {(flaggedStatements[statement.id] ?? []).length > 1 && (
-              <span className="flex items-center text-xxs bg-accent p-1.5 rounded-sm dark:text-foreground">
+              <span className="flex items-center text-xs bg-accent p-1.5 rounded-sm dark:text-foreground">
                 <FlagIcon width={10} height={10} className="mr-2" />
                 This statement has been removed from poll because of 2 reports.
               </span>
@@ -58,36 +59,31 @@ const StatementsList: FC<Props> = ({ poll, statements, flaggedStatements }) => {
             <p className="mr-2 text-black dark:text-gray-200">
               {statement.text}
             </p>
-            <div className="flex">
-              {(flaggedStatements[statement.id] ?? []).length > 1 && (
-                <span className="bg-accent p-2.5 rounded-full">
-                  <a
-                    href="#"
-                    onClick={() =>
-                      openDeleteFlaggedStatementsDialog(statement.id)
-                    }
-                  >
-                    <CornerUpLeftIcon
-                      width={12}
-                      height={12}
-                      className="w-4 h-4 text-foreground"
-                    />
-                  </a>
-                </span>
-              )}
 
-              <span className="bg-accent p-2.5 ml-2 rounded-full">
-                <a
-                  href="#"
-                  onClick={() => openDeleteStatementDialog(statement.id)}
+            <div className="flex gap-2">
+              {(flaggedStatements[statement.id] ?? []).length > 1 && (
+                <StatementListButton
+                  onClick={() =>
+                    openDeleteFlaggedStatementsDialog(statement.id)
+                  }
                 >
-                  <TrashIcon
+                  <CornerUpLeftIcon
                     width={12}
                     height={12}
                     className="w-4 h-4 text-foreground"
                   />
-                </a>
-              </span>
+                </StatementListButton>
+              )}
+
+              <StatementListButton
+                onClick={() => openDeleteStatementDialog(statement.id)}
+              >
+                <TrashIcon
+                  width={12}
+                  height={12}
+                  className="w-4 h-4 text-foreground"
+                />
+              </StatementListButton>
             </div>
           </div>
           {index !== statements.length - 1 && (
