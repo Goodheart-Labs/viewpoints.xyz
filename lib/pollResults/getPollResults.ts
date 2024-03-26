@@ -20,6 +20,8 @@ export const getPollResults = async (slug: string, sortBy?: SortKey) => {
     .selectFrom("statements")
     .selectAll()
     .where("poll_id", "=", poll.id)
+    // and where statement is visible
+    .where("visible", "=", true)
     .orderBy("id asc")
     .execute();
 

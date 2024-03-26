@@ -45,6 +45,8 @@ export const getData = async (slug: string) => {
     .selectFrom("statements")
     .selectAll()
     .where("poll_id", "=", poll.id)
+    // and where statement is visible
+    .where("visible", "=", true)
     .orderBy("id asc")
     .execute();
 
@@ -173,6 +175,8 @@ export const filterStatements = (
   const userResponses = new Map<number, UserResponseItem>();
 
   for (const statement of statements) {
+    if (!statement.visible) continue;
+
     if (
       (statement.flaggedStatements ?? []).length > MAX_NUM_FLAGS_BEFORE_REMOVAL
     ) {

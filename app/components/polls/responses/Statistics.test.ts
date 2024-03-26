@@ -34,6 +34,7 @@ describe("getHighlightedStatements", () => {
         text: "Statement 1",
         user_id: "1",
         session_id: "abc123",
+        visible: true,
         stats: {
           responseCount: 1,
           votePercentages: new Map([["skip", 1]]),
@@ -48,6 +49,7 @@ describe("getHighlightedStatements", () => {
         text: "Statement 2",
         user_id: "1",
         session_id: "abc123",
+        visible: true,
         stats: {
           responseCount: 1,
           votePercentages: new Map([["skip", 1]]),
@@ -97,6 +99,7 @@ describe("getHighlightedStatements", () => {
         text: "Statement 1",
         user_id: "1",
         session_id: "abc123",
+        visible: true,
         stats: {
           responseCount: 2,
           votePercentages: new Map([["agree", 0.9]]),
@@ -111,6 +114,7 @@ describe("getHighlightedStatements", () => {
         text: "Statement 2",
         user_id: "2",
         session_id: "def456",
+        visible: true,
         stats: {
           responseCount: 2,
           votePercentages: new Map([["disagree", 0.3]]),
@@ -186,6 +190,7 @@ describe("getHighlightedStatements", () => {
         text: "Single Statement",
         user_id: "1",
         session_id: "xyz123",
+        visible: true,
         stats: {
           responseCount: 1,
           votePercentages: new Map([["agree", 1]]),
@@ -231,6 +236,7 @@ describe("getHighlightedStatements", () => {
         text: "Statement 1",
         user_id: "1",
         session_id: "abc123",
+        visible: true,
         stats: {
           responseCount: 1,
           votePercentages: new Map([["agree", 0.8]]),
@@ -245,6 +251,7 @@ describe("getHighlightedStatements", () => {
         text: "Statement 2",
         user_id: "2",
         session_id: "def456",
+        visible: true,
         stats: {
           responseCount: 1,
           votePercentages: new Map([["disagree", 0.5]]),
