@@ -12,6 +12,7 @@ import { useToast } from "@/app/components/shadcn/ui/use-toast";
 import type { Statement, Poll, FlaggedStatement } from "@/db/schema";
 
 import StatementsList from "./StatementList";
+import { ToggleNewStatementVisibility } from "./ToggleNewStatementVisibility";
 
 type Form = {
   visibility: Poll["visibility"];
@@ -64,17 +65,26 @@ const PollAdminForm = ({
 
   return (
     <div className="flex flex-col items-stretch w-full h-full xl:max-w-3xl bg-zinc-950 xl:rounded-xl">
-      <div className="p-6">
+      <div className="p-6 grid gap-8">
         <DisabledInputWithLabel label="Poll subject" value={poll.title} />
         <DisabledInputWithLabel
           label="Poll description"
           value={poll.core_question}
         />
-        <p className="mb-2 text-sm text-secondary">Poll type</p>
-        <PollPrivacySettings
-          visibility={visibilityField.field.value}
-          pollVisibilitySetter={visibilityField.field.onChange}
-        />
+        <section className="grid gap-2">
+          <SectionTitle>Poll Type</SectionTitle>
+          <PollPrivacySettings
+            visibility={visibilityField.field.value}
+            pollVisibilitySetter={visibilityField.field.onChange}
+          />
+        </section>
+        <section className="grid gap-2">
+          <SectionTitle>New Statements</SectionTitle>
+          <ToggleNewStatementVisibility
+            pollId={poll.id}
+            visibleByDefault={!!poll.new_statements_visible_by_default}
+          />
+        </section>
       </div>
 
       <div className="pt-3 mx-6 my-3 border-t border-zinc-700" />
@@ -117,3 +127,7 @@ const PollAdminForm = ({
 };
 
 export default PollAdminForm;
+
+const SectionTitle = ({ children }: { children: React.ReactNode }) => (
+  <h2 className="text-sm text-secondary">{children}</h2>
+);

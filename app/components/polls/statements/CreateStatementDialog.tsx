@@ -1,5 +1,3 @@
-"use client";
-
 import type { FC } from "react";
 import { useTransition } from "react";
 import { useController, useForm } from "react-hook-form";

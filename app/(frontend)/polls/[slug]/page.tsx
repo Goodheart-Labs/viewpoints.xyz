@@ -15,6 +15,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isPollAdminOrSuperadmin } from "@/utils/authutils";
 import { auth } from "@clerk/nextjs";
+import { BackToSouthGlos } from "@/components/BackToSouthGlos";
+import { headers } from "next/headers";
 import { getData } from "./getData";
 
 type PollPageProps = {
@@ -23,6 +25,9 @@ type PollPageProps = {
 };
 
 const PollPage = async ({ params, searchParams }: PollPageProps) => {
+  const headersList = headers();
+  const pathname = headersList.get("x-pathname");
+
   const {
     poll,
     statements,
@@ -64,9 +69,14 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
           .map((statement) => statement.id)
       : [];
 
+  const isCouncilPoll = pathname ? pathname.includes("council") : false;
+
+  const questionsRemaining = filteredStatements.length > 0;
+
   return (
-    <main className="flex flex-col items-center flex-1 w-full bg-black xl:p-8 xl:flex-row xl:justify-center xl:gap-8 xl:overflow-y-hidden">
-      <div className="flex flex-col items-stretch w-full h-full max-w-full xl:w-1/2 xl:bg-zinc-900 xl:rounded-xl">
+    <main className="bg-black xl:p-8 xl:gap-8 xl:overflow-y-hidden flex-grow grid xl:content-center">
+      {isCouncilPoll && !questionsRemaining ? <BackToSouthGlos /> : null}
+      <div className="flex flex-col items-stretch w-full h-full max-w-full mx-auto xl:w-1/2 xl:bg-zinc-900 xl:rounded-xl">
         <div className="p-6 bg-zinc-800 xl:rounded-t-xl">
           <div className="flex items-center justify-between">
             <p className="pl-2 mb-2 text-xs font-bold text-left uppercase border-l-2 text-zinc-400 border-l-zinc-400">
@@ -99,7 +109,7 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
           </h2>
         </div>
 
-        {filteredStatements.length > 0 ? (
+        {questionsRemaining ? (
           <>
             <Cards
               statements={statementsWithoutResponsesAndFlags}
