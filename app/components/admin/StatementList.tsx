@@ -1,16 +1,17 @@
 "use client";
 
 import type { FC } from "react";
-import { useState } from "react";
+import { startTransition, useCallback, useState } from "react";
 
 import { FlagIcon } from "@heroicons/react/20/solid";
-import { CornerUpLeftIcon, TrashIcon } from "lucide-react";
+import { CornerUpLeftIcon, TrashIcon, EyeOffIcon, EyeIcon } from "lucide-react";
 
 import { ScrollArea } from "@/app/components/shadcn/ui/scroll-area";
-import { Separator } from "@/app/components/shadcn/ui/separator";
 
 import type { FlaggedStatement, Poll, Statement } from "@/db/schema";
 
+import { hideStatement, showStatement } from "@/app/api/statements/visibility";
+import { cn } from "@/utils/style-utils";
 import DeleteFlaggedStatementDialog from "./DeleteFlaggedStatementDialog";
 import DeleteStatementDialog from "./DeleteStatementDialog";
 import { StatementListButton } from "./StatementListButton";
@@ -43,59 +44,43 @@ const StatementsList: FC<Props> = ({ poll, statements, flaggedStatements }) => {
     setIsOpen(true);
   };
 
+  const hide = useCallback(
+    (statementId: number) => {
+      startTransition(() => {
+        hideStatement(statementId, poll.id);
+      });
+    },
+    [poll.id],
+  );
+
+  const show = useCallback(
+    (statementId: number) => {
+      startTransition(() => {
+        showStatement(statementId, poll.id);
+      });
+    },
+    [poll.id],
+  );
+
   return (
     <TooltipProvider>
       <ScrollArea className="flex flex-col w-full px-6">
-        {statements.map((statement, index) => (
-          <div key={statement.id} className="mt-1 mb-2 ">
-            <div className="mb-2">
-              {(flaggedStatements[statement.id] ?? []).length > 1 && (
-                <span className="flex items-center text-xs bg-accent p-1.5 rounded-sm dark:text-zinc-400">
-                  <FlagIcon width={10} height={10} className="mr-2" />
-                  This statement has been removed from poll because of 2
-                  reports.
-                </span>
-              )}
-            </div>
-
-            <div className="flex items-center justify-between">
-              <p className="mr-2 text-black dark:text-gray-200">
-                {statement.text}
-              </p>
-
-              <div className="flex gap-2">
-                {(flaggedStatements[statement.id] ?? []).length > 1 && (
-                  <StatementListButton
-                    onClick={() =>
-                      openDeleteFlaggedStatementsDialog(statement.id)
-                    }
-                    tooltip="Remove reports and restore statement"
-                  >
-                    <CornerUpLeftIcon
-                      width={12}
-                      height={12}
-                      className="w-4 h-4 text-foreground"
-                    />
-                  </StatementListButton>
-                )}
-
-                <StatementListButton
-                  onClick={() => openDeleteStatementDialog(statement.id)}
-                  tooltip="Delete statement"
-                >
-                  <TrashIcon
-                    width={12}
-                    height={12}
-                    className="w-4 h-4 text-foreground"
-                  />
-                </StatementListButton>
-              </div>
-            </div>
-            {index !== statements.length - 1 && (
-              <Separator className="my-2 bg-muted" />
-            )}
-          </div>
-        ))}
+        {statements.map((statement) => {
+          const isFlagged = (flaggedStatements[statement.id] ?? []).length > 1;
+          return (
+            <StatementListRow
+              key={statement.id}
+              statement={statement}
+              isFlagged={isFlagged}
+              hide={hide}
+              show={show}
+              openDeleteStatementDialog={openDeleteStatementDialog}
+              openDeleteFlaggedStatementsDialog={
+                openDeleteFlaggedStatementsDialog
+              }
+            />
+          );
+        })}
         {selectedStatementId && modalType === "statement" && (
           <DeleteStatementDialog
             pollId={poll.id}
@@ -118,3 +103,81 @@ const StatementsList: FC<Props> = ({ poll, statements, flaggedStatements }) => {
 };
 
 export default StatementsList;
+
+const StatementListRow = ({
+  statement,
+  isFlagged,
+  hide,
+  show,
+  openDeleteStatementDialog,
+  openDeleteFlaggedStatementsDialog,
+}: {
+  statement: Statement;
+  isFlagged: boolean;
+  hide: (statementId: number) => void;
+  show: (statementId: number) => void;
+  openDeleteStatementDialog: (statementId: number) => void;
+  openDeleteFlaggedStatementsDialog: (statementId: number) => void;
+}) => (
+  <div
+    key={statement.id}
+    className="py-1 border-b last-of-type:border-b-0 border-zinc-800"
+  >
+    {isFlagged ? (
+      <div className="mb-2">
+        <span className="flex items-center text-xs bg-accent p-1.5 rounded-sm dark:text-zinc-400">
+          <FlagIcon width={10} height={10} className="mr-2" />
+          This statement has been removed from poll because of 2 reports.
+        </span>
+      </div>
+    ) : null}
+
+    <div className="flex items-center justify-between">
+      <p
+        className={cn("mr-2 text-black dark:text-gray-200", {
+          "opacity-25": !statement.visible || isFlagged,
+        })}
+      >
+        {statement.text}
+      </p>
+
+      <div className="flex gap-2">
+        {isFlagged ? (
+          <StatementListButton
+            onClick={() => openDeleteFlaggedStatementsDialog(statement.id)}
+            tooltip="Remove reports and restore statement"
+          >
+            <CornerUpLeftIcon
+              width={12}
+              height={12}
+              className="w-4 h-4 text-foreground"
+            />
+          </StatementListButton>
+        ) : null}
+
+        {statement.visible ? (
+          <StatementListButton
+            onClick={() => hide(statement.id)}
+            tooltip="Hide statement"
+          >
+            <EyeOffIcon className="w-4 h-4 text-foreground" />
+          </StatementListButton>
+        ) : (
+          <StatementListButton
+            onClick={() => show(statement.id)}
+            tooltip="Show statement"
+          >
+            <EyeIcon className="w-4 h-4 text-foreground" />
+          </StatementListButton>
+        )}
+
+        <StatementListButton
+          onClick={() => openDeleteStatementDialog(statement.id)}
+          tooltip="Delete statement"
+        >
+          <TrashIcon className="w-4 h-4 text-foreground" />
+        </StatementListButton>
+      </div>
+    </div>
+  </div>
+);

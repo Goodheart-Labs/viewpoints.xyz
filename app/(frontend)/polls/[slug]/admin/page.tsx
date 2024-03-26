@@ -24,6 +24,8 @@ async function getData(slug: string) {
     .selectFrom("statements")
     .selectAll()
     .where("poll_id", "=", poll.id)
+    // order by id
+    .orderBy("id", "asc")
     .execute();
 
   const flaggedStatements = (

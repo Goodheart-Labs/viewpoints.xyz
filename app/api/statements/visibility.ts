@@ -1,0 +1,41 @@
+"use server";
+
+import { db } from "@/db/client";
+import { auth } from "@clerk/nextjs";
+import { refreshPoll } from "../lib/refreshPoll";
+
+export const hideStatement = async (statementId: number, pollId: number) => {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("User not authenticated");
+  }
+
+  await db
+    .updateTable("statements")
+    .set({
+      visible: false,
+    })
+    .where("id", "=", statementId)
+    .executeTakeFirst();
+
+  await refreshPoll(pollId);
+};
+
+export const showStatement = async (statementId: number, pollId: number) => {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("User not authenticated");
+  }
+
+  await db
+    .updateTable("statements")
+    .set({
+      visible: true,
+    })
+    .where("id", "=", statementId)
+    .executeTakeFirst();
+
+  await refreshPoll(pollId);
+};
