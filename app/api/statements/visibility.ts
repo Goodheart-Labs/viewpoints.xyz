@@ -2,6 +2,7 @@
 
 import { db } from "@/db/client";
 import { auth } from "@clerk/nextjs";
+import { requirePollAdmin } from "@/utils/authutils";
 import { refreshPoll } from "../lib/refreshPoll";
 
 export const hideStatement = async (statementId: number, pollId: number) => {
@@ -10,6 +11,14 @@ export const hideStatement = async (statementId: number, pollId: number) => {
   if (!userId) {
     throw new Error("User not authenticated");
   }
+
+  const poll = await db
+    .selectFrom("polls")
+    .selectAll()
+    .where("id", "=", pollId)
+    .executeTakeFirstOrThrow();
+
+  await requirePollAdmin(poll);
 
   await db
     .updateTable("statements")
@@ -28,6 +37,14 @@ export const showStatement = async (statementId: number, pollId: number) => {
   if (!userId) {
     throw new Error("User not authenticated");
   }
+
+  const poll = await db
+    .selectFrom("polls")
+    .selectAll()
+    .where("id", "=", pollId)
+    .executeTakeFirstOrThrow();
+
+  await requirePollAdmin(poll);
 
   await db
     .updateTable("statements")
