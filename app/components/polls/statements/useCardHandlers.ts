@@ -5,7 +5,7 @@ import { createResponse } from "@/app/api/responses/createResponse";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import { useSessionId } from "@/utils/frontendsessionutils";
 
-const SWIPE_THRESHOLD = 150;
+export const SWIPE_THRESHOLD = 150;
 
 const choiceEvents = {
   agree: "votes.agree",

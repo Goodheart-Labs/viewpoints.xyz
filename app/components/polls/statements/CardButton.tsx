@@ -8,10 +8,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../../shadcn/ui/tooltip";
+import styles from "./CardButton.module.css";
 
 type CardButtonProps<C extends ChoiceEnum | number> = {
   choice: C;
   choiceText?: string;
+  activeChoice?: C;
   onResponse: (choice: C) => void;
   highlight?: boolean;
   withTooltip?: boolean;
@@ -20,10 +22,33 @@ type CardButtonProps<C extends ChoiceEnum | number> = {
 export const CardButton = <C extends ChoiceEnum | number>({
   choice,
   choiceText,
+  activeChoice,
   onResponse,
   highlight,
   withTooltip = false,
 }: CardButtonProps<C>) => {
+  const [isHovering, setIsHovering] = React.useState(false);
+  const choiceEmoji = getChoiceEmoji(choice as Response["choice"]);
+
+  /**
+   * Check if the specified type of choice is active
+   * @param type
+   */
+  const isActiveChoiceType = (type: string) =>
+    [choice, activeChoice].every((c) => c === type) ||
+    (isHovering && type === choice);
+
+  const extraButtonStyles = cn({
+    "rounded-full w-max grid place-content-center transition transition-colors":
+      !!choiceEmoji,
+    "text-2xl w-[56px] h-[56px]":
+      !!choiceEmoji && ["👎", "👍"].includes(choiceEmoji),
+    "w-10 h-10 text-base": choiceEmoji === "🤷",
+    [styles.agree]: isActiveChoiceType("agree"),
+    [styles.disagree]: isActiveChoiceType("disagree"),
+    [styles.skip]: isActiveChoiceType("skip"),
+  });
+
   const button = (
     <button
       type="button"
@@ -33,9 +58,16 @@ export const CardButton = <C extends ChoiceEnum | number>({
         typeof choice === "string" ? getButtonSize(choice) : false,
         choiceText && "rounded-md px-3 py-1 text-sm aspect-auto w-full mb-3",
         highlight && "bg-zinc-600",
+        extraButtonStyles,
       )}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseOut={() => setIsHovering(false)}
     >
-      {getChoiceEmoji(choice as Response["choice"]) || choiceText}
+      {choiceEmoji ? (
+        <div className="drop-shadow-xl pointer-events-none">{choiceEmoji}</div>
+      ) : (
+        choiceText
+      )}
     </button>
   );
 

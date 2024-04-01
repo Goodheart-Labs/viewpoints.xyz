@@ -11,7 +11,7 @@ import { isEmail } from "@/utils/stringutils";
 import type { DB } from "kysely-codegen";
 import { CardButton } from "./CardButton";
 import { ReportStatementDialog } from "./ReportStatementDialog";
-import { useCardHandlers } from "./useCardHandlers";
+import { SWIPE_THRESHOLD, useCardHandlers } from "./useCardHandlers";
 
 // Config
 // -----------------------------------------------------------------------------
@@ -64,6 +64,7 @@ type CustomOptionsCardViewProps = {
   animate: string;
   isActive: boolean;
 };
+type DefaultChoice = "agree" | "disagree" | "skip";
 
 // Default Card View
 // -----------------------------------------------------------------------------
@@ -80,82 +81,108 @@ const DefaultCardView = ({
   leaveX,
   leaveY,
   animate,
-}: DefaultCardViewProps) => (
-  <motion.div
-    ref={ref}
-    drag
-    dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-    onDragEnd={onDragEnd}
-    animate={animate}
-    initial={false}
-    variants={{
-      default: {
-        scale: 1 - (cardCount - index - 1) * CARD_SCALE_OFFSET,
-        x: 0,
-        y: (cardCount - index - 1) * CARD_VERTICAL_OFFSET,
-        filter: `brightness(${
-          100 - (cardCount - index - 1) * CARD_BRIGHTNESS_OFFSET
-        }%)`,
-      },
-      exit: {
-        x: leaveX,
-        y: leaveY,
-        opacity: 0,
-        scale: 0.5,
-        transition: { duration: ANIMATION_DURATION },
-      },
-    }}
-    style={{ height }}
-    className="absolute top-0 left-0 right-0 z-50 flex flex-col gap-4 px-4 py-3 overflow-hidden border cursor-grab border-zinc-600 bg-zinc-800 rounded-2xl"
-  >
-    <div className="flex items-center justify-between w-full">
-      <UserAvatar
-        name={
-          isEmail(statement.author?.name)
-            ? "Anonymous"
-            : statement.author?.name ?? null
-        }
-        avatarUrl={statement.author?.avatarUrl ?? null}
-        subtitle={new Date(statement.created_at).toLocaleDateString()}
-      />
+}: DefaultCardViewProps) => {
+  // what choice is currently active based on where card is being dragged
+  const [activeChoice, setActiveChoice] = useState<DefaultChoice | null>(null);
 
-      <button
-        type="button"
-        className="w-10 h-10 rounded-full text-zinc-400 hover:text-zinc-300 bg-zinc-700 focus-visible:outline-none"
-        onClick={onFlag}
-      >
-        <FlagIcon className="w-5 h-5 mx-auto" aria-hidden="true" />
-      </button>
-    </div>
-    <div className="flex-1">
-      {index === cardCount - 1 && (
-        <div className="font-semibold text-md text-zinc-200">
-          {statement.text}
-        </div>
-      )}
-    </div>
-    <div className="grid gap-2 grid-cols-3">
-      <CardButton<NonNullable<Response["choice"]>>
-        choice="disagree"
-        choiceText="Disagree"
-        onResponse={onResponseChoice}
-        withTooltip
-      />
-      <CardButton<NonNullable<Response["choice"]>>
-        choice="skip"
-        choiceText="Skip"
-        onResponse={onResponseChoice}
-        withTooltip
-      />
-      <CardButton<NonNullable<Response["choice"]>>
-        choice="agree"
-        choiceText="Agree"
-        onResponse={onResponseChoice}
-        withTooltip
-      />
-    </div>
-  </motion.div>
-);
+  function handleDrag(
+    e: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo,
+  ) {
+    if (info.offset.x > SWIPE_THRESHOLD) {
+      setActiveChoice("agree");
+    } else if (info.offset.x < -SWIPE_THRESHOLD) {
+      setActiveChoice("disagree");
+    } else {
+      setActiveChoice(null);
+    }
+
+    if (info.offset.y > SWIPE_THRESHOLD) {
+      setActiveChoice("skip");
+    }
+  }
+
+  return (
+    <motion.div
+      ref={ref}
+      drag
+      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+      onDragEnd={onDragEnd}
+      onDrag={handleDrag}
+      animate={animate}
+      initial={false}
+      variants={{
+        default: {
+          scale: 1 - (cardCount - index - 1) * CARD_SCALE_OFFSET,
+          x: 0,
+          y: (cardCount - index - 1) * CARD_VERTICAL_OFFSET,
+          filter: `brightness(${
+            100 - (cardCount - index - 1) * CARD_BRIGHTNESS_OFFSET
+          }%)`,
+        },
+        exit: {
+          x: leaveX,
+          y: leaveY,
+          opacity: 0,
+          scale: 0.5,
+          transition: { duration: ANIMATION_DURATION },
+        },
+      }}
+      style={{ height }}
+      className="absolute top-0 left-0 right-0 z-50 flex flex-col gap-4 px-4 py-3 overflow-hidden border cursor-grab border-zinc-600 bg-zinc-800 rounded-2xl"
+    >
+      <div className="flex items-center justify-between w-full">
+        <UserAvatar
+          name={
+            isEmail(statement.author?.name)
+              ? "Anonymous"
+              : statement.author?.name ?? null
+          }
+          avatarUrl={statement.author?.avatarUrl ?? null}
+          subtitle={new Date(statement.created_at).toLocaleDateString()}
+        />
+
+        <button
+          type="button"
+          className="w-10 h-10 rounded-full text-zinc-400 hover:text-zinc-300 bg-zinc-700 focus-visible:outline-none"
+          onClick={onFlag}
+        >
+          <FlagIcon className="w-5 h-5 mx-auto" aria-hidden="true" />
+        </button>
+      </div>
+      <div className="flex-1">
+        {index === cardCount - 1 && (
+          <div className="font-semibold text-md text-zinc-200">
+            {statement.text}
+          </div>
+        )}
+      </div>
+      <div className="grid gap-2 grid-cols-3 items-center justify-items-center w-full max-w-[400px] mx-auto justify-between">
+        <CardButton<NonNullable<Response["choice"]>>
+          activeChoice={activeChoice}
+          choice="disagree"
+          choiceText="Disagree"
+          onResponse={onResponseChoice}
+          withTooltip
+        />
+        <CardButton<NonNullable<Response["choice"]>>
+          activeChoice={activeChoice}
+          choice="skip"
+          choiceText="Skip"
+          onResponse={onResponseChoice}
+          withTooltip
+        />
+        <CardButton<NonNullable<Response["choice"]>>
+          activeChoice={activeChoice}
+          choice="agree"
+          choiceText="Agree"
+          onResponse={onResponseChoice}
+          withTooltip
+        />
+      </div>
+    </motion.div>
+  );
+};
 
 // Custom Options Card View
 // -----------------------------------------------------------------------------
