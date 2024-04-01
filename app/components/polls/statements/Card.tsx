@@ -8,7 +8,7 @@ import { UserAvatar } from "@/app/components/user/UserAvatar";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import type { Author, Statement, Response, StatementOption } from "@/db/schema";
 import { isEmail } from "@/utils/stringutils";
-import type { DB } from "kysely-codegen";
+import type { ChoiceEnum, DB } from "kysely-codegen";
 import { CardButton } from "./CardButton";
 import { ReportStatementDialog } from "./ReportStatementDialog";
 import { SWIPE_THRESHOLD, useCardHandlers } from "./useCardHandlers";
@@ -64,7 +64,6 @@ type CustomOptionsCardViewProps = {
   animate: string;
   isActive: boolean;
 };
-type DefaultChoice = "agree" | "disagree" | "skip";
 
 // Default Card View
 // -----------------------------------------------------------------------------
@@ -83,7 +82,7 @@ const DefaultCardView = ({
   animate,
 }: DefaultCardViewProps) => {
   // what choice is currently active based on where card is being dragged
-  const [activeChoice, setActiveChoice] = useState<DefaultChoice | null>(null);
+  const [activeChoice, setActiveChoice] = useState<ChoiceEnum | null>(null);
 
   function handleDrag(
     e: MouseEvent | TouchEvent | PointerEvent,

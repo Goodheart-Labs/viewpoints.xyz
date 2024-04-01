@@ -13,7 +13,7 @@ import styles from "./CardButton.module.css";
 type CardButtonProps<C extends ChoiceEnum | number> = {
   choice: C;
   choiceText?: string;
-  activeChoice?: C;
+  activeChoice?: ChoiceEnum | null;
   onResponse: (choice: C) => void;
   highlight?: boolean;
   withTooltip?: boolean;
