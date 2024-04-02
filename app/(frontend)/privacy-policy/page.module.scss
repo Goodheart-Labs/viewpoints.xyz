@@ -1,0 +1,59 @@
+.page {
+  @apply max-w-3xl mx-auto px-4 pt-16 pb-24  leading-9;
+
+  > * {
+    @apply mt-[2em]
+  }
+
+p, li {
+    @apply text-white/75;
+  }
+
+  h1 {
+    @apply font-bold text-3xl;
+  }
+
+  h2 {
+    @apply font-bold text-2xl;
+  }
+
+  a {
+    @apply text-blue-500 underline;
+  }
+
+  h3 {
+    @apply font-semibold text-xl;
+  }
+
+  *:where(ol, ul) {
+    @apply mt-3;
+  }
+
+  li {
+    @apply mt-3;
+  }
+
+  ol {
+    @apply  ml-6;
+  }
+
+  ul {
+    @apply list-disc ml-6;
+  }
+
+  .dashed {
+    li {
+      display: flex;
+      list-style-type: none;
+
+      &::before {
+        display: inline-block;
+        content: "-";
+        margin-right: 0.5em;
+        color: white;
+      }
+    }
+  }
+
+
+}
