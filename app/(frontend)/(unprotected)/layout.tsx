@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Toaster } from "@/app/components/shadcn/ui/toaster";
 import "@/styles/tailwind.css";
 import "@/styles/frontend.css";
+import clsx from "clsx";
+import styles from "@/app/(frontend)/(unprotected)/privacy-policy/page.module.scss";
+import Link from "next/link";
+import { Logo } from "@/components/Logo";
 
 // Metadata
 // -----------------------------------------------------------------------------
@@ -22,12 +25,16 @@ export const viewport: Viewport = {
 // -----------------------------------------------------------------------------
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => (
-  <html lang="en" suppressHydrationWarning>
-    <body className="flex flex-col items-stretch min-h-screen bg-black">
-      {children}
-      <Toaster />
-    </body>
-  </html>
+  <>
+    <div className="self-start flex items-center justify-end w-full p-4 sticky top-0 bg-zinc-900 z-[60] min-h-[68px]">
+      <div className={clsx(styles.logo, "mr-auto")}>
+        <Link href="/" className="hover:opacity-50 text-white">
+          <Logo width={160} height={40} />
+        </Link>
+      </div>
+    </div>
+    {children}
+  </>
 );
 
 export default RootLayout;

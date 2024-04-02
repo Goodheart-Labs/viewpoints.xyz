@@ -8,9 +8,9 @@ import type { Author } from "@/db/schema";
 import { db } from "@/db/client";
 import { isEmail } from "@/utils/stringutils";
 import { Logo } from "@/components/Logo";
-import { Button } from "../components/shadcn/ui/button";
-import { anonymousAvatar } from "../components/user/UserAvatar";
-import { WhatsappLink } from "../components/WhatsappLink";
+import { Button } from "../../components/shadcn/ui/button";
+import { anonymousAvatar } from "../../components/user/UserAvatar";
+import { WhatsappLink } from "../../components/WhatsappLink";
 
 // Data
 // -----------------------------------------------------------------------------
