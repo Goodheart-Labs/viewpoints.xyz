@@ -1,4 +1,4 @@
-import { getData } from "@/app/(frontend)/polls/[slug]/getData";
+import { getData } from "@/app/(frontend)/(protected)/polls/[slug]/getData";
 import { EmbedCardsView } from "./view";
 
 // Types

@@ -2,7 +2,7 @@ import Head from "next/head";
 
 import { Results } from "@/app/components/polls/responses/Results";
 import Link from "next/link";
-import { getPollResults } from "../../../../../lib/pollResults/getPollResults";
+import { getPollResults } from "@/lib/pollResults/getPollResults";
 import { DownloadButton } from "./DownloadButton";
 
 const AnalyticsPage = async ({ params }: { params: { slug: string } }) => {
