@@ -58,7 +58,7 @@ export const useCardHandlers = ({
           setLeaveX(-1000);
           break;
         case "skip":
-          setLeaveY(1000);
+          setLeaveY(-1000);
           break;
       }
 
@@ -110,7 +110,7 @@ export const useCardHandlers = ({
         onResponseChoice("disagree");
         return;
       }
-      if (info.offset.y > SWIPE_THRESHOLD) {
+      if (info.offset.y < -SWIPE_THRESHOLD) {
         onResponseChoice("skip");
       }
     },

@@ -4,7 +4,7 @@ import React from "react";
 
 import type { AnimationProps } from "framer-motion";
 import { motion } from "framer-motion";
-import { ArrowDown, ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUp } from "lucide-react";
 import { useIsClient, useLocalStorage } from "usehooks-ts";
 import { Button } from "@/app/components/shadcn/ui/button";
 import {
@@ -80,6 +80,14 @@ export const Tutorial = () => {
         </p>
 
         <div className="flex flex-col items-center w-full text-sm">
+          <motion.div
+            className="text-center"
+            animate={{ y: -10 }}
+            transition={transition}
+          >
+            {getChoiceEmoji("skip")}
+            <ArrowUp size={20} className="my-1" />
+          </motion.div>
           <div className="flex items-center self-stretch">
             <motion.div
               className="flex"
@@ -111,15 +119,6 @@ export const Tutorial = () => {
               {getChoiceEmoji("agree")}
             </motion.div>
           </div>
-
-          <motion.div
-            className="text-center"
-            animate={{ y: 10 }}
-            transition={transition}
-          >
-            <ArrowDown size={20} className="my-1" />
-            {getChoiceEmoji("skip")}
-          </motion.div>
         </div>
 
         <div>

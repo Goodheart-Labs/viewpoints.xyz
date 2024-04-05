@@ -96,7 +96,7 @@ const DefaultCardView = ({
       setActiveChoice(null);
     }
 
-    if (info.offset.y > SWIPE_THRESHOLD) {
+    if (info.offset.y < -SWIPE_THRESHOLD) {
       setActiveChoice("skip");
     }
   }
