@@ -221,7 +221,7 @@ const NewPollPageClient = () => {
     mode: "onTouched",
     resolver: yupResolver(schema),
     defaultValues: {
-      with_demographic_questions: true,
+      with_demographic_questions: false,
     },
   });
 
