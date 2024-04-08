@@ -41,7 +41,7 @@ const schema = yup
       .matches(/^[a-z0-9-]+$/),
     question: yup.string().default(""),
     statements: yup.array().of(yup.string().required()).min(5).required(),
-    with_demographic_questions: yup.boolean().default(true),
+    with_demographic_questions: yup.boolean().default(false),
   })
   .required();
 
