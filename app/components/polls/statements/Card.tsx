@@ -92,12 +92,10 @@ const DefaultCardView = ({
       setActiveChoice("agree");
     } else if (info.offset.x < -SWIPE_THRESHOLD) {
       setActiveChoice("disagree");
+    } else if (info.offset.y < -SWIPE_THRESHOLD) {
+      setActiveChoice("skip");
     } else {
       setActiveChoice(null);
-    }
-
-    if (info.offset.y < -SWIPE_THRESHOLD) {
-      setActiveChoice("skip");
     }
   }
 

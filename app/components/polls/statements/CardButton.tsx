@@ -27,16 +27,7 @@ export const CardButton = <C extends ChoiceEnum | number>({
   highlight,
   withTooltip = false,
 }: CardButtonProps<C>) => {
-  const [isHovering, setIsHovering] = React.useState(false);
   const choiceEmoji = getChoiceEmoji(choice as Response["choice"]);
-
-  /**
-   * Check if the specified type of choice is active
-   * @param type
-   */
-  const isActiveChoiceType = (type: string) =>
-    [choice, activeChoice].every((c) => c === type) ||
-    (isHovering && type === choice);
 
   const extraButtonStyles = cn({
     "rounded-full w-max grid place-content-center transition transition-colors":
@@ -44,15 +35,16 @@ export const CardButton = <C extends ChoiceEnum | number>({
     "text-2xl w-[56px] h-[56px]":
       !!choiceEmoji && ["👎", "👍"].includes(choiceEmoji),
     "w-10 h-10 text-base": choiceEmoji === "🤷",
-    [styles.agree]: isActiveChoiceType("agree"),
-    [styles.disagree]: isActiveChoiceType("disagree"),
-    [styles.skip]: isActiveChoiceType("skip"),
+    [styles.agree]: choice === "agree",
+    [styles.disagree]: choice === "disagree",
+    [styles.skip]: choice === "skip",
   });
 
   const button = (
     <button
       type="button"
       onClick={() => onResponse(choice)}
+      data-active={choice === activeChoice}
       className={cn(
         "bg-zinc-700 hover:bg-zinc-600 rounded-full aspect-square text-white transition-colors duration-200",
         typeof choice === "string" ? getButtonSize(choice) : false,
@@ -60,8 +52,6 @@ export const CardButton = <C extends ChoiceEnum | number>({
         highlight && "bg-zinc-600",
         extraButtonStyles,
       )}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseOut={() => setIsHovering(false)}
     >
       {choiceEmoji ? (
         <div className="drop-shadow-xl pointer-events-none">{choiceEmoji}</div>

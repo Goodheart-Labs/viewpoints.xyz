@@ -1,4 +1,4 @@
-.agree {
+.agree[data-active="true"], .agree:hover {
   background: linear-gradient(
       178.91deg,
       rgba(255, 255, 255, 0) 59.39%,
@@ -10,7 +10,7 @@
     0px 0px 20px 0px rgba(120, 87, 255, 0.9);
 }
 
-.disagree {
+.disagree[data-active="true"], .disagree:hover {
   background: linear-gradient(
       178.91deg,
       rgba(255, 255, 255, 0) 59.39%,
@@ -22,7 +22,7 @@
     0px 0px 20px 0px rgba(255, 73, 117, 0.9);
 }
 
-.skip {
+.skip[data-active="true"], .skip:hover {
   background: linear-gradient(
       178.91deg,
       rgba(255, 255, 255, 0) 59.39%,
