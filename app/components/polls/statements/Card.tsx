@@ -1,7 +1,7 @@
 "use client";
 
 import { forwardRef, useCallback, useEffect, useState } from "react";
-import type { PanInfo } from "framer-motion";
+import type { DragHandlers, PanInfo } from "framer-motion";
 import { motion } from "framer-motion";
 import { FlagIcon } from "lucide-react";
 import { UserAvatar } from "@/app/components/user/UserAvatar";
@@ -84,20 +84,20 @@ const DefaultCardView = ({
   // what choice is currently active based on where card is being dragged
   const [activeChoice, setActiveChoice] = useState<ChoiceEnum | null>(null);
 
-  function handleDrag(
-    e: MouseEvent | TouchEvent | PointerEvent,
-    info: PanInfo,
-  ) {
-    if (info.offset.x > SWIPE_THRESHOLD) {
-      setActiveChoice("agree");
-    } else if (info.offset.x < -SWIPE_THRESHOLD) {
-      setActiveChoice("disagree");
-    } else if (info.offset.y < -SWIPE_THRESHOLD) {
-      setActiveChoice("skip");
-    } else {
-      setActiveChoice(null);
-    }
-  }
+  const handleDrag = useCallback<NonNullable<DragHandlers["onDrag"]>>(
+    (_e, info) => {
+      if (info.offset.x > SWIPE_THRESHOLD) {
+        setActiveChoice("agree");
+      } else if (info.offset.x < -SWIPE_THRESHOLD) {
+        setActiveChoice("disagree");
+      } else if (info.offset.y < -SWIPE_THRESHOLD) {
+        setActiveChoice("skip");
+      } else {
+        setActiveChoice(null);
+      }
+    },
+    [],
+  );
 
   return (
     <motion.div
