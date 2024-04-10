@@ -2,12 +2,12 @@
 import Link from "next/link";
 
 const PrivacyPolicy = () => (
-  <div className="prose py-20 mx-auto text-white">
+  <div className="prose py-20 mx-auto text-white/75">
     <h1 className="text-center text-white">Privacy Policy</h1>
     <p className="text-center">
       <em>2024 Mar 9</em>
     </p>
-    <h2 className="text-white">1. Introduction</h2>
+    <h2 className="text-white/90">1. Introduction</h2>
     <p>
       This Privacy Policy (together with our terms and conditions and any other
       documents referred to in it) describes the type of information that we
@@ -56,7 +56,7 @@ const PrivacyPolicy = () => (
       .
     </p>
 
-    <h2 className="text-white">2. Who We Are</h2>
+    <h2 className="text-white/90">2. Who We Are</h2>
     <p>2.1 Here are our details:</p>
     <ul>
       <li>Our Website address is viewpoints.xyz</li>
@@ -83,7 +83,7 @@ const PrivacyPolicy = () => (
       2018 and other applicable privacy laws.
     </p>
 
-    <h2 className="text-white">3. What we may collect</h2>
+    <h2 className="text-white/90">3. What we may collect</h2>
     <p>
       3.1 Personal data, or personal information, means any information about an
       individual from which that person can be identified. It does not include
@@ -215,7 +215,7 @@ const PrivacyPolicy = () => (
       this Privacy Policy to their attention.&nbsp;
     </p>
 
-    <h2 className="text-white">4. How we may collect and use your data</h2>
+    <h2 className="text-white/90">4. How we may collect and use your data</h2>
     <p>
       4.1 We (or third party data processors, agents and sub-contractors acting
       on our behalf) may collect, store and use your personal information by way
@@ -338,7 +338,7 @@ const PrivacyPolicy = () => (
       Communications (EC Directive) Regulations 2003, as amended.&nbsp;
     </p>
 
-    <h2 className="text-white">5. Cookies</h2>
+    <h2 className="text-white/90">5. Cookies</h2>
     <p>
       5.1 All Cookies used by and on our website are used in accordance with
       current UK Cookie Law.
@@ -347,7 +347,7 @@ const PrivacyPolicy = () => (
       5.2 We use cookies to distinguish users and improve our Website.&nbsp;
     </p>
 
-    <h2 className="text-white">6. Where we store your data and security</h2>
+    <h2 className="text-white/90">6. Where we store your data and security</h2>
     <p>
       6.1 We may transfer your collected data to storage outside the UK. It may
       be processed outside the UK to fulfil your order and to receive our
@@ -403,7 +403,7 @@ const PrivacyPolicy = () => (
       obligations to ensure we are not retaining data for longer than we are
       legally obliged to.
     </p>
-    <h2 className="text-white">7. Disclosing your information</h2>
+    <h2 className="text-white/90">7. Disclosing your information</h2>
     <ol className="list-none">
       <li>
         7.1 We are allowed to disclose your information in the following cases:
@@ -441,7 +441,7 @@ const PrivacyPolicy = () => (
       purpose than fulfilling their contract with us.
     </p>
 
-    <h2 className="text-white">8. Your rights</h2>
+    <h2 className="text-white/90">8. Your rights</h2>
     <p>
       8.1 When you submit information via our Website, you may be given options
       to restrict our use of your data. We aim to give you strong controls on
@@ -482,7 +482,7 @@ const PrivacyPolicy = () => (
       </Link>
       .
     </p>
-    <h2 className="text-white">9. Links to other sites</h2>
+    <h2 className="text-white/90">9. Links to other sites</h2>
     <p>
       9.1 Please note that our terms and conditions and our policies will not
       apply to other websites that you get to via a link from our Website. We
@@ -491,13 +491,15 @@ const PrivacyPolicy = () => (
       websites before providing any data to them.
     </p>
 
-    <h2 className="text-white">10. Changes</h2>
+    <h2 className="text-white/90">10. Changes</h2>
     <p>
       10.1 If we change our Privacy Policy, we will post the changes on this
       page so please check this page for our current policy.&nbsp;
     </p>
 
-    <h2 className="text-white">11. Automated Decision-Making and Profiling</h2>
+    <h2 className="text-white/90">
+      11. Automated Decision-Making and Profiling
+    </h2>
     <p>
       11.1 In the event that we use personal data for the purposes of automated
       decision-making and those decisions have a legal (or similarly significant
@@ -540,20 +542,20 @@ const PrivacyPolicy = () => (
       </li>
     </ol>
 
-    <h2 className="text-white">12. Terms and Conditions</h2>
+    <h2 className="text-white/90">12. Terms and Conditions</h2>
     <p>
       12.1 Please also visit our Terms and Conditions section{" "}
       <em>[Insert link]</em> establishing the use, disclaimers, and limitations
       of liability governing the use of our Website.
     </p>
 
-    <h2 className="text-white">13. Your agreement</h2>
+    <h2 className="text-white/90">13. Your agreement</h2>
     <p>
       13.1 By using our Website and by way of acknowledgment, you agree to our
       Privacy Policy.
     </p>
 
-    <h2 className="text-white">14. Dispute Resolution</h2>
+    <h2 className="text-white/90">14. Dispute Resolution</h2>
     <p>
       14.1 We will use our best efforts to negotiate in good faith and settle
       any dispute that may arise out of or relate to this Privacy Policy or any
