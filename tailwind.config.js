@@ -17,6 +17,32 @@ module.exports = {
     },
     extend: {
       colors: {
+        red: {
+          DEFAULT: "#f04f45",
+          50: "#fef2f2",
+          100: "#ffe3e3",
+          200: "#ffcdcb",
+          300: "#fea9a6",
+          400: "#fa7872",
+          500: "#f04f45",
+          600: "#dc3224",
+          700: "#b92417",
+          800: "#991e16",
+          900: "#7f1e19",
+        },
+        purple: {
+          DEFAULT: "#733eff",
+          50: "#f4f3ff",
+          100: "#ecebff",
+          200: "#dbdaff",
+          300: "#c0bbff",
+          400: "#a093ff",
+          500: "#8165ff",
+          600: "#733eff",
+          700: "#632de6",
+          800: "#5226be",
+          900: "#442299",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -49,10 +75,6 @@ module.exports = {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
-        },
-        choices: {
-          red: "#F04F45",
-          purple: "#733EFF",
         },
       },
       borderRadius: {

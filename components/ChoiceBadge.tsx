@@ -25,8 +25,8 @@ const ChoiceBadge = ({
     className={clsx(
       "mr-2 inline-flex items-center px-3 py-2 text-xs font-medium text-white rounded-full",
       {
-        "bg-choices-purple": choice === "agree",
-        "bg-choices-red": choice === "disagree",
+        "bg-purple": choice === "agree",
+        "bg-red": choice === "disagree",
         "bg-white/50": choice === "skip",
         "opacity-40": disabled,
       },
