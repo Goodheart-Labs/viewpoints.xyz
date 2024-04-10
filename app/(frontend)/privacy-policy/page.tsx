@@ -1,6 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
 import Link from "next/link";
-import styles from "./page.module.scss";
 
 const PrivacyPolicy = () => (
   <div className="prose py-20 mx-auto text-white">
@@ -59,7 +58,7 @@ const PrivacyPolicy = () => (
 
     <h2 className="text-white">2. Who We Are</h2>
     <p>2.1 Here are our details:</p>
-    <ul className={styles.dashed}>
+    <ul>
       <li>Our Website address is viewpoints.xyz</li>
       <li>Our company name is Frostwork.io</li>
       <li>
