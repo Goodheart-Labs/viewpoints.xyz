@@ -12,6 +12,7 @@ const publicRoutes = [
   `/polls/${pollSlug}`,
   `/polls/${pollSlug}/results`,
   `/api/sessions`,
+  `/privacy-policy`,
 ];
 
 const ignoredRoutes = [`/embed/polls/${pollSlug}`, `/api/polls/${pollSlug}`];
