@@ -2,10 +2,12 @@ import type { Statement, Response } from "@/db/schema";
 
 export type SortKey = "consensus" | "conflict" | "confusion";
 
+export type ChoiceCount = Map<Response["choice"], number>;
 export type ChoicePercentages = Map<Response["choice"], number>;
 
 export type StatementStats = {
   responseCount: number;
+  voteCounts: ChoiceCount;
   votePercentages: ChoicePercentages;
   mostCommonChoice: Response["choice"];
   /**
