@@ -9,6 +9,11 @@ export function getStatementStatistics(
   if (statement.responses.length === 0) {
     return {
       responseCount: statement.responses.length,
+      voteCounts: new Map<Response["choice"], number>([
+        ["agree", 0],
+        ["disagree", 0],
+        ["skip", 0],
+      ]),
       votePercentages: new Map<Response["choice"], number>([
         ["agree", 0],
         ["disagree", 0],
@@ -29,6 +34,12 @@ export function getStatementStatistics(
   for (const response of statement.responses) {
     votes.set(response.choice, votes.get(response.choice)! + 1);
   }
+
+  const voteCounts = new Map<Response["choice"], number>([
+    ["agree", votes.get("agree")!],
+    ["disagree", votes.get("disagree")!],
+    ["skip", votes.get("skip")!],
+  ]);
 
   const votePercentages = new Map<Response["choice"], number>([
     ["agree", (votes.get("agree")! / statement.responses.length) * 100],
@@ -58,6 +69,7 @@ export function getStatementStatistics(
 
   return {
     responseCount: statement.responses.length,
+    voteCounts,
     votePercentages,
     mostCommonChoice,
     consensus,

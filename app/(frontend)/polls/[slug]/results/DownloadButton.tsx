@@ -1,70 +1,117 @@
 "use client";
 
-import type { Statement } from "@/db/schema";
-
 import { Button } from "@/app/components/shadcn/ui/button";
 import type { getPollResults } from "@/lib/pollResults/getPollResults";
 import { Download } from "lucide-react";
-import { stringify } from "csv-stringify";
+import { stringify } from "csv-stringify/sync";
 
-export const DownloadButton = (
-  results: Awaited<ReturnType<typeof getPollResults>>,
-) => (
-  <Button
-    variant="outline"
-    onClick={() => {
-      const rows = buildCsvResults(results);
-      stringify(rows, { header: true }, (err, output) => {
-        if (err) {
-          throw err;
-        }
+type PollResults = Awaited<ReturnType<typeof getPollResults>>;
+
+export const DownloadButton = (results: PollResults) => {
+  getResponseRows(results);
+  return (
+    <Button
+      variant="outline"
+      onClick={() => {
+        const responseRows = getResponseRows(results);
+
+        const output = stringify(responseRows, {
+          header: true,
+        });
         const blob = new Blob([output], { type: "text/csv" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `poll-${results.poll.id}-results.csv`;
+        a.download = `poll-${results.poll.slug}-results.csv`;
         a.click();
         URL.revokeObjectURL(url);
-      });
-    }}
-  >
-    <Download className="w-4 h-4 mr-2" />
-    Download as CSV
-  </Button>
-);
-
-type CsvRow = {
-  "Poll ID": number;
-  "Statement ID": string;
-  Text: string;
-  "Question Type": Statement["question_type"];
-  "Answer Type": Statement["answer_type"];
-  "Response ID": number;
-  "Session ID": string;
-  "User ID": string;
-  Choice: string;
-  "Created At": string;
+      }}
+    >
+      <Download className="w-4 h-4 mr-2" />
+      Download as CSV
+    </Button>
+  );
 };
 
-function buildCsvResults(results: Awaited<ReturnType<typeof getPollResults>>) {
-  const rows: CsvRow[] = [];
+type ResponseCSVRow = {
+  // Statement Information
+  statement_id: number;
+  statement_text: string;
 
-  for (const [statementId, statement] of Object.entries(results.statements)) {
+  // Response Information
+  response_id: number;
+  created_at: string;
+
+  // Option Information
+  option_id: string;
+  option_text: string;
+
+  // User Info
+  session_id: string;
+  user_id: string;
+};
+
+/**
+ * Create the rows of all responses to all questions
+ */
+function getResponseRows(results: PollResults) {
+  const rows: ResponseCSVRow[] = [];
+
+  for (const statement of results.statements) {
+    // Statement Info
+    const statement_id = statement.id;
+    const statement_text = statement.text;
+
     for (const response of statement.responses) {
-      rows.push({
-        "Poll ID": results.poll.id,
-        "Statement ID": statementId,
-        Text: statement.text,
-        "Question Type": statement.question_type,
-        "Answer Type": statement.answer_type,
-        "Response ID": response.id,
-        "Session ID": response.session_id,
-        "User ID": response.user_id ?? "",
-        Choice: response.choice ?? "",
-        "Created At": response.created_at.toISOString(),
-      });
+      // Response Info
+      const { choice, created_at, session_id, user_id, id, option_id } =
+        response;
+
+      let option_text = choice?.toString() ?? "";
+
+      // Get response text for demo question
+      if (statement.question_type === "demographic" && option_id !== null) {
+        option_text = getOptionText(option_id, results.statementOptions);
+      }
+
+      // Change skip to "Don’t know" for the csv
+      if (option_text === "skip") {
+        option_text = "don’t know";
+      }
+
+      const row: ResponseCSVRow = {
+        statement_id,
+        statement_text,
+        response_id: id,
+        option_id: option_id?.toString() ?? "",
+        option_text,
+        created_at: created_at.toISOString(),
+        session_id,
+        user_id: user_id?.toString() ?? "",
+      };
+
+      rows.push(row);
     }
   }
 
   return rows;
+}
+
+/**
+ * Given an option and the statement options,
+ * return the text of the option
+ */
+function getOptionText(
+  optionId: number,
+  statementOptions: PollResults["statementOptions"],
+) {
+  for (const options of Object.values(statementOptions)) {
+    for (const option of options) {
+      if (option.id === optionId) {
+        return option.option;
+      }
+    }
+  }
+
+  return "";
 }
