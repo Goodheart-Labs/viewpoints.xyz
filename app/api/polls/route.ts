@@ -19,8 +19,14 @@ export async function POST(request: NextRequest) {
     return notFound();
   }
 
-  const { title, slug, question, statements, with_demographic_questions } =
-    await request.json();
+  const {
+    title,
+    slug,
+    question,
+    statements,
+    with_demographic_questions,
+    new_statements_visible_by_default,
+  } = await request.json();
 
   const poll = await db.transaction().execute(async (tx) => {
     const newPoll = await tx
@@ -31,6 +37,7 @@ export async function POST(request: NextRequest) {
         slug,
         core_question: question,
         visibility: "public",
+        new_statements_visible_by_default,
         analytics_filters: {},
       })
       .returningAll()
