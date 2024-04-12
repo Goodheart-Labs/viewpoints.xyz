@@ -17,8 +17,10 @@ export const ChoicePercentageBadge: FC<Props> = ({
 }) => (
   <div
     className={cn(
-      "bg-zinc-700 rounded-full px-2 xl:px-1 2xl:px-2 py-[6px] text-xs text-zinc-300 w-fit select-none",
-      highlighted && "bg-zinc-50 text-zinc-800",
+      "bg-zinc-700 rounded-full px-3 xl:px-3 2xl:px-3 py-2 text-xs w-fit text-white/75 font-medium",
+      highlighted && choice === "disagree" && "bg-red",
+      highlighted && choice === "agree" && "bg-purple",
+      highlighted && choice === "skip" && "bg-white/50",
     )}
   >
     <span className="mr-1 text-sm xl:text-xs 2xl:text-sm">
