@@ -74,6 +74,11 @@ function getResponseRows(results: PollResults) {
         option_text = getOptionText(option_id, results.statementOptions);
       }
 
+      // Change skip to "Don’t know" for the csv
+      if (option_text === "skip") {
+        option_text = "don’t know";
+      }
+
       const row: ResponseCSVRow = {
         statement_id,
         statement_text,
