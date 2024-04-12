@@ -4,63 +4,88 @@ import { Button } from "@/app/components/shadcn/ui/button";
 import type { getPollResults } from "@/lib/pollResults/getPollResults";
 import { Download } from "lucide-react";
 import { stringify } from "csv-stringify/sync";
-import type { ChoiceEnum } from "kysely-codegen";
 
-type CSVRow = {
-  question: string;
-  response: string;
-  count: number;
-  percentage: number;
+type PollResults = Awaited<ReturnType<typeof getPollResults>>;
+
+export const DownloadButton = (results: PollResults) => {
+  getResponseRows(results);
+  return (
+    <Button
+      variant="outline"
+      onClick={() => {
+        const responseRows = getResponseRows(results);
+
+        const output = stringify(responseRows, {
+          header: true,
+        });
+        const blob = new Blob([output], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `poll-${results.poll.slug}-results.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }}
+    >
+      <Download className="w-4 h-4 mr-2" />
+      Download as CSV
+    </Button>
+  );
 };
 
-export const DownloadButton = (
-  results: Awaited<ReturnType<typeof getPollResults>>,
-) => (
-  <Button
-    variant="outline"
-    onClick={() => {
-      const resultsRows = getResultsRows(results);
-      const demographicsRows = getDemographicsRows(results);
+type ResponseCSVRow = {
+  // Statement Information
+  statement_id: number;
+  statement_text: string;
 
-      const output = stringify([...resultsRows, ...demographicsRows], {
-        header: true,
-      });
-      const blob = new Blob([output], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `poll-${results.poll.slug}-results.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }}
-  >
-    <Download className="w-4 h-4 mr-2" />
-    Download as CSV
-  </Button>
-);
+  // Response Information
+  response_id: number;
+  created_at: string;
 
-function getResultsRows(results: Awaited<ReturnType<typeof getPollResults>>) {
-  const rows: CSVRow[] = [];
+  // Option Information
+  option_id: string;
+  option_text: string;
 
-  // get all regular questions
-  const questions = results.statements.filter(
-    (statement) => statement.question_type === "default",
-  );
+  // User Info
+  session_id: string;
+  user_id: string;
+};
 
-  for (const question of questions) {
-    // loop over the keys of voteCounts
-    for (const [choice, count] of question.stats.voteCounts) {
-      if (!choice) continue;
+/**
+ * Create the rows of all responses to all questions
+ */
+function getResponseRows(results: PollResults) {
+  const rows: ResponseCSVRow[] = [];
 
-      const percentage =
-        question.stats.votePercentages.get(choice as ChoiceEnum) ?? 0;
+  for (const statement of results.statements) {
+    // Statement Info
+    const statement_id = statement.id;
+    const statement_text = statement.text;
 
-      rows.push({
-        question: question.text,
-        response: choice,
-        count,
-        percentage,
-      });
+    for (const response of statement.responses) {
+      // Response Info
+      const { choice, created_at, session_id, user_id, id, option_id } =
+        response;
+
+      let option_text = choice?.toString() ?? "";
+
+      // Get response text for demo question
+      if (statement.question_type === "demographic" && option_id !== null) {
+        option_text = getOptionText(option_id, results.statementOptions);
+      }
+
+      const row: ResponseCSVRow = {
+        statement_id,
+        statement_text,
+        response_id: id,
+        option_id: option_id?.toString() ?? "",
+        option_text,
+        created_at: created_at.toISOString(),
+        session_id,
+        user_id: user_id?.toString() ?? "",
+      };
+
+      rows.push(row);
     }
   }
 
@@ -68,50 +93,20 @@ function getResultsRows(results: Awaited<ReturnType<typeof getPollResults>>) {
 }
 
 /**
- * Creating a demographics csv, each row should have a question, it's response,
- * the number of responses, and the percentage of responses.
- * We should include answers that have no responses.
+ * Given an option and the statement options,
+ * return the text of the option
  */
-export function getDemographicsRows(
-  results: Awaited<ReturnType<typeof getPollResults>>,
+function getOptionText(
+  optionId: number,
+  statementOptions: PollResults["statementOptions"],
 ) {
-  const demographicQuestions = results.statements.filter(
-    (statement) => statement.question_type === "demographic",
-  );
-
-  const demographicRows: CSVRow[] = [];
-
-  for (const question of demographicQuestions) {
-    // Determine the number of responses for each statement
-    const responseCount: Record<number, number> = {};
-    let totalResponses = 0;
-    for (const response of question.responses) {
-      const optionId = response.option_id;
-      if (optionId === null) {
-        continue;
+  for (const options of Object.values(statementOptions)) {
+    for (const option of options) {
+      if (option.id === optionId) {
+        return option.option;
       }
-
-      if (!responseCount[optionId]) {
-        responseCount[optionId] = 0;
-      }
-
-      responseCount[optionId]++;
-      totalResponses++;
-    }
-
-    // in here we need to get the responses for each question
-    const availableResponses = results.statementOptions[question.id];
-    for (const availableResponse of availableResponses) {
-      const currentCount = responseCount[availableResponse.id] ?? 0;
-
-      demographicRows.push({
-        question: question.text,
-        response: availableResponse.option,
-        count: currentCount,
-        percentage: (100 * currentCount) / totalResponses,
-      });
     }
   }
 
-  return demographicRows;
+  return "";
 }
