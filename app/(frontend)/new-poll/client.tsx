@@ -41,7 +41,8 @@ const schema = yup
       .matches(/^[a-z0-9-]+$/),
     question: yup.string().default(""),
     statements: yup.array().of(yup.string().required()).min(5).required(),
-    with_demographic_questions: yup.boolean().default(true),
+    with_demographic_questions: yup.boolean().default(false),
+    new_statements_visible_by_default: yup.boolean().default(false),
   })
   .required();
 
@@ -192,6 +193,28 @@ const NewPollPageClientView = ({
         </p>
       </div>
 
+      <div className="flex flex-col w-full mt-10">
+        <h3 className="mb-2 text-xl font-semibold dark:text-white">
+          New Statements
+        </h3>
+        <h4 className="mb-4 text-lg text-gray-700 dark:text-gray-200">
+          Should statements added by respondents initially be visible or hidden?
+        </h4>
+
+        <p>
+          <label id="with_demographic_questions">
+            <input
+              type="checkbox"
+              className="mr-2"
+              {...register("new_statements_visible_by_default")}
+            />
+            <span className="text-lg text-gray-700 dark:text-gray-200">
+              Should be visible
+            </span>
+          </label>
+        </p>
+      </div>
+
       <div className="flex items-center justify-end w-full py-4 my-10 bg-gray-50 dark:bg-gray-950">
         <div>
           <BorderedButton
@@ -221,7 +244,8 @@ const NewPollPageClient = () => {
     mode: "onTouched",
     resolver: yupResolver(schema),
     defaultValues: {
-      with_demographic_questions: true,
+      with_demographic_questions: false,
+      new_statements_visible_by_default: false,
     },
   });
 
@@ -234,6 +258,7 @@ const NewPollPageClient = () => {
       question,
       statements,
       with_demographic_questions,
+      new_statements_visible_by_default,
     }: FormData) => {
       await axios.post(`/api/polls`, {
         title,
@@ -241,6 +266,7 @@ const NewPollPageClient = () => {
         question,
         statements,
         with_demographic_questions,
+        new_statements_visible_by_default,
       });
     },
   );
@@ -255,6 +281,7 @@ const NewPollPageClient = () => {
     question,
     statements,
     with_demographic_questions,
+    new_statements_visible_by_default,
   }: FormData) => {
     await newPollMutation.mutateAsync({
       title,
@@ -262,6 +289,7 @@ const NewPollPageClient = () => {
       question,
       statements: statements.filter((c) => c.trim() !== ""),
       with_demographic_questions,
+      new_statements_visible_by_default,
     });
 
     track({
