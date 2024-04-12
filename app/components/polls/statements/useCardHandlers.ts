@@ -5,7 +5,7 @@ import { createResponse } from "@/app/api/responses/createResponse";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import { useSessionId } from "@/utils/frontendsessionutils";
 
-const SWIPE_THRESHOLD = 150;
+export const SWIPE_THRESHOLD = 150;
 
 const choiceEvents = {
   agree: "votes.agree",
@@ -58,7 +58,7 @@ export const useCardHandlers = ({
           setLeaveX(-1000);
           break;
         case "skip":
-          setLeaveY(1000);
+          setLeaveY(-1000);
           break;
       }
 
@@ -110,7 +110,7 @@ export const useCardHandlers = ({
         onResponseChoice("disagree");
         return;
       }
-      if (info.offset.y > SWIPE_THRESHOLD) {
+      if (info.offset.y < -SWIPE_THRESHOLD) {
         onResponseChoice("skip");
       }
     },

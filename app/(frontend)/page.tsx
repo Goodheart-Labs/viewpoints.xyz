@@ -244,6 +244,10 @@ const Index = async () => {
           </Link>
         </div>
 
+        <Link href="/privacy-policy" className="mt-4 text-xs underline">
+          Privacy policy
+        </Link>
+
         <p className="mt-4 text-xs">
           &copy; {new Date().getFullYear()} Goodheart Labs
         </p>
