@@ -3,6 +3,27 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Author, Statement, StatementOption } from "@/db/schema";
 import Card, { CARD_VERTICAL_OFFSET } from "./Card";
+import { shuffleList } from "@/utils/arrangement";
+
+const getStatementSorting = (statements: Statement[]) => {
+  const demographicStatementIds = statements
+    .filter((statement) => statement.question_type === "demographic")
+    .map(({ id }) => id);
+  const nonDemographicStatementIds = statements
+    .filter((statement) => statement.question_type !== "demographic")
+    .map(({ id }) => id);
+
+  // shuffle non-demographic questions first to extract 3 of them
+  const shuffledNonDemographicIds = shuffleList(nonDemographicStatementIds);
+  const topThreeNonDemographicIds = shuffledNonDemographicIds.splice(0, 3);
+
+  const shuffledMixedIds = shuffleList([
+    ...shuffledNonDemographicIds,
+    ...demographicStatementIds,
+  ]);
+
+  return [...topThreeNonDemographicIds, ...shuffledMixedIds].toReversed();
+};
 
 type CardsProps = {
   statements: (Statement & {
@@ -44,12 +65,9 @@ const Cards = ({
   // render, because that would cause the cards to jump around. So we keep track of the
   // randomized order in state.
   const [statementSorting, setStatementSorting] = useState<number[]>([]);
+
   useEffect(() => {
-    setStatementSorting(
-      statements
-        .map((statement) => statement.id)
-        .sort(() => 0.5 - Math.random()),
-    );
+    setStatementSorting(getStatementSorting(statements));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -84,7 +102,7 @@ const Cards = ({
 
   return (
     <div
-      className="relative flex-shrink-0 m-6 mb-4"
+      className="relative flex-shrink-0 m-6 mb-4 min-h-[238px]"
       ref={containerRef}
       style={{
         height: `${
@@ -93,24 +111,25 @@ const Cards = ({
         }px`,
       }}
     >
-      {statementsToDisplay.map((statement, index) => (
-        <Card
-          key={statement.id}
-          statement={statement}
-          statementOptions={statementOptions[statement.id] ?? []}
-          index={index}
-          cardCount={statementsToDisplay.length}
-          onStatementHide={() =>
-            setStatementsToHide((hiddenStatements) => [
-              ...hiddenStatements,
-              statement.id,
-            ])
-          }
-          height={
-            index === statementsToDisplay.length - 1 ? undefined : cardHeight
-          }
-        />
-      ))}
+      {!!statementSorting?.length && // check if sorted before showing to avoid flickering
+        statementsToDisplay.map((statement, index) => (
+          <Card
+            key={statement.id}
+            statement={statement}
+            statementOptions={statementOptions[statement.id] ?? []}
+            index={index}
+            cardCount={statementsToDisplay.length}
+            onStatementHide={() =>
+              setStatementsToHide((hiddenStatements) => [
+                ...hiddenStatements,
+                statement.id,
+              ])
+            }
+            height={
+              index === statementsToDisplay.length - 1 ? undefined : cardHeight
+            }
+          />
+        ))}
       {statementsToDisplay.length === 0 && emptyMessage && (
         <div className="absolute inset-0 flex items-center justify-center">
           {emptyMessage}
