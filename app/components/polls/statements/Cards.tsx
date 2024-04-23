@@ -99,7 +99,7 @@ const Cards = ({
 
   return (
     <div
-      className="relative flex-shrink-0 m-6 mb-4 min-h-[238px]"
+      className="relative flex-shrink-0 m-6 mb-4"
       ref={containerRef}
       style={{
         height: `${
