@@ -22,7 +22,7 @@ const getStatementSorting = (statements: Statement[]) => {
     ...demographicStatementIds,
   ]);
 
-  return [...topThreeNonDemographicIds, ...shuffledMixedIds].toReversed();
+  return [...topThreeNonDemographicIds, ...shuffledMixedIds];
 };
 
 type CardsProps = {
@@ -64,19 +64,16 @@ const Cards = ({
   // We also want to randomize the order of the cards, but we don't want to do it on every
   // render, because that would cause the cards to jump around. So we keep track of the
   // randomized order in state.
-  const [statementSorting, setStatementSorting] = useState<number[]>([]);
-
-  useEffect(() => {
-    setStatementSorting(getStatementSorting(statements));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [statementSorting] = useState<number[]>(
+    getStatementSorting(statements),
+  );
 
   const statementsToDisplay = useMemo(
     () =>
       [...statements]
         .sort(
           (a, b) =>
-            statementSorting.indexOf(a.id) - statementSorting.indexOf(b.id),
+            statementSorting.indexOf(b.id) - statementSorting.indexOf(a.id),
         )
         .filter((statement) => !statementsToHide.includes(statement.id))
         .slice(-3),
