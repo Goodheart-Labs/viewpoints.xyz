@@ -108,25 +108,24 @@ const Cards = ({
         }px`,
       }}
     >
-      {!!statementSorting?.length && // check if sorted before showing to avoid flickering
-        statementsToDisplay.map((statement, index) => (
-          <Card
-            key={statement.id}
-            statement={statement}
-            statementOptions={statementOptions[statement.id] ?? []}
-            index={index}
-            cardCount={statementsToDisplay.length}
-            onStatementHide={() =>
-              setStatementsToHide((hiddenStatements) => [
-                ...hiddenStatements,
-                statement.id,
-              ])
-            }
-            height={
-              index === statementsToDisplay.length - 1 ? undefined : cardHeight
-            }
-          />
-        ))}
+      {statementsToDisplay.map((statement, index) => (
+        <Card
+          key={statement.id}
+          statement={statement}
+          statementOptions={statementOptions[statement.id] ?? []}
+          index={index}
+          cardCount={statementsToDisplay.length}
+          onStatementHide={() =>
+            setStatementsToHide((hiddenStatements) => [
+              ...hiddenStatements,
+              statement.id,
+            ])
+          }
+          height={
+            index === statementsToDisplay.length - 1 ? undefined : cardHeight
+          }
+        />
+      ))}
       {statementsToDisplay.length === 0 && emptyMessage && (
         <div className="absolute inset-0 flex items-center justify-center">
           {emptyMessage}
