@@ -212,10 +212,6 @@ export const filterStatements = (
       );
     }
 
-    if (skipCount > MAX_NUM_SKIPS_BEFORE_REMOVAL) {
-      continue;
-    }
-
     const didUserFlag = statement.flaggedStatements.some(
       (flag) =>
         (userId && flag.user_id === userId) || flag.session_id === sessionId,
