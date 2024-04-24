@@ -13,7 +13,6 @@ import { getSessionId } from "@/utils/sessionutils";
 import { safeUserId } from "@/utils/clerkutils";
 
 const MAX_NUM_FLAGS_BEFORE_REMOVAL = 2;
-const MAX_NUM_SKIPS_BEFORE_REMOVAL = 5;
 
 export type PollWithStatements = Poll & {
   statements: (Statement & {
@@ -210,10 +209,6 @@ export const filterStatements = (
         response.choice,
         responseCountMap.get(response.choice)! + 1,
       );
-    }
-
-    if (skipCount > MAX_NUM_SKIPS_BEFORE_REMOVAL) {
-      continue;
     }
 
     const didUserFlag = statement.flaggedStatements.some(
