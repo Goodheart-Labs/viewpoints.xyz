@@ -1,6 +1,6 @@
 import { db } from "@/db/client";
 import { getSessionId } from "@/utils/sessionutils";
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
