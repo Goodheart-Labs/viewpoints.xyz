@@ -45,6 +45,6 @@ export default clerkMiddleware(
     });
   },
   {
-    secretKey: process.env.CLERK_SECRET_KEY,
+    secretKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
   },
 );
