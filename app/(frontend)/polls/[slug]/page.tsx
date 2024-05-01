@@ -14,7 +14,7 @@ import { QrCodeGenerator } from "@/app/components/polls/QrCodeGenerator";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isPollAdminOrSuperadmin } from "@/utils/authutils";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { BackToSouthGlos } from "@/components/BackToSouthGlos";
 import { headers } from "next/headers";
 import { getData } from "./getData";

@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import NewPollPageClient from "./client";
 

@@ -1,4 +1,4 @@
-import { authMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
 import { NextResponse } from "next/server";
 
@@ -14,8 +14,10 @@ const publicRoutes = [
   `/api/sessions`,
   `/privacy-policy`,
 ];
+const isPublicRoute = createRouteMatcher(publicRoutes);
 
 const ignoredRoutes = [`/embed/polls/${pollSlug}`, `/api/polls/${pollSlug}`];
+const isIgnoredRoute = createRouteMatcher(ignoredRoutes);
 
 export const SESSION_ID_COOKIE_NAME = "sessionId";
 export const CLEAR_LOCALSTORAGE_HEADER_NAME = "X-Clear-LocalStorage";
@@ -28,10 +30,11 @@ export const config = {
 // Auth middleware
 // -----------------------------------------------------------------------------
 
-export default authMiddleware({
-  publicRoutes,
-  ignoredRoutes,
-  beforeAuth(request) {
+export default clerkMiddleware(
+  (auth, request) => {
+    if (!isIgnoredRoute(request) && !isPublicRoute(request)) {
+      auth().protect();
+    }
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set("x-pathname", request.nextUrl.pathname);
 
@@ -41,4 +44,7 @@ export default authMiddleware({
       },
     });
   },
-});
+  {
+    secretKey: process.env.CLERK_SECRET_KEY,
+  },
+);
