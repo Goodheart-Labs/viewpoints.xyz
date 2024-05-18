@@ -33,17 +33,23 @@ export default async function Page() {
           </Link>
         </Button>
       </header>
-      {userPolls.map((poll) => (
-        <Link
-          key={poll.id}
-          href={`/polls/${poll.slug}/admin`}
-          prefetch={false}
-          className="p-4 rounded-lg bg-white/10 hover:bg-white/5"
-        >
-          <h2 className="text-xl font-medium">{poll.title}</h2>
-          <p className="opacity-70 text-sm">{poll.core_question}</p>
-        </Link>
-      ))}
+      {userPolls.length ? (
+        userPolls.map((poll) => (
+          <Link
+            key={poll.id}
+            href={`/polls/${poll.slug}/admin`}
+            prefetch={false}
+            className="p-4 rounded-lg bg-white/10 hover:bg-white/5"
+          >
+            <h2 className="text-xl font-medium">{poll.title}</h2>
+            <p className="opacity-70 text-sm">{poll.core_question}</p>
+          </Link>
+        ))
+      ) : (
+        <p className="text-center text-lg opacity-70">
+          You haven&apos;t created any polls yet.
+        </p>
+      )}
     </Main>
   );
 }
