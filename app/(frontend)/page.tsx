@@ -11,6 +11,7 @@ import { Logo } from "@/components/Logo";
 import { Button } from "../components/shadcn/ui/button";
 import { anonymousAvatar } from "../components/user/UserAvatar";
 import { WhatsappLink } from "../components/WhatsappLink";
+import { Main } from "../components/Main";
 
 // Data
 // -----------------------------------------------------------------------------
@@ -104,7 +105,7 @@ const Index = async () => {
 
   return (
     <>
-      <main className="flex flex-col items-center w-full h-full max-w-5xl p-4 mx-auto md:mt-6">
+      <Main className="flex flex-col items-center">
         <Card className="flex mb-8 md:space-x-4">
           <div className="w-full md:w-5/12 md:p-8">
             <h2 className="mb-4 text-3xl font-medium leading-8 md:dark:text-white/90">
@@ -215,7 +216,7 @@ const Index = async () => {
             </Card>
           </div>
         </div>
-      </main>
+      </Main>
 
       <footer className="flex flex-col items-center w-full py-8 mt-4 md:mt-auto dark:bg-white/10 dark:text-white/80">
         <Link href="/" className="hover:grayscale-0 grayscale">

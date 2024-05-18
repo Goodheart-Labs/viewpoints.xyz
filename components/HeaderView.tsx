@@ -53,11 +53,20 @@ export const HeaderView = ({ userId = null }: { userId: string | null }) => {
       ) : null}
 
       {isSignedIn ? (
-        <Link href="/new-poll" prefetch={false}>
-          <Button variant="pill" size="pill" className="mr-2">
-            <PlusCircle className="w-3 mr-2" /> Create Poll
+        <div className="flex gap-3 items-center">
+          <Link
+            href="/user/polls"
+            prefetch={false}
+            className="text-white hover:opacity-50 text-sm"
+          >
+            My Polls
+          </Link>
+          <Button variant="pill" size="pill" className="mr-2" asChild>
+            <Link href="/new-poll" prefetch={false}>
+              <PlusCircle className="w-3 mr-2" /> Create Poll
+            </Link>
           </Button>
-        </Link>
+        </div>
       ) : null}
 
       <div className="z-50">
