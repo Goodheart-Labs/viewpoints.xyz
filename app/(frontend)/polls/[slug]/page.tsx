@@ -144,4 +144,19 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
   );
 };
 
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const { slug } = params;
+
+  const { poll } = await getData(slug);
+
+  return {
+    title: `viewpoints.xyz | ${poll?.title}`,
+    description: poll?.core_question,
+  };
+}
+
 export default PollPage;

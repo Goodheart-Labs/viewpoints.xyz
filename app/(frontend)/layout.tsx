@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { Header } from "@/components/Header";
 import { Toaster } from "@/app/components/shadcn/ui/toaster";
 import SessionProvider from "@/providers/SessionProvider";
+import { getBaseUrl } from "@/utils/constants";
 import Contexts from "../components/Contexts";
 import LogrocketWrapper from "../components/LogrocketWrapper";
 import "@/styles/tailwind.css";
@@ -13,7 +14,11 @@ import "@/styles/frontend.css";
 
 export const metadata: Metadata = {
   title: "viewpoints.xyz",
-  description: "what in the world are you thinking?",
+  description: "What in the world are you thinking?",
+  metadataBase: new URL(getBaseUrl()),
+  openGraph: {
+    images: ["/open-graph.png"],
+  },
 };
 
 export const viewport: Viewport = {
