@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
 import { getBaseUrl } from "@/utils/constants";
-import { getPolls } from "@/app/helpers";
+import { getPublicPolls } from "@/app/helpers";
 
 export default async function Sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
-    const polls = await getPolls();
+    const polls = await getPublicPolls();
+    const mostRecentPoll = polls[0];
     const pollPages = polls.map((poll) => ({
       url: `${getBaseUrl()}/poll/${poll.slug}`,
       priority: 0.5,
@@ -14,7 +15,7 @@ export default async function Sitemap(): Promise<MetadataRoute.Sitemap> {
       {
         url: `${getBaseUrl()}/`,
         priority: 1,
-        lastModified: new Date("2024-05-15"),
+        lastModified: mostRecentPoll?.created_at,
       },
     ];
     return [...pollPages, ...staticPages];
