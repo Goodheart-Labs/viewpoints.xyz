@@ -50,24 +50,23 @@ async function getData() {
     {} as Record<string, Author>,
   );
 
-  const responses = (
+  const respondents = (
     await db
       .selectFrom("responses")
       .innerJoin("statements", "responses.statementId", "statements.id")
-      .select(({ fn }) => [
+      .select([
+        "responses.user_id",
+        "responses.session_id",
         "statements.poll_id",
-        fn.count<number>("responses.id").as("response_count"),
       ])
-      .where(
-        "statements.poll_id",
-        "in",
-        polls.map((poll) => poll.id),
-      )
       .groupBy("statements.poll_id")
+      .groupBy("responses.user_id")
+      .groupBy("responses.session_id")
       .execute()
   ).reduce(
     (acc, response) => {
-      acc[response.poll_id] = response.response_count;
+      const currentRespondentCount = acc[response.poll_id] ?? 0;
+      acc[response.poll_id] = currentRespondentCount + 1;
       return acc;
     },
     {} as Record<string, number>,
@@ -76,7 +75,7 @@ async function getData() {
   return {
     polls,
     authors,
-    responses,
+    respondents,
   };
 }
 
@@ -100,7 +99,7 @@ const Card = ({
 );
 
 const Index = async () => {
-  const { polls, authors, responses } = await getData();
+  const { polls, authors, respondents } = await getData();
 
   return (
     <>
@@ -157,8 +156,8 @@ const Index = async () => {
                     {poll.title}
                   </h4>
                   <p className="mb-3 text-sm dark:text-white/60">
-                    {poll.statementCount} statements | {responses[poll.id] ?? 0}{" "}
-                    responses
+                    {poll.statementCount} statements |{" "}
+                    {respondents[poll.id] ?? 0} respondents
                   </p>
 
                   <p className="flex items-center text-xs dark:text-white/60 md:mt-auto">
