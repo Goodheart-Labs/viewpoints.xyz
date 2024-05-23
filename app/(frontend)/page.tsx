@@ -144,42 +144,48 @@ const Index = async () => {
 
         <div className="w-full md:flex md:flex-wrap md:-mx-2">
           {polls.length > 0 ? (
-            polls.map((poll) => (
-              <Link
-                className="w-full pl-2 md:w-1/3"
-                href={`/polls/${poll.slug}`}
-                key={poll.id}
-                prefetch={false}
-              >
-                <Card className="w-full md:mb-2 group md:h-[180px] md:flex md:flex-col md:hover:dark:opacity-90 md:cursor-pointer md:transition-opacity">
-                  <h4 className="mb-2 text-lg font-medium leading-6">
-                    {poll.title}
-                  </h4>
-                  <p className="mb-3 text-sm dark:text-white/60">
-                    {poll.statementCount} statements |{" "}
-                    {respondents[poll.id] ?? 0} respondents
-                  </p>
+            polls.map((poll) => {
+              const numRespondents = respondents[poll.id] ?? 0;
 
-                  <p className="flex items-center text-xs dark:text-white/60 md:mt-auto">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={authors[poll.user_id]?.avatarUrl ?? anonymousAvatar}
-                      alt={
-                        !isEmail(authors[poll.user_id]?.name)
+              return (
+                <Link
+                  className="w-full pl-2 md:w-1/3"
+                  href={`/polls/${poll.slug}`}
+                  key={poll.id}
+                  prefetch={false}
+                >
+                  <Card className="w-full md:mb-2 group md:h-[180px] md:flex md:flex-col md:hover:dark:opacity-90 md:cursor-pointer md:transition-opacity">
+                    <h4 className="mb-2 text-lg font-medium leading-6">
+                      {poll.title}
+                    </h4>
+                    <p className="mb-3 text-sm dark:text-white/60">
+                      {poll.statementCount} statements | {numRespondents}{" "}
+                      {numRespondents === 1 ? "respondent" : "respondents"}
+                    </p>
+
+                    <p className="flex items-center text-xs dark:text-white/60 md:mt-auto">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={
+                          authors[poll.user_id]?.avatarUrl ?? anonymousAvatar
+                        }
+                        alt={
+                          !isEmail(authors[poll.user_id]?.name)
+                            ? authors[poll.user_id].name ?? "Anonymous"
+                            : "Anonymous"
+                        }
+                        className="w-6 h-6 mr-2 rounded-full grayscale group-hover:grayscale-0"
+                      />
+                      <span>
+                        {!isEmail(authors[poll.user_id]?.name)
                           ? authors[poll.user_id].name ?? "Anonymous"
-                          : "Anonymous"
-                      }
-                      className="w-6 h-6 mr-2 rounded-full grayscale group-hover:grayscale-0"
-                    />
-                    <span>
-                      {!isEmail(authors[poll.user_id]?.name)
-                        ? authors[poll.user_id].name ?? "Anonymous"
-                        : "Anonymous"}
-                    </span>
-                  </p>
-                </Card>
-              </Link>
-            ))
+                          : "Anonymous"}
+                      </span>
+                    </p>
+                  </Card>
+                </Link>
+              );
+            })
           ) : (
             <p className="mt-4 dark:text-white/70">
               There are no public polls at the moment. Why not{" "}
