@@ -32,9 +32,10 @@ type NewPollPageClientViewProps = {
 // Validation
 // -----------------------------------------------------------------------------
 const checkSlugExists = async (slug: string) => {
-  const res = await axios.post<{ pollExists: boolean }>(`/api/slug-exists`, {
-    slug,
-  });
+  const uriEncoded = encodeURIComponent(slug);
+  const res = await axios.get<{ pollExists: boolean }>(
+    `/api/slug-exists?slug=${uriEncoded}`,
+  );
   return res.data?.pollExists;
 };
 

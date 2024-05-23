@@ -1,7 +1,8 @@
 import { db } from "@/db/client";
 
-export async function POST(request: Request) {
-  const { slug } = await request.json();
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const slug = decodeURIComponent(searchParams.get("slug")!);
 
   if (!slug) return new Response(JSON.stringify({ pollExists: false }));
 
