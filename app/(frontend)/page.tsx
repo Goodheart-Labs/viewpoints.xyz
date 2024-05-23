@@ -50,24 +50,23 @@ async function getData() {
     {} as Record<string, Author>,
   );
 
-  const responses = (
+  const respondents = (
     await db
       .selectFrom("responses")
       .innerJoin("statements", "responses.statementId", "statements.id")
-      .select(({ fn }) => [
+      .select([
+        "responses.user_id",
+        "responses.session_id",
         "statements.poll_id",
-        fn.count<number>("responses.id").as("response_count"),
       ])
-      .where(
-        "statements.poll_id",
-        "in",
-        polls.map((poll) => poll.id),
-      )
       .groupBy("statements.poll_id")
+      .groupBy("responses.user_id")
+      .groupBy("responses.session_id")
       .execute()
   ).reduce(
     (acc, response) => {
-      acc[response.poll_id] = response.response_count;
+      const currentRespondentCount = acc[response.poll_id] ?? 0;
+      acc[response.poll_id] = currentRespondentCount + 1;
       return acc;
     },
     {} as Record<string, number>,
@@ -76,7 +75,7 @@ async function getData() {
   return {
     polls,
     authors,
-    responses,
+    respondents,
   };
 }
 
@@ -100,7 +99,7 @@ const Card = ({
 );
 
 const Index = async () => {
-  const { polls, authors, responses } = await getData();
+  const { polls, authors, respondents } = await getData();
 
   return (
     <>
@@ -145,42 +144,48 @@ const Index = async () => {
 
         <div className="w-full md:flex md:flex-wrap md:-mx-2">
           {polls.length > 0 ? (
-            polls.map((poll) => (
-              <Link
-                className="w-full pl-2 md:w-1/3"
-                href={`/polls/${poll.slug}`}
-                key={poll.id}
-                prefetch={false}
-              >
-                <Card className="w-full md:mb-2 group md:h-[180px] md:flex md:flex-col md:hover:dark:opacity-90 md:cursor-pointer md:transition-opacity">
-                  <h4 className="mb-2 text-lg font-medium leading-6">
-                    {poll.title}
-                  </h4>
-                  <p className="mb-3 text-sm dark:text-white/60">
-                    {poll.statementCount} statements | {responses[poll.id] ?? 0}{" "}
-                    responses
-                  </p>
+            polls.map((poll) => {
+              const numRespondents = respondents[poll.id] ?? 0;
 
-                  <p className="flex items-center text-xs dark:text-white/60 md:mt-auto">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={authors[poll.user_id]?.avatarUrl ?? anonymousAvatar}
-                      alt={
-                        !isEmail(authors[poll.user_id]?.name)
+              return (
+                <Link
+                  className="w-full pl-2 md:w-1/3"
+                  href={`/polls/${poll.slug}`}
+                  key={poll.id}
+                  prefetch={false}
+                >
+                  <Card className="w-full md:mb-2 group md:h-[180px] md:flex md:flex-col md:hover:dark:opacity-90 md:cursor-pointer md:transition-opacity">
+                    <h4 className="mb-2 text-lg font-medium leading-6">
+                      {poll.title}
+                    </h4>
+                    <p className="mb-3 text-sm dark:text-white/60">
+                      {poll.statementCount} statements | {numRespondents}{" "}
+                      {numRespondents === 1 ? "respondent" : "respondents"}
+                    </p>
+
+                    <p className="flex items-center text-xs dark:text-white/60 md:mt-auto">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={
+                          authors[poll.user_id]?.avatarUrl ?? anonymousAvatar
+                        }
+                        alt={
+                          !isEmail(authors[poll.user_id]?.name)
+                            ? authors[poll.user_id].name ?? "Anonymous"
+                            : "Anonymous"
+                        }
+                        className="w-6 h-6 mr-2 rounded-full grayscale group-hover:grayscale-0"
+                      />
+                      <span>
+                        {!isEmail(authors[poll.user_id]?.name)
                           ? authors[poll.user_id].name ?? "Anonymous"
-                          : "Anonymous"
-                      }
-                      className="w-6 h-6 mr-2 rounded-full grayscale group-hover:grayscale-0"
-                    />
-                    <span>
-                      {!isEmail(authors[poll.user_id]?.name)
-                        ? authors[poll.user_id].name ?? "Anonymous"
-                        : "Anonymous"}
-                    </span>
-                  </p>
-                </Card>
-              </Link>
-            ))
+                          : "Anonymous"}
+                      </span>
+                    </p>
+                  </Card>
+                </Link>
+              );
+            })
           ) : (
             <p className="mt-4 dark:text-white/70">
               There are no public polls at the moment. Why not{" "}
