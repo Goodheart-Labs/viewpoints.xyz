@@ -157,12 +157,6 @@ const StatementsListView = ({
             </div>
           ) : null}
         </div>
-
-        {errors?.statements && errors?.statements[i] ? (
-          <span className="mt-1 text-sm text-red-500">
-            {errors?.statements?.[i]?.message}
-          </span>
-        ) : null}
       </div>
     ))}
 
