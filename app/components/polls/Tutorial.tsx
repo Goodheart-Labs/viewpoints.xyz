@@ -68,7 +68,8 @@ export const Tutorial = () => {
     <Dialog open>
       <DialogContent
         className="sm:max-w-[425px] gap-6 max-h-full overflow-auto text-zinc-100"
-        onPointerDownOutside={(e) => e.preventDefault()}
+        onPointerDownOutside={handleClose}
+        onClick={handleClose}
       >
         <DialogHeader>
           <DialogTitle className="text-xl">Welcome to Viewpoints!</DialogTitle>
