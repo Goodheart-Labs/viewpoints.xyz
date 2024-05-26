@@ -148,7 +148,7 @@ export const Tutorial = () => {
         </div>
 
         <DialogFooter>
-          <Button onClick={handleClose}>I understand</Button>
+          <Button>I understand</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
