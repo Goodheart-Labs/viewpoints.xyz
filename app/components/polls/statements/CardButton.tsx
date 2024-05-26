@@ -38,6 +38,7 @@ export const CardButton = <C extends ChoiceEnum | number>({
     [styles.agree]: choice === "agree",
     [styles.disagree]: choice === "disagree",
     [styles.skip]: choice === "skip",
+    [styles.dragging]: !!activeChoice,
   });
 
   const button = (
