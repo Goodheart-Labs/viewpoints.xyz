@@ -13,7 +13,6 @@ import { CaretDownIcon } from "@radix-ui/react-icons";
 import type { Response, StatementOption } from "@/db/schema";
 import { getStatementsWithStats } from "@/lib/pollResults/getStatementsWithStats";
 import { useIsSuperuser } from "@/utils/frontendauthutils";
-import type { ChoiceEnum } from "kysely-codegen";
 import { ArrowDownNarrowWideIcon } from "lucide-react";
 import {
   Popover,
@@ -387,11 +386,11 @@ function shouldHighlightBadge(
   votePercentages: ChoicePercentages,
   choiceType: Response["choice"],
 ) {
-  const choiceList: ChoiceEnum[] = ["agree", "disagree", "skip"];
   if (sortType === "consensus") {
-    const highestPercentage = Math.max(
-      ...choiceList.map((choice) => votePercentages.get(choice)!),
+    const nonSkipPercentageList = (["agree", "disagree"] as const).map(
+      (choice) => votePercentages.get(choice)!,
     );
+    const highestPercentage = Math.max(...nonSkipPercentageList);
     return votePercentages.get(choiceType) === highestPercentage;
   }
 
