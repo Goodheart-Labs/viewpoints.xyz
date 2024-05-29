@@ -51,4 +51,12 @@ export const sortOptions: {
   },
 ];
 
+export const sortDescriptionDict: Record<SortKey, string> = {
+  consensus:
+    "Statements with the highest number of total votes (👍 or 👎) appear at the top.",
+  conflict:
+    "Statements with the most balanced disagreement (similar numbers of 👍 and 👎) appear at the top.",
+  confusion: "Statements with the most 🤷 votes appear at the top.",
+};
+
 export const DEFAULT_MINIMUM_RESPONSE_COUNT_THRESHOLD = 5;

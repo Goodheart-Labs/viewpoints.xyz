@@ -3,12 +3,18 @@
 import type { FC } from "react";
 import { useCallback, useMemo, useState } from "react";
 import ChoiceBadge from "@/components/ChoiceBadge";
-import type { SortKey, StatementWithStats } from "@/lib/pollResults/constants";
-import { sortOptions } from "@/lib/pollResults/constants";
+import type {
+  ChoicePercentages,
+  SortKey,
+  StatementWithStats,
+} from "@/lib/pollResults/constants";
+import { sortDescriptionDict, sortOptions } from "@/lib/pollResults/constants";
 import { CaretDownIcon } from "@radix-ui/react-icons";
 import type { Response, StatementOption } from "@/db/schema";
 import { getStatementsWithStats } from "@/lib/pollResults/getStatementsWithStats";
 import { useIsSuperuser } from "@/utils/frontendauthutils";
+import type { ChoiceEnum } from "kysely-codegen";
+import { ArrowDownNarrowWideIcon } from "lucide-react";
 import {
   Popover,
   PopoverTrigger,
@@ -180,7 +186,7 @@ export const Results: FC<ResultsProps> = ({
         <h5>Responses: {filteredResponseCount ?? responseCount}</h5>
         <h5>Respondents: {filteredRespondentsCount ?? respondentsCount}</h5>
       </div>
-      <div className="grid justify-center gap-4 mt-6 sm:flex">
+      <div className="grid justify-center gap-4 sm:flex mt-6">
         {sortOptions.map((option) => (
           <button
             key={option.name}
@@ -207,7 +213,16 @@ export const Results: FC<ResultsProps> = ({
           </div>
         )}
       </div>
-      <div className="grid gap-2">
+
+      <div className="flex gap-4 items-center justify-center min-h-[4rem] pr-4 mx-auto rounded-xl overflow-hidden border border-white/10 bg-white/10 text-gray-300 text-balance">
+        <div className="grid self-stretch place-content-center px-5 bg-white/10">
+          <ArrowDownNarrowWideIcon size={20} />
+        </div>
+
+        <p className="max-w-[38ch]">{sortDescriptionDict[sort]}</p>
+      </div>
+
+      <div className="grid gap-2 mt-4">
         {sortedStatements.map(({ id, text, stats: { votePercentages } }) => (
           <div
             className="grid gap-2 p-3 border rounded bg-neutral-900 border-neutral-700"
@@ -215,24 +230,17 @@ export const Results: FC<ResultsProps> = ({
           >
             <span>{text}</span>
             <div className="flex justify-start gap-1">
-              <ChoiceBadge
-                choice="agree"
-                disabled={!votePercentages.get("agree")}
-              >
-                {Math.round(votePercentages.get("agree") ?? 0)}%
-              </ChoiceBadge>
-              <ChoiceBadge
-                choice="disagree"
-                disabled={!votePercentages.get("disagree")}
-              >
-                {Math.round(votePercentages.get("disagree") ?? 0)}%
-              </ChoiceBadge>
-              <ChoiceBadge
-                choice="skip"
-                disabled={!votePercentages.get("skip")}
-              >
-                {Math.round(votePercentages.get("skip") ?? 0)}%
-              </ChoiceBadge>
+              {(["agree", "disagree", "skip"] as const).map((choice) => (
+                <ChoiceBadge
+                  key={choice}
+                  choice={choice}
+                  disabled={
+                    !shouldHighlightBadge(sort, votePercentages, choice)
+                  }
+                >
+                  {Math.round(votePercentages.get(choice) ?? 0)}%
+                </ChoiceBadge>
+              ))}
             </div>
           </div>
         ))}
@@ -365,3 +373,32 @@ export const useDemographicResponses = (
 
   return response;
 };
+
+/**
+ * Determines whether a badge should be highlighted based on the sort type, vote percentages, and choice type.
+ *
+ * @param sortType - The sort type used to determine the highlighting logic.
+ * @param votePercentages - The vote percentages for each choice.
+ * @param choiceType - The type of choice.
+ * @return Whether the badge should be highlighted.
+ */
+function shouldHighlightBadge(
+  sortType: SortKey,
+  votePercentages: ChoicePercentages,
+  choiceType: Response["choice"],
+) {
+  const choiceList: ChoiceEnum[] = ["agree", "disagree", "skip"];
+  if (sortType === "consensus") {
+    const highestPercentage = Math.max(
+      ...choiceList.map((choice) => votePercentages.get(choice)!),
+    );
+    return votePercentages.get(choiceType) === highestPercentage;
+  }
+
+  if (sortType === "conflict")
+    return ["agree", "disagree"].includes(choiceType!);
+
+  if (sortType === "confusion") return choiceType === "skip";
+
+  return false;
+}
