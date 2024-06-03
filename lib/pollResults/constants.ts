@@ -53,9 +53,9 @@ export const sortOptions: {
 
 export const sortDescriptionDict: Record<SortKey, string> = {
   consensus:
-    "Statements with the highest number of total votes (👍 or 👎) appear at the top.",
+    "Statements with the highest number of 👍 or the highest number of 👎 appear at the top (if everyone thinks 👎, that's consensus too)",
   conflict:
-    "Statements with the most balanced disagreement (similar numbers of 👍 and 👎) appear at the top.",
+    "Statements with the most disagreement (similar number of both 👍 and 👎) appear at the top.",
   confusion: "Statements with the most 🤷 votes appear at the top.",
 };
 

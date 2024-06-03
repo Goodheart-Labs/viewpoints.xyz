@@ -213,12 +213,12 @@ export const Results: FC<ResultsProps> = ({
         )}
       </div>
 
-      <div className="flex gap-4 items-center justify-center min-h-[4rem] pr-4 mx-auto rounded-xl overflow-hidden border border-white/10 bg-white/10 text-gray-300 text-balance">
+      <div className="flex gap-4 items-center min-h-[6rem] pr-4 mx-auto rounded-xl overflow-hidden border border-white/10 bg-white/10 text-gray-300 text-balance">
         <div className="grid self-stretch place-content-center px-5 bg-white/10">
           <ArrowDownNarrowWideIcon size={20} />
         </div>
 
-        <p className="max-w-[38ch]">{sortDescriptionDict[sort]}</p>
+        <p className="max-w-[38ch] m-2">{sortDescriptionDict[sort]}</p>
       </div>
 
       <div className="grid gap-2 mt-4">
