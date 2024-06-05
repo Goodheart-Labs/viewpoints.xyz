@@ -38,6 +38,7 @@ export const CardButton = <C extends ChoiceEnum | number>({
     [styles.agree]: choice === "agree",
     [styles.disagree]: choice === "disagree",
     [styles.skip]: choice === "skip",
+    [styles.dragging]: !!activeChoice,
   });
 
   const button = (
@@ -46,7 +47,7 @@ export const CardButton = <C extends ChoiceEnum | number>({
       onClick={() => onResponse(choice)}
       data-active={choice === activeChoice}
       className={cn(
-        "bg-zinc-700 hover:bg-zinc-600 rounded-full aspect-square text-white transition-colors duration-200",
+        "bg-zinc-700 rounded-full aspect-square text-white transition-colors duration-200",
         typeof choice === "string" ? getButtonSize(choice) : false,
         choiceText && "rounded-md px-3 py-1 text-sm aspect-auto w-full mb-3",
         highlight && "bg-zinc-600",
@@ -61,7 +62,7 @@ export const CardButton = <C extends ChoiceEnum | number>({
     </button>
   );
 
-  if (!withTooltip) {
+  if (!withTooltip || activeChoice) {
     return button;
   }
 

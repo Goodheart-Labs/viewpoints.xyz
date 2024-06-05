@@ -3,10 +3,10 @@
       178.91deg,
       rgba(255, 255, 255, 0) 59.39%,
       rgba(255, 255, 255, 0.39) 99.07%
-  ),
-  linear-gradient(180deg, #7857ff 0%, #483499 100%);
+    ),
+    linear-gradient(180deg, #7857ff 0%, #483499 100%);
   --button-shadow: 0 0 0 2px theme("colors.zinc.800/10%"),
-  0px 0px 20px 0px rgba(120, 87, 255, 0.9)
+    0px 0px 20px 0px rgba(120, 87, 255, 0.9);
 }
 
 .disagree {
@@ -14,10 +14,10 @@
       178.91deg,
       rgba(255, 255, 255, 0) 59.39%,
       rgba(255, 255, 255, 0.39) 99.07%
-  ),
-  linear-gradient(180deg, #ff4975 0%, #f83160 100%);
+    ),
+    linear-gradient(180deg, #ff4975 0%, #f83160 100%);
   --button-shadow: 0 0 0 2px theme("colors.zinc.800/10%"),
-  0px 0px 20px 0px rgba(255, 73, 117, 0.9);
+    0px 0px 20px 0px rgba(255, 73, 117, 0.9);
 }
 
 .skip {
@@ -25,24 +25,29 @@
       178.91deg,
       rgba(255, 255, 255, 0) 59.39%,
       rgba(255, 255, 255, 0.1) 99.07%
-  ),
-  linear-gradient(180deg, #332c2d 0%, #998589 100%);
+    ),
+    linear-gradient(180deg, #332c2d 0%, #998589 100%);
   --button-shadow: 0 0 0 2px theme("colors.zinc.800/10%"),
-  0px 0px 20px 0px rgba(102, 86, 88, 1);
+    0px 0px 20px 0px rgba(102, 86, 88, 1);
 }
 
 /* Apply hover effect only on non-touch devices */
 /* Source: https://stackoverflow.com/a/64553121 */
 @media (hover: hover) and (pointer: fine) {
-  .agree:hover, .disagree:hover, .skip:hover {
+  .agree:not(.dragging):hover,
+  .disagree:not(.dragging):hover,
+  .skip:not(.dragging):hover {
     background: var(--button-background);
     box-shadow: var(--button-shadow);
   }
 }
 
-.agree[data-active="true"], .agree:active,
-.disagree[data-active="true"], .disagree:active,
-.skip[data-active="true"], .skip:active {
+.agree[data-active="true"],
+.disagree[data-active="true"],
+.skip[data-active="true"],
+.agree:not(.dragging):active,
+.disagree:not(.dragging):active,
+.skip:not(.dragging):active {
   background: var(--button-background);
   box-shadow: var(--button-shadow);
 }
