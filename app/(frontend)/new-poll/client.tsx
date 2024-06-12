@@ -31,18 +31,32 @@ type NewPollPageClientViewProps = {
 
 // Validation
 // -----------------------------------------------------------------------------
+const checkSlugExists = async (slug: string) => {
+  const uriEncoded = encodeURIComponent(slug);
+  const res = await axios.get<{ pollExists: boolean }>(
+    `/api/slug-exists?slug=${uriEncoded}`,
+  );
+  return res.data?.pollExists;
+};
 
 const schema = yup
   .object({
     title: yup.string().required(),
-    slug: yup
-      .string()
-      .required()
-      .matches(/^[a-z0-9-]+$/),
+    slug: yup.lazy(() =>
+      yup
+        .string()
+        .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Invalid slug format")
+        .required("Slug is required")
+        .test("check-slug", "Slug already exists", async (value) => {
+          if (!value) return true;
+          const exists = await checkSlugExists(value);
+          return !exists;
+        }),
+    ),
     question: yup.string().default(""),
     statements: yup.array().of(yup.string().required()).min(5).required(),
     with_demographic_questions: yup.boolean().default(false),
-    new_statements_visible_by_default: yup.boolean().default(false),
+    new_statements_visible_by_default: yup.boolean().default(true),
   })
   .required();
 
@@ -241,11 +255,11 @@ const NewPollPageClient = () => {
   // State
 
   const form = useForm<FormData>({
-    mode: "onTouched",
+    mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
       with_demographic_questions: false,
-      new_statements_visible_by_default: false,
+      new_statements_visible_by_default: true,
     },
   });
 
@@ -305,6 +319,7 @@ const NewPollPageClient = () => {
   const onBlurTitle = () => {
     if (form.formState.dirtyFields.title && !form.getValues("slug")) {
       form.setValue("slug", slugify(form.getValues("title").toLowerCase()));
+      form.trigger("slug");
     }
   };
 

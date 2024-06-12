@@ -6,56 +6,21 @@ const questions: {
   responses: string[];
 }[] = [
   {
-    question: "What is your age?",
+    question: "How old are you?",
+    responses: ["<18", "18 - 25", "26 - 39", "40+", "Rather not say"],
+  },
+  {
+    question: "Education",
     responses: [
-      "Under 18",
-      "18 to 44",
-      "45 to 64",
-      "65 or over",
-      "Prefer not to say",
+      "To ~18",
+      "University degree",
+      "Postgraduate degree",
+      "Rather not say",
     ],
   },
   {
-    question: "Are you?",
-    responses: ["Female", "Male", "Other", "Prefer not to say"],
-  },
-  {
-    question: "Do you consider yourself to be disabled?",
-    responses: ["Yes", "No", "Prefer not to say"],
-  },
-  {
-    question: "Please tell us your ethnic origin",
-    responses: [
-      "White British",
-      "Other white background",
-      "Black or Minority ethnic background",
-      "Prefer not to say",
-    ],
-  },
-  {
-    question: "Please tell us your sexual orientation?",
-    responses: [
-      "Straight or heterosexual",
-      "Gay or lesbian",
-      "Bisexual",
-      "All other sexual orientations",
-      "Prefer not to say",
-    ],
-  },
-  {
-    question:
-      "Do you have caring responsibilities (other than for your own children)?",
-    responses: ["Yes", "No", "Don’t know", "Prefer not to say"],
-  },
-  {
-    question:
-      "Are you currently, or have you previously served in the UK Armed Forces?",
-    responses: [
-      "No",
-      "Yes, I am currently serving/have previously served in the regular UK armed forces",
-      "Yes, I am currently serving/have previously served in the reserve UK armed forces",
-      "Prefer not to say",
-    ],
+    question: "What is your gender?",
+    responses: ["Male", "Female", "Other", "Rather not say"],
   },
 ];
 
