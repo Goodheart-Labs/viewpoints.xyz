@@ -1,5 +1,6 @@
 import { Main } from "@/app/components/Main";
 import { Button } from "@/app/components/shadcn/ui/button";
+import { PageTitle } from "@/components/PageTitle";
 import { db } from "@/db/client";
 import { auth } from "@clerk/nextjs";
 import { Plus } from "lucide-react";
@@ -21,8 +22,7 @@ export default async function Page() {
 
   return (
     <Main className="grid gap-4 text-white">
-      <header className="flex items-end justify-between border-b pb-2">
-        <h1 className="text-3xl font-medium">My Polls</h1>
+      <PageTitle title="My Polls">
         <Button
           asChild
           className="bg-neutral-800 text-white/70 hover:text-white hover:bg-neutral-700"
@@ -32,7 +32,7 @@ export default async function Page() {
             Create Poll
           </Link>
         </Button>
-      </header>
+      </PageTitle>
       {userPolls.length ? (
         userPolls.map((poll) => (
           <Link

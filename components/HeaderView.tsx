@@ -56,10 +56,15 @@ export const HeaderView = ({ userId = null }: { userId: string | null }) => {
         <div className="flex gap-3 items-center">
           <Link
             href="/user/polls"
-            prefetch={false}
             className="text-white hover:opacity-50 text-sm"
           >
             My Polls
+          </Link>
+          <Link
+            href="/user/account"
+            className="text-white hover:opacity-50 text-sm"
+          >
+            Account
           </Link>
           <Button variant="pill" size="pill" className="mr-2" asChild>
             <Link href="/new-poll" prefetch={false}>
