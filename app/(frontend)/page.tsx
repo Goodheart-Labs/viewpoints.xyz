@@ -6,7 +6,7 @@ import { GitHubLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import type { Author } from "@/db/schema";
 import { db } from "@/db/client";
-import { isEmail } from "@/utils/stringutils";
+import { isEmail } from "@/utils/strings";
 import { Logo } from "@/components/Logo";
 import { Button } from "../components/shadcn/ui/button";
 import { anonymousAvatar } from "../components/user/UserAvatar";
