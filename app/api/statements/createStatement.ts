@@ -2,7 +2,7 @@
 
 import { auth } from "@clerk/nextjs";
 import { db } from "@/db/client";
-import { getSessionId } from "@/utils/sessionutils";
+import { getSessionId } from "@/utils/session";
 import { createAuthorIfNeeded } from "../lib/createAuthorIfNeeded";
 import { refreshPoll } from "../lib/refreshPoll";
 

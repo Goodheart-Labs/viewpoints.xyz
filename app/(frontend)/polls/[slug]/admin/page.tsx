@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import PollAdminForm from "@/app/components/admin/PollAdminForm";
-import { requirePollAdmin } from "@/utils/authutils";
+import { requirePollAdmin } from "@/utils/auth";
 import { db } from "@/db/client";
 import type { FlaggedStatement } from "@/db/schema";
 

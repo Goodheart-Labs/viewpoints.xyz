@@ -1,5 +1,5 @@
 import { db } from "@/db/client";
-import { getSessionId } from "@/utils/sessionutils";
+import { getSessionId } from "@/utils/session";
 import { currentUser } from "@clerk/nextjs";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";

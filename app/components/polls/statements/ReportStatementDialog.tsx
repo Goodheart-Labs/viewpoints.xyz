@@ -9,7 +9,7 @@ import { RadioGroup } from "@/app/components/shadcn/ui/radio-group";
 import { Textarea } from "@/app/components/shadcn/ui/textarea";
 import { useToast } from "@/app/components/shadcn/ui/use-toast";
 import type { Statement } from "@/db/schema";
-import { useSessionId } from "@/utils/frontendsessionutils";
+import { useSessionId } from "@/utils/sessionFrontend";
 
 import { Dialog } from "../../dialog";
 

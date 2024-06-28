@@ -3,7 +3,7 @@ import type { PanInfo } from "framer-motion";
 import type { Response } from "@/db/schema";
 import { createResponse } from "@/app/api/responses/createResponse";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
-import { useSessionId } from "@/utils/frontendsessionutils";
+import { useSessionId } from "@/utils/sessionFrontend";
 
 export const SWIPE_THRESHOLD = 150;
 

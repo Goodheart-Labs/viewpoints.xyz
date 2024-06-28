@@ -1,7 +1,7 @@
 "use client";
 
 import { AFTER_DEPLOY_COOKIE_NAME } from "@/middleware";
-import { useSessionId } from "@/utils/frontendsessionutils";
+import { useSessionId } from "@/utils/sessionFrontend";
 import axios from "axios";
 import type { PropsWithChildren } from "react";
 import { createContext, useContext, useEffect, useMemo } from "react";

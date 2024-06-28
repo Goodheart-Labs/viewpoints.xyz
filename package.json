@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:ci": "prettier --check './**/*.{js,ts,tsx,css,json}'",
-    "typecheck": "tsc --noEmit",
+    "check": "tsc --noEmit",
     "test": "vitest",
     "migrate": "bun run db/migrate.ts",
     "env:pull": "vercel env pull .env",

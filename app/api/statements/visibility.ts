@@ -2,7 +2,7 @@
 
 import { db } from "@/db/client";
 import { auth } from "@clerk/nextjs";
-import { requirePollAdmin } from "@/utils/authutils";
+import { requirePollAdmin } from "@/utils/auth";
 import { refreshPoll } from "../lib/refreshPoll";
 
 export const hideStatement = async (statementId: number, pollId: number) => {

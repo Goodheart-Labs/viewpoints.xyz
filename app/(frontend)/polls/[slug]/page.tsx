@@ -13,7 +13,7 @@ import { ScrollArea } from "@/app/components/shadcn/ui/scroll-area";
 import { QrCodeGenerator } from "@/app/components/polls/QrCodeGenerator";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { isPollAdminOrSuperadmin } from "@/utils/authutils";
+import { isPollAdminOrSuperadmin } from "@/utils/auth";
 import { auth } from "@clerk/nextjs";
 import { BackToSouthGlos } from "@/components/BackToSouthGlos";
 import { headers } from "next/headers";

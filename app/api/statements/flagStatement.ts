@@ -3,8 +3,8 @@
 import type { FlaggedStatement } from "@/db/schema";
 import { notFound } from "next/navigation";
 import { db } from "@/db/client";
-import { safeUserId } from "@/utils/clerkutils";
-import { getSessionId } from "@/utils/sessionutils";
+import { safeUserId } from "@/utils/clerk";
+import { getSessionId } from "@/utils/session";
 import { refreshPoll } from "../lib/refreshPoll";
 
 export const flagStatement = async (

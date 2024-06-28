@@ -5,7 +5,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { db } from "@/db/client";
 import { notFound } from "next/navigation";
-import { getSessionId } from "@/utils/sessionutils";
+import { getSessionId } from "@/utils/session";
 import { createAuthorIfNeeded } from "../lib/createAuthorIfNeeded";
 import { createDemographicQuestions } from "../lib/createDemographicQuestions";
 

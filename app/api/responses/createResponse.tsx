@@ -3,8 +3,8 @@
 import { notFound } from "next/navigation";
 import type { Response } from "@/db/schema";
 import { db } from "@/db/client";
-import { getSessionId } from "@/utils/sessionutils";
-import { safeUserId } from "@/utils/clerkutils";
+import { getSessionId } from "@/utils/session";
+import { safeUserId } from "@/utils/clerk";
 import { refreshPoll } from "../lib/refreshPoll";
 
 export const createResponse = async (

@@ -9,8 +9,8 @@ import type {
   Response,
   StatementOption,
 } from "@/db/schema";
-import { getSessionId } from "@/utils/sessionutils";
-import { safeUserId } from "@/utils/clerkutils";
+import { getSessionId } from "@/utils/session";
+import { safeUserId } from "@/utils/clerk";
 
 const MAX_NUM_FLAGS_BEFORE_REMOVAL = 2;
 

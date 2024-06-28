@@ -2,10 +2,7 @@ import { auth } from "@clerk/nextjs";
 import { notFound } from "next/navigation";
 import NewPollPageClient from "./client";
 
-// View
-// -----------------------------------------------------------------------------
-
-const NewPollPageView = () => {
+export default async function NewPoll() {
   const { userId } = auth();
   if (!userId) notFound();
 
@@ -20,11 +17,4 @@ const NewPollPageView = () => {
       <NewPollPageClient />
     </main>
   );
-};
-
-// Default export
-// -----------------------------------------------------------------------------
-
-const NewPollPage = async () => <NewPollPageView />;
-
-export default NewPollPage;
+}
