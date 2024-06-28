@@ -1,14 +1,12 @@
 "use server";
 
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { db } from "@/db/client";
-import { getSessionId } from "@/utils/session";
 import { createAuthorIfNeeded } from "../lib/createAuthorIfNeeded";
 import { refreshPoll } from "../lib/refreshPoll";
 
 export const createStatement = async (pollId: number, text: string) => {
-  const { userId } = auth();
-  const sessionId = getSessionId();
+  const { userId, sessionId } = auth();
 
   await createAuthorIfNeeded();
 

@@ -3,7 +3,7 @@ import type { PanInfo } from "framer-motion";
 import type { Response } from "@/db/schema";
 import { createResponse } from "@/app/api/responses/createResponse";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
-import { useSessionId } from "@/utils/sessionFrontend";
+import { useAuth } from "@clerk/nextjs";
 
 export const SWIPE_THRESHOLD = 150;
 
@@ -26,7 +26,10 @@ export const useCardHandlers = ({
   onStatementHide,
 }: HookArgs) => {
   const { track } = useAmplitude();
-  const sessionId = useSessionId();
+  const { sessionId } = useAuth();
+  if (!sessionId) {
+    throw new Error("No sessionId");
+  }
 
   const [leaveX, setLeaveX] = useState(0);
   const [leaveY, setLeaveY] = useState(0);

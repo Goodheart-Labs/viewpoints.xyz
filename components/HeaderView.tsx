@@ -11,16 +11,12 @@ import { Button } from "@/app/components/shadcn/ui/button";
 import { PlusCircle } from "lucide-react";
 import { Logo } from "./Logo";
 
-export const HeaderView = ({ userId = null }: { userId: string | null }) => {
-  // State
-
+export const HeaderView = () => {
   const router = useRouter();
-  const { isSignedIn: clerkIsSignedIn, user } = useUser();
+  const { isSignedIn, user } = useUser();
   const [showSignIn, setShowSignIn] = useState(false);
 
   const { currentPoll } = useCurrentPoll();
-
-  const isSignedIn = userId !== null || clerkIsSignedIn;
 
   const isCurrentPollAdmin =
     currentPoll &&
@@ -95,7 +91,7 @@ export const HeaderView = ({ userId = null }: { userId: string | null }) => {
             onClick={() => setShowSignIn(false)}
           />
           <div className="fixed z-[100] top-[30vh] h-[200px] flex w-full justify-center items-center">
-            <SignIn redirectUrl={window.location.pathname} />
+            <SignIn />
           </div>
         </>
       )}

@@ -9,8 +9,8 @@ import { RadioGroup } from "@/app/components/shadcn/ui/radio-group";
 import { Textarea } from "@/app/components/shadcn/ui/textarea";
 import { useToast } from "@/app/components/shadcn/ui/use-toast";
 import type { Statement } from "@/db/schema";
-import { useSessionId } from "@/utils/sessionFrontend";
 
+import { useAuth } from "@clerk/nextjs";
 import { Dialog } from "../../dialog";
 
 import { ReportRadioItem } from "./ReportRadioItem";
@@ -33,7 +33,7 @@ export const ReportStatementDialog = ({
   close,
   statement,
 }: ReportStatementDialogProps) => {
-  const sessionId = useSessionId();
+  const { sessionId } = useAuth();
 
   const { reset, control, handleSubmit } = useForm<Form>({
     defaultValues: {
@@ -68,6 +68,8 @@ export const ReportStatementDialog = ({
 
   const onSave = handleSubmit((formData) => {
     startTransition(() => {
+      if (!sessionId) return;
+
       flagStatement(statement.id, formData, sessionId).then(() => {
         track({
           type: "statement.flag.persist",

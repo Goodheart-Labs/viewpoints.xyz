@@ -14,9 +14,9 @@ import { QrCodeGenerator } from "@/app/components/polls/QrCodeGenerator";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isPollAdminOrSuperadmin } from "@/utils/auth";
-import { auth } from "@clerk/nextjs";
 import { BackToSouthGlos } from "@/components/BackToSouthGlos";
 import { headers } from "next/headers";
+import { auth } from "@clerk/nextjs/server";
 import { getData } from "./getData";
 
 type PollPageProps = {
@@ -27,6 +27,7 @@ type PollPageProps = {
 const PollPage = async ({ params, searchParams }: PollPageProps) => {
   const headersList = headers();
   const pathname = headersList.get("x-pathname");
+  const { userId } = auth();
 
   const {
     poll,
@@ -35,8 +36,6 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
     userResponses,
     statementOptions,
   } = await getData(params.slug);
-
-  const { userId } = auth();
 
   const canSeePoll =
     poll.visibility !== "private" ||

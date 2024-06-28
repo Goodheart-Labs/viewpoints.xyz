@@ -3,8 +3,7 @@
 import { notFound } from "next/navigation";
 import type { Response } from "@/db/schema";
 import { db } from "@/db/client";
-import { getSessionId } from "@/utils/session";
-import { safeUserId } from "@/utils/clerk";
+import { auth } from "@clerk/nextjs/server";
 import { refreshPoll } from "../lib/refreshPoll";
 
 export const createResponse = async (
@@ -18,9 +17,9 @@ export const createResponse = async (
         type: "customOption";
         customOptionId: number;
       },
-  sessionId: string = getSessionId(),
+  sessionId: string,
 ) => {
-  const userId = await safeUserId();
+  const { userId } = auth();
 
   const statement = await db
     .selectFrom("statements")

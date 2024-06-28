@@ -3,16 +3,18 @@
 import type { FlaggedStatement } from "@/db/schema";
 import { notFound } from "next/navigation";
 import { db } from "@/db/client";
-import { safeUserId } from "@/utils/clerk";
-import { getSessionId } from "@/utils/session";
+import { auth } from "@clerk/nextjs/server";
 import { refreshPoll } from "../lib/refreshPoll";
 
 export const flagStatement = async (
   statementId: number,
   data: Pick<FlaggedStatement, "reason" | "description">,
-  sessionId: string = getSessionId(),
+  sessionId: string,
 ) => {
-  const userId = await safeUserId();
+  const { userId } = auth();
+  if (!userId) {
+    notFound();
+  }
 
   const statement = await db
     .selectFrom("statements")

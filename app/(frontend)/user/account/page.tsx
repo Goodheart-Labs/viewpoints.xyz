@@ -1,18 +1,18 @@
 import { Main } from "@/app/components/Main";
 import { Button } from "@/app/components/shadcn/ui/button";
 import { PageTitle } from "@/components/PageTitle";
-import { auth } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 
 // Fake function to determine if the user is a pro user
-function isPro(user: any) {
+function isPro() {
   // Replace with actual logic to determine if the user is a pro user
-  return user?.publicMetadata?.isPro || false;
+  return false;
 }
 
 export default async function Account() {
-  const { user } = auth();
+  const user = await currentUser();
   const email = user?.emailAddresses[0].emailAddress;
-  const pro = isPro(user);
+  const pro = isPro();
 
   return (
     <Main className="grid gap-4 text-white">

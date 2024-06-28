@@ -1,44 +1,26 @@
-import { authMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-import { NextResponse } from "next/server";
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/polls/(.*)",
+  "/api/sessions",
+  "/privacy-policy",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+]);
 
-// Config
-// -----------------------------------------------------------------------------
+console.log(`Hello world!`);
 
-const pollSlug = "([a-z0-9-]+)";
+export default clerkMiddleware();
 
-const publicRoutes = [
-  `/`,
-  `/polls/${pollSlug}`,
-  `/polls/${pollSlug}/results`,
-  `/api/sessions`,
-  `/privacy-policy`,
-];
-
-const ignoredRoutes = [`/embed/polls/${pollSlug}`, `/api/polls/${pollSlug}`];
-
-export const SESSION_ID_COOKIE_NAME = "sessionId";
-export const CLEAR_LOCALSTORAGE_HEADER_NAME = "X-Clear-LocalStorage";
-export const AFTER_DEPLOY_COOKIE_NAME = "afterDeployWipe20231218";
+// export default clerkMiddleware((auth, request) => {
+//   if (!isPublicRoute(request)) {
+//     auth().protect();
+//   }
+// });
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
 };
 
-// Auth middleware
-// -----------------------------------------------------------------------------
-
-export default authMiddleware({
-  publicRoutes,
-  ignoredRoutes,
-  beforeAuth(request) {
-    const requestHeaders = new Headers(request.headers);
-    requestHeaders.set("x-pathname", request.nextUrl.pathname);
-
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
-  },
-});
+export const AFTER_DEPLOY_COOKIE_NAME = "afterDeployWipe20231218";

@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db/client";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { requirePollAdmin } from "@/utils/auth";
 import { refreshPoll } from "../lib/refreshPoll";
 

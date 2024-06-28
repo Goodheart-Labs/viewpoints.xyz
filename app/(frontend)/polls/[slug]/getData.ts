@@ -9,8 +9,7 @@ import type {
   Response,
   StatementOption,
 } from "@/db/schema";
-import { getSessionId } from "@/utils/session";
-import { safeUserId } from "@/utils/clerk";
+import { auth } from "@clerk/nextjs/server";
 
 const MAX_NUM_FLAGS_BEFORE_REMOVAL = 2;
 
@@ -25,8 +24,10 @@ export type PollWithStatements = Poll & {
 };
 
 export const getData = async (slug: string) => {
-  const userId = await safeUserId();
-  const sessionId = getSessionId();
+  const { userId, sessionId } = auth();
+  if (!userId || !sessionId) {
+    notFound();
+  }
 
   // Pull the poll and associated data from the database
 

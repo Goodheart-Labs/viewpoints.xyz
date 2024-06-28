@@ -2,7 +2,7 @@ import { Main } from "@/app/components/Main";
 import { Button } from "@/app/components/shadcn/ui/button";
 import { PageTitle } from "@/components/PageTitle";
 import { db } from "@/db/client";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";

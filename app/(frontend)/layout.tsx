@@ -1,9 +1,8 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
-import { Header } from "@/components/Header";
 import { Toaster } from "@/app/components/shadcn/ui/toaster";
-import SessionProvider from "@/providers/SessionProvider";
 import { getBaseUrl } from "@/utils/constants";
+import { HeaderView } from "@/components/HeaderView";
 import Contexts from "../components/Contexts";
 import LogrocketWrapper from "../components/LogrocketWrapper";
 import "@/styles/tailwind.css";
@@ -31,22 +30,24 @@ export const viewport: Viewport = {
 // Default export
 // -----------------------------------------------------------------------------
 
-const RootLayout = ({ children }: { children: React.ReactNode }) => (
-  <ClerkProvider>
-    <html lang="en" suppressHydrationWarning>
-      <body className="flex flex-col items-stretch min-h-screen bg-black">
-        <LogrocketWrapper>
-          <SessionProvider>
-            <Contexts>
-              <Header />
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <ClerkProvider>
+      <LogrocketWrapper>
+        <Contexts>
+          <html lang="en">
+            <body className="flex flex-col items-stretch min-h-screen bg-black">
+              <HeaderView />
               {children}
-            </Contexts>
-          </SessionProvider>
-        </LogrocketWrapper>
-        <Toaster />
-      </body>
-    </html>
-  </ClerkProvider>
-);
-
-export default RootLayout;
+              <Toaster />
+            </body>
+          </html>
+        </Contexts>
+      </LogrocketWrapper>
+    </ClerkProvider>
+  );
+}
