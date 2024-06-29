@@ -1,6 +1,6 @@
 const KeyboardShortcutsLegend = () => (
   <div className="fixed flex-col hidden w-full px-3 py-2 mt-10 bg-white rounded-md bottom-4 bg-opacity-80 sm:flex left-4 right-4">
-    <h5 className="my-1 text-xs font-semibold text-gray-600 dark:text-gray-400">
+    <h5 className="my-1 text-xs font-semibold text-gray-600 text-gray-400">
       Keyboard Shortcuts
     </h5>
     <div>

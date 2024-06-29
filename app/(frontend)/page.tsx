@@ -90,10 +90,7 @@ const Card = ({
   className?: string;
 }>) => (
   <div
-    className={cn(
-      "w-full p-4 rounded-xl dark:bg-white/10 dark:text-white",
-      className,
-    )}
+    className={cn("w-full p-4 rounded-xl bg-white/10 text-white", className)}
   >
     {children}
   </div>
@@ -107,10 +104,10 @@ const Index = async () => {
       <Main className="flex flex-col items-center">
         <Card className="flex mb-8 md:space-x-4">
           <div className="w-full md:w-5/12 md:p-8">
-            <h2 className="mb-4 text-3xl font-medium leading-8 md:dark:text-white/90">
+            <h2 className="mb-4 text-3xl font-medium leading-8 md:text-white/90">
               What on earth are you thinking?
             </h2>
-            <p className="mb-4 md:mb-6 dark:text-white/90 md:dark:text-white/80">
+            <p className="mb-4 md:mb-6 text-white/90 md:text-white/80">
               Viewpoints.xyz is a tool that lets you gauge opinions on any
               topic. Create a poll, get a link, and find out what your community
               is thinking.
@@ -120,7 +117,7 @@ const Index = async () => {
                 <Button
                   variant="pill"
                   size="pill"
-                  className="pr-5 text-sm dark:bg-white dark:text-gray-800 hover:dark:bg-white/80"
+                  className="pr-5 text-sm bg-white text-gray-800 hover:bg-white/80"
                 >
                   <PlusCircle className="w-4 mr-2" />
                   Create poll
@@ -139,7 +136,7 @@ const Index = async () => {
           </div>
         </Card>
 
-        <h3 className="w-full mb-2 text-xl font-medium dark:text-white/90 md:dark:text-white/80">
+        <h3 className="w-full mb-2 text-xl font-medium text-white/90 md:text-white/80">
           Running public polls
         </h3>
 
@@ -155,16 +152,16 @@ const Index = async () => {
                   key={poll.id}
                   prefetch={false}
                 >
-                  <Card className="w-full md:mb-2 group md:h-[180px] md:flex md:flex-col md:hover:dark:opacity-90 md:cursor-pointer md:transition-opacity">
+                  <Card className="w-full md:mb-2 group md:h-[180px] md:flex md:flex-col md:hover:opacity-90 md:cursor-pointer md:transition-opacity">
                     <h4 className="mb-2 text-lg font-medium leading-6">
                       {poll.title}
                     </h4>
-                    <p className="mb-3 text-sm dark:text-white/60">
+                    <p className="mb-3 text-sm text-white/60">
                       {poll.statementCount} statements | {numRespondents}{" "}
                       {numRespondents === 1 ? "respondent" : "respondents"}
                     </p>
 
-                    <p className="flex items-center text-xs dark:text-white/60 md:mt-auto">
+                    <p className="flex items-center text-xs text-white/60 md:mt-auto">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={
@@ -188,7 +185,7 @@ const Index = async () => {
               );
             })
           ) : (
-            <p className="mt-4 dark:text-white/70">
+            <p className="mt-4 text-white/70">
               There are no public polls at the moment. Why not{" "}
               <Link href="/new-poll" className="underline" prefetch={false}>
                 create one
@@ -198,11 +195,11 @@ const Index = async () => {
           )}
 
           <div className="md:w-1/3 md:pl-2">
-            <Card className="my-4 dark:bg-white md:h-[180px] md:mt-0">
-              <h3 className="mb-2 text-lg font-medium leading-6 dark:text-gray-800">
+            <Card className="my-4 bg-white md:h-[180px] md:mt-0">
+              <h3 className="mb-2 text-lg font-medium leading-6 text-gray-800">
                 Create your own poll!
               </h3>
-              <p className="mb-4 dark:text-gray-800/90 md:text-sm">
+              <p className="mb-4 text-gray-800/90 md:text-sm">
                 It only takes a few minutes to create a poll, and you can create
                 public or private polls.
               </p>
@@ -211,7 +208,7 @@ const Index = async () => {
                   <Button
                     variant="pill"
                     size="pill"
-                    className="pr-5 text-sm dark:bg-background dark:text-white hover:dark:bg-orange-500"
+                    className="pr-5 text-sm bg-background text-white hover:bg-orange-500"
                   >
                     <PlusCircle className="w-4 mr-2" />
                     Create poll
@@ -223,7 +220,7 @@ const Index = async () => {
         </div>
       </Main>
 
-      <footer className="flex flex-col items-center w-full py-8 mt-4 md:mt-auto dark:bg-white/10 dark:text-white/80">
+      <footer className="flex flex-col items-center w-full py-8 mt-4 md:mt-auto bg-white/10 text-white/80">
         <Link href="/" className="hover:grayscale-0 grayscale">
           <Logo width={200} height={40} />
         </Link>

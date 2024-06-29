@@ -87,7 +87,7 @@ const StatementsListView = ({
         <a
           href="#"
           className={clsx(
-            "font-semibold underline hover:no-underline dark:text-white",
+            "font-semibold underline hover:no-underline text-white",
             isAutogenerating && "cursor-wait no-underline",
           )}
           onClick={(e) => {
@@ -133,7 +133,7 @@ const StatementsListView = ({
         <div className="flex items-center justify-between mb-4">
           <div className="w-full">
             <ControlledInput
-              className="w-full text-lg dark:text-white"
+              className="w-full text-lg text-white"
               value={statement}
               onChange={(val) => onChangeStatement(key, val)}
               onBlur={(val) =>

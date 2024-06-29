@@ -79,18 +79,14 @@ const NewPollPageClientView = ({
   <form className="flex flex-col w-full px-4">
     <div className="flex flex-col w-full">
       <div className="flex flex-col w-full">
-        <h3 className="mb-2 text-xl font-semibold dark:text-white">
-          Poll Title
-        </h3>
-        <h4 className="mb-4 text-lg dark:text-gray-200">
-          Give it a catchy name
-        </h4>
+        <h3 className="mb-2 text-xl font-semibold text-white">Poll Title</h3>
+        <h4 className="mb-4 text-lg text-gray-200">Give it a catchy name</h4>
 
         <div className="flex flex-col">
           <input
             type="text"
             className={clsx(
-              "w-full text-lg dark:text-white",
+              "w-full text-lg text-white",
               errors?.title ? "border-red-500" : "",
             )}
             autoFocus
@@ -107,8 +103,8 @@ const NewPollPageClientView = ({
       </div>
 
       <div className="flex flex-col w-full mt-10">
-        <h3 className="mb-2 text-xl font-semibold dark:text-white">Slug</h3>
-        <h4 className="mb-4 text-lg text-gray-700 dark:text-gray-200">
+        <h3 className="mb-2 text-xl font-semibold text-white">Slug</h3>
+        <h4 className="mb-4 text-lg text-gray-700 text-gray-200">
           This will be in the URL for your poll.
         </h4>
 
@@ -116,7 +112,7 @@ const NewPollPageClientView = ({
           <input
             type="text"
             className={clsx(
-              "w-full text-lg dark:text-white",
+              "w-full text-lg text-white",
               errors?.slug ? "border-red-500" : "",
             )}
             {...register("slug")}
@@ -130,10 +126,8 @@ const NewPollPageClientView = ({
       </div>
 
       <div className="flex flex-col w-full mt-10">
-        <h3 className="mb-2 text-xl font-semibold dark:text-white">
-          Main Question
-        </h3>
-        <h4 className="mb-4 text-lg text-gray-700 dark:text-gray-200">
+        <h3 className="mb-2 text-xl font-semibold text-white">Main Question</h3>
+        <h4 className="mb-4 text-lg text-gray-700 text-gray-200">
           What&apos;s the key question you&apos;re trying to answer?
         </h4>
 
@@ -142,7 +136,7 @@ const NewPollPageClientView = ({
             type="text"
             placeholder="What do you think of the following statements?"
             className={clsx(
-              "w-full text-lg dark:text-white",
+              "w-full text-lg text-white",
               errors?.question ? "border-red-500" : "",
             )}
             {...register("question")}
@@ -156,10 +150,8 @@ const NewPollPageClientView = ({
       </div>
 
       <div className="flex flex-col w-full mt-10">
-        <h3 className="mb-2 text-xl font-semibold dark:text-white">
-          Statements
-        </h3>
-        <h4 className="mb-4 text-lg text-gray-700 dark:text-gray-200">
+        <h3 className="mb-2 text-xl font-semibold text-white">Statements</h3>
+        <h4 className="mb-4 text-lg text-gray-700 text-gray-200">
           Add at least five statements that people can respond to. The more the
           better!
         </h4>
@@ -185,10 +177,10 @@ const NewPollPageClientView = ({
       </div>
 
       <div className="flex flex-col w-full mt-0">
-        <h3 className="mb-2 text-xl font-semibold dark:text-white">
+        <h3 className="mb-2 text-xl font-semibold text-white">
           Demographic Questions
         </h3>
-        <h4 className="mb-4 text-lg text-gray-700 dark:text-gray-200">
+        <h4 className="mb-4 text-lg text-gray-700 text-gray-200">
           We can ask people some demographic questions to help you understand
           the results better.
         </h4>
@@ -200,7 +192,7 @@ const NewPollPageClientView = ({
               className="mr-2"
               {...register("with_demographic_questions")}
             />
-            <span className="text-lg text-gray-700 dark:text-gray-200">
+            <span className="text-lg text-gray-700 text-gray-200">
               Include demographic questions?
             </span>
           </label>
@@ -208,10 +200,10 @@ const NewPollPageClientView = ({
       </div>
 
       <div className="flex flex-col w-full mt-10">
-        <h3 className="mb-2 text-xl font-semibold dark:text-white">
+        <h3 className="mb-2 text-xl font-semibold text-white">
           New Statements
         </h3>
-        <h4 className="mb-4 text-lg text-gray-700 dark:text-gray-200">
+        <h4 className="mb-4 text-lg text-gray-700 text-gray-200">
           Should statements added by respondents initially be visible or hidden?
         </h4>
 
@@ -222,14 +214,14 @@ const NewPollPageClientView = ({
               className="mr-2"
               {...register("new_statements_visible_by_default")}
             />
-            <span className="text-lg text-gray-700 dark:text-gray-200">
+            <span className="text-lg text-gray-700 text-gray-200">
               Should be visible
             </span>
           </label>
         </p>
       </div>
 
-      <div className="flex items-center justify-end w-full py-4 my-10 bg-gray-50 dark:bg-gray-950">
+      <div className="flex items-center justify-end w-full py-4 my-10 bg-gray-50 bg-gray-950">
         <div>
           <BorderedButton
             type="button"
