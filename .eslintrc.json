@@ -33,7 +33,7 @@
     "radix": "off",
 
     "prettier/prettier": "error",
-
+    "arrow-body-style": "off",
     "react/function-component-definition": [
       0,
       {

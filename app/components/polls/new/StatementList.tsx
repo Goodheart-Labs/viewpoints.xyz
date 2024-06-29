@@ -128,7 +128,7 @@ const StatementsListView = ({
       </span>
     ) : null}
 
-    {statements.map(({ key, statement }, i) => (
+    {statements.map(({ key, statement }) => (
       <div key={key} className="flex flex-col">
         <div className="flex items-center justify-between mb-4">
           <div className="w-full">
