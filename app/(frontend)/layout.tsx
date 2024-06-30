@@ -7,6 +7,7 @@ import Contexts from "../components/Contexts";
 import LogrocketWrapper from "../components/LogrocketWrapper";
 import "@/styles/tailwind.css";
 import "@/styles/frontend.css";
+import { TrackVisitor } from "../components/TrackVisitor";
 
 // Metadata
 // -----------------------------------------------------------------------------
@@ -44,6 +45,7 @@ export default function RootLayout({
               <HeaderView />
               {children}
               <Toaster />
+              <TrackVisitor />
             </body>
           </html>
         </Contexts>

@@ -10,6 +10,7 @@ import type {
   StatementOption,
 } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
+import { getVisitorId } from "@/lib/getVisitorId";
 
 const MAX_NUM_FLAGS_BEFORE_REMOVAL = 2;
 
@@ -24,10 +25,8 @@ export type PollWithStatements = Poll & {
 };
 
 export const getData = async (slug: string) => {
-  const { userId, sessionId } = auth();
-  if (!userId || !sessionId) {
-    notFound();
-  }
+  const { userId } = auth();
+  const visitorId = getVisitorId();
 
   // Pull the poll and associated data from the database
 
@@ -147,10 +146,11 @@ export const getData = async (slug: string) => {
     });
   }
 
+  // TODO: Make sure we're using the visitor id as needed
   const [filteredStatements, userResponses] = filterStatements(
     statementsWithStuff,
     userId,
-    sessionId,
+    visitorId,
   );
 
   return {
@@ -166,11 +166,14 @@ type FilteredStatement = Statement & {
   author: Author | null;
 };
 
-export const filterStatements = (
+export function filterStatements(
   statements: PollWithStatements["statements"],
   userId: string | null,
+  /**
+   * The session id or visitor id of the user.
+   */
   sessionId: string,
-): [FilteredStatement[], Map<number, UserResponseItem>] => {
+): [FilteredStatement[], Map<number, UserResponseItem>] {
   const filteredStatements: FilteredStatement[] = [];
   const userResponses = new Map<number, UserResponseItem>();
 
@@ -183,19 +186,15 @@ export const filterStatements = (
       continue;
     }
 
-    let skipCount = 0;
     const responseCountMap = new Map<Response["choice"], number>([
       ["agree", 0],
       ["disagree", 0],
       ["skip", 0],
     ]);
+
     let userResponse: Omit<UserResponseItem, "percentage"> | null = null;
 
     for (const response of statement.responses) {
-      if (response.choice === "skip") {
-        skipCount += 1;
-      }
-
       if (
         (userId && response.user_id === userId) ||
         response.session_id === sessionId
@@ -241,4 +240,4 @@ export const filterStatements = (
   }
 
   return [filteredStatements, userResponses];
-};
+}

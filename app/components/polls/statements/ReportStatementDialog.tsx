@@ -10,7 +10,6 @@ import { Textarea } from "@/app/components/shadcn/ui/textarea";
 import { useToast } from "@/app/components/shadcn/ui/use-toast";
 import type { Statement } from "@/db/schema";
 
-import { useAuth } from "@clerk/nextjs";
 import { Dialog } from "../../dialog";
 
 import { ReportRadioItem } from "./ReportRadioItem";
@@ -33,8 +32,6 @@ export const ReportStatementDialog = ({
   close,
   statement,
 }: ReportStatementDialogProps) => {
-  const { sessionId } = useAuth();
-
   const { reset, control, handleSubmit } = useForm<Form>({
     defaultValues: {
       reason: "",
@@ -67,23 +64,21 @@ export const ReportStatementDialog = ({
   const [isPending, startTransition] = useTransition();
 
   const onSave = handleSubmit((formData) => {
-    startTransition(() => {
-      if (!sessionId) return;
+    startTransition(async () => {
+      await flagStatement(statement.id, formData);
 
-      flagStatement(statement.id, formData, sessionId).then(() => {
-        track({
-          type: "statement.flag.persist",
-          statementId: statement.id,
-          reason: formData.reason,
-        });
-
-        toast({
-          description: "Report submitted",
-        });
-
-        reset();
-        close();
+      track({
+        type: "statement.flag.persist",
+        statementId: statement.id,
+        reason: formData.reason,
       });
+
+      toast({
+        description: "Report submitted",
+      });
+
+      reset();
+      close();
     });
   });
 

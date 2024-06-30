@@ -1,10 +1,9 @@
 // TODO: validation
 
-import { currentUser, getAuth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { db } from "@/db/client";
-import { notFound } from "next/navigation";
 import { createAuthorIfNeeded } from "../lib/createAuthorIfNeeded";
 import { createDemographicQuestions } from "../lib/createDemographicQuestions";
 
@@ -12,10 +11,11 @@ import { createDemographicQuestions } from "../lib/createDemographicQuestions";
 // -----------------------------------------------------------------------------
 
 export async function POST(request: NextRequest) {
-  const { sessionId } = getAuth(request);
   const user = await currentUser();
-  if (!user) {
-    return notFound();
+  const { sessionId } = auth();
+
+  if (!user || !sessionId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const {

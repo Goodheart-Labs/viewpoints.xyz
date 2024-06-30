@@ -5,42 +5,51 @@ import { SignIn, UserButton, useUser } from "@clerk/nextjs";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useCurrentPoll } from "@/providers/CurrentPollProvider";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/app/components/shadcn/ui/button";
 import { PlusCircle } from "lucide-react";
+import { useQuery } from "react-query";
 import { Logo } from "./Logo";
 
-export const HeaderView = () => {
+export function HeaderView() {
   const router = useRouter();
   const { isSignedIn, user } = useUser();
   const [showSignIn, setShowSignIn] = useState(false);
+  const { slug } = useParams();
 
-  const { currentPoll } = useCurrentPoll();
-
-  const isCurrentPollAdmin =
-    currentPoll &&
-    (currentPoll.user_id === user?.id || user?.publicMetadata.isSuperAdmin);
+  const { data: isAdmin } = useQuery(
+    ["polls", slug],
+    async () => {
+      if (!slug) return false;
+      if (slug === "new") return false;
+      if (user?.publicMetadata.isSuperAdmin) return true;
+      const response = await fetch(`/api/public/is-admin/${slug}`);
+      const data = (await response.json()) as { isAdmin: boolean };
+      return data.isAdmin;
+    },
+    {
+      enabled: isSignedIn,
+    },
+  );
 
   // Callbacks
-
   const onClickLogin = () => {
     setShowSignIn(true);
   };
 
   const onClickPollAdmin = () => {
-    router.push(`/polls/${currentPoll?.slug}/admin`);
+    router.push(`/polls/${slug}/admin`);
   };
 
   return (
     <div className="self-start flex items-center justify-end w-full p-4 sticky top-0 bg-zinc-900 z-[60]">
-      <div className={clsx(!(isSignedIn && isCurrentPollAdmin) && "mr-auto")}>
+      <div className={clsx(!(isSignedIn && isAdmin) && "mr-auto")}>
         <Link href="/" className="hover:opacity-50">
-          <Logo width={160} height={40} />
+          <Logo width={160} height={24} />
         </Link>
       </div>
 
-      {isSignedIn && isCurrentPollAdmin ? (
+      {isSignedIn && isAdmin ? (
         <div className="mx-auto">
           <Button variant="pill" size="pill" onClick={onClickPollAdmin}>
             Poll Admin
@@ -97,4 +106,4 @@ export const HeaderView = () => {
       )}
     </div>
   );
-};
+}

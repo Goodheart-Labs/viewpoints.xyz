@@ -352,7 +352,6 @@ const CardController = forwardRef<HTMLDivElement, CardControllerProps>(
     return (
       <>
         {CardComponent}
-
         <ReportStatementDialog
           isActive={index === cardCount - 1}
           close={onClose}
