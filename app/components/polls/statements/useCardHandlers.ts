@@ -3,7 +3,6 @@ import type { PanInfo } from "framer-motion";
 import type { Response } from "@/db/schema";
 import { createResponse } from "@/app/api/responses/createResponse";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
-import { useSessionId } from "@/utils/frontendsessionutils";
 
 export const SWIPE_THRESHOLD = 150;
 
@@ -20,13 +19,15 @@ type HookArgs = {
   onStatementHide: () => void;
 };
 
+/**
+ * Handles card swipe and drag events
+ */
 export const useCardHandlers = ({
   statementId,
   pollId,
   onStatementHide,
 }: HookArgs) => {
   const { track } = useAmplitude();
-  const sessionId = useSessionId();
 
   const [leaveX, setLeaveX] = useState(0);
   const [leaveY, setLeaveY] = useState(0);
@@ -34,14 +35,10 @@ export const useCardHandlers = ({
   const onResponseChoice = useCallback(
     (choice: NonNullable<Response["choice"]>) => {
       startTransition(() => {
-        createResponse(
-          statementId,
-          {
-            type: "choice",
-            choice,
-          },
-          sessionId,
-        );
+        createResponse(statementId, {
+          type: "choice",
+          choice,
+        });
       });
 
       track({
@@ -64,20 +61,16 @@ export const useCardHandlers = ({
 
       onStatementHide();
     },
-    [onStatementHide, pollId, sessionId, statementId, track],
+    [onStatementHide, pollId, statementId, track],
   );
 
   const onResponseCustomOption = useCallback(
     (customOptionId: number) => {
       startTransition(() => {
-        createResponse(
-          statementId,
-          {
-            type: "customOption",
-            customOptionId,
-          },
-          sessionId,
-        );
+        createResponse(statementId, {
+          type: "customOption",
+          customOptionId,
+        });
       });
 
       track({
@@ -93,7 +86,7 @@ export const useCardHandlers = ({
 
       onStatementHide();
     },
-    [onStatementHide, pollId, sessionId, statementId, track],
+    [onStatementHide, pollId, statementId, track],
   );
 
   const onDragEnd = useCallback(

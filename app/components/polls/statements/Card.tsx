@@ -7,7 +7,7 @@ import { FlagIcon } from "lucide-react";
 import { UserAvatar } from "@/app/components/user/UserAvatar";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import type { Author, Statement, Response, StatementOption } from "@/db/schema";
-import { isEmail } from "@/utils/stringutils";
+import { isEmail } from "@/utils/strings";
 import type { ChoiceEnum, DB } from "kysely-codegen";
 import { CardButton } from "./CardButton";
 import { ReportStatementDialog } from "./ReportStatementDialog";
@@ -352,7 +352,6 @@ const CardController = forwardRef<HTMLDivElement, CardControllerProps>(
     return (
       <>
         {CardComponent}
-
         <ReportStatementDialog
           isActive={index === cardCount - 1}
           close={onClose}

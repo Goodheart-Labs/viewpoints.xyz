@@ -18,26 +18,13 @@ export const Logo = ({ width, height }: LogoProps) => {
     return <span />;
   }
   return (
-    <>
-      <div className="dark:hidden">
-        <Image
-          className="max-w-[160px] sm:max-w-none"
-          src="/logo.png"
-          alt="viewpoints.xyz"
-          width={width}
-          height={height}
-        />
-      </div>
-      <div className="hidden dark:block">
-        <Image
-          className="max-w-[160px] sm:max-w-none"
-          src="/logo-dark.png"
-          alt="viewpoints.xyz"
-          width={width}
-          height={height}
-        />
-      </div>
-    </>
+    <Image
+      className="max-w-[160px] sm:max-w-none"
+      src="/logo-dark.png"
+      alt="viewpoints.xyz"
+      width={width}
+      height={height}
+    />
   );
 };
 

@@ -35,7 +35,7 @@ const AccordionTrigger = React.forwardRef<
       {...props}
     >
       {children}
-      <ChevronUpCircle className="h-5 w-5 shrink-0 transition-transform duration-200 fill-black/75 dark:fill-white/75 stroke-background" />
+      <ChevronUpCircle className="h-5 w-5 shrink-0 transition-transform duration-200 fill-black/75 fill-white/75 stroke-background" />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ));

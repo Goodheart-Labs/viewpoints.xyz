@@ -31,19 +31,17 @@ const AnalyticsPage = async ({ params }: { params: { slug: string } }) => {
         <p className="mb-8">
           <Link
             href={`/polls/${poll.slug}`}
-            className="text-black dark:text-gray-200"
+            className="text-black text-gray-200"
           >
             &larr; Back to poll
           </Link>
         </p>
 
-        <h1 className="mb-4 text-4xl font-bold text-black dark:text-gray-200">
+        <h1 className="mb-4 text-4xl font-bold text-black text-gray-200">
           {poll.title}
         </h1>
         <div className="flex items-center gap-4 justify-center">
-          <h2 className="text-gray-800 sm:text-xl dark:text-gray-500">
-            Results
-          </h2>
+          <h2 className="text-gray-800 sm:text-xl text-gray-500">Results</h2>
           <DownloadButton poll={poll} {...statistics} />
         </div>
       </div>

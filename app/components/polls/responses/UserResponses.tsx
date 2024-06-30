@@ -1,6 +1,6 @@
 import type { FC } from "react";
 
-import { choiceToHumanReadablePastTense } from "@/utils/choiceUtils";
+import { choiceToHumanReadablePastTense } from "@/utils/choice";
 import { cn } from "@/utils/style-utils";
 import type { Response } from "@/db/schema";
 

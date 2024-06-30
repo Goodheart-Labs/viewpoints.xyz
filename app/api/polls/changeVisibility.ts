@@ -1,6 +1,6 @@
 "use server";
 
-import { requirePollAdmin } from "@/utils/authutils";
+import { requirePollAdmin } from "@/utils/auth";
 import { db } from "@/db/client";
 import type { Poll } from "@/db/schema";
 import { notFound } from "next/navigation";

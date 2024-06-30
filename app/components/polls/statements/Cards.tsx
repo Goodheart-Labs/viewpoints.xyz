@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Author, Statement, StatementOption } from "@/db/schema";
-import Card, { CARD_VERTICAL_OFFSET } from "./Card";
 import { shuffleList } from "@/utils/arrangement";
+import Card, { CARD_VERTICAL_OFFSET } from "./Card";
 
 const getStatementSorting = (statements: Statement[]) => {
   const demographicStatementIds = statements
@@ -96,6 +96,16 @@ const Cards = ({
 
     setCardHeight(lastChild?.clientHeight);
   }, [statementsToDisplay]);
+
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return <div className="h-[278px]" />;
+  }
 
   return (
     <div

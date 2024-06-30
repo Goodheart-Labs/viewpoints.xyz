@@ -9,7 +9,6 @@ import { RadioGroup } from "@/app/components/shadcn/ui/radio-group";
 import { Textarea } from "@/app/components/shadcn/ui/textarea";
 import { useToast } from "@/app/components/shadcn/ui/use-toast";
 import type { Statement } from "@/db/schema";
-import { useSessionId } from "@/utils/frontendsessionutils";
 
 import { Dialog } from "../../dialog";
 
@@ -33,8 +32,6 @@ export const ReportStatementDialog = ({
   close,
   statement,
 }: ReportStatementDialogProps) => {
-  const sessionId = useSessionId();
-
   const { reset, control, handleSubmit } = useForm<Form>({
     defaultValues: {
       reason: "",
@@ -67,21 +64,21 @@ export const ReportStatementDialog = ({
   const [isPending, startTransition] = useTransition();
 
   const onSave = handleSubmit((formData) => {
-    startTransition(() => {
-      flagStatement(statement.id, formData, sessionId).then(() => {
-        track({
-          type: "statement.flag.persist",
-          statementId: statement.id,
-          reason: formData.reason,
-        });
+    startTransition(async () => {
+      await flagStatement(statement.id, formData);
 
-        toast({
-          description: "Report submitted",
-        });
-
-        reset();
-        close();
+      track({
+        type: "statement.flag.persist",
+        statementId: statement.id,
+        reason: formData.reason,
       });
+
+      toast({
+        description: "Report submitted",
+      });
+
+      reset();
+      close();
     });
   });
 

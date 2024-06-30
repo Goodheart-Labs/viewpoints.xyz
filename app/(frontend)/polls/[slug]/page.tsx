@@ -13,10 +13,9 @@ import { ScrollArea } from "@/app/components/shadcn/ui/scroll-area";
 import { QrCodeGenerator } from "@/app/components/polls/QrCodeGenerator";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { isPollAdminOrSuperadmin } from "@/utils/authutils";
-import { auth } from "@clerk/nextjs";
+import { isPollAdminOrSuperadmin } from "@/utils/auth";
 import { BackToSouthGlos } from "@/components/BackToSouthGlos";
-import { headers } from "next/headers";
+import { auth } from "@clerk/nextjs/server";
 import { getData } from "./getData";
 
 type PollPageProps = {
@@ -24,9 +23,10 @@ type PollPageProps = {
   searchParams: { [SORT_PARAM]?: SortKey };
 };
 
-const PollPage = async ({ params, searchParams }: PollPageProps) => {
-  const headersList = headers();
-  const pathname = headersList.get("x-pathname");
+export const dynamic = "force-dynamic";
+
+export default async function Poll({ params, searchParams }: PollPageProps) {
+  const { userId } = auth();
 
   const {
     poll,
@@ -35,8 +35,6 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
     userResponses,
     statementOptions,
   } = await getData(params.slug);
-
-  const { userId } = auth();
 
   const canSeePoll =
     poll.visibility !== "private" ||
@@ -69,7 +67,7 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
           .map((statement) => statement.id)
       : [];
 
-  const isCouncilPoll = pathname ? pathname.includes("council") : false;
+  const isCouncilPoll = poll.slug?.includes("council");
 
   const questionsRemaining = filteredStatements.length > 0;
 
@@ -138,11 +136,10 @@ const PollPage = async ({ params, searchParams }: PollPageProps) => {
           </Statistics>
         )}
       </div>
-
       <Tutorial />
     </main>
   );
-};
+}
 
 export async function generateMetadata({
   params,
@@ -158,5 +155,3 @@ export async function generateMetadata({
     description: poll?.core_question,
   };
 }
-
-export default PollPage;

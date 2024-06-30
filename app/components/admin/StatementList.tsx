@@ -126,7 +126,7 @@ const StatementListRow = ({
     >
       {isFlagged ? (
         <div className="mb-2">
-          <span className="flex items-center text-xs bg-accent p-1.5 rounded-sm dark:text-zinc-400">
+          <span className="flex items-center text-xs bg-accent p-1.5 rounded-sm text-zinc-400">
             <FlagIcon width={10} height={10} className="mr-2" />
             This statement has been removed from poll because of 2 reports.
           </span>
@@ -135,7 +135,7 @@ const StatementListRow = ({
 
       <div className="flex items-center justify-between">
         <p
-          className={cn("mr-2 text-black dark:text-gray-200", {
+          className={cn("mr-2 text-black text-gray-200", {
             "opacity-25": !optimisticVisible || isFlagged,
           })}
         >

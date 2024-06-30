@@ -64,7 +64,7 @@ const PollAdminForm = ({
   });
 
   return (
-    <div className="flex flex-col items-stretch w-full h-full xl:max-w-3xl bg-zinc-950 xl:rounded-xl">
+    <div className="flex flex-col items-stretch w-full h-full xl:max-w-3xl mx-auto bg-zinc-950 xl:rounded-xl">
       <div className="p-6 grid gap-8">
         <DisabledInputWithLabel label="Poll subject" value={poll.title} />
         <DisabledInputWithLabel

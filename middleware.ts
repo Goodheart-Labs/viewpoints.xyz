@@ -1,44 +1,43 @@
-import { authMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { v4 as uuidv4 } from "uuid";
 
-import { NextResponse } from "next/server";
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/polls/(.*)",
+  "/api/public/(.*)",
+  "/privacy-policy",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+]);
 
-// Config
-// -----------------------------------------------------------------------------
+export default clerkMiddleware((auth, request) => {
+  if (!isPublicRoute(request)) {
+    auth().protect();
+  }
 
-const pollSlug = "([a-z0-9-]+)";
-
-const publicRoutes = [
-  `/`,
-  `/polls/${pollSlug}`,
-  `/polls/${pollSlug}/results`,
-  `/api/sessions`,
-  `/privacy-policy`,
-];
-
-const ignoredRoutes = [`/embed/polls/${pollSlug}`, `/api/polls/${pollSlug}`];
-
-export const SESSION_ID_COOKIE_NAME = "sessionId";
-export const CLEAR_LOCALSTORAGE_HEADER_NAME = "X-Clear-LocalStorage";
-export const AFTER_DEPLOY_COOKIE_NAME = "afterDeployWipe20231218";
+  return visitorMiddleware(request);
+});
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
 };
 
-// Auth middleware
-// -----------------------------------------------------------------------------
+function visitorMiddleware(request: NextRequest) {
+  const requestHeaders = new Headers(request.headers);
 
-export default authMiddleware({
-  publicRoutes,
-  ignoredRoutes,
-  beforeAuth(request) {
-    const requestHeaders = new Headers(request.headers);
-    requestHeaders.set("x-pathname", request.nextUrl.pathname);
+  // If there is no visitor id on the request header, set it
+  if (!requestHeaders.get("x-visitor-id")) {
+    // Use the visitor id from the cookie if it exists
+    const visitorId = request.cookies.get("__visitor_id")?.value;
 
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
-  },
-});
+    requestHeaders.set("x-visitor-id", visitorId || uuidv4());
+  }
+
+  return NextResponse.next({
+    request: {
+      ...request,
+      headers: requestHeaders,
+    },
+  });
+}

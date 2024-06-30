@@ -37,14 +37,14 @@ export const UserAvatar: FC<Props> = ({
       )}
     >
       {showName && (
-        <span className="text-sm leading-3 font-medium text-slate-700 dark:text-white/75">
+        <span className="text-sm leading-3 font-medium text-slate-700 text-white/75">
           {name ?? "Anonymous user"}
         </span>
       )}
 
       {subtitle && (
         <span
-          className="text-xs leading-3 text-slate-500 dark:text-white/50"
+          className="text-xs leading-3 text-slate-500 text-white/50"
           suppressHydrationWarning
         >
           {subtitle}
