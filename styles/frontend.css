@@ -7,3 +7,33 @@
 body {
   color: rgb(var(--foreground-rgb));
 }
+
+.text-wrap-balance {
+  text-wrap: balance;
+}
+
+.text-wrap-pretty {
+  text-wrap: pretty;
+}
+
+.upgrade-link {
+  @apply relative overflow-hidden border-2 transition-colors duration-200;
+}
+
+.upgrade-link:hover {
+  @apply border-orange-500;
+}
+
+.upgrade-link::before {
+  content: "";
+  display: block;
+  @apply h-full w-full bg-gradient-to-b from-transparent to-orange-500/30 left-0 absolute opacity-0 transition-opacity duration-200;
+}
+
+.upgrade-link:hover::before {
+  @apply opacity-100;
+}
+
+.upgrade-link * {
+  @apply relative z-10;
+}

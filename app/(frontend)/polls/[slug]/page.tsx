@@ -76,12 +76,12 @@ export default async function Poll({ params, searchParams }: PollPageProps) {
       {isCouncilPoll && !questionsRemaining ? <BackToSouthGlos /> : null}
       <div className="flex flex-col items-stretch w-full h-full max-w-full mx-auto xl:w-1/2 xl:bg-zinc-900 xl:rounded-xl">
         <div className="p-6 bg-zinc-800 xl:rounded-t-xl">
-          <div className="flex items-center justify-between">
+          <div className="flex items-end justify-between ">
             <p className="pl-2 mb-2 text-xs font-bold text-left uppercase border-l-2 text-zinc-400 border-l-zinc-400">
               Topic
             </p>
 
-            <div className="flex ml-auto">
+            <div className="flex ml-auto mb-2">
               <div className="mr-2">
                 <QrCodeGenerator />
               </div>
