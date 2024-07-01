@@ -79,15 +79,13 @@ export function HeaderView() {
         </div>
       ) : null}
 
-      <div className="z-50">
-        {isSignedIn ? (
-          <UserButton afterSignOutUrl="/" />
-        ) : (
-          <Button variant="pill" size="pill" onClick={onClickLogin}>
-            Login
-          </Button>
-        )}
-      </div>
+      {isSignedIn ? (
+        <UserButton afterSignOutUrl="/" />
+      ) : (
+        <Button variant="pill" size="pill" onClick={onClickLogin}>
+          Login
+        </Button>
+      )}
 
       {showSignIn && (
         <>
