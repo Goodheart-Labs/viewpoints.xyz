@@ -10,10 +10,11 @@ import { getPollResults } from "@/lib/pollResults/getPollResults";
 import { ScrollArea } from "@/app/components/shadcn/ui/scroll-area";
 import { cn } from "@/utils/style-utils";
 
-import { ChoicePercentages } from "./ChoicePercentages";
+import ChoiceBadge from "@/components/ChoiceBadge";
 import { HighlightedStatement } from "./HighlightedStatement";
 import { StatementSort } from "./StatementSort";
 import type { UserResponseItem } from "./UserResponses";
+import { shouldHighlightBadge } from "./shouldHighlightBadge";
 
 type Props = PropsWithChildren<{
   slug: string;
@@ -72,17 +73,29 @@ export const Statistics = async ({
               <p className="my-2 text-sm text-zinc-300">{statement.text}</p>
 
               <div className="flex gap-2 mb-2 text-white">
-                {statement.question_type === "default" ? (
-                  <ChoicePercentages
-                    userChoice={userResponses.get(statement.id)?.choice}
-                    votePercentages={statement.stats.votePercentages}
-                  />
-                ) : (
-                  statistics.statementOptions[statement.id]?.find(
-                    ({ id }) =>
-                      id === userResponses.get(statement.id)?.option_id,
-                  )?.option ?? null
-                )}
+                {statement.question_type === "default"
+                  ? (["agree", "disagree", "skip"] as const).map((choice) => (
+                      <ChoiceBadge
+                        key={choice}
+                        choice={choice}
+                        disabled={
+                          !shouldHighlightBadge(
+                            sortBy ?? "consensus",
+                            statement.stats.votePercentages,
+                            choice,
+                          )
+                        }
+                      >
+                        {Math.round(
+                          statement.stats.votePercentages.get(choice) ?? 0,
+                        )}
+                        %
+                      </ChoiceBadge>
+                    ))
+                  : statistics.statementOptions[statement.id]?.find(
+                      ({ id }) =>
+                        id === userResponses.get(statement.id)?.option_id,
+                    )?.option ?? null}
               </div>
             </div>
           ))}
