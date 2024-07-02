@@ -2,7 +2,7 @@ import { Main } from "@/app/components/Main";
 import { Button } from "@/app/components/shadcn/ui/button";
 import { db } from "@/db/client";
 import { auth } from "@clerk/nextjs";
-import { Plus } from "lucide-react";
+import { EyeIcon, PencilIcon, Plus } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -35,15 +35,31 @@ export default async function Page() {
       </header>
       {userPolls.length ? (
         userPolls.map((poll) => (
-          <Link
+          <div
             key={poll.id}
-            href={`/polls/${poll.slug}/admin`}
-            prefetch={false}
-            className="p-4 rounded-lg bg-white/10 hover:bg-white/5"
+            className="flex justify-between items-start p-4 rounded-lg bg-white/10"
           >
-            <h2 className="text-xl font-medium">{poll.title}</h2>
-            <p className="opacity-70 text-sm">{poll.core_question}</p>
-          </Link>
+            <div className="grid">
+              <h2 className="text-xl font-medium">{poll.title}</h2>
+              <p className="opacity-70 text-sm">{poll.core_question}</p>
+            </div>
+            <div className="flex gap-2">
+              <Link
+                prefetch={false}
+                href={`/polls/${poll.slug}/admin`}
+                className="p-2 rounded bg-white/10 hover:bg-white/5"
+              >
+                <PencilIcon size={16} />
+              </Link>
+              <Link
+                prefetch={false}
+                href={`/polls/${poll.slug}`}
+                className="p-2 rounded bg-white/10 hover:bg-white/5"
+              >
+                <EyeIcon size={16} />
+              </Link>
+            </div>
+          </div>
         ))
       ) : (
         <p className="text-center text-lg opacity-70">
