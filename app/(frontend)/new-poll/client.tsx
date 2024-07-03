@@ -18,6 +18,7 @@ import {
   QuestionTitle,
   SubTitle,
 } from "@/app/components/polls/poll-components";
+import { cn } from "@/utils/style-utils";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -31,6 +32,7 @@ type NewPollPageClientViewProps = {
     onSubmit: (data: FormData) => void;
     onBlurTitle: () => void;
   };
+  canCreatePoll: boolean;
 };
 
 // Validation
@@ -79,8 +81,13 @@ const NewPollPageClientView = ({
     formState: { errors, isValid },
   },
   callbacks: { onSubmit, onBlurTitle },
+  canCreatePoll,
 }: NewPollPageClientViewProps) => (
-  <form className="flex flex-col w-full px-4">
+  <form
+    className={cn("flex flex-col w-full px-4", {
+      "opacity-70 cursor-not-allowed": !canCreatePoll,
+    })}
+  >
     <div className="flex flex-col w-full">
       <div className="flex flex-col w-full">
         <QuestionTitle>Poll Title</QuestionTitle>
@@ -221,10 +228,8 @@ const NewPollPageClientView = ({
 // Default export
 // -----------------------------------------------------------------------------
 
-const NewPollPageClient = () => {
+const NewPollPageClient = ({ canCreatePoll }: { canCreatePoll: boolean }) => {
   const router = useRouter();
-
-  // State
 
   const form = useForm<FormData>({
     mode: "onChange",
@@ -233,6 +238,7 @@ const NewPollPageClient = () => {
       with_demographic_questions: false,
       new_statements_visible_by_default: true,
     },
+    disabled: !canCreatePoll,
   });
 
   // Mutations
@@ -304,6 +310,7 @@ const NewPollPageClient = () => {
       }}
       form={form}
       callbacks={{ onSubmit, onBlurTitle }}
+      canCreatePoll={canCreatePoll}
     />
   );
 };
