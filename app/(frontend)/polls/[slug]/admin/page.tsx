@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import PollAdminForm from "@/app/components/admin/PollAdminForm";
-import { requirePollAdmin } from "@/utils/authutils";
+import { requirePollAdmin } from "@/utils/auth";
 import { db } from "@/db/client";
 import type { FlaggedStatement } from "@/db/schema";
 
@@ -58,7 +58,10 @@ const PollAdminPage = async ({ params }: PollAdminPageProps) => {
   const { poll, statements, flaggedStatements } = await getData(params.slug);
 
   return (
-    <main className="flex flex-col items-center flex-1 w-full bg-black xl:p-8 xl:flex-row xl:justify-center xl:gap-8 xl:overflow-y-hidden">
+    <main className="grid gap-2 pt-12">
+      <div className="flex flex-col items-center justify-center">
+        <h1 className="text-2xl font-bold text-white">{poll.title}</h1>
+      </div>
       <PollAdminForm
         poll={poll}
         statements={statements}

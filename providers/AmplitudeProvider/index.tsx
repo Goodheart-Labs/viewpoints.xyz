@@ -11,7 +11,7 @@ import {
 import * as amplitude from "@amplitude/analytics-browser";
 import { defaultEventTrackingAdvancedPlugin } from "@amplitude/plugin-default-event-tracking-advanced-browser";
 
-import { useSession } from "../SessionProvider";
+import { useAuth } from "@clerk/nextjs";
 import type { TrackingEvent } from "./types";
 
 const defaultEventTrackingPlugin = defaultEventTrackingAdvancedPlugin();
@@ -31,7 +31,7 @@ export const useAmplitude = () => {
 };
 
 const AmplitudeProvider = ({ children }: PropsWithChildren) => {
-  const { sessionId } = useSession();
+  const { sessionId } = useAuth();
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {

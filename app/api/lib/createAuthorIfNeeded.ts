@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db/client";
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 
 export const createAuthorIfNeeded = async () => {
   const user = await currentUser();

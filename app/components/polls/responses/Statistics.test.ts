@@ -41,6 +41,7 @@ describe("getHighlightedStatements", () => {
           mostCommonChoice: "skip",
           consensus: 0,
           conflict: 0,
+          voteCounts: new Map([["skip", 1]]),
         },
       },
       {
@@ -56,6 +57,7 @@ describe("getHighlightedStatements", () => {
           mostCommonChoice: "skip",
           consensus: 0,
           conflict: 0,
+          voteCounts: new Map([["skip", 1]]),
         },
       },
     ];
@@ -106,6 +108,7 @@ describe("getHighlightedStatements", () => {
           mostCommonChoice: "agree",
           consensus: 90,
           conflict: 10,
+          voteCounts: new Map([["agree", 2]]),
         },
       },
       {
@@ -121,6 +124,7 @@ describe("getHighlightedStatements", () => {
           mostCommonChoice: "disagree",
           consensus: 30,
           conflict: 70,
+          voteCounts: new Map([["disagree", 2]]),
         },
       },
     ];
@@ -197,6 +201,7 @@ describe("getHighlightedStatements", () => {
           mostCommonChoice: "agree",
           consensus: 100,
           conflict: 0,
+          voteCounts: new Map([["agree", 1]]),
         },
       },
     ];
@@ -243,6 +248,7 @@ describe("getHighlightedStatements", () => {
           mostCommonChoice: "agree",
           consensus: 80,
           conflict: 20,
+          voteCounts: new Map([["agree", 1]]),
         },
       },
       {
@@ -258,6 +264,7 @@ describe("getHighlightedStatements", () => {
           mostCommonChoice: "disagree",
           consensus: 50,
           conflict: 50,
+          voteCounts: new Map([["disagree", 1]]),
         },
       },
     ];
