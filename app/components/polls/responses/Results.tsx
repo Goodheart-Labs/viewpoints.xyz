@@ -3,16 +3,12 @@
 import type { FC } from "react";
 import { useCallback, useMemo, useState } from "react";
 import ChoiceBadge from "@/components/ChoiceBadge";
-import type {
-  ChoicePercentages,
-  SortKey,
-  StatementWithStats,
-} from "@/lib/pollResults/constants";
+import type { SortKey, StatementWithStats } from "@/lib/pollResults/constants";
 import { sortDescriptionDict, sortOptions } from "@/lib/pollResults/constants";
 import { CaretDownIcon } from "@radix-ui/react-icons";
 import type { Response, StatementOption } from "@/db/schema";
 import { getStatementsWithStats } from "@/lib/pollResults/getStatementsWithStats";
-import { useIsSuperuser } from "@/utils/frontendauthutils";
+import { useIsSuperuser } from "@/utils/authFrontend";
 import { ArrowDownNarrowWideIcon } from "lucide-react";
 import {
   Popover,
@@ -20,6 +16,7 @@ import {
   PopoverContent,
 } from "../../shadcn/ui/popover";
 import { ToggleGroup, ToggleGroupItem } from "../../shadcn/ui/toggle-group";
+import { shouldHighlightBadge } from "./shouldHighlightBadge";
 
 type StatementWithStatsAndResponses = StatementWithStats & {
   responses: Response[];
@@ -372,32 +369,3 @@ export const useDemographicResponses = (
 
   return response;
 };
-
-/**
- * Determines whether a badge should be highlighted based on the sort type, vote percentages, and choice type.
- *
- * @param sortType - The sort type used to determine the highlighting logic.
- * @param votePercentages - The vote percentages for each choice.
- * @param choiceType - The type of choice.
- * @return Whether the badge should be highlighted.
- */
-function shouldHighlightBadge(
-  sortType: SortKey,
-  votePercentages: ChoicePercentages,
-  choiceType: Response["choice"],
-) {
-  if (sortType === "consensus") {
-    const nonSkipPercentageList = (["agree", "disagree"] as const).map(
-      (choice) => votePercentages.get(choice)!,
-    );
-    const highestPercentage = Math.max(...nonSkipPercentageList);
-    return votePercentages.get(choiceType) === highestPercentage;
-  }
-
-  if (sortType === "conflict")
-    return ["agree", "disagree"].includes(choiceType!);
-
-  if (sortType === "confusion") return choiceType === "skip";
-
-  return false;
-}

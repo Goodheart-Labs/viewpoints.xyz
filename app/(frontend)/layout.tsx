@@ -1,13 +1,16 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
-import { Header } from "@/components/Header";
 import { Toaster } from "@/app/components/shadcn/ui/toaster";
-import SessionProvider from "@/providers/SessionProvider";
 import { getBaseUrl } from "@/utils/constants";
+import { HeaderView } from "@/components/HeaderView";
+import { SubscriptionProvider } from "@/providers/SubscriptionProvider";
+import { getSubscription } from "@/lib/getSubscription";
+import PosthogPageView from "@/components/PosthogPageView";
 import Contexts from "../components/Contexts";
 import LogrocketWrapper from "../components/LogrocketWrapper";
 import "@/styles/tailwind.css";
 import "@/styles/frontend.css";
+import { TrackVisitor } from "../components/TrackVisitor";
 
 // Metadata
 // -----------------------------------------------------------------------------
@@ -31,22 +34,28 @@ export const viewport: Viewport = {
 // Default export
 // -----------------------------------------------------------------------------
 
-const RootLayout = ({ children }: { children: React.ReactNode }) => (
-  <ClerkProvider>
-    <html lang="en" suppressHydrationWarning>
-      <body className="flex flex-col items-stretch min-h-screen bg-black">
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <ClerkProvider>
+      <SubscriptionProvider initialState={await getSubscription()}>
         <LogrocketWrapper>
-          <SessionProvider>
-            <Contexts>
-              <Header />
-              {children}
-            </Contexts>
-          </SessionProvider>
+          <Contexts>
+            <html lang="en">
+              <body className="flex flex-col items-stretch min-h-screen bg-black">
+                <HeaderView />
+                {children}
+                <Toaster />
+                <TrackVisitor />
+                <PosthogPageView />
+              </body>
+            </html>
+          </Contexts>
         </LogrocketWrapper>
-        <Toaster />
-      </body>
-    </html>
-  </ClerkProvider>
-);
-
-export default RootLayout;
+      </SubscriptionProvider>
+    </ClerkProvider>
+  );
+}
