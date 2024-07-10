@@ -162,7 +162,7 @@ const NewPollPageClientView = ({
             <div className="flex flex-col mb-5 ">
               <Textarea className="leading-6" rows={5} {...field} />
               {errors?.statements ? (
-                <span className="mt-1 text-sm text-red-500">
+                <span className="mt-1 text-sm text-orange-500">
                   {errors.statements.message}
                 </span>
               ) : null}
