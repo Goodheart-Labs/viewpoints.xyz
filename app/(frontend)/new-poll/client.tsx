@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation";
 import slugify from "slugify";
 import * as yup from "yup";
 
-import StatementList from "@/app/components/polls/new/StatementList";
 import BorderedButton from "@/components/BorderedButton";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
 import {
@@ -19,6 +18,7 @@ import {
   SubTitle,
 } from "@/app/components/polls/poll-components";
 import { cn } from "@/utils/style-utils";
+import { Textarea } from "@/app/components/shadcn/ui/textarea";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -44,6 +44,8 @@ const checkSlugExists = async (slug: string) => {
   );
   return res.data?.pollExists;
 };
+const getStatementsArrayFromString = (value: string) =>
+  value.split("\n").filter((s) => s.trim() !== "");
 
 const schema = yup
   .object({
@@ -60,7 +62,17 @@ const schema = yup
         }),
     ),
     question: yup.string().default(""),
-    statements: yup.array().of(yup.string().required()).min(5).required(),
+    statements: yup.string().test(
+      "statements",
+      ({ value }) => {
+        if (typeof value !== "string") return "";
+        return `At least ${5 - getStatementsArrayFromString(value).length} more statements required. (Use a new line for each statement)`;
+      },
+      (value) => {
+        if (typeof value !== "string") return false;
+        return getStatementsArrayFromString(value).length >= 5;
+      },
+    ),
     with_demographic_questions: yup.boolean().default(false),
     new_statements_visible_by_default: yup.boolean().default(true),
   })
@@ -76,7 +88,6 @@ const NewPollPageClientView = ({
   form: {
     register,
     handleSubmit,
-    watch,
     control,
     formState: { errors, isValid },
   },
@@ -153,18 +164,14 @@ const NewPollPageClientView = ({
           name="statements"
           control={control}
           render={({ field }) => (
-            <StatementList
-              data={{ title: watch("title"), question: watch("question") }}
-              state={{ errors }}
-              callbacks={{
-                onStatementsChange: (statements) => {
-                  field.onChange(statements);
-                },
-                onStatementsBlur: (statements) => {
-                  field.onChange(statements);
-                },
-              }}
-            />
+            <div className="flex flex-col mb-5 ">
+              <Textarea className="leading-6" rows={5} {...field} />
+              {errors?.statements ? (
+                <span className="mt-1 text-sm text-red-500">
+                  {errors.statements.message}
+                </span>
+              ) : null}
+            </div>
           )}
         />
       </div>
@@ -251,7 +258,7 @@ const NewPollPageClient = ({ canCreatePoll }: { canCreatePoll: boolean }) => {
       statements,
       with_demographic_questions,
       new_statements_visible_by_default,
-    }: FormData) => {
+    }: Omit<FormData, "statements"> & { statements: string[] }) => {
       await axios.post(`/api/polls`, {
         title,
         slug,
@@ -279,7 +286,7 @@ const NewPollPageClient = ({ canCreatePoll }: { canCreatePoll: boolean }) => {
       title,
       slug,
       question,
-      statements: statements.filter((c) => c.trim() !== ""),
+      statements: statements!.split("\n").filter((c) => c.trim() !== ""),
       with_demographic_questions,
       new_statements_visible_by_default,
     });
