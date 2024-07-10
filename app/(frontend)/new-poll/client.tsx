@@ -64,14 +64,9 @@ const schema = yup
     question: yup.string().default(""),
     statements: yup.string().test(
       "statements",
-      ({ value }) => {
-        if (typeof value !== "string") return "";
-        return `At least ${5 - getStatementsArrayFromString(value).length} more statements required. (Use a new line for each statement)`;
-      },
-      (value) => {
-        if (typeof value !== "string") return false;
-        return getStatementsArrayFromString(value).length >= 5;
-      },
+      ({ value }) =>
+        `At least ${5 - getStatementsArrayFromString(value).length} more statements required. (Use a new line for each statement)`,
+      (value) => getStatementsArrayFromString(value!).length >= 5,
     ),
     with_demographic_questions: yup.boolean().default(false),
     new_statements_visible_by_default: yup.boolean().default(true),
@@ -242,6 +237,7 @@ const NewPollPageClient = ({ canCreatePoll }: { canCreatePoll: boolean }) => {
     mode: "onChange",
     resolver: yupResolver(schema),
     defaultValues: {
+      statements: "",
       with_demographic_questions: false,
       new_statements_visible_by_default: true,
     },
