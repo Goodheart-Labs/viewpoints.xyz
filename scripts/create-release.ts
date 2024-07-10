@@ -88,8 +88,8 @@ function createPullRequest(version: string, mergedPRs: string): void {
 /**
  * Function to open a pull request in the browser
  */
-function openPullRequest(version: string): void {
-  exec(`gh pr view --web release-v${version}`);
+function openPullRequest(): void {
+  exec(`gh pr view --web`);
 }
 
 // Main function
@@ -134,10 +134,7 @@ async function createRelease(): Promise<void> {
   );
 
   // Open the pull request
-  runAction(
-    () => openPullRequest(newVersion),
-    `Opening pull request for v${newVersion}`,
-  );
+  runAction(() => openPullRequest(), "Opened pull request");
 }
 
 createRelease().catch(console.error);
