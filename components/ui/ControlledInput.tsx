@@ -1,3 +1,4 @@
+import { Input } from "@/app/components/polls/poll-components";
 import type { ChangeEvent, InputHTMLAttributes } from "react";
 import { useState } from "react";
 
@@ -20,7 +21,7 @@ const ControlledInput = ({
     propOnChange(e.target.value);
   };
 
-  return <input type="text" value={value} onChange={onChange} {...props} />;
+  return <Input type="text" value={value} onChange={onChange} {...props} />;
 };
 
 export default ControlledInput;

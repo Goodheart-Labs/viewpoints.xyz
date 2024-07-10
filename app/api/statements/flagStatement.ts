@@ -3,16 +3,18 @@
 import type { FlaggedStatement } from "@/db/schema";
 import { notFound } from "next/navigation";
 import { db } from "@/db/client";
-import { safeUserId } from "@/utils/clerkutils";
-import { getSessionId } from "@/utils/sessionutils";
+import { auth } from "@clerk/nextjs/server";
+import { getVisitorId } from "@/lib/getVisitorId";
 import { refreshPoll } from "../lib/refreshPoll";
 
 export const flagStatement = async (
   statementId: number,
   data: Pick<FlaggedStatement, "reason" | "description">,
-  sessionId: string = getSessionId(),
 ) => {
-  const userId = await safeUserId();
+  const { userId: user_id, sessionId } = auth();
+  const visitorId = getVisitorId();
+
+  const session_id = sessionId || visitorId;
 
   const statement = await db
     .selectFrom("statements")
@@ -28,8 +30,8 @@ export const flagStatement = async (
     .insertInto("flagged_statements")
     .values({
       statementId: statement.id,
-      user_id: userId,
-      session_id: sessionId,
+      user_id,
+      session_id,
       ...data,
     })
     .execute();

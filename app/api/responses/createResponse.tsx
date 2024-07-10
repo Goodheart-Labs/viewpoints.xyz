@@ -3,10 +3,13 @@
 import { notFound } from "next/navigation";
 import type { Response } from "@/db/schema";
 import { db } from "@/db/client";
-import { getSessionId } from "@/utils/sessionutils";
-import { safeUserId } from "@/utils/clerkutils";
+import { auth } from "@clerk/nextjs/server";
+import { getVisitorId } from "@/lib/getVisitorId";
 import { refreshPoll } from "../lib/refreshPoll";
 
+/**
+ * Creates a response for a statement.
+ */
 export const createResponse = async (
   statementId: number,
   answer:
@@ -18,9 +21,11 @@ export const createResponse = async (
         type: "customOption";
         customOptionId: number;
       },
-  sessionId: string = getSessionId(),
 ) => {
-  const userId = await safeUserId();
+  const { userId: user_id, sessionId: authSessionId } = auth();
+  const visitorId = getVisitorId();
+
+  const session_id = authSessionId || visitorId;
 
   const statement = await db
     .selectFrom("statements")
@@ -36,9 +41,9 @@ export const createResponse = async (
     await db
       .insertInto("responses")
       .values({
-        user_id: userId,
+        user_id,
         statementId,
-        session_id: sessionId,
+        session_id,
         choice: answer.choice,
       })
       .execute();
@@ -46,9 +51,9 @@ export const createResponse = async (
     await db
       .insertInto("responses")
       .values({
-        user_id: userId,
+        user_id,
         statementId,
-        session_id: sessionId,
+        session_id,
         option_id: answer.customOptionId,
       })
       .execute();

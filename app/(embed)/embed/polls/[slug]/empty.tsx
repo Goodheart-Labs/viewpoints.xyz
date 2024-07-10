@@ -20,7 +20,7 @@ export const EmptyMessage = ({ slug }: { slug: string }) => {
           <Button
             variant="pill"
             size="pill"
-            className="pr-5 text-sm dark:bg-white dark:text-gray-800 hover:dark:bg-white/80"
+            className="pr-5 text-sm bg-white text-gray-800 hover:bg-white/80"
           >
             View results
           </Button>

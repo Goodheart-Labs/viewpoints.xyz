@@ -1,17 +1,18 @@
 import { Main } from "@/app/components/Main";
 import { Button } from "@/app/components/shadcn/ui/button";
+import { PageTitle } from "@/components/PageTitle";
+import { UpgradeLink } from "@/components/UpgradeLink";
 import { db } from "@/db/client";
-import { auth } from "@clerk/nextjs";
+import { isUserPro } from "@/lib/pro";
+import { auth } from "@clerk/nextjs/server";
 import { EyeIcon, PencilIcon, Plus } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
   const { userId } = auth();
-
-  if (!userId) redirect("/sign-in");
+  const isPro = await isUserPro();
 
   const userPolls = await db
     .selectFrom("polls")
@@ -21,18 +22,17 @@ export default async function Page() {
 
   return (
     <Main className="grid gap-4 text-white">
-      <header className="flex items-end justify-between border-b pb-2">
-        <h1 className="text-3xl font-medium">My Polls</h1>
+      <PageTitle title="My Polls">
         <Button
           asChild
-          className="bg-neutral-800 text-white/70 hover:text-white hover:bg-neutral-700"
+          className="text-white/70 flex gap-2 items-center bg-neutral-800 hover:text-white hover:bg-neutral-700"
         >
-          <Link href="/new-poll" className="flex gap-2 items-center">
+          <Link href="/new-poll">
             <Plus size={16} />
-            Create Poll
+            Create New Poll
           </Link>
         </Button>
-      </header>
+      </PageTitle>
       {userPolls.length ? (
         userPolls.map((poll) => (
           <div
@@ -66,6 +66,7 @@ export default async function Page() {
           You haven&apos;t created any polls yet.
         </p>
       )}
+      {!isPro ? <UpgradeLink>Need more polls?</UpgradeLink> : null}
     </Main>
   );
 }
