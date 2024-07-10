@@ -5,6 +5,7 @@ import { getBaseUrl } from "@/utils/constants";
 import { HeaderView } from "@/components/HeaderView";
 import { SubscriptionProvider } from "@/providers/SubscriptionProvider";
 import { getSubscription } from "@/lib/getSubscription";
+import PosthogPageView from "@/components/PosthogPageView";
 import Contexts from "../components/Contexts";
 import LogrocketWrapper from "../components/LogrocketWrapper";
 import "@/styles/tailwind.css";
@@ -49,6 +50,7 @@ export default async function RootLayout({
                 {children}
                 <Toaster />
                 <TrackVisitor />
+                <PosthogPageView />
               </body>
             </html>
           </Contexts>
