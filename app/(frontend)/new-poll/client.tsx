@@ -152,8 +152,8 @@ const NewPollPageClientView = ({
       <div className="flex flex-col w-full mt-10">
         <QuestionTitle>Statements</QuestionTitle>
         <SubTitle>
-          Add at least five statements that people can respond to. The more the
-          better!
+          Use a new line for each statement. Add at least five statements that
+          people can respond to. The more the better!
         </SubTitle>
         <Controller
           name="statements"
