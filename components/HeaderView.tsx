@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { SignIn, UserButton, useUser } from "@clerk/nextjs";
+import { UserButton, useUser, SignInButton } from "@clerk/nextjs";
 import clsx from "clsx";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/app/components/shadcn/ui/button";
@@ -14,7 +12,6 @@ import { Logo } from "./Logo";
 export function HeaderView() {
   const router = useRouter();
   const { isSignedIn, user } = useUser();
-  const [showSignIn, setShowSignIn] = useState(false);
   const { slug } = useParams();
 
   const { data: isAdmin } = useQuery(
@@ -31,11 +28,6 @@ export function HeaderView() {
       enabled: isSignedIn,
     },
   );
-
-  // Callbacks
-  const onClickLogin = () => {
-    setShowSignIn(true);
-  };
 
   const onClickPollAdmin = () => {
     router.push(`/polls/${slug}/admin`);
@@ -82,25 +74,7 @@ export function HeaderView() {
       {isSignedIn ? (
         <UserButton afterSignOutUrl="/" />
       ) : (
-        <Button variant="pill" size="pill" onClick={onClickLogin}>
-          Login
-        </Button>
-      )}
-
-      {showSignIn && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={clsx(
-              "fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-80 z-40",
-            )}
-            onClick={() => setShowSignIn(false)}
-          />
-          <div className="fixed z-[100] top-[30vh] h-[200px] flex w-full justify-center items-center">
-            <SignIn />
-          </div>
-        </>
+        <SignInButton>Login</SignInButton>
       )}
     </div>
   );
