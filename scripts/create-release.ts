@@ -41,15 +41,42 @@ function updateVersion(newVersion: string): void {
 function getMergedPRs(): string {
   let prList: string;
   try {
-    const lastTag = exec("git describe --tags --abbrev=0");
-    prList = exec(
-      `gh pr list --base main --state merged --limit 1000 --json number,title,mergedAt --jq '.[] | select(.mergedAt > "${lastTag}") | "- " + .title + " (#" + (.number | tostring) + ")"'`,
-    );
+    // console.log("Fetching tags from remote...");
+    exec("git fetch --tags");
+
+    // Get the most recent tag
+    const lastTag = exec("git ls-remote --tags origin | sort -r | head -n 1");
+    // console.log(`Most recent tag: ${lastTag}`);
+
+    // Get the commit hash of the tag
+    const tagCommit = exec(`git rev-list -n 1 ${lastTag}`);
+    // console.log(`Tag commit: ${tagCommit}`);
+
+    // Get the date of the tag in ISO 8601 format
+    const tagDate = exec(`git show -s --format=%cI ${tagCommit}`);
+    // console.log(`Tag date: ${tagDate}`);
+
+    // Increment the tag date by one day so as not to get PRs merged in around tag time
+    const nextDay = new Date(tagDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const nextDayISO = nextDay.toISOString();
+    // console.log(`Next day after tag: ${nextDayISO}`);
+
+    // Use GitHub CLI to get PRs merged into main after the tag date
+    const command = `gh pr list --base main --state merged --limit 1000 --json number,title,mergedAt --jq '.[] | select(.mergedAt > "${nextDayISO}") | "- " + .title + " (#" + (.number | tostring) + ")"'`;
+    // console.log(`Executing command: ${command}`);
+
+    prList = exec(command);
+
+    if (prList.trim() === "") {
+      console.log("No PRs found after the last tag.");
+    } else {
+      console.log("PRs found:");
+      console.log(prList);
+    }
   } catch (error) {
-    // If no tags found, get the last 10 merged PRs
-    prList = exec(
-      'gh pr list --base main --state merged --limit 10 --json number,title --jq \'.[] | "- " + .title + " (#" + (.number | tostring) + ")"\'',
-    );
+    console.error("Error in getMergedPRs:", error);
+    throw error;
   }
   return prList;
 }
