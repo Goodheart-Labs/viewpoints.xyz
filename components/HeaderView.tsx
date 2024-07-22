@@ -51,6 +51,11 @@ export function HeaderView() {
 
       {isSignedIn ? (
         <div className="flex gap-3 items-center">
+          <Button variant="pill" size="pill" asChild>
+            <Link href="/new-poll" prefetch={false}>
+              <PlusCircle className="w-3 mr-2" /> Create Poll
+            </Link>
+          </Button>
           <Link
             href="/user/polls"
             className="text-white hover:opacity-50 text-sm"
@@ -59,15 +64,10 @@ export function HeaderView() {
           </Link>
           <Link
             href="/user/account"
-            className="text-white hover:opacity-50 text-sm"
+            className="text-white hover:opacity-50 text-sm mr-4"
           >
             Account
           </Link>
-          <Button variant="pill" size="pill" className="mr-2" asChild>
-            <Link href="/new-poll" prefetch={false}>
-              <PlusCircle className="w-3 mr-2" /> Create Poll
-            </Link>
-          </Button>
         </div>
       ) : null}
 
