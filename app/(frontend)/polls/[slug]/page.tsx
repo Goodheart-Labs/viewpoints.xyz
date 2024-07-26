@@ -79,20 +79,20 @@ export default async function Poll({ params, searchParams }: PollPageProps) {
               Topic
             </p>
 
-            <div className="flex items-center gap-2 ml-auto mb-2">
+            <div className="flex items-center gap-3 ml-auto mb-2">
               <div className="text-white rounded-l text-xs">
-                <VisibilityIcon className="inline w-3 h-3 mr-2 mb-0.5" />
+                <VisibilityIcon className="inline w-3 h-3 mr-1.5 mb-0.5" />
 
                 {visibilityText}
               </div>
 
-              <div className="mr-2">
+              <div className="">
                 <QrCodeGenerator />
               </div>
 
-              <Link href={`/polls/${poll.slug}/results`} className="mr-2 group">
-                <div className="flex items-center rounded-full bg-zinc-600 text-white text-xs px-2 py-[6px] group-hover:bg-zinc-500">
-                  <BarChartIcon className="inline w-3 h-3 mr-2" />
+              <Link href={`/polls/${poll.slug}/results`} className="group">
+                <div className="flex items-center rounded-full bg-zinc-600 text-white text-xs px-3 py-[6px] group-hover:bg-zinc-500">
+                  <BarChartIcon className="inline w-3 h-3 mr-1.5" />
                   Results
                 </div>
               </Link>
