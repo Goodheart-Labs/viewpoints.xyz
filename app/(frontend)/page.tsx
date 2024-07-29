@@ -194,14 +194,14 @@ const Index = async () => {
                         }
                         alt={
                           !isEmail(authors[poll.user_id]?.name)
-                            ? authors[poll.user_id].name ?? "Anonymous"
+                            ? (authors[poll.user_id].name ?? "Anonymous")
                             : "Anonymous"
                         }
                         className="w-6 h-6 mr-2 rounded-full grayscale group-hover:grayscale-0"
                       />
                       <span>
                         {!isEmail(authors[poll.user_id]?.name)
-                          ? authors[poll.user_id].name ?? "Anonymous"
+                          ? (authors[poll.user_id].name ?? "Anonymous")
                           : "Anonymous"}
                       </span>
                     </p>

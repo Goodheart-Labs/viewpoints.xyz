@@ -14,8 +14,9 @@ import { notFound } from "next/navigation";
 import { isPollAdminOrSuperadmin } from "@/utils/auth";
 import { BackToSouthGlos } from "@/components/BackToSouthGlos";
 import { auth } from "@clerk/nextjs/server";
-import { getData } from "./getData";
+import { getVisitorId } from "@/lib/getVisitorId";
 import { Progress } from "@/app/components/shadcn/ui/progress";
+import { getData } from "./getData";
 
 type PollPageProps = {
   params: { slug: string };
@@ -26,6 +27,11 @@ export const dynamic = "force-dynamic";
 
 export default async function Poll({ params, searchParams }: PollPageProps) {
   const { userId } = auth();
+  const visitorId = await getVisitorId();
+
+  if (!visitorId) {
+    throw new Error("Visitor ID not found");
+  }
 
   const {
     poll,
@@ -33,7 +39,7 @@ export default async function Poll({ params, searchParams }: PollPageProps) {
     filteredStatements,
     userResponses,
     statementOptions,
-  } = await getData(params.slug);
+  } = await getData(params.slug, visitorId);
 
   const canSeePoll =
     poll.visibility !== "private" ||
@@ -123,10 +129,6 @@ export default async function Poll({ params, searchParams }: PollPageProps) {
             <div className="flex justify-center mt-8 mb-10 sm:mb-0 sm:mt-0 pb-8">
               <CreateStatementButton pollId={poll.id} />
             </div>
-
-            {/* <ScrollArea className="mt-4">
-              <UserResponses responses={userResponses} />
-            </ScrollArea> */}
           </>
         ) : (
           <Statistics
@@ -151,9 +153,9 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }) {
+  const visitorId = await getVisitorId();
   const { slug } = params;
-
-  const { poll } = await getData(slug);
+  const { poll } = await getData(slug, visitorId);
 
   return {
     title: `viewpoints.xyz | ${poll?.title}`,
