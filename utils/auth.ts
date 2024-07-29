@@ -1,5 +1,5 @@
 import type { Poll } from "@/db/schema";
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser, User } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 
 export const isPollAdmin = (
@@ -7,17 +7,12 @@ export const isPollAdmin = (
   userId: string | null | undefined,
 ): poll is Poll => Boolean(userId && poll && poll.user_id === userId);
 
-export const isPollAdminOrSuperadmin = async (
+export const isPollAdminOrSuperadmin = (
   poll: Poll | null | undefined,
   userId: string | null | undefined,
+  isSuperAdmin: boolean,
 ) => {
-  const user = await currentUser();
-
-  if (!user) {
-    return false;
-  }
-
-  if (user.publicMetadata.isSuperAdmin || isPollAdmin(poll, userId)) {
+  if (isSuperAdmin || isPollAdmin(poll, userId)) {
     return true;
   }
 
@@ -26,7 +21,11 @@ export const isPollAdminOrSuperadmin = async (
 
 export const requirePollAdmin = async (poll: Poll | null): Promise<boolean> => {
   const user = await currentUser();
-  const canEditPoll = await isPollAdminOrSuperadmin(poll, user?.id);
+  const canEditPoll = isPollAdminOrSuperadmin(
+    poll,
+    user?.id,
+    user?.publicMetadata.isSuperAdmin as boolean,
+  );
 
   if (canEditPoll) {
     return true;

@@ -1,3 +1,4 @@
+"use client";
 import { type PropsWithChildren } from "react";
 
 import type { Response } from "@/db/schema";
@@ -15,21 +16,29 @@ import { HighlightedStatement } from "./HighlightedStatement";
 import { StatementSort } from "./StatementSort";
 import type { UserResponseItem } from "./UserResponses";
 import { shouldHighlightBadge } from "./shouldHighlightBadge";
+import { getData } from "@/app/(frontend)/polls/[slug]/getData";
+import { usePolledPollData } from "../PollPage";
+import { usePolledResultsData } from "./Results";
 
 type Props = PropsWithChildren<{
-  slug: string;
-  userResponses: Map<number, UserResponseItem>;
+  initialPollData: Awaited<ReturnType<typeof getData>>;
+  initialPollResults: Awaited<ReturnType<typeof getPollResults>>;
   sortBy?: SortKey;
 }>;
 
-export const Statistics = async ({
-  slug,
-  userResponses,
+export const Statistics = ({
+  initialPollData,
+  initialPollResults,
   sortBy,
   children,
 }: Props) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { poll, ...statistics } = await getPollResults(slug, sortBy);
+  const {
+    data: { poll, ...statistics },
+  } = usePolledResultsData(initialPollResults);
+  const {
+    data: { userResponses },
+  } = usePolledPollData(initialPollData);
 
   const { mostConsensus, mostControversial } = getHighlightedStatements(
     statistics.statements,
@@ -87,7 +96,7 @@ export const Statistics = async ({
                         }
                       >
                         {Math.round(
-                          statement.stats.votePercentages.get(choice) ?? 0,
+                          statement.stats.votePercentages[choice] ?? 0,
                         )}
                         %
                       </ChoiceBadge>
@@ -118,7 +127,7 @@ type HighlightedStatements = {
 
 export const getHighlightedStatements = (
   statements: StatementWithStats[],
-  userResponses: Map<number, UserResponseItem>,
+  userResponses: Record<number, UserResponseItem>,
   {
     minimumResponseCount = DEFAULT_MINIMUM_RESPONSE_COUNT_THRESHOLD,
   }: { minimumResponseCount?: number } = {
@@ -131,7 +140,7 @@ export const getHighlightedStatements = (
   let userMostControversialStatement: StatementWithStats | null = null;
 
   for (const statement of statements) {
-    const response = userResponses.get(statement.id);
+    const response = userResponses[statement.id];
 
     if (!response || response.choice === "skip") {
       continue;

@@ -6,7 +6,8 @@ import { getPollResults } from "../../../../../lib/pollResults/getPollResults";
 import { DownloadButton } from "./DownloadButton";
 
 const AnalyticsPage = async ({ params }: { params: { slug: string } }) => {
-  const { poll, ...statistics } = await getPollResults(params.slug);
+  const initialPollResults = await getPollResults(params.slug);
+  const { poll, ...statistics } = initialPollResults;
 
   const url = `${process.env.NEXT_PUBLIC_BASE_URL}/polls/${poll.slug}`;
 
@@ -47,7 +48,7 @@ const AnalyticsPage = async ({ params }: { params: { slug: string } }) => {
       </div>
 
       <div className="mt-12">
-        <Results {...statistics} />
+        <Results initialData={initialPollResults} />
       </div>
     </main>
   );

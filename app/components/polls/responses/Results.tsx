@@ -17,16 +17,16 @@ import {
 } from "../../shadcn/ui/popover";
 import { ToggleGroup, ToggleGroupItem } from "../../shadcn/ui/toggle-group";
 import { shouldHighlightBadge } from "./shouldHighlightBadge";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import { getPollResults } from "@/lib/pollResults/getPollResults";
 
 type StatementWithStatsAndResponses = StatementWithStats & {
   responses: Response[];
 };
 
 export type ResultsProps = {
-  statements: StatementWithStatsAndResponses[];
-  statementOptions: Record<number, StatementOption[]>;
-  responseCount: number;
-  respondentsCount: number;
+  initialData: Awaited<ReturnType<typeof getPollResults>>;
 };
 
 const DemographicFilter = ({
@@ -96,12 +96,10 @@ const DemographicFilter = ({
   );
 };
 
-export const Results: FC<ResultsProps> = ({
-  statements,
-  statementOptions,
-  responseCount,
-  respondentsCount,
-}) => {
+export const Results: FC<ResultsProps> = ({ initialData }) => {
+  const { data } = usePolledResultsData(initialData);
+  const { statements, statementOptions, responseCount, respondentsCount } =
+    data || {};
   const canFilterByDemographics = useIsSuperuser();
 
   const [enabledDemographicFilters, setEnabledDemographicFilters] =
@@ -234,7 +232,7 @@ export const Results: FC<ResultsProps> = ({
                     !shouldHighlightBadge(sort, votePercentages, choice)
                   }
                 >
-                  {Math.round(votePercentages.get(choice) ?? 0)}%
+                  {Math.round(votePercentages[choice] ?? 0)}%
                 </ChoiceBadge>
               ))}
             </div>
@@ -369,3 +367,20 @@ export const useDemographicResponses = (
 
   return response;
 };
+
+export function usePolledResultsData(
+  initialData: Awaited<ReturnType<typeof getPollResults>>,
+) {
+  const params = useParams();
+  const { data } = useQuery({
+    queryKey: ["/polls/[slug]/results", params.slug],
+    queryFn: async () => {
+      const res = await fetch(`/api/polls/${params.slug}/results`);
+      return res.json() as ReturnType<typeof getPollResults>;
+    },
+    initialData,
+    refetchInterval: 15_000,
+  });
+
+  return { data };
+}
