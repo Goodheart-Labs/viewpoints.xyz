@@ -102,8 +102,7 @@ export const Statistics = ({
                       </ChoiceBadge>
                     ))
                   : statistics.statementOptions[statement.id]?.find(
-                      ({ id }) =>
-                        id === userResponses.get(statement.id)?.option_id,
+                      ({ id }) => id === userResponses[statement.id]?.option_id,
                     )?.option ?? null}
               </div>
             </div>
