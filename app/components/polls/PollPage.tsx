@@ -30,7 +30,7 @@ export function PollPage({ initialData, children, userId }: PollPageProps) {
 
   const isSuperAdmin = useIsSuperuser();
   const canSeePoll =
-    poll.visibility !== "private" ||
+    poll?.visibility !== "private" ||
     isPollAdminOrSuperadmin(poll, userId, isSuperAdmin);
 
   if (!canSeePoll) {
@@ -38,34 +38,35 @@ export function PollPage({ initialData, children, userId }: PollPageProps) {
   }
 
   const visibilityText =
-    poll.visibility === "public" ? "Public poll" : "Private poll";
+    poll?.visibility === "public" ? "Public poll" : "Private poll";
 
   const VisibilityIcon =
-    poll.visibility === "public" ? LockOpen2Icon : LockClosedIcon;
+    poll?.visibility === "public" ? LockOpen2Icon : LockClosedIcon;
 
-  const statementsWithoutResponsesAndFlags = statements.map((statement) => ({
+  const statementsWithoutResponsesAndFlags = statements?.map((statement) => ({
     ...statement,
     responses: [],
     flaggedStatements: [],
   }));
 
-  const filteredStatementIds = filteredStatements.map(
+  const filteredStatementIds = filteredStatements?.map(
     (statement) => statement.id,
   );
 
   const statementsToHideIds =
-    filteredStatementIds.length > 0
+    filteredStatementIds && filteredStatementIds.length > 0
       ? statements
-          .filter((statement) => !filteredStatementIds.includes(statement.id))
+          ?.filter((statement) => !filteredStatementIds.includes(statement.id))
           .map((statement) => statement.id)
       : [];
 
-  const isCouncilPoll = poll.slug?.includes("council");
+  const isCouncilPoll = poll?.slug?.includes("council");
 
-  const questionsRemaining = filteredStatements.length > 0;
+  const questionsRemaining =
+    filteredStatements && filteredStatements.length > 0;
 
   return (
-    <main className="bg-black xl:p-8 xl:gap-8 xl:overflow-y-hidden flex-grow grid xl:content-center">
+    <main className="bg-black xl:p-8 xl:gap-8 xl:overflow-y-hidden flex-grow grid xl:content-start xl:py-24">
       {isCouncilPoll && !questionsRemaining ? <BackToSouthGlos /> : null}
       <div className="flex flex-col relative items-stretch w-full h-full max-w-full mx-auto xl:w-1/2 xl:bg-zinc-900 xl:rounded-xl">
         <div className="p-6 bg-zinc-800 xl:rounded-t-xl">
@@ -85,7 +86,7 @@ export function PollPage({ initialData, children, userId }: PollPageProps) {
                 <QrCodeGenerator />
               </div>
 
-              <Link href={`/polls/${poll.slug}/results`} className="group">
+              <Link href={`/polls/${poll?.slug}/results`} className="group">
                 <div className="flex items-center rounded-full bg-zinc-600 text-white text-xs px-3 py-[6px] group-hover:bg-zinc-500">
                   <BarChartIcon className="inline w-3 h-3 mr-1.5" />
                   Results
@@ -93,30 +94,39 @@ export function PollPage({ initialData, children, userId }: PollPageProps) {
               </Link>
             </div>
           </div>
-          <h1 className="font-semibold text-white">{poll.title}</h1>
+          <h1 className="font-semibold text-white">{poll?.title}</h1>
           <h2 className="text-sm text-zinc-500">
-            {poll.core_question ||
+            {poll?.core_question ||
               "What do you think of the following statements?"}
           </h2>
         </div>
 
         {questionsRemaining ? (
           <>
-            <div className="px-6 pt-6">
-              <Progress
-                className="w-full h-2"
-                value={(statementsToHideIds.length / statements.length) * 100}
-              />
-            </div>
-            <Cards
-              statements={statementsWithoutResponsesAndFlags}
-              statementsToHideIds={statementsToHideIds}
-              statementOptions={statementOptions}
-            />
+            {statementsToHideIds && statements && (
+              <div className="px-6 pt-6">
+                <Progress
+                  className="w-full h-2"
+                  value={(statementsToHideIds.length / statements.length) * 100}
+                />
+              </div>
+            )}
 
-            <div className="flex justify-center mt-8 mb-10 sm:mb-0 sm:mt-0 pb-8">
-              <CreateStatementButton pollId={poll.id} />
-            </div>
+            {statementsWithoutResponsesAndFlags &&
+              statementsToHideIds &&
+              statementOptions && (
+                <Cards
+                  statements={statementsWithoutResponsesAndFlags}
+                  statementsToHideIds={statementsToHideIds}
+                  statementOptions={statementOptions}
+                />
+              )}
+
+            {poll && (
+              <div className="flex justify-center mt-8 mb-10 sm:mb-0 sm:mt-0 pb-8">
+                <CreateStatementButton pollId={poll.id} />
+              </div>
+            )}
           </>
         ) : (
           children

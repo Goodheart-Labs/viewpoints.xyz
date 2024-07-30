@@ -33,16 +33,12 @@ export const Statistics = ({
   children,
 }: Props) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const {
-    data: { poll, ...statistics },
-  } = usePolledResultsData(initialPollResults);
-  const {
-    data: { userResponses },
-  } = usePolledPollData(initialPollData);
+  const { data: results } = usePolledResultsData(initialPollResults);
+  const { data: pollData } = usePolledPollData(initialPollData);
 
   const { mostConsensus, mostControversial } = getHighlightedStatements(
-    statistics.statements,
-    userResponses,
+    results?.statements ?? [],
+    pollData?.userResponses ?? {},
   );
 
   return (
@@ -74,12 +70,12 @@ export const Statistics = ({
           <StatementSort value={sortBy} />
         </div>
         <div>
-          {statistics.statements.map((statement, index) => (
+          {results?.statements.map((statement, index) => (
             <div
               key={statement.id}
               className={cn(
                 "border-zinc-700",
-                index < statistics.statements.length - 1 && "border-b mb-2",
+                index < results.statements.length - 1 && "border-b mb-2",
               )}
             >
               <p className="my-2 text-sm text-zinc-300">{statement.text}</p>
@@ -104,9 +100,10 @@ export const Statistics = ({
                         %
                       </ChoiceBadge>
                     ))
-                  : statistics.statementOptions[statement.id]?.find(
-                      ({ id }) => id === userResponses[statement.id]?.option_id,
-                    )?.option ?? null}
+                  : (results.statementOptions[statement.id]?.find(
+                      ({ id }) =>
+                        id === pollData?.userResponses[statement.id]?.option_id,
+                    )?.option ?? null)}
               </div>
             </div>
           ))}

@@ -117,8 +117,8 @@ export const Results: FC<ResultsProps> = ({ initialData }) => {
     sessionIdsByDemographicOptionId,
     totalSessionCountsByDemographicOptionId,
   } = useDemographicResponses(
-    statements,
-    statementOptions,
+    statements || [],
+    statementOptions || {},
     enabledDemographicFilters,
   );
 
@@ -127,9 +127,10 @@ export const Results: FC<ResultsProps> = ({ initialData }) => {
     filteredResponseCount,
     filteredRespondentsCount,
   ] = useMemo(() => {
-    const fs = statements.filter(
-      ({ question_type }) => question_type !== "demographic",
-    );
+    const fs =
+      statements?.filter(
+        ({ question_type }) => question_type !== "demographic",
+      ) ?? [];
 
     if (enabledDemographicFilterOptionIds.length === 0) {
       return [fs, responseCount, respondentsCount];
@@ -197,7 +198,7 @@ export const Results: FC<ResultsProps> = ({ initialData }) => {
           <div className="ml-auto">
             <DemographicFilter
               demographicStatements={demographicStatements}
-              statementOptions={statementOptions}
+              statementOptions={statementOptions ?? {}}
               enabledDemographicFilters={enabledDemographicFilters}
               totalSessionCountsByDemographicOptionId={
                 totalSessionCountsByDemographicOptionId
