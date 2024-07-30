@@ -15,6 +15,7 @@ import { isPollAdminOrSuperadmin } from "@/utils/auth";
 import { BackToSouthGlos } from "@/components/BackToSouthGlos";
 import { auth } from "@clerk/nextjs/server";
 import { getData } from "./getData";
+import { Progress } from "@/app/components/shadcn/ui/progress";
 
 type PollPageProps = {
   params: { slug: string };
@@ -107,6 +108,12 @@ export default async function Poll({ params, searchParams }: PollPageProps) {
 
         {questionsRemaining ? (
           <>
+            <div className="px-6 pt-6">
+              <Progress
+                className="w-full h-2"
+                value={(statementsToHideIds.length / statements.length) * 100}
+              />
+            </div>
             <Cards
               statements={statementsWithoutResponsesAndFlags}
               statementsToHideIds={statementsToHideIds}
