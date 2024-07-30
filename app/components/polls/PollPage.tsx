@@ -11,12 +11,11 @@ import { Tutorial } from "@/app/components/polls/Tutorial";
 import { QrCodeGenerator } from "@/app/components/polls/QrCodeGenerator";
 import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
-import { isPollAdminOrSuperadmin } from "@/utils/auth";
 import { BackToSouthGlos } from "@/components/BackToSouthGlos";
 import { getData } from "@/app/(frontend)/polls/[slug]/getData";
 import { useQuery } from "@tanstack/react-query";
-import { ReactNode, useEffect } from "react";
-import { useIsSuperuser } from "@/utils/authFrontend";
+import { ReactNode } from "react";
+import { isPollAdminOrSuperadmin, useIsSuperuser } from "@/utils/authFrontend";
 import { Progress } from "@/app/components/shadcn/ui/progress";
 
 type PollPageProps = {
