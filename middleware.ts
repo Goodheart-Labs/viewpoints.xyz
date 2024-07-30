@@ -1,43 +1,43 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 
 const isPublicRoute = createRouteMatcher([
   "/",
   "/polls/(.*)",
   "/api/public/(.*)",
+  "/api/visitor",
   "/privacy-policy",
   "/sign-in(.*)",
   "/sign-up(.*)",
 ]);
 
-export default clerkMiddleware((auth, request) => {
-  if (!isPublicRoute(request)) {
+export default clerkMiddleware((auth, req) => {
+  if (!isPublicRoute(req)) {
     auth().protect();
   }
 
-  return visitorMiddleware(request);
+  const visitorIdCookie = req.cookies.get("visitorId");
+
+  const res = NextResponse.next();
+
+  if (!visitorIdCookie) {
+    res.cookies.set({
+      name: "visitorId",
+      value: auth().userId || uuidv4(),
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+    });
+  }
+
+  return res;
 });
 
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    // Always run for API routes
+    "/(api|trpc)(.*)",
+  ],
 };
-
-function visitorMiddleware(request: NextRequest) {
-  const requestHeaders = new Headers(request.headers);
-
-  // If there is no visitor id on the request header, set it
-  if (!requestHeaders.get("x-visitor-id")) {
-    // Use the visitor id from the cookie if it exists
-    const visitorId = request.cookies.get("__visitor_id")?.value;
-
-    requestHeaders.set("x-visitor-id", visitorId || uuidv4());
-  }
-
-  return NextResponse.next({
-    request: {
-      ...request,
-      headers: requestHeaders,
-    },
-  });
-}

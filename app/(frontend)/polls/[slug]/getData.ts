@@ -10,7 +10,6 @@ import type {
   StatementOption,
 } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
-import { getVisitorId } from "@/lib/getVisitorId";
 
 const MAX_NUM_FLAGS_BEFORE_REMOVAL = 2;
 
@@ -24,9 +23,8 @@ export type PollWithStatements = Poll & {
   })[];
 };
 
-export const getData = async (slug: string) => {
+export const getData = async (slug: string, visitorId: string) => {
   const { userId } = auth();
-  const visitorId = getVisitorId();
 
   // Pull the poll and associated data from the database
 
@@ -159,6 +157,7 @@ export const getData = async (slug: string) => {
     filteredStatements,
     statementOptions,
     userResponses,
+    visitorId,
   };
 };
 

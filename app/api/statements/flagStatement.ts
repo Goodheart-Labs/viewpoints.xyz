@@ -12,7 +12,7 @@ export const flagStatement = async (
   data: Pick<FlaggedStatement, "reason" | "description">,
 ) => {
   const { userId: user_id, sessionId } = auth();
-  const visitorId = getVisitorId();
+  const visitorId = await getVisitorId();
 
   const session_id = sessionId || visitorId;
 
@@ -29,7 +29,7 @@ export const flagStatement = async (
   await db
     .insertInto("flagged_statements")
     .values({
-      statementId: statement.id,
+      statementId,
       user_id,
       session_id,
       ...data,
