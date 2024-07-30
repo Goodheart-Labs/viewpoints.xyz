@@ -13,7 +13,7 @@ import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
 import { BackToSouthGlos } from "@/components/BackToSouthGlos";
 import { getData } from "@/app/(frontend)/polls/[slug]/getData";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "react-query";
 import { ReactNode } from "react";
 import { isPollAdminOrSuperadmin, useIsSuperuser } from "@/utils/authFrontend";
 import { Progress } from "@/app/components/shadcn/ui/progress";

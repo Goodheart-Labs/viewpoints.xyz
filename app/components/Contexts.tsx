@@ -5,7 +5,7 @@ import type { PropsWithChildren } from "react";
 import AmplitudeProvider from "@/providers/AmplitudeProvider";
 import QueryProvider from "@/providers/QueryProvider";
 import { PosthogProvider } from "@/providers/PosthogProvider";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 const queryClient = new QueryClient();
 

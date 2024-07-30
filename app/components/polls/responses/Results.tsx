@@ -17,7 +17,7 @@ import {
 } from "../../shadcn/ui/popover";
 import { ToggleGroup, ToggleGroupItem } from "../../shadcn/ui/toggle-group";
 import { shouldHighlightBadge } from "./shouldHighlightBadge";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "react-query";
 import { useParams } from "next/navigation";
 import { getPollResults } from "@/lib/pollResults/getPollResults";
 
