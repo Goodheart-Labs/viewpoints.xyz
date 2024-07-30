@@ -23,7 +23,7 @@ export const createResponse = async (
       },
 ) => {
   const { userId: user_id, sessionId: authSessionId } = auth();
-  const visitorId = getVisitorId();
+  const visitorId = await getVisitorId();
 
   const session_id = authSessionId || visitorId;
 

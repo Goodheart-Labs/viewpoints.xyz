@@ -42,17 +42,20 @@ export const Statistics = async ({
         {children}
 
         {mostConsensus && mostControversial && (
-          <div className="flex flex-col gap-3 md:flex-row">
-            <HighlightedStatement
-              statement={mostConsensus.statement}
-              userChoice={mostConsensus.choice}
-              highlightText="My most consensus view"
-            />
-            <HighlightedStatement
-              statement={mostControversial.statement}
-              userChoice={mostControversial.choice}
-              highlightText="My most controversial view"
-            />
+          <div className="py-5">
+            <div className="pb-3">Highlights</div>
+            <div className="flex flex-col gap-3 md:flex-row">
+              <HighlightedStatement
+                statement={mostConsensus.statement}
+                userChoice={mostConsensus.choice}
+                highlightText="My most consensus view"
+              />
+              <HighlightedStatement
+                statement={mostControversial.statement}
+                userChoice={mostControversial.choice}
+                highlightText="My most controversial view"
+              />
+            </div>
           </div>
         )}
 
