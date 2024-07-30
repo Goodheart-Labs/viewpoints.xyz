@@ -1,7 +1,8 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 /**
  * Returns the unique visitor id for the current user or generates a new one if none is found.
@@ -9,6 +10,9 @@ import { auth } from "@clerk/nextjs/server";
 export const getVisitorId = async () => {
   const { userId } = auth();
   const visitorId = userId || cookies().get("visitorId")?.value;
-  if (!visitorId) throw new Error("No visitor id found");
+  if (!visitorId) {
+    // refresh the page to generate a new visitor id
+    redirect(headers().get("x-pathname") || "/");
+  }
   return visitorId;
 };
