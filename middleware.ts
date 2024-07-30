@@ -28,6 +28,7 @@ export default clerkMiddleware((auth, req) => {
       path: "/",
       maxAge: 60 * 60 * 24 * 365,
     });
+    res.headers.set("x-pathname", req.nextUrl.pathname);
   }
 
   return res;
