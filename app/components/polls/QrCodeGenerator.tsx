@@ -23,10 +23,10 @@ export const QrCodeGenerator = () => {
   return (
     <>
       <div
-        className="rounded-full bg-zinc-600 hover:bg-zinc-500 text-white text-xs px-2 py-[6px] cursor-pointer"
+        className="flex items-center rounded-full bg-zinc-600 hover:bg-zinc-500 text-white text-xs px-3 py-[6px] cursor-pointer"
         onClick={() => setOpen(true)}
       >
-        <QrCodeIcon className="inline w-3 h-3 mr-2" />
+        <QrCodeIcon className="inline w-3 h-3 mr-1.5" />
         QR Code
       </div>
 

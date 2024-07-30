@@ -125,12 +125,13 @@ async function createRelease(): Promise<void> {
   console.log(`Current version: ${currentVersion}`);
 
   // Prompt for new version
+  // @ts-expect-error Issue with inquirer
   const { versionBump } = await inquirer.prompt([
     {
-      type: "list",
       name: "versionBump",
       message: "Select the type of version bump:",
-      choices: [
+      type: "list",
+      choices: () => [
         { name: "Breaking (Major)", value: "major" },
         { name: "Feature (Minor)", value: "minor" },
         { name: "Fix (Patch)", value: "patch" },

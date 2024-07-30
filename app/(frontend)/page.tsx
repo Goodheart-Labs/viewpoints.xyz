@@ -141,6 +141,31 @@ const Index = async () => {
         </h3>
 
         <div className="w-full md:flex md:flex-wrap md:-mx-2">
+          <div className="md:w-1/3 md:pl-2">
+            <Card className="flex flex-col bg-white md:h-[180px] md:mt-0">
+              <div>
+                <h3 className="mb-2 text-lg font-medium leading-6 text-gray-800">
+                  Create your own poll!
+                </h3>
+                <p className="mb-4 text-gray-800/90 md:text-sm">
+                  It only takes a few minutes to create a poll, and you can
+                  create public or private polls.
+                </p>
+              </div>
+              <p className="mt-auto">
+                <Link href="/new-poll" prefetch={false}>
+                  <Button
+                    variant="pill"
+                    size="pill"
+                    className="pr-5 text-sm bg-background text-white hover:bg-orange-500"
+                  >
+                    <PlusCircle className="w-4 mr-2" />
+                    Create poll
+                  </Button>
+                </Link>
+              </p>
+            </Card>
+          </div>
           {polls.length > 0 ? (
             polls.map((poll) => {
               const numRespondents = respondents[poll.id] ?? 0;
@@ -193,30 +218,6 @@ const Index = async () => {
               ?
             </p>
           )}
-
-          <div className="md:w-1/3 md:pl-2">
-            <Card className="my-4 bg-white md:h-[180px] md:mt-0">
-              <h3 className="mb-2 text-lg font-medium leading-6 text-gray-800">
-                Create your own poll!
-              </h3>
-              <p className="mb-4 text-gray-800/90 md:text-sm">
-                It only takes a few minutes to create a poll, and you can create
-                public or private polls.
-              </p>
-              <p className="mb-2">
-                <Link href="/new-poll" prefetch={false}>
-                  <Button
-                    variant="pill"
-                    size="pill"
-                    className="pr-5 text-sm bg-background text-white hover:bg-orange-500"
-                  >
-                    <PlusCircle className="w-4 mr-2" />
-                    Create poll
-                  </Button>
-                </Link>
-              </p>
-            </Card>
-          </div>
         </div>
       </Main>
 
