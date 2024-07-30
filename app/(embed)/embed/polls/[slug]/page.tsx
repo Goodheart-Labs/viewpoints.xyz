@@ -1,4 +1,5 @@
 import { getData } from "@/app/(frontend)/polls/[slug]/getData";
+import { getVisitorId } from "@/lib/getVisitorId";
 import { EmbedCardsView } from "./view";
 
 // Types
@@ -12,8 +13,11 @@ type EmbeddedPollProps = {
 // -----------------------------------------------------------------------------
 
 const EmbeddedPoll = async ({ params: { slug } }: EmbeddedPollProps) => {
-  const { statements, filteredStatements, statementOptions } =
-    await getData(slug);
+  const visitorId = await getVisitorId();
+  const { statements, filteredStatements, statementOptions } = await getData(
+    slug,
+    visitorId,
+  );
 
   const statementsWithoutResponsesAndFlags = statements.map((statement) => ({
     ...statement,

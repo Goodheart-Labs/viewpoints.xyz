@@ -1,4 +1,3 @@
-import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
 import { Toaster } from "@/app/components/shadcn/ui/toaster";
 import { getBaseUrl } from "@/utils/constants";
@@ -10,7 +9,6 @@ import Contexts from "../components/Contexts";
 import LogrocketWrapper from "../components/LogrocketWrapper";
 import "@/styles/tailwind.css";
 import "@/styles/frontend.css";
-import { TrackVisitor } from "../components/TrackVisitor";
 
 // Metadata
 // -----------------------------------------------------------------------------
@@ -40,22 +38,19 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <SubscriptionProvider initialState={await getSubscription()}>
-        <LogrocketWrapper>
-          <Contexts>
-            <html lang="en">
-              <body className="flex flex-col items-stretch min-h-screen bg-black">
-                <HeaderView />
-                {children}
-                <Toaster />
-                <TrackVisitor />
-                <PosthogPageView />
-              </body>
-            </html>
-          </Contexts>
-        </LogrocketWrapper>
-      </SubscriptionProvider>
-    </ClerkProvider>
+    <SubscriptionProvider initialState={await getSubscription()}>
+      <LogrocketWrapper>
+        <Contexts>
+          <html lang="en">
+            <body className="flex flex-col items-stretch min-h-screen bg-black">
+              <HeaderView />
+              {children}
+              <Toaster />
+              <PosthogPageView />
+            </body>
+          </html>
+        </Contexts>
+      </LogrocketWrapper>
+    </SubscriptionProvider>
   );
 }
