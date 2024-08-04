@@ -1,6 +1,6 @@
 "use client";
 
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useFormState } from "react-hook-form";
 import { useMutation } from "react-query";
 
 import { CheckIcon } from "@heroicons/react/20/solid";
@@ -243,6 +243,7 @@ const NewPollPageClient = ({ canCreatePoll }: { canCreatePoll: boolean }) => {
     },
     disabled: !canCreatePoll,
   });
+  const formState = useFormState({ control: form.control });
 
   // Mutations
 
@@ -299,6 +300,7 @@ const NewPollPageClient = ({ canCreatePoll }: { canCreatePoll: boolean }) => {
   const slug = form.watch("slug");
   const onBlurTitle = () => {
     console.log("onBlurTitle", form.formState.dirtyFields, slug);
+    console.log(formState);
     if (form.formState.dirtyFields.title && !slug) {
       form.setValue("slug", slugify(form.getValues("title").toLowerCase()), {
         shouldValidate: true,
