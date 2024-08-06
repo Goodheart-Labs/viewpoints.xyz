@@ -8,10 +8,11 @@ import { getData } from "../getData";
 import { getVisitorId } from "@/lib/getVisitorId";
 
 const AnalyticsPage = async ({ params }: { params: { slug: string } }) => {
-  const { poll, ...statistics } = await getPollResults(params.slug);
+  const initialPollResults = await getPollResults(params.slug);
   const visitorId = await getVisitorId();
 
-  const { userResponses } = await getData(params.slug, visitorId);
+  const initialPollData = await getData(params.slug, visitorId);
+  const { poll, ...statistics } = initialPollResults;
 
   const url = `${process.env.NEXT_PUBLIC_BASE_URL}/polls/${poll.slug}`;
 
@@ -33,26 +34,19 @@ const AnalyticsPage = async ({ params }: { params: { slug: string } }) => {
       </Head>
 
       <div className="mt-4 text-center sm:mt-20">
-        <p className="mb-8">
-          <Link
-            href={`/polls/${poll.slug}`}
-            className="text-black text-gray-200"
-          >
-            &larr; Back to poll
-          </Link>
-        </p>
-
         <h1 className="mb-4 text-4xl font-bold text-black text-gray-200">
           {poll.title}
         </h1>
         <div className="flex items-center gap-4 justify-center">
-          <h2 className="text-gray-800 sm:text-xl text-gray-500">Results</h2>
           <DownloadButton poll={poll} {...statistics} />
         </div>
       </div>
 
       <div className="mt-12">
-        <Results {...statistics} poll={poll} userResponses={userResponses} />
+        <Results
+          initialResultsData={initialPollResults}
+          initialPollData={initialPollData}
+        />
       </div>
     </main>
   );

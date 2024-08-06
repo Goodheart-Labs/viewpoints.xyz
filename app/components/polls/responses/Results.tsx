@@ -19,18 +19,19 @@ import { ToggleGroup, ToggleGroupItem } from "../../shadcn/ui/toggle-group";
 import { shouldHighlightBadge } from "./shouldHighlightBadge";
 import { Statistics } from "./Statistics";
 import { CreateStatementButton } from "../statements/CreateStatementButton";
+import { useQuery } from "react-query";
+import { useParams, useSearchParams } from "next/navigation";
+import { getPollResults } from "@/lib/pollResults/getPollResults";
+import { usePolledPollData } from "../PollPage";
+import { getData } from "@/app/(frontend)/polls/[slug]/getData";
 
 type StatementWithStatsAndResponses = StatementWithStats & {
   responses: Response[];
 };
 
 export type ResultsProps = {
-  poll: Poll;
-  userResponses: UserResponse[];
-  statements: StatementWithStatsAndResponses[];
-  statementOptions: Record<number, StatementOption[]>;
-  responseCount: number;
-  respondentsCount: number;
+  initialResultsData: Awaited<ReturnType<typeof getPollResults>>;
+  initialPollData: Awaited<ReturnType<typeof getData>>;
 };
 
 const DemographicFilter = ({
@@ -101,97 +102,18 @@ const DemographicFilter = ({
 };
 
 export const Results: FC<ResultsProps> = ({
-  poll,
-  statements,
-  statementOptions,
-  responseCount,
-  respondentsCount,
+  initialResultsData,
+  initialPollData,
 }) => {
-  const canFilterByDemographics = useIsSuperuser();
-
-  const [enabledDemographicFilters, setEnabledDemographicFilters] =
-    useState<EnabledDemographicFilters>({});
-
-  const enabledDemographicFilterOptionIds = useMemo(
-    () => Object.values(enabledDemographicFilters).flat(),
-    [enabledDemographicFilters],
-  );
-
-  const [sort, setSort] = useState<SortKey>("consensus");
-
-  const {
-    demographicStatements,
-    sessionIdsByDemographicOptionId,
-    totalSessionCountsByDemographicOptionId,
-  } = useDemographicResponses(
-    statements,
-    statementOptions,
-    enabledDemographicFilters,
-  );
-
-  const [
-    filteredStatementsWithStats,
-    filteredResponseCount,
-    filteredRespondentsCount,
-  ] = useMemo(() => {
-    const fs = statements.filter(
-      ({ question_type }) => question_type !== "demographic",
-    );
-
-    if (enabledDemographicFilterOptionIds.length === 0) {
-      return [fs, responseCount, respondentsCount];
-    }
-
-    const sessionIdsForEnabledDemographicFilters = Object.values(
-      sessionIdsByDemographicOptionId,
-    ).flat();
-
-    const sessionIdsForAllEnabledDemographicFilters =
-      sessionIdsForEnabledDemographicFilters.filter((sessionId) =>
-        enabledDemographicFilterOptionIds.every((optionId) =>
-          sessionIdsByDemographicOptionId[optionId].includes(sessionId),
-        ),
-      );
-
-    const statementsGivenFilters = fs
-      .map((statement) => ({
-        ...statement,
-        responses: statement.responses.filter((response) =>
-          sessionIdsForAllEnabledDemographicFilters.includes(
-            response.session_id,
-          ),
-        ),
-      }))
-      .filter(({ responses }) => responses.length > 0);
-
-    return getStatementsWithStats(statementsGivenFilters);
-  }, [
-    enabledDemographicFilterOptionIds,
-    respondentsCount,
-    responseCount,
-    sessionIdsByDemographicOptionId,
-    statements,
-  ]);
-
-  const sortedStatements = useMemo(() => {
-    const sortFn =
-      sortOptions.find((option) => option.key === sort)?.sortFn ??
-      sortOptions[0].sortFn;
-
-    return filteredStatementsWithStats.sort(sortFn);
-  }, [filteredStatementsWithStats, sort]);
+  const searchParams = useSearchParams();
+  const sortBy = searchParams.get("sort") as SortKey;
 
   return (
     <Statistics
-      slug={poll.slug ?? ""}
-      userResponses={userResponses}
+      initialPollData={initialPollData}
+      initialPollResults={initialResultsData}
       sortBy={sortBy}
-    >
-      <div className="flex items-center justify-between">
-        <p className="text-zinc-100">End of statements</p>
-        <CreateStatementButton pollId={poll.id} />
-      </div>
-    </Statistics>
+    />
   );
 };
 
@@ -319,3 +241,20 @@ export const useDemographicResponses = (
 
   return response;
 };
+
+export function usePolledResultsData(
+  initialData: Awaited<ReturnType<typeof getPollResults>>,
+) {
+  const params = useParams();
+  const { data } = useQuery({
+    queryKey: ["/polls/[slug]/results", params.slug],
+    queryFn: async () => {
+      const res = await fetch(`/api/polls/${params.slug}/results`);
+      return res.json() as ReturnType<typeof getPollResults>;
+    },
+    initialData,
+    refetchInterval: 15_000,
+  });
+
+  return { data };
+}

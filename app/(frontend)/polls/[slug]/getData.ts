@@ -172,9 +172,9 @@ export function filterStatements(
    * The session id or visitor id of the user.
    */
   sessionId: string,
-): [FilteredStatement[], Map<number, UserResponseItem>] {
+): [FilteredStatement[], Record<number, UserResponseItem>] {
   const filteredStatements: FilteredStatement[] = [];
-  const userResponses = new Map<number, UserResponseItem>();
+  const userResponses: Record<number, UserResponseItem> = {};
 
   for (const statement of statements) {
     if (!statement.visible) continue;
@@ -225,12 +225,12 @@ export function filterStatements(
         0,
       );
 
-      userResponses.set(userResponse.statementId, {
+      userResponses[userResponse.statementId] = {
         ...userResponse,
         percentage: Math.round(
           (responseCountMap.get(userResponse.choice)! / totalResponses) * 100,
         ),
-      });
+      };
 
       continue;
     }

@@ -54,7 +54,7 @@ type ResponseCSVRow = {
 /**
  * Create the rows of all responses to all questions
  */
-function getResponseRows(results: PollResults) {
+export function getResponseRows(results: PollResults) {
   const rows: ResponseCSVRow[] = [];
 
   for (const statement of results.statements) {
@@ -85,7 +85,7 @@ function getResponseRows(results: PollResults) {
         response_id: id,
         option_id: option_id?.toString() ?? "",
         option_text,
-        created_at: created_at.toISOString(),
+        created_at: created_at instanceof Date ? created_at.toISOString() : "",
         session_id,
         user_id: user_id?.toString() ?? "",
       };

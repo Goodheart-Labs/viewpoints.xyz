@@ -1,9 +1,11 @@
-import { type PropsWithChildren } from "react";
+"use client";
+import { ReactNode, useMemo, useState, type PropsWithChildren } from "react";
 
 import type { Response } from "@/db/schema";
 import {
   DEFAULT_MINIMUM_RESPONSE_COUNT_THRESHOLD,
   sortDescriptionDict,
+  sortOptions,
   type SortKey,
   type StatementWithStats,
 } from "@/lib/pollResults/constants";
@@ -16,26 +18,112 @@ import { StatementSort } from "./StatementSort";
 import type { UserResponseItem } from "./UserResponses";
 import { shouldHighlightBadge } from "./shouldHighlightBadge";
 import { ArrowDownNarrowWideIcon } from "lucide-react";
+import { getData } from "@/app/(frontend)/polls/[slug]/getData";
+import { usePolledPollData } from "../PollPage";
+import { useDemographicResponses, usePolledResultsData } from "./Results";
+import { useIsSuperuser } from "@/utils/authFrontend";
+import { getStatementsWithStats } from "@/lib/pollResults/getStatementsWithStats";
+import { cn } from "@/utils/style-utils";
 
 type Props = PropsWithChildren<{
-  slug: string;
-  userResponses: Map<number, UserResponseItem>;
+  initialPollData: Awaited<ReturnType<typeof getData>>;
+  initialPollResults: Awaited<ReturnType<typeof getPollResults>>;
   sortBy?: SortKey;
+  children?: ReactNode;
 }>;
 
-export const Statistics = async ({
-  slug,
-  userResponses,
+type EnabledDemographicFilters = Record<number, number[]>;
+
+export const Statistics = ({
+  initialPollData,
+  initialPollResults,
   sortBy,
   children,
 }: Props) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { poll, ...statistics } = await getPollResults(slug, sortBy);
+  const { data: results } = usePolledResultsData(initialPollResults);
+  const { data: pollData } = usePolledPollData(initialPollData);
+
+  const canFilterByDemographics = useIsSuperuser();
+
+  const [enabledDemographicFilters, setEnabledDemographicFilters] =
+    useState<EnabledDemographicFilters>({});
+
+  const enabledDemographicFilterOptionIds = useMemo(
+    () => Object.values(enabledDemographicFilters).flat(),
+    [enabledDemographicFilters],
+  );
+
+  const nonDemoStatements = results?.statements.filter(
+    ({ question_type }) => question_type !== "demographic",
+  );
 
   const { mostConsensus, mostControversial } = getHighlightedStatements(
-    statistics.statements,
-    userResponses,
+    nonDemoStatements ?? [],
+    pollData?.userResponses ?? {},
   );
+
+  const {
+    demographicStatements,
+    sessionIdsByDemographicOptionId,
+    totalSessionCountsByDemographicOptionId,
+  } = useDemographicResponses(
+    results?.statements || [],
+    pollData?.statementOptions || {},
+    enabledDemographicFilters || [],
+  );
+
+  const [
+    filteredStatementsWithStats,
+    filteredResponseCount,
+    filteredRespondentsCount,
+  ] = useMemo(() => {
+    const fs = results?.statements.filter(
+      ({ question_type }) => question_type !== "demographic",
+    );
+
+    if (enabledDemographicFilterOptionIds.length === 0) {
+      return [fs, results?.responseCount, results?.respondentsCount];
+    }
+
+    const sessionIdsForEnabledDemographicFilters = Object.values(
+      sessionIdsByDemographicOptionId,
+    ).flat();
+
+    const sessionIdsForAllEnabledDemographicFilters =
+      sessionIdsForEnabledDemographicFilters.filter((sessionId) =>
+        enabledDemographicFilterOptionIds.every((optionId) =>
+          sessionIdsByDemographicOptionId[optionId].includes(sessionId),
+        ),
+      );
+
+    const statementsGivenFilters = fs
+      ?.map((statement) => ({
+        ...statement,
+        responses: statement.responses.filter((response) =>
+          sessionIdsForAllEnabledDemographicFilters.includes(
+            response.session_id,
+          ),
+        ),
+      }))
+      .filter(({ responses }) => responses.length > 0);
+
+    return getStatementsWithStats(statementsGivenFilters!);
+  }, [
+    enabledDemographicFilterOptionIds,
+    results?.respondentsCount,
+    results?.responseCount,
+    sessionIdsByDemographicOptionId,
+    results?.statements,
+  ]);
+
+  const sortedStatements = useMemo(() => {
+    const sortFn =
+      sortOptions.find((option) => option.key === sortBy)?.sortFn ??
+      sortOptions[0].sortFn;
+
+    return filteredStatementsWithStats?.sort(sortFn);
+  }, [filteredStatementsWithStats, sortBy]);
 
   return (
     <ScrollArea className="h-full p-6">
@@ -60,17 +148,23 @@ export const Statistics = async ({
           </div>
         )}
 
-        <div className="flex justify-between items-start mt-4">
-          <div className="text-zinc-100">Results</div>
+        <div
+          className={cn("flex justify-between items-start mt-4", {
+            "justify-center": !mostConsensus || !mostControversial,
+          })}
+        >
+          {mostConsensus && mostControversial && (
+            <div className="text-zinc-100">Results</div>
+          )}
 
           <div className="flex gap-4 bg-zinc-800 text-sm px-3 py-1 rounded">
             <div className="text-white/80">
               Responses:{" "}
-              <span className="font-medium">{statistics.responseCount}</span>
+              <span className="font-medium">{filteredResponseCount}</span>
             </div>
             <div className="text-white/80">
               Respondents:{" "}
-              <span className="font-medium">{statistics.respondentsCount}</span>
+              <span className="font-medium">{filteredRespondentsCount}</span>
             </div>
           </div>
         </div>
@@ -81,33 +175,33 @@ export const Statistics = async ({
             <div className="grid self-stretch place-content-center px-5 bg-white/10">
               <ArrowDownNarrowWideIcon size={20} />
             </div>
-            <p className="max-w-[38ch] m-2">{sortDescriptionDict[sortBy!]}</p>
+            <p className="max-w-[38ch] m-2">
+              {sortDescriptionDict[sortBy ?? "consensus"]}
+            </p>
           </div>
         </div>
         <div className="grid gap-2 mt-4">
-          {statistics.statements.map(
-            ({ id, text, stats: { votePercentages } }) => (
-              <div
-                className="grid gap-2 p-3 border rounded bg-neutral-900 border-neutral-700"
-                key={id}
-              >
-                <span>{text}</span>
-                <div className="flex justify-start gap-1">
-                  {(["agree", "disagree", "skip"] as const).map((choice) => (
-                    <ChoiceBadge
-                      key={choice}
-                      choice={choice}
-                      disabled={
-                        !shouldHighlightBadge(sortBy!, votePercentages, choice)
-                      }
-                    >
-                      {Math.round(votePercentages.get(choice) ?? 0)}%
-                    </ChoiceBadge>
-                  ))}
-                </div>
+          {sortedStatements?.map(({ id, text, stats: { votePercentages } }) => (
+            <div
+              className="grid gap-2 p-3 border rounded bg-neutral-900 border-neutral-700"
+              key={id}
+            >
+              <span>{text}</span>
+              <div className="flex justify-start gap-1">
+                {(["agree", "disagree", "skip"] as const).map((choice) => (
+                  <ChoiceBadge
+                    key={choice}
+                    choice={choice}
+                    disabled={
+                      !shouldHighlightBadge(sortBy!, votePercentages, choice)
+                    }
+                  >
+                    {Math.round(votePercentages[choice] ?? 0)}%
+                  </ChoiceBadge>
+                ))}
               </div>
-            ),
-          )}
+            </div>
+          ))}
         </div>
       </div>
     </ScrollArea>
@@ -127,7 +221,7 @@ type HighlightedStatements = {
 
 export const getHighlightedStatements = (
   statements: StatementWithStats[],
-  userResponses: Map<number, UserResponseItem>,
+  userResponses: Record<number, UserResponseItem>,
   {
     minimumResponseCount = DEFAULT_MINIMUM_RESPONSE_COUNT_THRESHOLD,
   }: { minimumResponseCount?: number } = {
@@ -140,7 +234,7 @@ export const getHighlightedStatements = (
   let userMostControversialStatement: StatementWithStats | null = null;
 
   for (const statement of statements) {
-    const response = userResponses.get(statement.id);
+    const response = userResponses[statement.id];
 
     if (!response || response.choice === "skip") {
       continue;
