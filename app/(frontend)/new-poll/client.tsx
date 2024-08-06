@@ -297,9 +297,8 @@ const NewPollPageClient = ({ canCreatePoll }: { canCreatePoll: boolean }) => {
   };
 
   // Update slug when title changes, if slug is empty
-  const slug = form.watch("slug");
   const onBlurTitle = () => {
-    if (formState.dirtyFields.title && !slug) {
+    if (formState.dirtyFields.title) {
       form.setValue("slug", slugify(form.getValues("title").toLowerCase()), {
         shouldValidate: true,
         shouldTouch: true,
