@@ -3,18 +3,19 @@ import { type PropsWithChildren } from "react";
 import type { Response } from "@/db/schema";
 import {
   DEFAULT_MINIMUM_RESPONSE_COUNT_THRESHOLD,
+  sortDescriptionDict,
   type SortKey,
   type StatementWithStats,
 } from "@/lib/pollResults/constants";
 import { getPollResults } from "@/lib/pollResults/getPollResults";
 import { ScrollArea } from "@/app/components/shadcn/ui/scroll-area";
-import { cn } from "@/utils/style-utils";
 
 import ChoiceBadge from "@/components/ChoiceBadge";
 import { HighlightedStatement } from "./HighlightedStatement";
 import { StatementSort } from "./StatementSort";
 import type { UserResponseItem } from "./UserResponses";
 import { shouldHighlightBadge } from "./shouldHighlightBadge";
+import { ArrowDownNarrowWideIcon } from "lucide-react";
 
 type Props = PropsWithChildren<{
   slug: string;
@@ -44,7 +45,7 @@ export const Statistics = async ({
         {mostConsensus && mostControversial && (
           <div className="py-5">
             <div className="pb-3">Highlights</div>
-            <div className="flex flex-col gap-3 md:flex-row">
+            <div className="flex flex-col gap-3 sm:flex-row">
               <HighlightedStatement
                 statement={mostConsensus.statement}
                 userChoice={mostConsensus.choice}
@@ -59,49 +60,54 @@ export const Statistics = async ({
           </div>
         )}
 
-        <div className="flex items-center justify-between">
+        <div className="flex justify-between items-start mt-4">
           <div className="text-zinc-100">Results</div>
 
-          <StatementSort value={sortBy} />
-        </div>
-        <div>
-          {statistics.statements.map((statement, index) => (
-            <div
-              key={statement.id}
-              className={cn(
-                "border-zinc-700",
-                index < statistics.statements.length - 1 && "border-b mb-2",
-              )}
-            >
-              <p className="my-2 text-sm text-zinc-300">{statement.text}</p>
-
-              <div className="flex gap-2 mb-2 text-white">
-                {statement.question_type === "default"
-                  ? (["agree", "disagree", "skip"] as const).map((choice) => (
-                      <ChoiceBadge
-                        key={choice}
-                        choice={choice}
-                        disabled={
-                          !shouldHighlightBadge(
-                            sortBy ?? "consensus",
-                            statement.stats.votePercentages,
-                            choice,
-                          )
-                        }
-                      >
-                        {Math.round(
-                          statement.stats.votePercentages.get(choice) ?? 0,
-                        )}
-                        %
-                      </ChoiceBadge>
-                    ))
-                  : statistics.statementOptions[statement.id]?.find(
-                      ({ id }) =>
-                        id === userResponses.get(statement.id)?.option_id,
-                    )?.option ?? null}
-              </div>
+          <div className="flex gap-4 bg-zinc-800 text-sm px-3 py-1 rounded">
+            <div className="text-white/80">
+              Responses:{" "}
+              <span className="font-medium">{statistics.responseCount}</span>
             </div>
-          ))}
+            <div className="text-white/80">
+              Respondents:{" "}
+              <span className="font-medium">{statistics.respondentsCount}</span>
+            </div>
+          </div>
+        </div>
+        <div className="grid justify-items-center gap-2">
+          <StatementSort value={sortBy} />
+
+          <div className="flex gap-4 items-center min-h-[6rem] pr-4 mx-auto rounded-xl overflow-hidden border border-white/10 bg-white/10 text-gray-300 text-balance">
+            <div className="grid self-stretch place-content-center px-5 bg-white/10">
+              <ArrowDownNarrowWideIcon size={20} />
+            </div>
+            <p className="max-w-[38ch] m-2">{sortDescriptionDict[sortBy!]}</p>
+          </div>
+        </div>
+        <div className="grid gap-2 mt-4">
+          {statistics.statements.map(
+            ({ id, text, stats: { votePercentages } }) => (
+              <div
+                className="grid gap-2 p-3 border rounded bg-neutral-900 border-neutral-700"
+                key={id}
+              >
+                <span>{text}</span>
+                <div className="flex justify-start gap-1">
+                  {(["agree", "disagree", "skip"] as const).map((choice) => (
+                    <ChoiceBadge
+                      key={choice}
+                      choice={choice}
+                      disabled={
+                        !shouldHighlightBadge(sortBy!, votePercentages, choice)
+                      }
+                    >
+                      {Math.round(votePercentages.get(choice) ?? 0)}%
+                    </ChoiceBadge>
+                  ))}
+                </div>
+              </div>
+            ),
+          )}
         </div>
       </div>
     </ScrollArea>

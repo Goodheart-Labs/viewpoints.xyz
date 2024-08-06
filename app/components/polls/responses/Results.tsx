@@ -6,7 +6,7 @@ import ChoiceBadge from "@/components/ChoiceBadge";
 import type { SortKey, StatementWithStats } from "@/lib/pollResults/constants";
 import { sortDescriptionDict, sortOptions } from "@/lib/pollResults/constants";
 import { CaretDownIcon } from "@radix-ui/react-icons";
-import type { Response, StatementOption } from "@/db/schema";
+import type { Poll, Response, StatementOption } from "@/db/schema";
 import { getStatementsWithStats } from "@/lib/pollResults/getStatementsWithStats";
 import { useIsSuperuser } from "@/utils/authFrontend";
 import { ArrowDownNarrowWideIcon } from "lucide-react";
@@ -17,12 +17,16 @@ import {
 } from "../../shadcn/ui/popover";
 import { ToggleGroup, ToggleGroupItem } from "../../shadcn/ui/toggle-group";
 import { shouldHighlightBadge } from "./shouldHighlightBadge";
+import { Statistics } from "./Statistics";
+import { CreateStatementButton } from "../statements/CreateStatementButton";
 
 type StatementWithStatsAndResponses = StatementWithStats & {
   responses: Response[];
 };
 
 export type ResultsProps = {
+  poll: Poll;
+  userResponses: UserResponse[];
   statements: StatementWithStatsAndResponses[];
   statementOptions: Record<number, StatementOption[]>;
   responseCount: number;
@@ -97,6 +101,7 @@ const DemographicFilter = ({
 };
 
 export const Results: FC<ResultsProps> = ({
+  poll,
   statements,
   statementOptions,
   responseCount,
@@ -177,71 +182,16 @@ export const Results: FC<ResultsProps> = ({
   }, [filteredStatementsWithStats, sort]);
 
   return (
-    <div className="grid gap-6">
-      <div className="grid gap-5 p-2 text-sm rounded-lg sm:flex text-neutral-300 bg-neutral-800">
-        <h5>Responses: {filteredResponseCount ?? responseCount}</h5>
-        <h5>Respondents: {filteredRespondentsCount ?? respondentsCount}</h5>
+    <Statistics
+      slug={poll.slug ?? ""}
+      userResponses={userResponses}
+      sortBy={sortBy}
+    >
+      <div className="flex items-center justify-between">
+        <p className="text-zinc-100">End of statements</p>
+        <CreateStatementButton pollId={poll.id} />
       </div>
-      <div className="grid justify-center gap-4 sm:flex mt-6">
-        {sortOptions.map((option) => (
-          <button
-            key={option.name}
-            type="button"
-            data-state-active={option.key === sort}
-            className="py-.5 border-b border-transparent data-[state-active=true]:border-neutral-200 text-neutral-400 data-[state-active=true]:text-neutral-50 hover:text-neutral-100"
-            onClick={() => setSort(option.key)}
-          >
-            {option.name}
-          </button>
-        ))}
-
-        {demographicStatements.length > 0 && canFilterByDemographics && (
-          <div className="ml-auto">
-            <DemographicFilter
-              demographicStatements={demographicStatements}
-              statementOptions={statementOptions}
-              enabledDemographicFilters={enabledDemographicFilters}
-              totalSessionCountsByDemographicOptionId={
-                totalSessionCountsByDemographicOptionId
-              }
-              onChange={setEnabledDemographicFilters}
-            />
-          </div>
-        )}
-      </div>
-
-      <div className="flex gap-4 items-center min-h-[6rem] pr-4 mx-auto rounded-xl overflow-hidden border border-white/10 bg-white/10 text-gray-300 text-balance">
-        <div className="grid self-stretch place-content-center px-5 bg-white/10">
-          <ArrowDownNarrowWideIcon size={20} />
-        </div>
-
-        <p className="max-w-[38ch] m-2">{sortDescriptionDict[sort]}</p>
-      </div>
-
-      <div className="grid gap-2 mt-4">
-        {sortedStatements.map(({ id, text, stats: { votePercentages } }) => (
-          <div
-            className="grid gap-2 p-3 border rounded bg-neutral-900 border-neutral-700"
-            key={id}
-          >
-            <span>{text}</span>
-            <div className="flex justify-start gap-1">
-              {(["agree", "disagree", "skip"] as const).map((choice) => (
-                <ChoiceBadge
-                  key={choice}
-                  choice={choice}
-                  disabled={
-                    !shouldHighlightBadge(sort, votePercentages, choice)
-                  }
-                >
-                  {Math.round(votePercentages.get(choice) ?? 0)}%
-                </ChoiceBadge>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+    </Statistics>
   );
 };
 

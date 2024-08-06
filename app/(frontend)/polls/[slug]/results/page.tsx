@@ -4,9 +4,14 @@ import { Results } from "@/app/components/polls/responses/Results";
 import Link from "next/link";
 import { getPollResults } from "../../../../../lib/pollResults/getPollResults";
 import { DownloadButton } from "./DownloadButton";
+import { getData } from "../getData";
+import { getVisitorId } from "@/lib/getVisitorId";
 
 const AnalyticsPage = async ({ params }: { params: { slug: string } }) => {
   const { poll, ...statistics } = await getPollResults(params.slug);
+  const visitorId = await getVisitorId();
+
+  const { userResponses } = await getData(params.slug, visitorId);
 
   const url = `${process.env.NEXT_PUBLIC_BASE_URL}/polls/${poll.slug}`;
 
@@ -47,7 +52,7 @@ const AnalyticsPage = async ({ params }: { params: { slug: string } }) => {
       </div>
 
       <div className="mt-12">
-        <Results {...statistics} />
+        <Results {...statistics} poll={poll} userResponses={userResponses} />
       </div>
     </main>
   );
