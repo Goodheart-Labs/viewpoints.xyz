@@ -32,9 +32,8 @@ export const Statistics = ({
   sortBy,
   children,
 }: Props) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data: results } = usePolledResultsData(initialPollResults);
-  const { data: pollData } = usePolledPollData(initialPollData);
+  const results = usePolledResultsData(initialPollResults);
+  const pollData = usePolledPollData(initialPollData);
 
   const { mostConsensus, mostControversial } = getHighlightedStatements(
     results?.statements ?? [],

@@ -97,7 +97,7 @@ const DemographicFilter = ({
 };
 
 export const Results: FC<ResultsProps> = ({ initialData }) => {
-  const { data } = usePolledResultsData(initialData);
+  const data = usePolledResultsData(initialData);
   const { statements, statementOptions, responseCount, respondentsCount } =
     data || {};
   const canFilterByDemographics = useIsSuperuser();
@@ -372,16 +372,17 @@ export const useDemographicResponses = (
 export function usePolledResultsData(
   initialData: Awaited<ReturnType<typeof getPollResults>>,
 ) {
-  const params = useParams();
+  const { slug } = useParams<{ slug: string }>();
   const { data } = useQuery({
-    queryKey: ["/polls/[slug]/results", params.slug],
+    queryKey: ["/polls/[slug]/results", slug],
     queryFn: async () => {
-      const res = await fetch(`/api/polls/${params.slug}/results`);
+      const res = await fetch(`/api/polls/${slug}/results`);
       return res.json() as ReturnType<typeof getPollResults>;
     },
     initialData,
     refetchInterval: 15_000,
+    staleTime: 15_000,
   });
 
-  return { data };
+  return data;
 }

@@ -25,45 +25,47 @@ type PollPageProps = {
 };
 
 export function PollPage({ initialData, children, userId }: PollPageProps) {
-  const { data } = usePolledPollData(initialData);
-  const { poll, statements, filteredStatements, statementOptions } = data || {};
+  const data = usePolledPollData(initialData);
+  if (!data) {
+    notFound();
+  }
+  const { poll, statements, filteredStatements, statementOptions } = data;
 
   const isSuperAdmin = useIsSuperuser();
   const canSeePoll =
-    poll?.visibility !== "private" ||
+    poll.visibility !== "private" ||
     isPollAdminOrSuperadmin(poll, userId, isSuperAdmin);
 
-  if (!canSeePoll) {
+  if (!canSeePoll || !poll) {
     notFound();
   }
 
   const visibilityText =
-    poll?.visibility === "public" ? "Public poll" : "Private poll";
+    poll.visibility === "public" ? "Public poll" : "Private poll";
 
   const VisibilityIcon =
-    poll?.visibility === "public" ? LockOpen2Icon : LockClosedIcon;
+    poll.visibility === "public" ? LockOpen2Icon : LockClosedIcon;
 
-  const statementsWithoutResponsesAndFlags = statements?.map((statement) => ({
+  const statementsWithoutResponsesAndFlags = statements.map((statement) => ({
     ...statement,
     responses: [],
     flaggedStatements: [],
   }));
 
-  const filteredStatementIds = filteredStatements?.map(
+  const filteredStatementIds = filteredStatements.map(
     (statement) => statement.id,
   );
 
   const statementsToHideIds =
     filteredStatementIds && filteredStatementIds.length > 0
       ? statements
-          ?.filter((statement) => !filteredStatementIds.includes(statement.id))
+          .filter((statement) => !filteredStatementIds.includes(statement.id))
           .map((statement) => statement.id)
       : [];
 
-  const isCouncilPoll = poll?.slug?.includes("council");
+  const isCouncilPoll = poll.slug?.includes("council");
 
-  const questionsRemaining =
-    filteredStatements && filteredStatements.length > 0;
+  const questionsRemaining = filteredStatements.length > 0;
 
   return (
     <main className="bg-black xl:p-8 xl:gap-8 xl:overflow-y-hidden flex-grow grid xl:content-start xl:py-24">
@@ -86,7 +88,7 @@ export function PollPage({ initialData, children, userId }: PollPageProps) {
                 <QrCodeGenerator />
               </div>
 
-              <Link href={`/polls/${poll?.slug}/results`} className="group">
+              <Link href={`/polls/${poll.slug}/results`} className="group">
                 <div className="flex items-center rounded-full bg-zinc-600 text-white text-xs px-3 py-[6px] group-hover:bg-zinc-500">
                   <BarChartIcon className="inline w-3 h-3 mr-1.5" />
                   Results
@@ -94,9 +96,9 @@ export function PollPage({ initialData, children, userId }: PollPageProps) {
               </Link>
             </div>
           </div>
-          <h1 className="font-semibold text-white">{poll?.title}</h1>
+          <h1 className="font-semibold text-white">{poll.title}</h1>
           <h2 className="text-sm text-zinc-500">
-            {poll?.core_question ||
+            {poll.core_question ||
               "What do you think of the following statements?"}
           </h2>
         </div>
@@ -141,8 +143,7 @@ export const POLLED_POLL_QUERY_KEY = "/polls/[slug]";
 export function usePolledPollData(
   initialData: Awaited<ReturnType<typeof getData>>,
 ) {
-  const params = useParams();
-  const slug = params.slug;
+  const { slug } = useParams<{ slug: string }>();
   const { data } = useQuery({
     queryKey: [POLLED_POLL_QUERY_KEY, slug],
     queryFn: async () => {
@@ -151,7 +152,8 @@ export function usePolledPollData(
     },
     initialData,
     refetchInterval: 15_000,
+    staleTime: 15_000,
   });
 
-  return { data };
+  return data;
 }
