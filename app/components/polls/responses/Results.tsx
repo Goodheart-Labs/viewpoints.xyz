@@ -18,7 +18,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "../../shadcn/ui/toggle-group";
 import { shouldHighlightBadge } from "./shouldHighlightBadge";
 import { useQuery } from "react-query";
-import { useParams } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { getPollResults } from "@/lib/pollResults/getPollResults";
 
 type StatementWithStatsAndResponses = StatementWithStats & {
@@ -97,9 +97,9 @@ const DemographicFilter = ({
 };
 
 export const Results: FC<ResultsProps> = ({ initialData }) => {
-  const data = usePolledResultsData(initialData);
   const { statements, statementOptions, responseCount, respondentsCount } =
-    data || {};
+    usePolledResultsData(initialData);
+
   const canFilterByDemographics = useIsSuperuser();
 
   const [enabledDemographicFilters, setEnabledDemographicFilters] =
@@ -383,6 +383,10 @@ export function usePolledResultsData(
     refetchInterval: 15_000,
     staleTime: 15_000,
   });
+
+  if (!data) {
+    notFound();
+  }
 
   return data;
 }

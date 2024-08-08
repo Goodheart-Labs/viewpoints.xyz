@@ -25,11 +25,8 @@ type PollPageProps = {
 };
 
 export function PollPage({ initialData, children, userId }: PollPageProps) {
-  const data = usePolledPollData(initialData);
-  if (!data) {
-    notFound();
-  }
-  const { poll, statements, filteredStatements, statementOptions } = data;
+  const { poll, statements, filteredStatements, statementOptions } =
+    usePolledPollData(initialData);
 
   const isSuperAdmin = useIsSuperuser();
   const canSeePoll =
@@ -154,6 +151,10 @@ export function usePolledPollData(
     refetchInterval: 15_000,
     staleTime: 15_000,
   });
+
+  if (!data) {
+    notFound();
+  }
 
   return data;
 }
