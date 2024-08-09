@@ -1,30 +1,39 @@
 "use client";
 
-import {
-  BarChartIcon,
-  LockClosedIcon,
-  LockOpen2Icon,
-} from "@radix-ui/react-icons";
+import { LockClosedIcon, LockOpen2Icon } from "@radix-ui/react-icons";
 import Cards from "@/app/components/polls/statements/Cards";
 import { CreateStatementButton } from "@/app/components/polls/statements/CreateStatementButton";
 import { Tutorial } from "@/app/components/polls/Tutorial";
 import { QrCodeGenerator } from "@/app/components/polls/QrCodeGenerator";
-import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
 import { BackToSouthGlos } from "@/components/BackToSouthGlos";
 import { getData } from "@/app/(frontend)/polls/[slug]/getData";
 import { useQuery } from "react-query";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { isPollAdminOrSuperadmin, useIsSuperuser } from "@/utils/authFrontend";
 import { Progress } from "@/app/components/shadcn/ui/progress";
+import { DownloadIcon, LinkIcon } from "lucide-react";
+import { getResponseRows } from "@/app/(frontend)/polls/[slug]/results/DownloadButton";
+import { stringify } from "csv-stringify/sync";
+import { getPollResults } from "@/lib/pollResults/getPollResults";
+import { usePolledResultsData } from "./responses/Results";
+import { toast } from "@/app/components/shadcn/ui/use-toast";
 
 type PollPageProps = {
   initialData: Awaited<ReturnType<typeof getData>>;
+  initialPollResults: Awaited<ReturnType<typeof getPollResults>>;
   children: ReactNode;
   userId: string;
 };
 
-export function PollPage({ initialData, children, userId }: PollPageProps) {
+export function PollPage({
+  initialData,
+  initialPollResults,
+  children,
+  userId,
+}: PollPageProps) {
+  const results = usePolledResultsData(initialPollResults);
+
   const { poll, statements, filteredStatements, statementOptions } =
     usePolledPollData(initialData);
 
@@ -64,6 +73,36 @@ export function PollPage({ initialData, children, userId }: PollPageProps) {
 
   const questionsRemaining = filteredStatements.length > 0;
 
+  useEffect(() => {
+    getResponseRows(results!);
+  }, [results]);
+
+  const handleDownloadCSV = () => {
+    const responseRows = getResponseRows(results!);
+
+    const output = stringify(responseRows, {
+      header: true,
+    });
+    const blob = new Blob([output], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `poll-${results?.poll.slug}-results.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleShareResultsLink = () => {
+    const url = `${window.location.origin}/polls/${results?.poll.slug}/results`;
+    navigator.clipboard.writeText(url);
+    toast({
+      description: "Results link copied to clipboard",
+    });
+  };
+
+  const buttonClasses =
+    "flex items-center rounded-full bg-zinc-600 text-white text-xs px-3 py-[6px] hover:bg-zinc-500";
+
   return (
     <main className="bg-black xl:p-8 xl:gap-8 xl:overflow-y-hidden flex-grow grid xl:content-start xl:py-24">
       {isCouncilPoll && !questionsRemaining ? <BackToSouthGlos /> : null}
@@ -85,12 +124,18 @@ export function PollPage({ initialData, children, userId }: PollPageProps) {
                 <QrCodeGenerator />
               </div>
 
-              <Link href={`/polls/${poll.slug}/results`} className="group">
-                <div className="flex items-center rounded-full bg-zinc-600 text-white text-xs px-3 py-[6px] group-hover:bg-zinc-500">
-                  <BarChartIcon className="inline w-3 h-3 mr-1.5" />
-                  Results
-                </div>
-              </Link>
+              <button className={buttonClasses} onClick={handleDownloadCSV}>
+                <DownloadIcon className="w-3 h-3 mr-1.5" />
+                Download CSV
+              </button>
+
+              <button
+                className={buttonClasses}
+                onClick={handleShareResultsLink}
+              >
+                <LinkIcon className="inline w-3 h-3 mr-1.5" />
+                Share results link
+              </button>
             </div>
           </div>
           <h1 className="font-semibold text-white">{poll.title}</h1>

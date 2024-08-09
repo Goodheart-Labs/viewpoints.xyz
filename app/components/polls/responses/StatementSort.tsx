@@ -1,7 +1,7 @@
 "use client";
 
 import type { FC } from "react";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import { usePathname, useRouter } from "next/navigation";
 
@@ -19,7 +19,7 @@ type Props = {
   value?: SortKey;
 };
 
-export const StatementSort: FC<Props> = ({ value = "consensus" }) => {
+export const StatementSort: FC<Props> = ({ value }) => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -32,18 +32,23 @@ export const StatementSort: FC<Props> = ({ value = "consensus" }) => {
     [pathname, router],
   );
 
+  useEffect(() => {
+    if (!value) handleChange("consensus");
+  }, [value, handleChange]);
+
   return (
-    <Select defaultValue={value} onValueChange={handleChange}>
-      <SelectTrigger className="text-zinc-100">
-        Sort by: <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        {sortOptions.map((option) => (
-          <SelectItem key={option.key} value={option.key}>
-            {option.name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <div className="grid justify-center gap-4 sm:flex mt-4 mb-2">
+      {sortOptions.map((option) => (
+        <button
+          key={option.name}
+          type="button"
+          data-state-active={option.key === value}
+          className="py-.5 border-b border-transparent data-[state-active=true]:border-neutral-200 text-neutral-400 data-[state-active=true]:text-neutral-50 hover:text-neutral-100"
+          onClick={() => handleChange(option.key)}
+        >
+          {option.name}
+        </button>
+      ))}
+    </div>
   );
 };
