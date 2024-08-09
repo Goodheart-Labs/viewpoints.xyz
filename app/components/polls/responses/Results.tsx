@@ -17,16 +17,16 @@ import {
 } from "../../shadcn/ui/popover";
 import { ToggleGroup, ToggleGroupItem } from "../../shadcn/ui/toggle-group";
 import { shouldHighlightBadge } from "./shouldHighlightBadge";
+import { useQuery } from "react-query";
+import { notFound, useParams } from "next/navigation";
+import { getPollResults } from "@/lib/pollResults/getPollResults";
 
 type StatementWithStatsAndResponses = StatementWithStats & {
   responses: Response[];
 };
 
 export type ResultsProps = {
-  statements: StatementWithStatsAndResponses[];
-  statementOptions: Record<number, StatementOption[]>;
-  responseCount: number;
-  respondentsCount: number;
+  initialData: Awaited<ReturnType<typeof getPollResults>>;
 };
 
 const DemographicFilter = ({
@@ -96,12 +96,10 @@ const DemographicFilter = ({
   );
 };
 
-export const Results: FC<ResultsProps> = ({
-  statements,
-  statementOptions,
-  responseCount,
-  respondentsCount,
-}) => {
+export const Results: FC<ResultsProps> = ({ initialData }) => {
+  const { statements, statementOptions, responseCount, respondentsCount } =
+    usePolledResultsData(initialData);
+
   const canFilterByDemographics = useIsSuperuser();
 
   const [enabledDemographicFilters, setEnabledDemographicFilters] =
@@ -119,8 +117,8 @@ export const Results: FC<ResultsProps> = ({
     sessionIdsByDemographicOptionId,
     totalSessionCountsByDemographicOptionId,
   } = useDemographicResponses(
-    statements,
-    statementOptions,
+    statements || [],
+    statementOptions || {},
     enabledDemographicFilters,
   );
 
@@ -129,9 +127,10 @@ export const Results: FC<ResultsProps> = ({
     filteredResponseCount,
     filteredRespondentsCount,
   ] = useMemo(() => {
-    const fs = statements.filter(
-      ({ question_type }) => question_type !== "demographic",
-    );
+    const fs =
+      statements?.filter(
+        ({ question_type }) => question_type !== "demographic",
+      ) ?? [];
 
     if (enabledDemographicFilterOptionIds.length === 0) {
       return [fs, responseCount, respondentsCount];
@@ -199,7 +198,7 @@ export const Results: FC<ResultsProps> = ({
           <div className="ml-auto">
             <DemographicFilter
               demographicStatements={demographicStatements}
-              statementOptions={statementOptions}
+              statementOptions={statementOptions ?? {}}
               enabledDemographicFilters={enabledDemographicFilters}
               totalSessionCountsByDemographicOptionId={
                 totalSessionCountsByDemographicOptionId
@@ -234,7 +233,7 @@ export const Results: FC<ResultsProps> = ({
                     !shouldHighlightBadge(sort, votePercentages, choice)
                   }
                 >
-                  {Math.round(votePercentages.get(choice) ?? 0)}%
+                  {Math.round(votePercentages[choice] ?? 0)}%
                 </ChoiceBadge>
               ))}
             </div>
@@ -369,3 +368,25 @@ export const useDemographicResponses = (
 
   return response;
 };
+
+export function usePolledResultsData(
+  initialData: Awaited<ReturnType<typeof getPollResults>>,
+) {
+  const { slug } = useParams<{ slug: string }>();
+  const { data } = useQuery({
+    queryKey: ["/polls/[slug]/results", slug],
+    queryFn: async () => {
+      const res = await fetch(`/api/polls/${slug}/results`);
+      return res.json() as ReturnType<typeof getPollResults>;
+    },
+    initialData,
+    refetchInterval: 15_000,
+    staleTime: 15_000,
+  });
+
+  if (!data) {
+    notFound();
+  }
+
+  return data;
+}

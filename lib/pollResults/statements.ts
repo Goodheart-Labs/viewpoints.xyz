@@ -1,5 +1,6 @@
 import type { Response, Statement } from "@/db/schema";
 import type { StatementStats } from "./constants";
+import { ChoiceEnum } from "kysely-codegen";
 
 export function getStatementStatistics(
   statement: Statement & {
@@ -9,12 +10,12 @@ export function getStatementStatistics(
   if (statement.responses.length === 0) {
     return {
       responseCount: statement.responses.length,
-      voteCounts: new Map<Response["choice"], number>([
+      voteCounts: Object.fromEntries([
         ["agree", 0],
         ["disagree", 0],
         ["skip", 0],
       ]),
-      votePercentages: new Map<Response["choice"], number>([
+      votePercentages: Object.fromEntries([
         ["agree", 0],
         ["disagree", 0],
         ["skip", 0],
@@ -25,53 +26,50 @@ export function getStatementStatistics(
     };
   }
 
-  const votes = new Map<Response["choice"], number>([
+  const votes = Object.fromEntries([
     ["agree", 0],
     ["disagree", 0],
     ["skip", 0],
   ]);
 
   for (const response of statement.responses) {
-    votes.set(response.choice, votes.get(response.choice)! + 1);
+    console.log(response);
+    votes[response.choice!] = votes[response.choice!] + 1;
   }
 
-  const voteCounts = new Map<Response["choice"], number>([
-    ["agree", votes.get("agree")!],
-    ["disagree", votes.get("disagree")!],
-    ["skip", votes.get("skip")!],
+  const voteCounts = Object.fromEntries([
+    ["agree", votes.agree],
+    ["disagree", votes.disagree],
+    ["skip", votes.skip],
   ]);
 
-  const votePercentages = new Map<Response["choice"], number>([
-    ["agree", (votes.get("agree")! / statement.responses.length) * 100],
-    ["disagree", (votes.get("disagree")! / statement.responses.length) * 100],
-    ["skip", (votes.get("skip")! / statement.responses.length) * 100],
+  const votePercentages = Object.fromEntries([
+    ["agree", (votes.agree / statement.responses.length) * 100],
+    ["disagree", (votes.disagree / statement.responses.length) * 100],
+    ["skip", (votes.skip / statement.responses.length) * 100],
   ]);
 
-  const mostCommonChoice = Array.from(votes.entries()).reduce((a, b) =>
+  const mostCommonChoice = Object.entries(votes).reduce((a, b) =>
     a[1] > b[1] ? a : b,
   )[0];
 
-  const consensus = Math.max(
-    votePercentages.get("agree")!,
-    votePercentages.get("disagree")!,
-  );
+  const consensus = Math.max(votePercentages.agree, votePercentages.disagree);
 
-  const divider =
-    votePercentages.get("agree")! + votePercentages.get("disagree")!;
+  const divider = votePercentages.agree + votePercentages.disagree;
 
   const conflict =
     divider === 0
       ? 0
       : Math.min(
-          votePercentages.get("agree")! / divider,
-          votePercentages.get("disagree")! / divider,
+          votePercentages.agree / divider,
+          votePercentages.disagree / divider,
         );
 
   return {
     responseCount: statement.responses.length,
     voteCounts,
     votePercentages,
-    mostCommonChoice,
+    mostCommonChoice: mostCommonChoice as ChoiceEnum,
     consensus,
     conflict,
   };

@@ -17,10 +17,10 @@ export function shouldHighlightBadge(
 ) {
   if (sortType === "consensus") {
     const nonSkipPercentageList = (["agree", "disagree"] as const).map(
-      (choice) => votePercentages.get(choice)!,
+      (choice) => votePercentages[choice],
     );
     const highestPercentage = Math.max(...nonSkipPercentageList);
-    return votePercentages.get(choiceType) === highestPercentage;
+    return votePercentages[choiceType!] === highestPercentage;
   }
 
   if (sortType === "conflict")
