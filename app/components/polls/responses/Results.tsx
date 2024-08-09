@@ -1,28 +1,20 @@
 "use client";
 
 import type { FC } from "react";
-import { useCallback, useMemo, useState } from "react";
-import ChoiceBadge from "@/components/ChoiceBadge";
+import { useCallback, useMemo } from "react";
 import type { SortKey, StatementWithStats } from "@/lib/pollResults/constants";
-import { sortDescriptionDict, sortOptions } from "@/lib/pollResults/constants";
 import { CaretDownIcon } from "@radix-ui/react-icons";
-import type { Poll, Response, StatementOption } from "@/db/schema";
-import { getStatementsWithStats } from "@/lib/pollResults/getStatementsWithStats";
-import { useIsSuperuser } from "@/utils/authFrontend";
-import { ArrowDownNarrowWideIcon } from "lucide-react";
+import type { Response, StatementOption } from "@/db/schema";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "../../shadcn/ui/popover";
 import { ToggleGroup, ToggleGroupItem } from "../../shadcn/ui/toggle-group";
-import { shouldHighlightBadge } from "./shouldHighlightBadge";
 import { Statistics } from "./Statistics";
-import { CreateStatementButton } from "../statements/CreateStatementButton";
 import { useQuery } from "react-query";
 import { notFound, useParams, useSearchParams } from "next/navigation";
 import { getPollResults } from "@/lib/pollResults/getPollResults";
-import { usePolledPollData } from "../PollPage";
 import { getData } from "@/app/(frontend)/polls/[slug]/getData";
 
 type StatementWithStatsAndResponses = StatementWithStats & {
