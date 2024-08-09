@@ -20,7 +20,7 @@ import { shouldHighlightBadge } from "./shouldHighlightBadge";
 import { Statistics } from "./Statistics";
 import { CreateStatementButton } from "../statements/CreateStatementButton";
 import { useQuery } from "react-query";
-import { useParams, useSearchParams } from "next/navigation";
+import { notFound, useParams, useSearchParams } from "next/navigation";
 import { getPollResults } from "@/lib/pollResults/getPollResults";
 import { usePolledPollData } from "../PollPage";
 import { getData } from "@/app/(frontend)/polls/[slug]/getData";
@@ -245,16 +245,21 @@ export const useDemographicResponses = (
 export function usePolledResultsData(
   initialData: Awaited<ReturnType<typeof getPollResults>>,
 ) {
-  const params = useParams();
+  const { slug } = useParams<{ slug: string }>();
   const { data } = useQuery({
-    queryKey: ["/polls/[slug]/results", params.slug],
+    queryKey: ["/polls/[slug]/results", slug],
     queryFn: async () => {
-      const res = await fetch(`/api/polls/${params.slug}/results`);
+      const res = await fetch(`/api/polls/${slug}/results`);
       return res.json() as ReturnType<typeof getPollResults>;
     },
     initialData,
     refetchInterval: 15_000,
+    staleTime: 15_000,
   });
 
-  return { data };
+  if (!data) {
+    notFound();
+  }
+
+  return data;
 }

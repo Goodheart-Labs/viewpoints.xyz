@@ -32,47 +32,46 @@ export function PollPage({
   children,
   userId,
 }: PollPageProps) {
-  const { data } = usePolledPollData(initialData);
-  const { data: results } = usePolledResultsData(initialPollResults);
+  const results = usePolledResultsData(initialPollResults);
 
-  const { poll, statements, filteredStatements, statementOptions } = data || {};
+  const { poll, statements, filteredStatements, statementOptions } =
+    usePolledPollData(initialData);
 
   const isSuperAdmin = useIsSuperuser();
   const canSeePoll =
-    poll?.visibility !== "private" ||
+    poll.visibility !== "private" ||
     isPollAdminOrSuperadmin(poll, userId, isSuperAdmin);
 
-  if (!canSeePoll) {
+  if (!canSeePoll || !poll) {
     notFound();
   }
 
   const visibilityText =
-    poll?.visibility === "public" ? "Public poll" : "Private poll";
+    poll.visibility === "public" ? "Public poll" : "Private poll";
 
   const VisibilityIcon =
-    poll?.visibility === "public" ? LockOpen2Icon : LockClosedIcon;
+    poll.visibility === "public" ? LockOpen2Icon : LockClosedIcon;
 
-  const statementsWithoutResponsesAndFlags = statements?.map((statement) => ({
+  const statementsWithoutResponsesAndFlags = statements.map((statement) => ({
     ...statement,
     responses: [],
     flaggedStatements: [],
   }));
 
-  const filteredStatementIds = filteredStatements?.map(
+  const filteredStatementIds = filteredStatements.map(
     (statement) => statement.id,
   );
 
   const statementsToHideIds =
     filteredStatementIds && filteredStatementIds.length > 0
       ? statements
-          ?.filter((statement) => !filteredStatementIds.includes(statement.id))
+          .filter((statement) => !filteredStatementIds.includes(statement.id))
           .map((statement) => statement.id)
       : [];
 
-  const isCouncilPoll = poll?.slug?.includes("council");
+  const isCouncilPoll = poll.slug?.includes("council");
 
-  const questionsRemaining =
-    filteredStatements && filteredStatements.length > 0;
+  const questionsRemaining = filteredStatements.length > 0;
 
   useEffect(() => {
     getResponseRows(results!);
@@ -139,9 +138,9 @@ export function PollPage({
               </button>
             </div>
           </div>
-          <h1 className="font-semibold text-white">{poll?.title}</h1>
+          <h1 className="font-semibold text-white">{poll.title}</h1>
           <h2 className="text-sm text-zinc-500">
-            {poll?.core_question ||
+            {poll.core_question ||
               "What do you think of the following statements?"}
           </h2>
         </div>
@@ -186,8 +185,7 @@ export const POLLED_POLL_QUERY_KEY = "/polls/[slug]";
 export function usePolledPollData(
   initialData: Awaited<ReturnType<typeof getData>>,
 ) {
-  const params = useParams();
-  const slug = params.slug;
+  const { slug } = useParams<{ slug: string }>();
   const { data } = useQuery({
     queryKey: [POLLED_POLL_QUERY_KEY, slug],
     queryFn: async () => {
@@ -196,7 +194,12 @@ export function usePolledPollData(
     },
     initialData,
     refetchInterval: 15_000,
+    staleTime: 15_000,
   });
 
-  return { data };
+  if (!data) {
+    notFound();
+  }
+
+  return data;
 }
