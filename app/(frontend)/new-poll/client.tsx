@@ -230,7 +230,13 @@ const NewPollPageClientView = ({
 // Default export
 // -----------------------------------------------------------------------------
 
-const NewPollPageClient = ({ canCreatePoll }: { canCreatePoll: boolean }) => {
+const NewPollPageClient = ({
+  canCreatePoll,
+  revalidateUserPolls,
+}: {
+  canCreatePoll: boolean;
+  revalidateUserPolls: () => Promise<void>;
+}) => {
   const router = useRouter();
 
   const form = useForm<FormData>({
@@ -263,6 +269,7 @@ const NewPollPageClient = ({ canCreatePoll }: { canCreatePoll: boolean }) => {
         with_demographic_questions,
         new_statements_visible_by_default,
       });
+      await revalidateUserPolls();
     },
   );
 
