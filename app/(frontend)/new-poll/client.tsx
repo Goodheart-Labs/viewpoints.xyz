@@ -19,6 +19,21 @@ import {
 } from "@/app/components/polls/poll-components";
 import { cn } from "@/utils/style-utils";
 import { Textarea } from "@/app/components/shadcn/ui/textarea";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/app/components/shadcn/ui/accordion";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/shadcn/ui/select";
+import { Switch } from "@/app/components/shadcn/ui/switch";
+import { Label } from "@/app/components/shadcn/ui/label";
 
 // Types
 // -----------------------------------------------------------------------------
@@ -70,6 +85,10 @@ const schema = yup
     ),
     with_demographic_questions: yup.boolean().default(false),
     new_statements_visible_by_default: yup.boolean().default(true),
+    poll_type: yup
+      .string()
+      .oneOf(["public", "private", "closed"])
+      .default("public"),
   })
   .required();
 
@@ -81,6 +100,7 @@ type FormData = yup.InferType<typeof schema>;
 const NewPollPageClientView = ({
   state: { loading },
   form: {
+    watch,
     register,
     handleSubmit,
     control,
@@ -109,20 +129,6 @@ const NewPollPageClientView = ({
           {errors?.title ? (
             <span className="mt-1 text-sm text-red-500">
               {errors.title.message}
-            </span>
-          ) : null}
-        </div>
-      </div>
-
-      <div className="flex flex-col w-full mt-10">
-        <QuestionTitle>Slug</QuestionTitle>
-        <SubTitle>This will be in the URL for your poll.</SubTitle>
-
-        <div className="flex flex-col">
-          <Input hasErrors={!!errors?.slug} type="text" {...register("slug")} />
-          {errors?.slug ? (
-            <span className="mt-1 text-sm text-red-500">
-              {errors.slug.message}
             </span>
           ) : null}
         </div>
@@ -171,44 +177,128 @@ const NewPollPageClientView = ({
         />
       </div>
 
-      <div className="flex flex-col w-full mt-0">
-        <QuestionTitle>Demographic Questions</QuestionTitle>
-        <SubTitle>
-          We can ask people some demographic questions to help you understand
-          the results better.
-        </SubTitle>
+      <Accordion
+        defaultValue="advanced-settings"
+        type="single"
+        collapsible
+        className="w-full mt-10"
+      >
+        <AccordionItem value="advanced-settings" className="border-b-0">
+          <AccordionTrigger className="text-xl bg-zinc-900 px-6">
+            Advanced Settings
+          </AccordionTrigger>
+          <AccordionContent className="bg-zinc-950 px-6 border border-zinc-900">
+            <div className="flex flex-col w-full mt-4">
+              <QuestionTitle>Slug</QuestionTitle>
+              <SubTitle>This will be in the URL for your poll.</SubTitle>
 
-        <p>
-          <label id="with_demographic_questions">
-            <input
-              type="checkbox"
-              className="mr-2"
-              {...register("with_demographic_questions")}
-            />
-            <span className="text-lg text-gray-200">
-              Include demographic questions?
-            </span>
-          </label>
-        </p>
-      </div>
+              <div className="flex flex-col">
+                <Input
+                  hasErrors={!!errors?.slug}
+                  type="text"
+                  {...register("slug")}
+                />
+                {errors?.slug ? (
+                  <span className="mt-1 text-sm text-red-500">
+                    {errors.slug.message}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+            <div className="flex flex-col w-full mt-8">
+              <QuestionTitle>Poll Type</QuestionTitle>
+              <SubTitle>Choose the visibility of your poll</SubTitle>
+              <Controller
+                name="poll_type"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex flex-col space-y-3">
+                    {["public", "private", "closed"].map((type) => (
+                      <label key={type} className="flex items-center">
+                        <input
+                          type="radio"
+                          {...field}
+                          value={type}
+                          checked={field.value === type}
+                          className="sr-only"
+                        />
+                        <div
+                          className={cn(
+                            "w-5 h-5 border rounded-full mr-3 flex items-center justify-center",
+                            field.value === type
+                              ? "border-white"
+                              : "border-gray-400",
+                          )}
+                        >
+                          {field.value === type && (
+                            <div className="w-3 h-3 bg-white rounded-full"></div>
+                          )}
+                        </div>
+                        <span className="text-lg text-gray-200 capitalize">
+                          {type}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              />
+              {errors?.poll_type ? (
+                <span className="mt-1 text-sm text-red-500">
+                  {errors.poll_type.message}
+                </span>
+              ) : null}
+            </div>
 
-      <div className="flex flex-col w-full mt-10">
-        <QuestionTitle>New Statements</QuestionTitle>
-        <SubTitle>
-          Should statements added by respondents initially be visible or hidden?
-        </SubTitle>
+            <div className="flex flex-col w-full mt-8">
+              <QuestionTitle>New Statements</QuestionTitle>
+              <SubTitle>
+                Should statements added by respondents initially be visible or
+                hidden?
+              </SubTitle>
 
-        <p>
-          <label id="with_demographic_questions">
-            <input
-              type="checkbox"
-              className="mr-2"
-              {...register("new_statements_visible_by_default")}
-            />
-            <span className="text-lg text-gray-200">Should be visible</span>
-          </label>
-        </p>
-      </div>
+              <div className="flex items-center space-x-2">
+                <Controller
+                  name="new_statements_visible_by_default"
+                  control={control}
+                  render={({ field }) => (
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  )}
+                />
+                <Label htmlFor="new_statements_visible_by_default">
+                  Should be visible
+                </Label>
+              </div>
+            </div>
+
+            <div className="flex flex-col w-full mt-8">
+              <QuestionTitle>Demographic Questions</QuestionTitle>
+              <SubTitle>
+                We can ask people some demographic questions to help you
+                understand the results better.
+              </SubTitle>
+
+              <div className="flex items-center space-x-2">
+                <Controller
+                  name="with_demographic_questions"
+                  control={control}
+                  render={({ field }) => (
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  )}
+                />
+                <Label htmlFor="with_demographic_questions">
+                  Include demographic questions?
+                </Label>
+              </div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
 
       <div className="flex items-center justify-end w-full py-4 my-10 bg-gray-50 bg-gray-950">
         <div>
@@ -246,6 +336,7 @@ const NewPollPageClient = ({
       statements: "",
       with_demographic_questions: false,
       new_statements_visible_by_default: true,
+      poll_type: "public",
     },
     disabled: !canCreatePoll,
   });
@@ -261,6 +352,7 @@ const NewPollPageClient = ({
       statements,
       with_demographic_questions,
       new_statements_visible_by_default,
+      poll_type,
     }: Omit<FormData, "statements"> & { statements: string[] }) => {
       await axios.post(`/api/polls`, {
         title,
@@ -269,6 +361,7 @@ const NewPollPageClient = ({
         statements,
         with_demographic_questions,
         new_statements_visible_by_default,
+        poll_type,
       });
       await revalidateUserPolls();
     },
@@ -285,6 +378,7 @@ const NewPollPageClient = ({
     statements,
     with_demographic_questions,
     new_statements_visible_by_default,
+    poll_type,
   }: FormData) => {
     await newPollMutation.mutateAsync({
       title,
@@ -293,6 +387,7 @@ const NewPollPageClient = ({
       statements: statements!.split("\n").filter((c) => c.trim() !== ""),
       with_demographic_questions,
       new_statements_visible_by_default,
+      poll_type,
     });
 
     track({
