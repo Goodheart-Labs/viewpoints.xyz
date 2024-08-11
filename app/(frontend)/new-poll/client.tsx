@@ -25,13 +25,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/app/components/shadcn/ui/accordion";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/app/components/shadcn/ui/select";
 import { Switch } from "@/app/components/shadcn/ui/switch";
 import { Label } from "@/app/components/shadcn/ui/label";
 
@@ -87,7 +80,7 @@ const schema = yup
     new_statements_visible_by_default: yup.boolean().default(true),
     poll_type: yup
       .string()
-      .oneOf(["public", "private", "closed"])
+      .oneOf(["public", "private", "hidden"])
       .default("public"),
   })
   .required();
@@ -100,7 +93,6 @@ type FormData = yup.InferType<typeof schema>;
 const NewPollPageClientView = ({
   state: { loading },
   form: {
-    watch,
     register,
     handleSubmit,
     control,
@@ -213,29 +205,33 @@ const NewPollPageClientView = ({
                 control={control}
                 render={({ field }) => (
                   <div className="flex flex-col space-y-3">
-                    {["public", "private", "closed"].map((type) => (
-                      <label key={type} className="flex items-center">
+                    {[
+                      { value: "public", label: "Public" },
+                      { value: "hidden", label: "Private" },
+                      // { value: "private", label: "Closed" },
+                    ].map(({ value, label }) => (
+                      <label key={value} className="flex items-center">
                         <input
                           type="radio"
                           {...field}
-                          value={type}
-                          checked={field.value === type}
+                          value={value}
+                          checked={field.value === value}
                           className="sr-only"
                         />
                         <div
                           className={cn(
                             "w-5 h-5 border rounded-full mr-3 flex items-center justify-center",
-                            field.value === type
+                            field.value === value
                               ? "border-white"
                               : "border-gray-400",
                           )}
                         >
-                          {field.value === type && (
+                          {field.value === value && (
                             <div className="w-3 h-3 bg-white rounded-full"></div>
                           )}
                         </div>
                         <span className="text-lg text-gray-200 capitalize">
-                          {type}
+                          {label}
                         </span>
                       </label>
                     ))}
@@ -361,7 +357,7 @@ const NewPollPageClient = ({
         statements,
         with_demographic_questions,
         new_statements_visible_by_default,
-        poll_type,
+        visibility: poll_type,
       });
       await revalidateUserPolls();
     },
