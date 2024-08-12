@@ -24,7 +24,11 @@ export default async function Poll({ params, searchParams }: PollPageProps) {
   const user = await currentUser();
 
   return (
-    <PollPage initialData={initialData} userId={user?.id!}>
+    <PollPage
+      initialData={initialData}
+      initialPollResults={initialPollResults}
+      userId={user?.id!}
+    >
       <Statistics
         initialPollData={initialData}
         initialPollResults={initialPollResults}

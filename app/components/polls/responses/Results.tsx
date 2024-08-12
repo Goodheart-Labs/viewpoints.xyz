@@ -1,32 +1,29 @@
 "use client";
 
 import type { FC } from "react";
-import { useCallback, useMemo, useState } from "react";
-import ChoiceBadge from "@/components/ChoiceBadge";
+import { useCallback, useMemo } from "react";
 import type { SortKey, StatementWithStats } from "@/lib/pollResults/constants";
-import { sortDescriptionDict, sortOptions } from "@/lib/pollResults/constants";
 import { CaretDownIcon } from "@radix-ui/react-icons";
 import type { Response, StatementOption } from "@/db/schema";
-import { getStatementsWithStats } from "@/lib/pollResults/getStatementsWithStats";
-import { useIsSuperuser } from "@/utils/authFrontend";
-import { ArrowDownNarrowWideIcon } from "lucide-react";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "../../shadcn/ui/popover";
 import { ToggleGroup, ToggleGroupItem } from "../../shadcn/ui/toggle-group";
-import { shouldHighlightBadge } from "./shouldHighlightBadge";
+import { Statistics } from "./Statistics";
 import { useQuery } from "react-query";
-import { notFound, useParams } from "next/navigation";
+import { notFound, useParams, useSearchParams } from "next/navigation";
 import { getPollResults } from "@/lib/pollResults/getPollResults";
+import { getData } from "@/app/(frontend)/polls/[slug]/getData";
 
 type StatementWithStatsAndResponses = StatementWithStats & {
   responses: Response[];
 };
 
 export type ResultsProps = {
-  initialData: Awaited<ReturnType<typeof getPollResults>>;
+  initialResultsData: Awaited<ReturnType<typeof getPollResults>>;
+  initialPollData: Awaited<ReturnType<typeof getData>>;
 };
 
 const DemographicFilter = ({
@@ -96,151 +93,19 @@ const DemographicFilter = ({
   );
 };
 
-export const Results: FC<ResultsProps> = ({ initialData }) => {
-  const { statements, statementOptions, responseCount, respondentsCount } =
-    usePolledResultsData(initialData);
-
-  const canFilterByDemographics = useIsSuperuser();
-
-  const [enabledDemographicFilters, setEnabledDemographicFilters] =
-    useState<EnabledDemographicFilters>({});
-
-  const enabledDemographicFilterOptionIds = useMemo(
-    () => Object.values(enabledDemographicFilters).flat(),
-    [enabledDemographicFilters],
-  );
-
-  const [sort, setSort] = useState<SortKey>("consensus");
-
-  const {
-    demographicStatements,
-    sessionIdsByDemographicOptionId,
-    totalSessionCountsByDemographicOptionId,
-  } = useDemographicResponses(
-    statements || [],
-    statementOptions || {},
-    enabledDemographicFilters,
-  );
-
-  const [
-    filteredStatementsWithStats,
-    filteredResponseCount,
-    filteredRespondentsCount,
-  ] = useMemo(() => {
-    const fs =
-      statements?.filter(
-        ({ question_type }) => question_type !== "demographic",
-      ) ?? [];
-
-    if (enabledDemographicFilterOptionIds.length === 0) {
-      return [fs, responseCount, respondentsCount];
-    }
-
-    const sessionIdsForEnabledDemographicFilters = Object.values(
-      sessionIdsByDemographicOptionId,
-    ).flat();
-
-    const sessionIdsForAllEnabledDemographicFilters =
-      sessionIdsForEnabledDemographicFilters.filter((sessionId) =>
-        enabledDemographicFilterOptionIds.every((optionId) =>
-          sessionIdsByDemographicOptionId[optionId].includes(sessionId),
-        ),
-      );
-
-    const statementsGivenFilters = fs
-      .map((statement) => ({
-        ...statement,
-        responses: statement.responses.filter((response) =>
-          sessionIdsForAllEnabledDemographicFilters.includes(
-            response.session_id,
-          ),
-        ),
-      }))
-      .filter(({ responses }) => responses.length > 0);
-
-    return getStatementsWithStats(statementsGivenFilters);
-  }, [
-    enabledDemographicFilterOptionIds,
-    respondentsCount,
-    responseCount,
-    sessionIdsByDemographicOptionId,
-    statements,
-  ]);
-
-  const sortedStatements = useMemo(() => {
-    const sortFn =
-      sortOptions.find((option) => option.key === sort)?.sortFn ??
-      sortOptions[0].sortFn;
-
-    return filteredStatementsWithStats.sort(sortFn);
-  }, [filteredStatementsWithStats, sort]);
+export const Results: FC<ResultsProps> = ({
+  initialResultsData,
+  initialPollData,
+}) => {
+  const searchParams = useSearchParams();
+  const sortBy = searchParams.get("sort") as SortKey;
 
   return (
-    <div className="grid gap-6">
-      <div className="grid gap-5 p-2 text-sm rounded-lg sm:flex text-neutral-300 bg-neutral-800">
-        <h5>Responses: {filteredResponseCount ?? responseCount}</h5>
-        <h5>Respondents: {filteredRespondentsCount ?? respondentsCount}</h5>
-      </div>
-      <div className="grid justify-center gap-4 sm:flex mt-6">
-        {sortOptions.map((option) => (
-          <button
-            key={option.name}
-            type="button"
-            data-state-active={option.key === sort}
-            className="py-.5 border-b border-transparent data-[state-active=true]:border-neutral-200 text-neutral-400 data-[state-active=true]:text-neutral-50 hover:text-neutral-100"
-            onClick={() => setSort(option.key)}
-          >
-            {option.name}
-          </button>
-        ))}
-
-        {demographicStatements.length > 0 && canFilterByDemographics && (
-          <div className="ml-auto">
-            <DemographicFilter
-              demographicStatements={demographicStatements}
-              statementOptions={statementOptions ?? {}}
-              enabledDemographicFilters={enabledDemographicFilters}
-              totalSessionCountsByDemographicOptionId={
-                totalSessionCountsByDemographicOptionId
-              }
-              onChange={setEnabledDemographicFilters}
-            />
-          </div>
-        )}
-      </div>
-
-      <div className="flex gap-4 items-center min-h-[6rem] pr-4 mx-auto rounded-xl overflow-hidden border border-white/10 bg-white/10 text-gray-300 text-balance">
-        <div className="grid self-stretch place-content-center px-5 bg-white/10">
-          <ArrowDownNarrowWideIcon size={20} />
-        </div>
-
-        <p className="max-w-[38ch] m-2">{sortDescriptionDict[sort]}</p>
-      </div>
-
-      <div className="grid gap-2 mt-4">
-        {sortedStatements.map(({ id, text, stats: { votePercentages } }) => (
-          <div
-            className="grid gap-2 p-3 border rounded bg-neutral-900 border-neutral-700"
-            key={id}
-          >
-            <span>{text}</span>
-            <div className="flex justify-start gap-1">
-              {(["agree", "disagree", "skip"] as const).map((choice) => (
-                <ChoiceBadge
-                  key={choice}
-                  choice={choice}
-                  disabled={
-                    !shouldHighlightBadge(sort, votePercentages, choice)
-                  }
-                >
-                  {Math.round(votePercentages[choice] ?? 0)}%
-                </ChoiceBadge>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+    <Statistics
+      initialPollData={initialPollData}
+      initialPollResults={initialResultsData}
+      sortBy={sortBy}
+    />
   );
 };
 
