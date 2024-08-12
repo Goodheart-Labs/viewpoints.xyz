@@ -8,8 +8,7 @@ import { QrCodeGenerator } from "@/app/components/polls/QrCodeGenerator";
 import { notFound } from "next/navigation";
 import { BackToSouthGlos } from "@/components/BackToSouthGlos";
 import type { getData } from "@/app/(frontend)/polls/[slug]/getData";
-import type { ReactNode } from "react";
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import { isPollAdminOrSuperadmin, useIsSuperuser } from "@/utils/authFrontend";
 
 import { DownloadIcon, LinkIcon } from "lucide-react";
@@ -18,7 +17,7 @@ import { stringify } from "csv-stringify/sync";
 import type { getPollResults } from "@/lib/pollResults/getPollResults";
 import { toast } from "@/app/components/shadcn/ui/use-toast";
 import { usePolledPollData } from "@/lib/usePolledPollData";
-import { usePolledResultsData } from "./responses/Results";
+import { usePolledResultsData } from "@/lib/usePolledResultsData";
 
 type PollPageProps = {
   initialData: Awaited<ReturnType<typeof getData>>;

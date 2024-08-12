@@ -1,4 +1,3 @@
-import { getData } from "@/app/(frontend)/polls/[slug]/getData";
 import { getPollResults } from "@/lib/pollResults/getPollResults";
 import { NextResponse } from "next/server";
 

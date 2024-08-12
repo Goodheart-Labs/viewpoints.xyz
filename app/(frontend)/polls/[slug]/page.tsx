@@ -1,11 +1,11 @@
 import type { SORT_PARAM, SortKey } from "@/lib/pollResults/constants";
-import { getData } from "./getData";
 import { PollPage } from "@/app/components/polls/PollPage";
 import { Statistics } from "@/app/components/polls/responses/Statistics";
 import { CreateStatementButton } from "@/app/components/polls/statements/CreateStatementButton";
 import { currentUser } from "@clerk/nextjs/server";
 import { getPollResults } from "@/lib/pollResults/getPollResults";
 import { getVisitorId } from "@/lib/getVisitorId";
+import { getData } from "./getData";
 
 type PollPageProps = {
   params: { slug: string };

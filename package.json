@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "lint:fix": "eslint --fix './**/*.{js,ts,tsx,css,json}'",
     "format": "prettier --write .",
     "format:ci": "prettier --check './**/*.{js,ts,tsx,css,json}'",
     "check": "tsc --noEmit",
@@ -14,7 +15,8 @@
     "migrate": "bun run db/migrate.ts",
     "env:pull": "vercel env pull .env",
     "db:codegen": "kysely-codegen",
-    "release": "bun run scripts/create-release.ts"
+    "release": "bun run scripts/create-release.ts",
+    "prepare": "husky"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.3.3",
@@ -101,6 +103,7 @@
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-unused-imports": "^3.0.0",
+    "husky": "^9.1.4",
     "jest": "^29.5.0",
     "prettier": "^3.0.0",
     "vitest": "^0.32.0"

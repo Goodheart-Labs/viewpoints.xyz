@@ -1,4 +1,4 @@
-import { Poll } from "@/db/schema";
+import type { Poll } from "@/db/schema";
 import { useUser } from "@clerk/nextjs";
 
 export const useIsSuperuser = () => {
