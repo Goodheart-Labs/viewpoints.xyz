@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { ReactNode, type PropsWithChildren } from "react";
+import type { ReactNode, PropsWithChildren } from "react";
 
 import type { Response } from "@/db/schema";
 import {
