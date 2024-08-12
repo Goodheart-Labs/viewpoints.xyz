@@ -108,12 +108,12 @@ export function PollPage({
       {isCouncilPoll && !questionsRemaining ? <BackToSouthGlos /> : null}
       <div className="flex flex-col relative items-stretch w-full h-full max-w-full mx-auto xl:w-1/2 xl:bg-zinc-900 xl:rounded-xl">
         <div className="p-6 bg-zinc-800 xl:rounded-t-xl">
-          <div className="flex items-end justify-between ">
-            <p className="pl-2 mb-2 text-xs font-bold text-left uppercase border-l-2 text-zinc-400 border-l-zinc-400">
+          <div className="flex items-start justify-between ">
+            <p className="pl-2 mt-1 mb-2 text-xs font-bold text-left uppercase border-l-2 text-zinc-400 border-l-zinc-400">
               Topic
             </p>
 
-            <div className="flex items-center gap-3 ml-auto mb-2">
+            <div className="flex justify-end flex-wrap items-center gap-3 ml-auto mb-2">
               <div className="text-white rounded-l text-xs">
                 <VisibilityIcon className="inline w-3 h-3 mr-1.5 mb-0.5" />
 
