@@ -169,12 +169,7 @@ const NewPollPageClientView = ({
         />
       </div>
 
-      <Accordion
-        defaultValue="advanced-settings"
-        type="single"
-        collapsible
-        className="w-full mt-10"
-      >
+      <Accordion type="single" collapsible className="w-full mt-10">
         <AccordionItem value="advanced-settings" className="border-b-0">
           <AccordionTrigger className="text-xl bg-zinc-900 px-6">
             Advanced Settings
@@ -227,7 +222,7 @@ const NewPollPageClientView = ({
                           )}
                         >
                           {field.value === value && (
-                            <div className="w-3 h-3 bg-white rounded-full"></div>
+                            <div className="w-3 h-3 bg-white rounded-full" />
                           )}
                         </div>
                         <span className="text-lg text-gray-200 capitalize">
@@ -296,7 +291,7 @@ const NewPollPageClientView = ({
         </AccordionItem>
       </Accordion>
 
-      <div className="flex items-center justify-end w-full py-4 my-10 bg-gray-50 bg-gray-950">
+      <div className="flex items-center justify-end w-full py-4 my-10">
         <div>
           <BorderedButton
             type="button"
