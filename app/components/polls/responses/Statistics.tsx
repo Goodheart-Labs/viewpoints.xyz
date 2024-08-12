@@ -1,5 +1,7 @@
 "use client";
-import { ReactNode, useMemo, useState, type PropsWithChildren } from "react";
+
+import { useMemo, useState } from "react";
+import type { ReactNode, PropsWithChildren } from "react";
 
 import type { Response } from "@/db/schema";
 import {
@@ -9,21 +11,21 @@ import {
   type SortKey,
   type StatementWithStats,
 } from "@/lib/pollResults/constants";
-import { getPollResults } from "@/lib/pollResults/getPollResults";
+import type { getPollResults } from "@/lib/pollResults/getPollResults";
 import { ScrollArea } from "@/app/components/shadcn/ui/scroll-area";
 
 import ChoiceBadge from "@/components/ChoiceBadge";
+import { ArrowDownNarrowWideIcon } from "lucide-react";
+import type { getData } from "@/app/(frontend)/polls/[slug]/getData";
+import { useIsSuperuser } from "@/utils/authFrontend";
+import { getStatementsWithStats } from "@/lib/pollResults/getStatementsWithStats";
+import { cn } from "@/utils/style-utils";
+import { usePolledPollData } from "@/lib/usePolledPollData";
 import { HighlightedStatement } from "./HighlightedStatement";
 import { StatementSort } from "./StatementSort";
 import type { UserResponseItem } from "./UserResponses";
 import { shouldHighlightBadge } from "./shouldHighlightBadge";
-import { ArrowDownNarrowWideIcon } from "lucide-react";
-import { getData } from "@/app/(frontend)/polls/[slug]/getData";
-import { usePolledPollData } from "../PollPage";
 import { useDemographicResponses, usePolledResultsData } from "./Results";
-import { useIsSuperuser } from "@/utils/authFrontend";
-import { getStatementsWithStats } from "@/lib/pollResults/getStatementsWithStats";
-import { cn } from "@/utils/style-utils";
 
 type Props = PropsWithChildren<{
   initialPollData: Awaited<ReturnType<typeof getData>>;

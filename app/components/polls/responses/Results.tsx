@@ -5,17 +5,17 @@ import { useCallback, useMemo } from "react";
 import type { SortKey, StatementWithStats } from "@/lib/pollResults/constants";
 import { CaretDownIcon } from "@radix-ui/react-icons";
 import type { Response, StatementOption } from "@/db/schema";
+import { useQuery } from "react-query";
+import { notFound, useParams, useSearchParams } from "next/navigation";
+import type { getPollResults } from "@/lib/pollResults/getPollResults";
+import type { getData } from "@/app/(frontend)/polls/[slug]/getData";
+import { Statistics } from "./Statistics";
+import { ToggleGroup, ToggleGroupItem } from "../../shadcn/ui/toggle-group";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "../../shadcn/ui/popover";
-import { ToggleGroup, ToggleGroupItem } from "../../shadcn/ui/toggle-group";
-import { Statistics } from "./Statistics";
-import { useQuery } from "react-query";
-import { notFound, useParams, useSearchParams } from "next/navigation";
-import { getPollResults } from "@/lib/pollResults/getPollResults";
-import { getData } from "@/app/(frontend)/polls/[slug]/getData";
 
 type StatementWithStatsAndResponses = StatementWithStats & {
   responses: Response[];

@@ -1,6 +1,6 @@
 import type { Response, Statement } from "@/db/schema";
+import type { ChoiceEnum } from "kysely-codegen";
 import type { StatementStats } from "./constants";
-import { ChoiceEnum } from "kysely-codegen";
 
 export function getStatementStatistics(
   statement: Statement & {
@@ -33,7 +33,6 @@ export function getStatementStatistics(
   ]);
 
   for (const response of statement.responses) {
-    console.log(response);
     votes[response.choice!] = votes[response.choice!] + 1;
   }
 

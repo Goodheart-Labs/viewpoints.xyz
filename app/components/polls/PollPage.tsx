@@ -5,19 +5,20 @@ import Cards from "@/app/components/polls/statements/Cards";
 import { CreateStatementButton } from "@/app/components/polls/statements/CreateStatementButton";
 import { Tutorial } from "@/app/components/polls/Tutorial";
 import { QrCodeGenerator } from "@/app/components/polls/QrCodeGenerator";
-import { notFound, useParams } from "next/navigation";
+import { notFound } from "next/navigation";
 import { BackToSouthGlos } from "@/components/BackToSouthGlos";
-import { getData } from "@/app/(frontend)/polls/[slug]/getData";
-import { useQuery } from "react-query";
-import { ReactNode, useEffect } from "react";
+import type { getData } from "@/app/(frontend)/polls/[slug]/getData";
+import type { ReactNode } from "react";
+import { useEffect } from "react";
 import { isPollAdminOrSuperadmin, useIsSuperuser } from "@/utils/authFrontend";
-import { Progress } from "@/app/components/shadcn/ui/progress";
+
 import { DownloadIcon, LinkIcon } from "lucide-react";
 import { getResponseRows } from "@/app/(frontend)/polls/[slug]/results/DownloadButton";
 import { stringify } from "csv-stringify/sync";
-import { getPollResults } from "@/lib/pollResults/getPollResults";
-import { usePolledResultsData } from "./responses/Results";
+import type { getPollResults } from "@/lib/pollResults/getPollResults";
 import { toast } from "@/app/components/shadcn/ui/use-toast";
+import { usePolledPollData } from "@/lib/usePolledPollData";
+import { usePolledResultsData } from "./responses/Results";
 
 type PollPageProps = {
   initialData: Awaited<ReturnType<typeof getData>>;
@@ -147,15 +148,6 @@ export function PollPage({
 
         {questionsRemaining ? (
           <>
-            {statementsToHideIds && statements && (
-              <div className="px-6 pt-6">
-                <Progress
-                  className="w-full h-2"
-                  value={(statementsToHideIds.length / statements.length) * 100}
-                />
-              </div>
-            )}
-
             {statementsWithoutResponsesAndFlags &&
               statementsToHideIds &&
               statementOptions && (
@@ -165,7 +157,6 @@ export function PollPage({
                   statementOptions={statementOptions}
                 />
               )}
-
             {poll && (
               <div className="flex justify-center mt-8 mb-10 sm:mb-0 sm:mt-0 pb-8">
                 <CreateStatementButton pollId={poll.id} />
@@ -179,27 +170,4 @@ export function PollPage({
       <Tutorial />
     </main>
   );
-}
-
-export const POLLED_POLL_QUERY_KEY = "/polls/[slug]";
-export function usePolledPollData(
-  initialData: Awaited<ReturnType<typeof getData>>,
-) {
-  const { slug } = useParams<{ slug: string }>();
-  const { data } = useQuery({
-    queryKey: [POLLED_POLL_QUERY_KEY, slug],
-    queryFn: async () => {
-      const res = await fetch(`/api/polls/${slug}`);
-      return res.json() as ReturnType<typeof getData>;
-    },
-    initialData,
-    refetchInterval: 15_000,
-    staleTime: 15_000,
-  });
-
-  if (!data) {
-    notFound();
-  }
-
-  return data;
 }
