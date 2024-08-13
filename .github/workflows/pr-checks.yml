@@ -31,7 +31,7 @@ jobs:
         run: bun run check
 
       - name: Run tests
-        run: bun run test
+        run: bun test
 
       - name: Run build
         run: bun run build
