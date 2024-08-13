@@ -1,11 +1,13 @@
 "use client";
+
 import Link from "next/link";
-import { Button } from "../components/shadcn/ui/button";
 import { PlusCircle } from "lucide-react";
 import { isEmail } from "@/utils/strings";
-import { anonymousAvatar } from "../components/user/UserAvatar";
-import { PropsWithChildren, useState } from "react";
+import type { PropsWithChildren } from "react";
+import { useState } from "react";
 import { cn } from "@/utils/style-utils";
+import { anonymousAvatar } from "../components/user/UserAvatar";
+import { Button } from "../components/shadcn/ui/button";
 
 export function PollList({
   polls,

@@ -54,7 +54,7 @@ bun run dev
 ```
 
 ### Creating a new migration
-  
+
 ```bash
 bun run migrate make <migration_name>
 ```
@@ -64,7 +64,6 @@ bun run migrate make <migration_name>
 ```bash
 bun run build
 ```
-
 
 ### Deploying Without Viewpoints Logo
 

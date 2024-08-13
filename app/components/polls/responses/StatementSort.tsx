@@ -7,13 +7,6 @@ import { usePathname, useRouter } from "next/navigation";
 
 import type { SortKey } from "@/lib/pollResults/constants";
 import { SORT_PARAM, sortOptions } from "@/lib/pollResults/constants";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/app/components/shadcn/ui/select";
 
 type Props = {
   value?: SortKey;

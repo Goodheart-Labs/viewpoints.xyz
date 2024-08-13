@@ -67,7 +67,7 @@ export const useCardHandlers = ({
 
       onStatementHide();
     },
-    [onStatementHide, pollId, statementId, track],
+    [onStatementHide, pollId, queryClient, statementId, track],
   );
 
   const onResponseCustomOption = useCallback(
@@ -95,7 +95,7 @@ export const useCardHandlers = ({
 
       onStatementHide();
     },
-    [onStatementHide, pollId, statementId, track],
+    [onStatementHide, pollId, queryClient, statementId, track],
   );
 
   const onDragEnd = useCallback(

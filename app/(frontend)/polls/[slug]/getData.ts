@@ -174,6 +174,9 @@ export function filterStatements(
   sessionId: string,
 ): [FilteredStatement[], Record<number, UserResponseItem>] {
   const filteredStatements: FilteredStatement[] = [];
+  /**
+   * A map of statement id to the current user's response for that statement.
+   */
   const userResponses: Record<number, UserResponseItem> = {};
 
   for (const statement of statements) {
@@ -194,6 +197,7 @@ export function filterStatements(
     let userResponse: Omit<UserResponseItem, "percentage"> | null = null;
 
     for (const response of statement.responses) {
+      // If the response is from the user, set the user response
       if (
         (userId && response.user_id === userId) ||
         response.session_id === sessionId

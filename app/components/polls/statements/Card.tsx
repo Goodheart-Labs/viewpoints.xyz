@@ -133,7 +133,7 @@ const DefaultCardView = ({
           name={
             isEmail(statement.author?.name)
               ? "Anonymous"
-              : statement.author?.name ?? null
+              : (statement.author?.name ?? null)
           }
           avatarUrl={statement.author?.avatarUrl ?? null}
           subtitle={new Date(statement.created_at).toLocaleDateString()}

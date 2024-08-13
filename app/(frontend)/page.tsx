@@ -1,14 +1,11 @@
-import type { PropsWithChildren } from "react";
 import Link from "next/link";
 import { PlusCircle } from "lucide-react";
-import { cn } from "@/utils/style-utils";
 import { GitHubLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import type { Author } from "@/db/schema";
 import { db } from "@/db/client";
 import { Logo } from "@/components/Logo";
 import { Button } from "../components/shadcn/ui/button";
-import { anonymousAvatar } from "../components/user/UserAvatar";
 import { WhatsappLink } from "../components/WhatsappLink";
 import { Main } from "../components/Main";
 import { Card, PollList } from "./PollList";
