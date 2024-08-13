@@ -23,6 +23,8 @@ jobs:
         run: bun run format:ci
 
       - name: Run db:codegen
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_STAGING }}
         run: bun run db:codegen
 
       - name: Run type check
