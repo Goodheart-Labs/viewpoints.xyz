@@ -7,13 +7,10 @@ import {
   useMemo,
 } from "react";
 
-import type { Response } from "@/db/schema";
 import {
-  DEFAULT_MINIMUM_RESPONSE_COUNT_THRESHOLD,
   sortDescriptionDict,
   sortOptions,
   type SortKey,
-  type StatementWithStats,
 } from "@/lib/pollResults/constants";
 import type { getPollResults } from "@/lib/pollResults/getPollResults";
 import { ScrollArea } from "@/app/components/shadcn/ui/scroll-area";
@@ -22,14 +19,13 @@ import ChoiceBadge from "@/components/ChoiceBadge";
 import type { getData } from "@/app/(frontend)/polls/[slug]/getData";
 import { usePolledPollData } from "@/lib/usePolledPollData";
 import { usePolledResultsData } from "@/lib/usePolledResultsData";
-import { useIsSuperuser } from "@/utils/authFrontend";
 import { useDemographicResponses } from "@/lib/useDemographicResponses";
 import { ArrowDownNarrowWideIcon } from "lucide-react";
 import { cn } from "@/utils/style-utils";
 import { getStatementsWithStats } from "@/lib/pollResults/getStatementsWithStats";
+import { getHighlightedStatements } from "@/lib/getHighlightedStatements";
 import { HighlightedStatement } from "./HighlightedStatement";
 import { StatementSort } from "./StatementSort";
-import type { UserResponseItem } from "./UserResponses";
 import { shouldHighlightBadge } from "./shouldHighlightBadge";
 
 type Props = PropsWithChildren<{
@@ -50,10 +46,7 @@ export const Statistics = ({
   const results = usePolledResultsData(initialPollResults);
   const pollData = usePolledPollData(initialPollData);
 
-  const canFilterByDemographics = useIsSuperuser();
-
-  const [enabledDemographicFilters, setEnabledDemographicFilters] =
-    useState<EnabledDemographicFilters>({});
+  const [enabledDemographicFilters] = useState<EnabledDemographicFilters>({});
 
   const enabledDemographicFilterOptionIds = useMemo(
     () => Object.values(enabledDemographicFilters).flat(),
@@ -69,11 +62,7 @@ export const Statistics = ({
     pollData?.userResponses ?? {},
   );
 
-  const {
-    demographicStatements,
-    sessionIdsByDemographicOptionId,
-    totalSessionCountsByDemographicOptionId,
-  } = useDemographicResponses(
+  const { sessionIdsByDemographicOptionId } = useDemographicResponses(
     results?.statements || [],
     pollData?.statementOptions || {},
     enabledDemographicFilters || [],
@@ -212,75 +201,4 @@ export const Statistics = ({
       </div>
     </ScrollArea>
   );
-};
-
-type HighlightedStatements = {
-  mostConsensus: {
-    statement: StatementWithStats;
-    choice: Response["choice"];
-  } | null;
-  mostControversial: {
-    statement: StatementWithStats;
-    choice: Response["choice"];
-  } | null;
-};
-
-export const getHighlightedStatements = (
-  statements: StatementWithStats[],
-  userResponses: Record<number, UserResponseItem>,
-  {
-    minimumResponseCount = DEFAULT_MINIMUM_RESPONSE_COUNT_THRESHOLD,
-  }: { minimumResponseCount?: number } = {
-    minimumResponseCount: DEFAULT_MINIMUM_RESPONSE_COUNT_THRESHOLD,
-  },
-): HighlightedStatements => {
-  let userMostConsensusResponse: UserResponseItem | null = null;
-  let userMostConsensusStatement: StatementWithStats | null = null;
-  let userMostControversialResponse: UserResponseItem | null = null;
-  let userMostControversialStatement: StatementWithStats | null = null;
-
-  for (const statement of statements) {
-    const response = userResponses[statement.id];
-
-    if (!response || response.choice === "skip") {
-      continue;
-    }
-
-    const isPastMinimumResponseCountThreshold =
-      statement.stats.responseCount >= minimumResponseCount;
-
-    if (
-      response.percentage > (userMostConsensusResponse?.percentage ?? 0) &&
-      isPastMinimumResponseCountThreshold
-    ) {
-      userMostConsensusResponse = response;
-      userMostConsensusStatement = statement;
-    }
-
-    if (
-      response.percentage <
-        (userMostControversialResponse?.percentage ?? Infinity) &&
-      isPastMinimumResponseCountThreshold
-    ) {
-      userMostControversialResponse = response;
-      userMostControversialStatement = statement;
-    }
-  }
-
-  return {
-    mostConsensus:
-      userMostConsensusStatement && userMostConsensusResponse
-        ? {
-            statement: userMostConsensusStatement,
-            choice: userMostConsensusResponse.choice,
-          }
-        : null,
-    mostControversial:
-      userMostControversialStatement && userMostControversialResponse
-        ? {
-            statement: userMostControversialStatement,
-            choice: userMostControversialResponse.choice,
-          }
-        : null,
-  };
 };

@@ -24,6 +24,7 @@ const ToggleGroup = React.forwardRef<
     className={cn("flex items-center justify-center gap-1", className)}
     {...props}
   >
+    {/* eslint-disable-next-line react/jsx-no-constructed-context-values */}
     <ToggleGroupContext.Provider value={{ variant, size }}>
       {children}
     </ToggleGroupContext.Provider>

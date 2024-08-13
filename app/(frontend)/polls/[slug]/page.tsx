@@ -27,7 +27,7 @@ export default async function Poll({ params, searchParams }: PollPageProps) {
     <PollPage
       initialData={initialData}
       initialPollResults={initialPollResults}
-      userId={user?.id!}
+      userId={user?.id}
     >
       <Statistics
         initialPollData={initialData}

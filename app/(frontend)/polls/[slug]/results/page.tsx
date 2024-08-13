@@ -1,11 +1,10 @@
 import Head from "next/head";
 
 import { Results } from "@/app/components/polls/responses/Results";
-import Link from "next/link";
+import { getVisitorId } from "@/lib/getVisitorId";
 import { getPollResults } from "../../../../../lib/pollResults/getPollResults";
 import { DownloadButton } from "./DownloadButton";
 import { getData } from "../getData";
-import { getVisitorId } from "@/lib/getVisitorId";
 
 const AnalyticsPage = async ({ params }: { params: { slug: string } }) => {
   const initialPollResults = await getPollResults(params.slug);
