@@ -2,8 +2,8 @@ import type { Statement, Response } from "@/db/schema";
 
 export type SortKey = "consensus" | "conflict" | "confusion";
 
-export type ChoiceCount = Map<Response["choice"], number>;
-export type ChoicePercentages = Map<Response["choice"], number>;
+export type ChoiceCount = Record<string, number>;
+export type ChoicePercentages = Record<string, number>;
 
 export type StatementStats = {
   responseCount: number;
@@ -46,8 +46,7 @@ export const sortOptions: {
     name: "Most confusion",
     key: "confusion",
     sortFn: (a, b) =>
-      (b.stats.votePercentages.get("skip") ?? 0) -
-      (a.stats.votePercentages.get("skip") ?? 0),
+      (b.stats.votePercentages.skip ?? 0) - (a.stats.votePercentages.skip ?? 0),
   },
 ];
 

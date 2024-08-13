@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { UpgradeLink } from "@/components/UpgradeLink";
 import { cn } from "@/utils/style-utils";
 import NewPollPageClient from "./client";
+import { revalidateUserPolls } from "./revalidate";
 
 export default async function NewPoll() {
   const isPro = await isUserPro();
@@ -37,7 +38,10 @@ export default async function NewPoll() {
           Create New Poll
         </h1>
       </div>
-      <NewPollPageClient canCreatePoll={canCreatePoll} />
+      <NewPollPageClient
+        canCreatePoll={canCreatePoll}
+        revalidateUserPolls={revalidateUserPolls}
+      />
     </main>
   );
 }

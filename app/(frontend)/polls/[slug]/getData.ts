@@ -172,9 +172,12 @@ export function filterStatements(
    * The session id or visitor id of the user.
    */
   sessionId: string,
-): [FilteredStatement[], Map<number, UserResponseItem>] {
+): [FilteredStatement[], Record<number, UserResponseItem>] {
   const filteredStatements: FilteredStatement[] = [];
-  const userResponses = new Map<number, UserResponseItem>();
+  /**
+   * A map of statement id to the current user's response for that statement.
+   */
+  const userResponses: Record<number, UserResponseItem> = {};
 
   for (const statement of statements) {
     if (!statement.visible) continue;
@@ -194,6 +197,7 @@ export function filterStatements(
     let userResponse: Omit<UserResponseItem, "percentage"> | null = null;
 
     for (const response of statement.responses) {
+      // If the response is from the user, set the user response
       if (
         (userId && response.user_id === userId) ||
         response.session_id === sessionId
@@ -225,12 +229,12 @@ export function filterStatements(
         0,
       );
 
-      userResponses.set(userResponse.statementId, {
+      userResponses[userResponse.statementId] = {
         ...userResponse,
         percentage: Math.round(
           (responseCountMap.get(userResponse.choice)! / totalResponses) * 100,
         ),
-      });
+      };
 
       continue;
     }

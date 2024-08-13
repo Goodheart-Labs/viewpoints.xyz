@@ -15,8 +15,7 @@ export function SubscriptionProvider({
   children: React.ReactNode;
   initialState?: SubscriptionState;
 }) {
-  const [subscription, setSubscription] =
-    useState<SubscriptionState>(initialState);
+  const [subscription] = useState<SubscriptionState>(initialState);
 
   return (
     <SubscriptionContext.Provider value={subscription}>

@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
     statements,
     with_demographic_questions,
     new_statements_visible_by_default,
+    visibility = "public",
   } = await request.json();
 
   const poll = await db.transaction().execute(async (tx) => {
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
         title,
         slug,
         core_question: question,
-        visibility: "public",
+        visibility,
         new_statements_visible_by_default,
         analytics_filters: {},
       })

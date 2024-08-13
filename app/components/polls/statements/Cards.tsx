@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Author, Statement, StatementOption } from "@/db/schema";
 import { shuffleList } from "@/utils/arrangement";
 import Card, { CARD_VERTICAL_OFFSET } from "./Card";
+import { Progress } from "../../shadcn/ui/progress";
 
 const getStatementSorting = (statements: Statement[]) => {
   const demographicStatementIds = statements
@@ -108,40 +109,48 @@ const Cards = ({
   }
 
   return (
-    <div
-      className="relative flex-shrink-0 m-6 mb-4"
-      ref={containerRef}
-      style={{
-        height: `${
-          (cardHeight ?? 0) +
-          (statementsToDisplay.length - 1) * CARD_VERTICAL_OFFSET
-        }px`,
-      }}
-    >
-      {statementsToDisplay.map((statement, index) => (
-        <Card
-          key={statement.id}
-          statement={statement}
-          statementOptions={statementOptions[statement.id] ?? []}
-          index={index}
-          cardCount={statementsToDisplay.length}
-          onStatementHide={() =>
-            setStatementsToHide((hiddenStatements) => [
-              ...hiddenStatements,
-              statement.id,
-            ])
-          }
-          height={
-            index === statementsToDisplay.length - 1 ? undefined : cardHeight
-          }
+    <>
+      <div className="px-6 pt-6">
+        <Progress
+          className="w-full h-2"
+          value={(statementsToHide.length / statements.length) * 100}
         />
-      ))}
-      {statementsToDisplay.length === 0 && emptyMessage && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          {emptyMessage}
-        </div>
-      )}
-    </div>
+      </div>
+      <div
+        className="relative flex-shrink-0 m-6 mb-4"
+        ref={containerRef}
+        style={{
+          height: `${
+            (cardHeight ?? 0) +
+            (statementsToDisplay.length - 1) * CARD_VERTICAL_OFFSET
+          }px`,
+        }}
+      >
+        {statementsToDisplay.map((statement, index) => (
+          <Card
+            key={statement.id}
+            statement={statement}
+            statementOptions={statementOptions[statement.id] ?? []}
+            index={index}
+            cardCount={statementsToDisplay.length}
+            onStatementHide={() =>
+              setStatementsToHide((hiddenStatements) => [
+                ...hiddenStatements,
+                statement.id,
+              ])
+            }
+            height={
+              index === statementsToDisplay.length - 1 ? undefined : cardHeight
+            }
+          />
+        ))}
+        {statementsToDisplay.length === 0 && emptyMessage && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            {emptyMessage}
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 export default Cards;

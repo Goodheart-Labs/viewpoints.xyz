@@ -25,8 +25,8 @@
       " return <$1View />",
       "}",
       "",
-      "export default $1;"
+      "export default $1;",
     ],
-    "description": "React component with view"
-  }
+    "description": "React component with view",
+  },
 }

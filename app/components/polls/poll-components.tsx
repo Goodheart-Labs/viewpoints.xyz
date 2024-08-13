@@ -2,7 +2,9 @@ import { cn } from "@/utils/style-utils";
 import { forwardRef } from "react";
 
 export function QuestionTitle({ children }: { children: React.ReactNode }) {
-  return <h3 className="mb-2 text-xl font-semibold text-white">{children}</h3>;
+  return (
+    <h3 className="mb-2 text-xl font-semibold text-zinc-200">{children}</h3>
+  );
 }
 
 export function SubTitle({ children }: { children: React.ReactNode }) {

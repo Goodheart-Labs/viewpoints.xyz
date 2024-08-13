@@ -16,17 +16,17 @@ export const ChoicePercentages: FC<Props> = ({
   <>
     <ChoicePercentageBadge
       choice="agree"
-      percentage={votePercentages.get("agree")}
+      percentage={votePercentages.agree}
       highlighted={userChoice === "agree"}
     />
     <ChoicePercentageBadge
       choice="disagree"
-      percentage={votePercentages.get("disagree")}
+      percentage={votePercentages.disagree}
       highlighted={userChoice === "disagree"}
     />
     <ChoicePercentageBadge
       choice="skip"
-      percentage={votePercentages.get("skip")}
+      percentage={votePercentages.skip}
       highlighted={userChoice === "skip"}
     />
   </>

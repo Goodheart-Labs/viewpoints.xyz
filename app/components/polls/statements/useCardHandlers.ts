@@ -3,6 +3,8 @@ import type { PanInfo } from "framer-motion";
 import type { Response } from "@/db/schema";
 import { createResponse } from "@/app/api/responses/createResponse";
 import { useAmplitude } from "@/providers/AmplitudeProvider";
+import { useQueryClient } from "react-query";
+import { POLLED_POLL_QUERY_KEY } from "@/lib/usePolledPollData";
 
 export const SWIPE_THRESHOLD = 150;
 
@@ -27,6 +29,7 @@ export const useCardHandlers = ({
   pollId,
   onStatementHide,
 }: HookArgs) => {
+  const queryClient = useQueryClient();
   const { track } = useAmplitude();
 
   const [leaveX, setLeaveX] = useState(0);
@@ -34,10 +37,13 @@ export const useCardHandlers = ({
 
   const onResponseChoice = useCallback(
     (choice: NonNullable<Response["choice"]>) => {
-      startTransition(() => {
-        createResponse(statementId, {
+      startTransition(async () => {
+        await createResponse(statementId, {
           type: "choice",
           choice,
+        });
+        await queryClient.invalidateQueries({
+          queryKey: [POLLED_POLL_QUERY_KEY],
         });
       });
 
@@ -61,15 +67,18 @@ export const useCardHandlers = ({
 
       onStatementHide();
     },
-    [onStatementHide, pollId, statementId, track],
+    [onStatementHide, pollId, queryClient, statementId, track],
   );
 
   const onResponseCustomOption = useCallback(
     (customOptionId: number) => {
-      startTransition(() => {
-        createResponse(statementId, {
+      startTransition(async () => {
+        await createResponse(statementId, {
           type: "customOption",
           customOptionId,
+        });
+        await queryClient.invalidateQueries({
+          queryKey: [POLLED_POLL_QUERY_KEY],
         });
       });
 
@@ -86,7 +95,7 @@ export const useCardHandlers = ({
 
       onStatementHide();
     },
-    [onStatementHide, pollId, statementId, track],
+    [onStatementHide, pollId, queryClient, statementId, track],
   );
 
   const onDragEnd = useCallback(
