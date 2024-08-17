@@ -6,8 +6,8 @@ import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/app/components/shadcn/ui/button";
 import { PlusCircle, Menu, XIcon } from "lucide-react";
 import { useQuery } from "react-query";
-import { Logo } from "./Logo";
 import { useState } from "react";
+import { Logo } from "./Logo";
 
 export function HeaderView() {
   const router = useRouter();
