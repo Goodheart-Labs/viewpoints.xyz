@@ -71,11 +71,7 @@ export function HeaderView() {
         </div>
       ) : null}
 
-      {isSignedIn ? (
-        <UserButton afterSignOutUrl="/" />
-      ) : (
-        <SignInButton>Login</SignInButton>
-      )}
+      {isSignedIn ? <UserButton /> : <SignInButton>Login</SignInButton>}
     </div>
   );
 }

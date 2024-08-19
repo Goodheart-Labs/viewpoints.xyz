@@ -22,7 +22,9 @@ export default clerkMiddleware((auth, req) => {
 
   const res = NextResponse.next();
 
-  if (!visitorIdCookie) {
+  if (req.nextUrl.searchParams.get("removeVisitorId")) {
+    res.cookies.delete("visitorId");
+  } else if (!visitorIdCookie) {
     res.cookies.set({
       name: "visitorId",
       value: auth().userId || uuidv4(),
