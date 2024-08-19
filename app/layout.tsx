@@ -5,5 +5,9 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  return <ClerkProvider>{children}</ClerkProvider>;
+  return (
+    <ClerkProvider afterSignOutUrl="/?removeVisitorId=true">
+      {children}
+    </ClerkProvider>
+  );
 }
