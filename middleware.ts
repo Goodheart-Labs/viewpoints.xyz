@@ -14,8 +14,12 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware((auth, req) => {
-  if (!isPublicRoute(req)) {
-    auth().protect();
+  try {
+    if (!isPublicRoute(req)) {
+      auth().protect();
+    }
+  } catch (error) {
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   const visitorIdCookie = req.cookies.get("visitorId");
