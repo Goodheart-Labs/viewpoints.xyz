@@ -6,7 +6,7 @@ import { createAuthorIfNeeded } from "../lib/createAuthorIfNeeded";
 import { refreshPoll } from "../lib/refreshPoll";
 
 export const createStatement = async (pollId: number, text: string) => {
-  const { userId, sessionId } = auth();
+  const { sessionId } = auth();
 
   await createAuthorIfNeeded();
 
@@ -21,7 +21,7 @@ export const createStatement = async (pollId: number, text: string) => {
     .insertInto("statements")
     .values({
       poll_id: pollId,
-      user_id: userId,
+      user_id: null, // Make sure added statements are always anonymous
       session_id: sessionId,
       visible: poll.new_statements_visible_by_default,
       text,
