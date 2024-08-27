@@ -11,6 +11,7 @@ const isPublicRoute = createRouteMatcher([
   "/privacy-policy",
   "/sign-in(.*)",
   "/sign-up(.*)",
+  "/embed/polls/(.*)",
 ]);
 
 export default clerkMiddleware((auth, req) => {
