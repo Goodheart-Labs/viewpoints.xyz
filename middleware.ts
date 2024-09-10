@@ -11,18 +11,25 @@ const isPublicRoute = createRouteMatcher([
   "/privacy-policy",
   "/sign-in(.*)",
   "/sign-up(.*)",
+  "/embed/polls/(.*)",
 ]);
 
 export default clerkMiddleware((auth, req) => {
-  if (!isPublicRoute(req)) {
-    auth().protect();
+  try {
+    if (!isPublicRoute(req)) {
+      auth().protect();
+    }
+  } catch (error) {
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   const visitorIdCookie = req.cookies.get("visitorId");
 
   const res = NextResponse.next();
 
-  if (!visitorIdCookie) {
+  if (req.nextUrl.searchParams.get("removeVisitorId")) {
+    res.cookies.delete("visitorId");
+  } else if (!visitorIdCookie) {
     res.cookies.set({
       name: "visitorId",
       value: auth().userId || uuidv4(),
